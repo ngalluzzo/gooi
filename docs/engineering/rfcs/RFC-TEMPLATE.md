@@ -90,8 +90,27 @@ Describe functional modules and package-level exports.
 - Feature-oriented module layout:
 - Public APIs via `package.json` exports:
 - No barrel files:
+- Single entry per feature:
 
 Include concise code snippets when needed.
+
+## Package boundary classification
+
+Classify each new module/package and justify placement.
+
+- Proposed location(s): `packages/* | products/<lane>/* | tools/*`
+- Lane (if `products/*`): `authoring | runtime | quality | <new lane>`
+- Why this boundary is correct:
+- Primary consumers (internal/external):
+- Coupling expectations (what it should and should not depend on):
+- Why this is not a better fit in another boundary:
+- Promotion/demotion plan (if expected to move boundaries later):
+
+Use these decision rules:
+
+- `packages/*`: Product-agnostic, reusable public primitives.
+- `products/<lane>/*`: Product-specific behavior and APIs for a lane.
+- `tools/*`: Cross-cutting internal utilities/tooling.
 
 ## Delivery plan and rollout
 

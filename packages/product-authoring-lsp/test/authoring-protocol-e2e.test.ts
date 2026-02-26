@@ -65,8 +65,22 @@ describe("product-authoring-lsp protocol e2e", () => {
 			).lens.command?.id,
 		).toBe("gooi.authoring.showProviders");
 
+		const documentSymbolResponse = server.handleMessage({
+			id: 6,
+			method: "textDocument/documentSymbol",
+			params: {},
+		});
+		expect(documentSymbolResponse.error).toBeUndefined();
+		expect(
+			(
+				documentSymbolResponse.result as {
+					items: Array<{ symbolId: string }>;
+				}
+			).items.length,
+		).toBeGreaterThan(0);
+
 		const prepareRenameResponse = server.handleMessage({
-			id: 4,
+			id: 7,
 			method: "textDocument/prepareRename",
 			params: { position: { line: 12, character: 10 } },
 		});
@@ -76,7 +90,7 @@ describe("product-authoring-lsp protocol e2e", () => {
 		).toBe(true);
 
 		const renameResponse = server.handleMessage({
-			id: 5,
+			id: 8,
 			method: "textDocument/rename",
 			params: { position: { line: 12, character: 10 }, newName: "message_ids" },
 		});
@@ -90,7 +104,7 @@ describe("product-authoring-lsp protocol e2e", () => {
 		});
 
 		const response = server.handleMessage({
-			id: 6,
+			id: 9,
 			method: "textDocument/rename",
 			params: {
 				position: { line: 12, character: 10 },

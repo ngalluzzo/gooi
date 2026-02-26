@@ -13,6 +13,7 @@ import {
 } from "./compile.contracts";
 import { compileBindings } from "./compile-bindings";
 import { compileEntrypoints } from "./compile-entrypoints";
+import { compileReachabilityRequirements } from "./compile-reachability-requirements";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 
 /**
@@ -140,6 +141,7 @@ export const compileEntrypointBundle = (
 	const spec = parseAuthoringEntrypointSpec(parsed.data);
 	const entrypointOutput = compileEntrypoints(spec);
 	const bindingOutput = compileBindings(spec, entrypointOutput.entrypoints);
+	const reachabilityOutput = compileReachabilityRequirements(spec);
 	const refreshOutput = compileRefreshSubscriptions(
 		spec,
 		entrypointOutput.entrypoints,
@@ -147,6 +149,7 @@ export const compileEntrypointBundle = (
 	const diagnostics = [
 		...entrypointOutput.diagnostics,
 		...bindingOutput.diagnostics,
+		...reachabilityOutput.diagnostics,
 		...refreshOutput.diagnostics,
 	];
 
@@ -162,6 +165,7 @@ export const compileEntrypointBundle = (
 		sourceSpecHash,
 		entrypoints: entrypointOutput.entrypoints,
 		bindings: bindingOutput.bindings,
+		reachabilityRequirements: reachabilityOutput.requirements,
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan: compileAccessPlan(spec),
 		schemaArtifacts: entrypointOutput.schemaArtifacts,

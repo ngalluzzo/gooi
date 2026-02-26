@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { compileEntrypointBundle } from "../src/compile/compile-bundle";
 import {
+	createAmbiguousReachabilityRequirementsFixture,
 	createBindingFieldMismatchFixture,
 	createComposableEntrypointSpecFixture,
+	createInvalidReachabilityModeFixture,
 	createUnsupportedScalarSpecFixture,
 } from "./fixtures/composable-entrypoint-spec.fixture";
 
@@ -32,6 +34,14 @@ describe("spec-compiler", () => {
 			"http:query:list_messages",
 			"http:mutation:submit_message",
 		]);
+		expect(Object.keys(first.bundle.reachabilityRequirements ?? {})).toEqual([
+			"ids.generate@1.0.0",
+			"legacy.audit@1.0.0",
+			"notifications.send@1.0.0",
+		]);
+		expect(
+			first.bundle.reachabilityRequirements?.["ids.generate@1.0.0"]?.mode,
+		).toBe("local");
 		const subscription = first.bundle.refreshSubscriptions.list_messages;
 		expect(subscription).toBeDefined();
 		if (subscription !== undefined) {
@@ -117,6 +127,37 @@ describe("spec-compiler", () => {
 		if (!result.ok) {
 			expect(result.diagnostics.map((item) => item.code)).toContain(
 				"duplicate_entrypoint_id",
+			);
+		}
+	});
+
+	test("fails compilation for ambiguous reachability requirements", () => {
+		const fixture = createAmbiguousReachabilityRequirementsFixture();
+		const result = compileEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics.map((item) => item.code)).toContain(
+				"reachability_requirement_ambiguous",
+			);
+		}
+	});
+
+	test("fails compilation with deterministic diagnostics for invalid reachability mode", () => {
+		const fixture = createInvalidReachabilityModeFixture();
+		const result = compileEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics[0]?.code).toBe("authoring_spec_invalid");
+			expect(result.diagnostics[0]?.path).toBe(
+				"wiring.requirements.capabilities.0.mode",
 			);
 		}
 	});

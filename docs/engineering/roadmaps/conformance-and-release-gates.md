@@ -1,4 +1,4 @@
-# Sequence 08: Cross-Lane Conformance and Release Gates
+# Track 08: Conformance and Release Gates
 
 ## RFC Alignment
 

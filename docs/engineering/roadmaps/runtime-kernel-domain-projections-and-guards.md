@@ -1,4 +1,4 @@
-# Sequence 03: Runtime Kernel, Domain, and Projection Semantics
+# Track 03: Runtime Kernel, Domain, Projections, and Guards
 
 ## RFC Alignment
 

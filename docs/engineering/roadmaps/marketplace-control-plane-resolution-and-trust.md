@@ -1,4 +1,4 @@
-# Sequence 07: Marketplace Product (Control Plane, Resolution, Trust)
+# Track 07: Marketplace Control Plane, Resolution, and Trust
 
 ## RFC Alignment
 

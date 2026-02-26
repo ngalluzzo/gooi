@@ -55,7 +55,7 @@ export const validateBindingRequirements = (
 
 		if (binding.resolution.mode === "unreachable") {
 			return fail(
-				"activation_error",
+				"capability_unreachable_error",
 				"Capability is unreachable in binding plan.",
 				{
 					portId: contract.id,

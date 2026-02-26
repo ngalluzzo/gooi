@@ -121,6 +121,58 @@ describe("provider-runtime", () => {
 		expect(activated.ok).toBe(true);
 	});
 
+	test("fails activation with capability_unreachable_error for unreachable bindings", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion: "1.0.0",
+			contracts: [contract],
+			bindingPlan: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				capabilityBindings: [
+					{
+						portId: "ids.generate",
+						portVersion: "1.0.0",
+						resolution: {
+							mode: "unreachable",
+							reason: "No compatible host route.",
+						},
+					},
+				],
+			},
+			lockfile: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				providers: [
+					{
+						providerId: "gooi.providers.test",
+						providerVersion: "1.2.3",
+						integrity: "sha256:abc123",
+						capabilities: [
+							{
+								portId: "ids.generate",
+								portVersion: "1.0.0",
+								contractHash: contract.artifacts.contractHash,
+							},
+						],
+					},
+				],
+			},
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("capability_unreachable_error");
+		}
+	});
+
 	test("rejects undeclared observed effects at invocation time", async () => {
 		const contract = createContract();
 		const providerModule = createProviderModule(
@@ -159,6 +211,96 @@ describe("provider-runtime", () => {
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
 			expect(result.error.kind).toBe("effect_violation_error");
+		}
+	});
+
+	test("fails invocation with capability_unreachable_error when no contract is registered", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion: "1.0.0",
+			contracts: [contract],
+		});
+		expect(activated.ok).toBe(true);
+		if (!activated.ok) {
+			return;
+		}
+
+		const result = await invokeCapability(activated.value, {
+			portId: "ids.missing",
+			portVersion: "1.0.0",
+			input: { count: 1 },
+			principal: {
+				subject: "user_1",
+				roles: ["authenticated"],
+			},
+			ctx: {
+				id: "invocation_missing",
+				traceId: "trace_missing",
+				now: new Date().toISOString(),
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.kind).toBe("capability_unreachable_error");
+		}
+	});
+
+	test("fails activation when binding targets a different provider (no implicit fallback)", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion: "1.0.0",
+			contracts: [contract],
+			bindingPlan: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				capabilityBindings: [
+					{
+						portId: "ids.generate",
+						portVersion: "1.0.0",
+						resolution: {
+							mode: "local",
+							targetHost: "node",
+							providerId: "gooi.providers.other",
+						},
+					},
+				],
+			},
+			lockfile: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				providers: [
+					{
+						providerId: "gooi.providers.test",
+						providerVersion: "1.2.3",
+						integrity: "sha256:abc123",
+						capabilities: [
+							{
+								portId: "ids.generate",
+								portVersion: "1.0.0",
+								contractHash: contract.artifacts.contractHash,
+							},
+						],
+					},
+				],
+			},
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("activation_error");
 		}
 	});
 

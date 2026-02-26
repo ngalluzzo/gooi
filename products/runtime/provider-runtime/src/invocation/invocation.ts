@@ -30,7 +30,7 @@ export const invokeCapability = async (
 
 	if (contract === undefined) {
 		return fail(
-			"invocation_error",
+			"capability_unreachable_error",
 			"No contract registered for capability call.",
 			{
 				portId: call.portId,

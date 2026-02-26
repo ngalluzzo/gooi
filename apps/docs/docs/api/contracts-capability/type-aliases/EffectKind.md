@@ -1,8 +1,8 @@
-[**@gooi/contracts-capability**](../README.md)
+[**@gooi/capability-contracts**](../README.md)
 
 ***
 
-[@gooi/contracts-capability](../README.md) / EffectKind
+[@gooi/capability-contracts](../README.md) / EffectKind
 
 # Type Alias: EffectKind
 

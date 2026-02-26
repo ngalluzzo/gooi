@@ -1,0 +1,28 @@
+{
+	"name": "@gooi/stable-json",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/stable-json/stable-json.js",
+	"types": "./src/stable-json/stable-json.ts",
+	"exports": {
+		".": {
+			"types": "./src/stable-json/stable-json.ts",
+			"bun": "./src/stable-json/stable-json.ts",
+			"import": "./dist/stable-json/stable-json.js",
+			"default": "./dist/stable-json/stable-json.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/stable-json/stable-json.ts --outfile ./dist/stable-json/stable-json.js",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	}
+}

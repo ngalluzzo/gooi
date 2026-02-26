@@ -57,12 +57,44 @@ function normalizePath(input: string): string {
 	return input.replaceAll("\\", "/");
 }
 
-function wildcardToRegExp(pattern: string): RegExp {
-	const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const wildcardPattern = escaped
-		.replaceAll("\\*", ".*")
-		.replaceAll("\\?", ".");
-	return new RegExp(`^${wildcardPattern}$`);
+function matchesWildcard(pattern: string, value: string): boolean {
+	let patternIndex = 0;
+	let valueIndex = 0;
+	let starPatternIndex = -1;
+	let starMatchValueIndex = 0;
+
+	while (valueIndex < value.length) {
+		const patternChar = pattern[patternIndex];
+		const valueChar = value[valueIndex];
+
+		if (patternChar === valueChar || patternChar === "?") {
+			patternIndex += 1;
+			valueIndex += 1;
+			continue;
+		}
+
+		if (patternChar === "*") {
+			starPatternIndex = patternIndex;
+			starMatchValueIndex = valueIndex;
+			patternIndex += 1;
+			continue;
+		}
+
+		if (starPatternIndex !== -1) {
+			patternIndex = starPatternIndex + 1;
+			starMatchValueIndex += 1;
+			valueIndex = starMatchValueIndex;
+			continue;
+		}
+
+		return false;
+	}
+
+	while (pattern[patternIndex] === "*") {
+		patternIndex += 1;
+	}
+
+	return patternIndex === pattern.length;
 }
 
 function isExpired(expiresAt: string | undefined): boolean {
@@ -84,7 +116,7 @@ function matchesException(pattern: string, filePath: string): boolean {
 		return normalizedPattern === normalizedPath;
 	}
 
-	return wildcardToRegExp(normalizedPattern).test(normalizedPath);
+	return matchesWildcard(normalizedPattern, normalizedPath);
 }
 
 async function readExceptions(

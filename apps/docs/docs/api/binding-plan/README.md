@@ -1,8 +1,8 @@
-**@gooi/binding-plan**
+**@gooi/binding**
 
 ***
 
-# @gooi/binding-plan
+# @gooi/binding
 
 ## Type Aliases
 

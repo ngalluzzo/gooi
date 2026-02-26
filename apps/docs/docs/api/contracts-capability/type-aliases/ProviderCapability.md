@@ -1,8 +1,8 @@
-[**@gooi/contracts-capability**](../README.md)
+[**@gooi/capability-contracts**](../README.md)
 
 ***
 
-[@gooi/contracts-capability](../README.md) / ProviderCapability
+[@gooi/capability-contracts](../README.md) / ProviderCapability
 
 # Type Alias: ProviderCapability
 

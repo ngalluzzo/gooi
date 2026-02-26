@@ -1,0 +1,16 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": [
+		"./src/build-capability-index-snapshot/build-capability-index-snapshot.ts",
+		"./src/capability-index-contracts/capability-index.contracts.ts",
+		"./src/parse-capability-index-snapshot/parse-capability-index-snapshot.ts",
+		"./src/resolve-capability/resolve-capability.ts"
+	],
+	"entryPointStrategy": "resolve",
+	"excludePrivate": true,
+	"excludeProtected": true,
+	"excludeInternal": true,
+	"readme": "./README.md",
+	"plugin": ["typedoc-plugin-markdown"],
+	"out": "../../../apps/docs/docs/api/capability-index"
+}

@@ -1,0 +1,50 @@
+{
+	"name": "@gooi/symbol-graph",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/build-symbol-graph-snapshot/build-symbol-graph-snapshot.js",
+	"types": "./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts",
+	"exports": {
+		".": {
+			"types": "./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts",
+			"bun": "./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts",
+			"import": "./dist/build-symbol-graph-snapshot/build-symbol-graph-snapshot.js",
+			"default": "./dist/build-symbol-graph-snapshot/build-symbol-graph-snapshot.js"
+		},
+		"./contracts": {
+			"types": "./src/symbol-graph-contracts/symbol-graph.contracts.ts",
+			"bun": "./src/symbol-graph-contracts/symbol-graph.contracts.ts",
+			"import": "./dist/symbol-graph-contracts/symbol-graph.contracts.js",
+			"default": "./dist/symbol-graph-contracts/symbol-graph.contracts.js"
+		},
+		"./parse": {
+			"types": "./src/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.ts",
+			"bun": "./src/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.ts",
+			"import": "./dist/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.js",
+			"default": "./dist/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.js"
+		},
+		"./derive-signal-impact-edges": {
+			"types": "./src/derive-signal-impact-edges/derive-signal-impact-edges.ts",
+			"bun": "./src/derive-signal-impact-edges/derive-signal-impact-edges.ts",
+			"import": "./dist/derive-signal-impact-edges/derive-signal-impact-edges.js",
+			"default": "./dist/derive-signal-impact-edges/derive-signal-impact-edges.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts --outfile ./dist/build-symbol-graph-snapshot/build-symbol-graph-snapshot.js --external zod --external @gooi/stable-json && bun build ./src/symbol-graph-contracts/symbol-graph.contracts.ts --outfile ./dist/symbol-graph-contracts/symbol-graph.contracts.js --external zod && bun build ./src/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.ts --outfile ./dist/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.js --external zod --external @gooi/stable-json && bun build ./src/derive-signal-impact-edges/derive-signal-impact-edges.ts --outfile ./dist/derive-signal-impact-edges/derive-signal-impact-edges.js --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/stable-json": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

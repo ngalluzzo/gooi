@@ -1,17 +1,20 @@
 {
 	"files": [],
 	"references": [
-		{ "path": "./apps/gooi-vscode-extension" },
-		{ "path": "./packages/contracts-capability" },
-		{ "path": "./packages/authoring-contracts" },
-		{ "path": "./packages/capability-index" },
-		{ "path": "./packages/symbol-graph" },
-		{ "path": "./packages/product-authoring-lsp" },
-		{ "path": "./packages/binding-plan" },
-		{ "path": "./packages/provider-runtime" },
-		{ "path": "./packages/conformance" },
-		{ "path": "./packages/spec-compiler" },
-		{ "path": "./packages/surface-bindings" },
-		{ "path": "./packages/entrypoint-runtime" }
+		{ "path": "./apps/vscode-extension" },
+		{ "path": "./packages/provider-manifest" },
+		{ "path": "./packages/capability-contracts" },
+		{ "path": "./packages/binding" },
+		{ "path": "./packages/surface-contracts" },
+		{ "path": "./products/authoring/authoring-contracts" },
+		{ "path": "./products/authoring/language-server" },
+		{ "path": "./products/authoring/capability-index" },
+		{ "path": "./products/authoring/symbol-graph" },
+		{ "path": "./products/runtime/provider-runtime" },
+		{ "path": "./products/quality/conformance" },
+		{ "path": "./products/authoring/spec-compiler" },
+		{ "path": "./products/runtime/entrypoint-runtime" },
+		{ "path": "./products/runtime/surface-runtime" },
+		{ "path": "./marketplace/memory" }
 	]
 }

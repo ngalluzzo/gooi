@@ -1,5 +1,5 @@
 ---
-"@gooi/product-authoring-lsp": minor
+"@gooi/language-server": minor
 "@gooi/conformance": minor
 ---
 

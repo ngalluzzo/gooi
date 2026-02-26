@@ -1,6 +1,6 @@
 ---
-"@gooi/contracts-capability": minor
-"@gooi/binding-plan": minor
+"@gooi/capability-contracts": minor
+"@gooi/binding": minor
 "@gooi/provider-runtime": minor
 "@gooi/conformance": minor
 ---

@@ -8,6 +8,8 @@ import { compileEntrypoints } from "./compile-entrypoints";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 import {
 	artifactVersionSchema,
+	type CompiledRoleDefinition,
+	type CompiledRoleDeriveRule,
 	type CompileDiagnostic,
 	type CompiledEntrypointBundle,
 	type CompileEntrypointBundleResult,
@@ -34,17 +36,78 @@ const compileAccessPlan = (
 	spec: ReturnType<typeof parseAuthoringEntrypointSpec>,
 ) => {
 	const entrypointRoles: Record<string, readonly string[]> = {};
+	const roleDefinitions: Record<string, CompiledRoleDefinition> = {};
 	for (const query of spec.queries) {
 		entrypointRoles[`query:${query.id}`] = [...query.access.roles];
 	}
 	for (const mutation of spec.mutations) {
 		entrypointRoles[`mutation:${mutation.id}`] = [...mutation.access.roles];
 	}
+
+	const parseDeriveRules = (
+		roleValue: unknown,
+	): readonly CompiledRoleDeriveRule[] => {
+		if (roleValue === null || typeof roleValue !== "object") {
+			return [];
+		}
+		const roleRecord = roleValue as Readonly<Record<string, unknown>>;
+		const deriveValue = roleRecord.derive;
+		if (deriveValue === null || typeof deriveValue !== "object") {
+			return [];
+		}
+		const deriveRecord = deriveValue as Readonly<Record<string, unknown>>;
+		const rules: CompiledRoleDeriveRule[] = [];
+		for (const [deriveKind, deriveInput] of Object.entries(deriveRecord).sort(
+			([left], [right]) => left.localeCompare(right),
+		)) {
+			if (deriveKind === "auth_is_authenticated") {
+				rules.push({ kind: "auth_is_authenticated" });
+				continue;
+			}
+			if (
+				deriveKind === "auth_claim_equals" &&
+				Array.isArray(deriveInput) &&
+				typeof deriveInput[0] === "string"
+			) {
+				rules.push({
+					kind: "auth_claim_equals",
+					claim: deriveInput[0],
+					expected: deriveInput[1],
+				});
+			}
+		}
+		return rules;
+	};
+
+	const parseExtends = (roleValue: unknown): readonly string[] => {
+		if (roleValue === null || typeof roleValue !== "object") {
+			return [];
+		}
+		const roleRecord = roleValue as Readonly<Record<string, unknown>>;
+		const extendsValue = roleRecord.extends;
+		if (!Array.isArray(extendsValue)) {
+			return [];
+		}
+		const filtered = extendsValue.filter(
+			(entry): entry is string => typeof entry === "string" && entry.length > 0,
+		);
+		return [...new Set(filtered)];
+	};
+
+	for (const roleId of Object.keys(spec.access.roles).sort((left, right) =>
+		left.localeCompare(right),
+	)) {
+		roleDefinitions[roleId] = {
+			roleId,
+			extends: parseExtends(spec.access.roles[roleId]),
+			deriveRules: parseDeriveRules(spec.access.roles[roleId]),
+		};
+	}
+
 	return {
 		defaultPolicy: spec.access.default_policy,
-		knownRoles: Object.keys(spec.access.roles).sort((left, right) =>
-			left.localeCompare(right),
-		),
+		knownRoles: Object.keys(roleDefinitions),
+		roleDefinitions,
 		entrypointRoles,
 	} as const;
 };

@@ -39,7 +39,7 @@ jobs:
 
       - name: Upload coverage artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-reports
           path: |
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload LOC report artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: loc-report
           path: loc-check.txt
@@ -167,7 +167,7 @@ jobs:
         run: bun run docs:sync
 
       - name: Upload generated docs artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: docs-generated
           path: apps/docs/docs

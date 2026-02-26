@@ -142,3 +142,33 @@ jobs:
         run: |
           echo "LOC policy regressions detected (enforce mode)."
           exit 1
+
+  docs:
+    name: Docs Generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.9
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate API docs
+        run: bun run docs:api
+
+      - name: Sync engineering docs
+        run: bun run docs:sync
+
+      - name: Upload generated docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-generated
+          path: apps/docs/docs
+          if-no-files-found: error

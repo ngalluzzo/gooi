@@ -1,0 +1,22 @@
+{
+	"artifactVersion": "1.0.0",
+	"sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+	"sourceKind": "workspace-local",
+	"requiredArtifacts": {
+		"compiledEntrypointBundle": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+		"capabilityIndexSnapshot": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+		"symbolGraphSnapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+	},
+	"catalogSnapshot": {
+		"catalogSource": "demo-catalog",
+		"catalogVersion": "2026-02-26",
+		"catalogHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+	},
+	"envelopeVersions": {
+		"authoringRequestEnvelope": "1.0.0",
+		"authoringResultEnvelope": "1.0.0",
+		"authoringErrorEnvelope": "1.0.0",
+		"authoringDiagnosticsEnvelope": "1.0.0"
+	},
+	"artifactHash": "95e1160b0499c7986449bf142c8c093a109202f5448ec661d0f7e23c0b8bb779"
+}

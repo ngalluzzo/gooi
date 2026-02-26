@@ -1,0 +1,102 @@
+{
+	"artifactVersion": "1.0.0",
+	"sourceHash": "9999999999999999999999999999999999999999999999999999999999999999",
+	"artifactHash": "720cd48b5f92c5228adb762e6384b082717a7a2f8bde7d956711c596d314c6cd",
+	"symbols": [
+		{
+			"id": "action:guestbook.submit",
+			"kind": "action",
+			"name": "guestbook.submit",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 42,
+				"character": 1
+			}
+		},
+		{
+			"id": "ambient:payload.user_id",
+			"kind": "ambient_symbol",
+			"name": "payload.user_id",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 46,
+				"character": 20
+			}
+		},
+		{
+			"id": "entrypoint:home.data.messages",
+			"kind": "entrypoint",
+			"name": "home.data.messages",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 91,
+				"character": 1
+			}
+		},
+		{
+			"id": "expr:var.generated_ids.ids.0",
+			"kind": "expression_variable",
+			"name": "generated_ids.ids.0",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 57,
+				"character": 18
+			},
+			"ownerSymbolId": "action:guestbook.submit"
+		},
+		{
+			"id": "signal:message.created",
+			"kind": "signal",
+			"name": "message.created",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 62,
+				"character": 1
+			}
+		},
+		{
+			"id": "step:generated_ids",
+			"kind": "step_binding",
+			"name": "generated_ids",
+			"location": {
+				"path": "docs/demo.yml",
+				"line": 49,
+				"character": 3
+			},
+			"ownerSymbolId": "action:guestbook.submit"
+		}
+	],
+	"references": [
+		{
+			"fromSymbolId": "action:guestbook.submit",
+			"toSymbolId": "signal:message.created",
+			"relationship": "emits_signal"
+		},
+		{
+			"fromSymbolId": "action:guestbook.submit",
+			"toSymbolId": "entrypoint:home.data.messages",
+			"relationship": "impacts_query"
+		},
+		{
+			"fromSymbolId": "expr:var.generated_ids.ids.0",
+			"toSymbolId": "step:generated_ids",
+			"relationship": "references"
+		},
+		{
+			"fromSymbolId": "signal:message.created",
+			"toSymbolId": "entrypoint:home.data.messages",
+			"relationship": "refresh_subscription"
+		}
+	],
+	"renameConstraints": [
+		{
+			"symbolKind": "ambient_symbol",
+			"renameable": false,
+			"blockedReason": "Ambient runtime symbols are reserved."
+		},
+		{
+			"symbolKind": "step_binding",
+			"renameable": true
+		}
+	]
+}

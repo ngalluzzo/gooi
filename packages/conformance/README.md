@@ -4,17 +4,19 @@
 [![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
 [![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
 
-Conformance harness for RFC-0001 provider runtime and RFC-0002 entrypoint runtime behavior checks.
+Conformance harness for RFC-0001 provider runtime, RFC-0002 entrypoint runtime,
+and RFC-0003 authoring intelligence behavior checks.
 
 ## Overview
 
-`@gooi/conformance` runs conformance suites across two feature surfaces:
-provider runtime checks and entrypoint runtime checks.
+`@gooi/conformance` runs conformance suites across three feature surfaces:
+provider runtime checks, entrypoint runtime checks, and authoring intelligence checks.
 
 ## Features
 
 - Provider runtime checks (`runProviderConformance`)
 - Entrypoint runtime checks (`runEntrypointConformance`)
+- Authoring checks (`runAuthoringConformance`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
 
@@ -31,6 +33,7 @@ import {
   runProviderConformance,
 } from "@gooi/conformance/provider";
 import { runEntrypointConformance } from "@gooi/conformance/entrypoint";
+import { runAuthoringConformance } from "@gooi/conformance/authoring";
 
 const report = await runProviderConformance({
   providerModule,
@@ -47,8 +50,10 @@ console.log(report.passed, report.checks);
 
 - `runProviderConformance(input)`
 - `runEntrypointConformance(input)`
+- `runAuthoringConformance(input)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
+- `AuthoringConformanceReport`
 
 ## Development
 

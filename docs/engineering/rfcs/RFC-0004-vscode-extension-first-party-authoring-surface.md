@@ -168,6 +168,24 @@ Public API exposure:
 
 ## Delivery plan and rollout
 
+Phase execution pattern (required for every phase):
+
+1. Contracts first:
+   - add/adjust Zod IO contracts and exported types before implementation.
+2. Fixtures before tests:
+   - add deterministic fixture workspaces/payloads before writing test assertions.
+3. TDD sequence:
+   - write failing unit/integration/E2E tests against contracts.
+   - implement minimal production code to satisfy tests (no stubs).
+   - iterate until tests and conformance are green.
+4. Product-feature module discipline:
+   - keep modules feature-scoped, explicit boundaries, and no barrel files.
+5. Documentation and release hygiene:
+   - update package README and TSDoc-facing module docs for changed public APIs.
+   - add a changeset for user-visible behavior changes.
+6. Phase gate:
+   - phase does not exit until all existing CI quality gates pass.
+
 Phase 1: Extension scaffold and typed adapter contracts
 
 - Entry criteria:
@@ -175,8 +193,11 @@ Phase 1: Extension scaffold and typed adapter contracts
   - Existing authoring handlers and conformance tests are green.
 - Exit criteria:
   - Extension activates and language client starts against fixture workspace.
+  - Phase 1 unit/integration tests are green in CI.
 - Deliverables:
   - extension manifest, activation entrypoint, typed settings/command contracts.
+  - fixture workspace for activation/lifecycle tests.
+  - phase-specific tests and changeset.
 
 Phase 2: Core authoring flows in extension
 
@@ -184,8 +205,11 @@ Phase 2: Core authoring flows in extension
   - Phase 1 merged.
 - Exit criteria:
   - completion/diagnostics/navigation/rename/lens flows work via VS Code client.
+  - conformance suite remains green through existing `@gooi/conformance` tests.
 - Deliverables:
   - command wiring, lens resolution, rename routing, diagnostics publishing.
+  - deterministic protocol fixtures for completion/rename/lens flows.
+  - phase-specific tests and changeset.
 
 Phase 3: Release readiness and publish
 
@@ -193,8 +217,11 @@ Phase 3: Release readiness and publish
   - Phase 2 conformance and integration tests green.
 - Exit criteria:
   - signed extension artifact and Marketplace publication process validated.
+  - release smoke tests and rollback drill documented and green.
 - Deliverables:
   - release docs, publish workflow wiring, rollback/runbook docs.
+  - package README badges and install/verify instructions.
+  - phase-specific tests and changeset.
 
 ## Test strategy and acceptance criteria
 

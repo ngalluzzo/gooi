@@ -2,10 +2,14 @@
 	"$schema": "https://typedoc.org/schema.json",
 	"entryPoints": [
 		"./src/contracts/completion-contracts.ts",
+		"./src/contracts/code-lens-contracts.ts",
 		"./src/contracts/diagnostics-contracts.ts",
 		"./src/contracts/navigation-contracts.ts",
 		"./src/contracts/navigation-results.ts",
 		"./src/contracts/read-context.ts",
+		"./src/contracts/rename-contracts.ts",
+		"./src/features/actions/list-authoring-code-lenses.ts",
+		"./src/features/actions/resolve-authoring-code-lens.ts",
 		"./src/features/completion/list-authoring-completion-items.ts",
 		"./src/features/completion/resolve-authoring-completion-item.ts",
 		"./src/features/diagnostics/publish-authoring-diagnostics.ts",
@@ -13,7 +17,9 @@
 		"./src/features/navigation/get-authoring-definition.ts",
 		"./src/features/navigation/get-authoring-references.ts",
 		"./src/features/navigation/list-authoring-document-symbols.ts",
-		"./src/features/navigation/search-authoring-workspace-symbols.ts"
+		"./src/features/navigation/search-authoring-workspace-symbols.ts",
+		"./src/features/rename/apply-authoring-rename.ts",
+		"./src/features/rename/prepare-authoring-rename.ts"
 	],
 	"entryPointStrategy": "resolve",
 	"excludePrivate": true,

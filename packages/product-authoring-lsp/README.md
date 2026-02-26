@@ -4,12 +4,12 @@
 [![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
 [![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
 
-Snapshot-driven read-path handlers for RFC-0003 authoring intelligence.
+Snapshot-driven handlers for RFC-0003 authoring intelligence read and action paths.
 
 ## Overview
 
-`@gooi/product-authoring-lsp` implements the Phase 3 read path for product authoring:
-completion, hover, diagnostics, definition/references, and symbol queries.
+`@gooi/product-authoring-lsp` implements product authoring LSP handlers for:
+completion, hover, diagnostics, symbol navigation, code lenses, and rename-safe edits.
 
 The package is deterministic and artifact-driven. It consumes:
 
@@ -24,6 +24,8 @@ The package is deterministic and artifact-driven. It consumes:
 - Lockfile parity evaluation with degraded read-mode behavior
 - Deterministic diagnostics ordering (`path`, `code`, `message`)
 - Graph-backed definition/references and symbol listing helpers
+- Code lens list/resolve for run, provider visibility, and affected-query actions
+- Rename preflight (`prepareRename`) and workspace edits (`rename`) with conflict checks
 
 ## Installation
 
@@ -49,11 +51,15 @@ console.log(result.parity.status, result.items.map((item) => item.label));
 - `listAuthoringCompletionItems(value)`
 - `resolveAuthoringCompletionItem(value)`
 - `publishAuthoringDiagnostics(value)`
+- `listAuthoringCodeLenses(value)`
+- `resolveAuthoringCodeLens(value)`
 - `getAuthoringHover(value)`
 - `getAuthoringDefinition(value)`
 - `getAuthoringReferences(value)`
 - `listAuthoringDocumentSymbols(value)`
 - `searchAuthoringWorkspaceSymbols(value)`
+- `prepareAuthoringRename(value)`
+- `applyAuthoringRename(value)`
 
 ## Development
 

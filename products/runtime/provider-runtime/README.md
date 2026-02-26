@@ -15,6 +15,7 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
 - Hard-fail activation when binding/lockfile checks fail
+- Fail-hard capability reachability enforcement (`capability_unreachable_error`)
 - Typed invocation envelope (`principal`, `ctx`, `input`)
 - Input/output/error payload validation via contract Zod schemas
 - Observed-effect enforcement against declared capability effects

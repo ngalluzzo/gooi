@@ -18,7 +18,9 @@ export type RuntimeErrorKind =
 	| "activation_error"
 	| "invocation_error"
 	| "timeout_error"
-	| "effect_violation_error";
+	| "effect_violation_error"
+	| "capability_unreachable_error"
+	| "capability_delegation_error";
 
 /**
  * Structured runtime error payload.

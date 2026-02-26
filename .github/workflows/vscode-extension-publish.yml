@@ -1,0 +1,63 @@
+name: VS Code Extension Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish packaged VSIX to Marketplace
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Build and package VSIX
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.9
+
+      - name: Install dependencies
+        run: |
+          bun install --save-text-lockfile
+          git diff --exit-code -- bun.lock
+
+      - name: Typecheck extension
+        run: bun --filter gooi-vscode-extension typecheck
+
+      - name: Test extension
+        run: bun --filter gooi-vscode-extension test
+
+      - name: Build extension
+        run: bun --filter gooi-vscode-extension build
+
+      - name: Package VSIX
+        run: bun --filter gooi-vscode-extension package:vsix
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: gooi-vscode-extension-vsix
+          path: "*.vsix"
+          if-no-files-found: error
+
+      - name: Publish VSIX
+        if: inputs.publish == 'true'
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+        run: |
+          test -n "$VSCE_TOKEN"
+          bunx @vscode/vsce publish --packagePath *.vsix --pat "$VSCE_TOKEN"

@@ -1,7 +1,7 @@
 import type { BindingPlan, DeploymentLockfile } from "@gooi/binding-plan";
-import { hostFail, hostOk } from "@gooi/host-contracts";
 import { executeEntrypoint } from "@gooi/entrypoint-runtime";
 import { createDefaultEntrypointHostPorts } from "@gooi/entrypoint-runtime/host-ports";
+import { hostFail, hostOk } from "@gooi/host-contracts";
 import {
 	activateProvider,
 	deactivateProvider,
@@ -182,8 +182,10 @@ export const runHostConformance = async (
 	checks.push(
 		buildCheck(
 			"provider_host_clock_used",
-			providerActivation.ok && capturedActivatedAt === "2026-02-26T02:00:00.000Z",
-			providerActivation.ok && capturedActivatedAt === "2026-02-26T02:00:00.000Z"
+			providerActivation.ok &&
+				capturedActivatedAt === "2026-02-26T02:00:00.000Z",
+			providerActivation.ok &&
+				capturedActivatedAt === "2026-02-26T02:00:00.000Z"
 				? "Provider activation used host-provided activation timestamp."
 				: "Provider activation did not use host-provided activation timestamp.",
 		),

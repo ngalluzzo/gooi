@@ -135,14 +135,14 @@ export const executeEntrypoint = async (
 			`${input.binding.entrypointKind}:${input.binding.entrypointId}`
 		];
 	if (entrypoint === undefined) {
-			return errorResult(
-				invocation,
-				input.bundle.artifactHash,
-				startedAt,
-				hostPorts.clock.nowIso,
-				errorEnvelope(
-					"entrypoint_not_found_error",
-					"Compiled entrypoint was not found for binding.",
+		return errorResult(
+			invocation,
+			input.bundle.artifactHash,
+			startedAt,
+			hostPorts.clock.nowIso,
+			errorEnvelope(
+				"entrypoint_not_found_error",
+				"Compiled entrypoint was not found for binding.",
 				false,
 			),
 		);
@@ -193,7 +193,9 @@ export const executeEntrypoint = async (
 		input: bound.value,
 	};
 
-	if (input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey] === undefined) {
+	if (
+		input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey] === undefined
+	) {
 		return errorResult(
 			resolvedInvocation,
 			input.bundle.artifactHash,
@@ -249,14 +251,14 @@ export const executeEntrypoint = async (
 		const existing = await input.idempotencyStore.load(scope);
 		if (existing !== null) {
 			if (existing.inputHash !== inputHash) {
-					return errorResult(
-						validatedInvocation,
-						input.bundle.artifactHash,
-						startedAt,
-						hostPorts.clock.nowIso,
-						errorEnvelope(
-							"idempotency_conflict_error",
-							"Idempotency key reuse conflict.",
+				return errorResult(
+					validatedInvocation,
+					input.bundle.artifactHash,
+					startedAt,
+					hostPorts.clock.nowIso,
+					errorEnvelope(
+						"idempotency_conflict_error",
+						"Idempotency key reuse conflict.",
 						false,
 					),
 				);

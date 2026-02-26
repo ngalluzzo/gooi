@@ -1,9 +1,9 @@
-import { z } from "zod";
 import type {
 	CompiledEntrypoint,
 	CompiledInputField,
 	CompiledScalarType,
 } from "@gooi/spec-compiler/contracts";
+import { z } from "zod";
 
 /**
  * Validation result for entrypoint input payloads.

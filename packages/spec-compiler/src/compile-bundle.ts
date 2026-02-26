@@ -8,10 +8,10 @@ import { compileEntrypoints } from "./compile-entrypoints";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 import {
 	artifactVersionSchema,
-	type CompiledRoleDefinition,
-	type CompiledRoleDeriveRule,
 	type CompileDiagnostic,
 	type CompiledEntrypointBundle,
+	type CompiledRoleDefinition,
+	type CompiledRoleDeriveRule,
 	type CompileEntrypointBundleResult,
 } from "./contracts";
 

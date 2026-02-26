@@ -24,9 +24,7 @@
 				"page": 1,
 				"page_size": 10
 			},
-			"accessRoles": [
-				"authenticated"
-			],
+			"accessRoles": ["authenticated"],
 			"schemaArtifactKey": "entrypoint.query.list_messages.input"
 		},
 		"mutation:submit_message": {
@@ -39,9 +37,7 @@
 				}
 			},
 			"defaultInput": {},
-			"accessRoles": [
-				"authenticated"
-			],
+			"accessRoles": ["authenticated"],
 			"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
 		}
 	},
@@ -68,19 +64,12 @@
 	"refreshSubscriptions": {
 		"list_messages": {
 			"queryId": "list_messages",
-			"signalIds": [
-				"message.created",
-				"message.deleted"
-			]
+			"signalIds": ["message.created", "message.deleted"]
 		}
 	},
 	"accessPlan": {
 		"defaultPolicy": "deny",
-		"knownRoles": [
-			"admin",
-			"anonymous",
-			"authenticated"
-		],
+		"knownRoles": ["admin", "anonymous", "authenticated"],
 		"roleDefinitions": {
 			"admin": {
 				"roleId": "admin",
@@ -99,12 +88,8 @@
 			}
 		},
 		"entrypointRoles": {
-			"query:list_messages": [
-				"authenticated"
-			],
-			"mutation:submit_message": [
-				"authenticated"
-			]
+			"query:list_messages": ["authenticated"],
+			"mutation:submit_message": ["authenticated"]
 		}
 	},
 	"schemaArtifacts": {
@@ -152,9 +137,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"message"
-				],
+				"required": ["message"],
 				"type": "object"
 			},
 			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"

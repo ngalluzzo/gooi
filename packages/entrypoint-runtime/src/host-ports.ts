@@ -76,9 +76,13 @@ export const createDefaultEntrypointHostPorts = (): EntrypointHostPorts => ({
 		validatePrincipal: (value): HostPortResult<PrincipalContext> => {
 			const parsed = principalContextSchema.safeParse(value);
 			if (!parsed.success) {
-				return hostFail("principal_validation_error", "Invalid principal context.", {
-					issues: parsed.error.issues,
-				});
+				return hostFail(
+					"principal_validation_error",
+					"Invalid principal context.",
+					{
+						issues: parsed.error.issues,
+					},
+				);
 			}
 			return hostOk(parsed.data);
 		},

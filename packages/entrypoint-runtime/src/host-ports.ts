@@ -3,7 +3,15 @@ import type {
 	HostIdentityPort,
 	HostPortResult,
 } from "@gooi/host-contracts";
+import {
+	createSystemClockPort,
+	createSystemIdentityPort,
+	hostFail,
+	hostOk,
+} from "@gooi/host-contracts";
 import type { CompiledAccessPlan } from "@gooi/spec-compiler/contracts";
+import { z } from "zod";
+import { deriveEffectiveRoles } from "./access-gate";
 import type { PrincipalContext } from "./contracts";
 import type { IdempotencyRecord } from "./idempotency-store";
 
@@ -49,3 +57,32 @@ export interface EntrypointHostPorts {
 	/** Optional idempotency port for replay and conflict semantics. */
 	readonly idempotency?: EntrypointIdempotencyPort;
 }
+
+const principalContextSchema = z.object({
+	subject: z.string().nullable(),
+	claims: z.record(z.string(), z.unknown()),
+	tags: z.array(z.string()),
+});
+
+/**
+ * Creates host ports for entrypoint runtime orchestration.
+ *
+ * @returns Entrypoint runtime host ports.
+ */
+export const createDefaultEntrypointHostPorts = (): EntrypointHostPorts => ({
+	clock: createSystemClockPort(),
+	identity: createSystemIdentityPort(),
+	principal: {
+		validatePrincipal: (value): HostPortResult<PrincipalContext> => {
+			const parsed = principalContextSchema.safeParse(value);
+			if (!parsed.success) {
+				return hostFail("principal_validation_error", "Invalid principal context.", {
+					issues: parsed.error.issues,
+				});
+			}
+			return hostOk(parsed.data);
+		},
+		deriveRoles: ({ principal, accessPlan }) =>
+			hostOk(deriveEffectiveRoles(principal, accessPlan)),
+	},
+});

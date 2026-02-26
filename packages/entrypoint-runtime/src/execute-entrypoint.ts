@@ -15,6 +15,10 @@ import type {
 } from "./contracts";
 import type { DomainRuntimePort } from "./domain-runtime-port";
 import { executeEntrypointTail } from "./execute-entrypoint-tail";
+import {
+	createDefaultEntrypointHostPorts,
+	type EntrypointHostPorts,
+} from "./host-ports";
 import type { IdempotencyStore } from "./idempotency-store";
 import { validateEntrypointInput } from "./input-validation";
 
@@ -42,6 +46,8 @@ export interface ExecuteEntrypointInput {
 	readonly traceId?: string;
 	/** Optional timestamp override for deterministic tests. */
 	readonly now?: string;
+	/** Optional host ports for orchestration infrastructure behavior. */
+	readonly hostPorts?: EntrypointHostPorts;
 }
 
 const envelopeVersion = "1.0.0" as const;
@@ -73,9 +79,10 @@ const errorResult = (
 	invocation: InvocationEnvelope<Readonly<Record<string, unknown>>>,
 	artifactHash: string,
 	startedAt: string,
+	nowIso: () => string,
 	error: TypedErrorEnvelope<unknown>,
 ): ResultEnvelope<unknown, unknown> => {
-	const completedAt = new Date().toISOString();
+	const completedAt = nowIso();
 	return {
 		envelopeVersion,
 		traceId: invocation.traceId,
@@ -105,11 +112,12 @@ const errorResult = (
 export const executeEntrypoint = async (
 	input: ExecuteEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
-	const startedAt = input.now ?? new Date().toISOString();
+	const hostPorts = input.hostPorts ?? createDefaultEntrypointHostPorts();
+	const startedAt = input.now ?? hostPorts.clock.nowIso();
 	const invocation: InvocationEnvelope<Readonly<Record<string, unknown>>> = {
 		envelopeVersion,
-		traceId: input.traceId ?? `trace_${crypto.randomUUID()}`,
-		invocationId: input.invocationId ?? `inv_${crypto.randomUUID()}`,
+		traceId: input.traceId ?? hostPorts.identity.newTraceId(),
+		invocationId: input.invocationId ?? hostPorts.identity.newInvocationId(),
 		entrypointId: input.binding.entrypointId,
 		entrypointKind: input.binding.entrypointKind,
 		principal: input.principal,
@@ -127,13 +135,14 @@ export const executeEntrypoint = async (
 			`${input.binding.entrypointKind}:${input.binding.entrypointId}`
 		];
 	if (entrypoint === undefined) {
-		return errorResult(
-			invocation,
-			input.bundle.artifactHash,
-			startedAt,
-			errorEnvelope(
-				"entrypoint_not_found_error",
-				"Compiled entrypoint was not found for binding.",
+			return errorResult(
+				invocation,
+				input.bundle.artifactHash,
+				startedAt,
+				hostPorts.clock.nowIso,
+				errorEnvelope(
+					"entrypoint_not_found_error",
+					"Compiled entrypoint was not found for binding.",
 				false,
 			),
 		);
@@ -149,6 +158,7 @@ export const executeEntrypoint = async (
 			invocation,
 			input.bundle.artifactHash,
 			startedAt,
+			hostPorts.clock.nowIso,
 			errorEnvelope(
 				"access_denied_error",
 				"Access denied for entrypoint.",
@@ -167,6 +177,7 @@ export const executeEntrypoint = async (
 			invocation,
 			input.bundle.artifactHash,
 			startedAt,
+			hostPorts.clock.nowIso,
 			errorEnvelope(
 				"binding_error",
 				bound.error.message,
@@ -187,6 +198,7 @@ export const executeEntrypoint = async (
 			resolvedInvocation,
 			input.bundle.artifactHash,
 			startedAt,
+			hostPorts.clock.nowIso,
 			errorEnvelope(
 				"validation_error",
 				"Compiled entrypoint schema artifact is missing.",
@@ -206,6 +218,7 @@ export const executeEntrypoint = async (
 			resolvedInvocation,
 			input.bundle.artifactHash,
 			startedAt,
+			hostPorts.clock.nowIso,
 			errorEnvelope(
 				"validation_error",
 				"Entrypoint input validation failed.",
@@ -240,9 +253,10 @@ export const executeEntrypoint = async (
 						validatedInvocation,
 						input.bundle.artifactHash,
 						startedAt,
+						hostPorts.clock.nowIso,
 						errorEnvelope(
 							"idempotency_conflict_error",
-						"Idempotency key reuse conflict.",
+							"Idempotency key reuse conflict.",
 						false,
 					),
 				);
@@ -261,6 +275,7 @@ export const executeEntrypoint = async (
 		artifactHash: input.bundle.artifactHash,
 		domainRuntime: input.domainRuntime,
 		refreshSubscriptions: input.bundle.refreshSubscriptions,
+		nowIso: hostPorts.clock.nowIso,
 	});
 	if (
 		entrypoint.kind === "mutation" &&

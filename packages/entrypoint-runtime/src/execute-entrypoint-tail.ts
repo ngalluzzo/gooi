@@ -28,6 +28,8 @@ interface ExecuteTailInput {
 			{ readonly signalIds: readonly string[]; readonly queryId: string }
 		>
 	>;
+	/** Clock callback used for completion timestamps. */
+	readonly nowIso: () => string;
 }
 
 const normalizeEffects = (
@@ -46,7 +48,7 @@ const buildSuccess = (
 	observedEffects: readonly EffectKind[],
 	emittedSignals: readonly SignalEnvelope[],
 ): ResultEnvelope<unknown, unknown> => {
-	const completedAt = new Date().toISOString();
+	const completedAt = input.nowIso();
 	const refreshTriggers = buildRefreshTriggers(emittedSignals);
 	const affectedQueryIds = resolveAffectedQueryIds(
 		input.refreshSubscriptions,
@@ -108,7 +110,7 @@ export const executeEntrypointTail = async (
 		input.entrypoint.kind === "query" &&
 		hasDisallowedQueryEffects(execution.observedEffects)
 	) {
-		const completedAt = new Date().toISOString();
+		const completedAt = input.nowIso();
 		return {
 			envelopeVersion,
 			traceId: input.invocation.traceId,
@@ -140,7 +142,7 @@ export const executeEntrypointTail = async (
 	}
 
 	if (!execution.ok) {
-		const completedAt = new Date().toISOString();
+		const completedAt = input.nowIso();
 		return {
 			envelopeVersion,
 			traceId: input.invocation.traceId,

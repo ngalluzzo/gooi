@@ -1,0 +1,12 @@
+{
+	"entryPoints": [
+		"./src/capability-port/capability-port.ts",
+		"./src/provider-manifest/provider-manifest.ts"
+	],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
+}

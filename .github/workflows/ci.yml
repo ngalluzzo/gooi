@@ -7,6 +7,7 @@ on:
       - main
 
 permissions:
+  actions: read
   contents: read
   security-events: write
 
@@ -63,10 +64,14 @@ jobs:
           path: |
             coverage/**
             packages/*/coverage/**
+            products/*/*/coverage/**
           if-no-files-found: warn
 
       - name: Upload Semgrep SARIF
-        if: always() && hashFiles('semgrep-results.sarif') != ''
+        if: >-
+          always() &&
+          hashFiles('semgrep-results.sarif') != '' &&
+          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
@@ -90,43 +95,7 @@ jobs:
             echo ""
             echo "### Semgrep summary"
             echo ""
-            node --input-type=module <<'NODE'
-            import { existsSync, readFileSync } from "node:fs";
-
-            if (!existsSync("semgrep-results.sarif")) {
-              console.log("Semgrep report was not generated.");
-              process.exit(0);
-            }
-
-            try {
-              const raw = readFileSync("semgrep-results.sarif", "utf8");
-              const data = JSON.parse(raw);
-              const results = data.runs?.[0]?.results ?? [];
-              const total = results.length;
-
-              if (total === 0) {
-                console.log("No Semgrep findings.");
-                process.exit(0);
-              }
-
-              const byRule = new Map();
-              for (const result of results) {
-                const key = result.ruleId || "unknown";
-                byRule.set(key, (byRule.get(key) ?? 0) + 1);
-              }
-
-              console.log(`Findings: ${total}`);
-              console.log();
-              console.log("Findings by rule:");
-              for (const [rule, count] of [...byRule.entries()].sort(
-                (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
-              )) {
-                console.log(`- ${rule}: ${count}`);
-              }
-            } catch (error) {
-              console.log(`Unable to parse semgrep report: ${error}`);
-            }
-            NODE
+            node --input-type=module -e 'import { existsSync, readFileSync } from "node:fs"; if (!existsSync("semgrep-results.sarif")) { console.log("Semgrep report was not generated."); process.exit(0); } try { const data = JSON.parse(readFileSync("semgrep-results.sarif", "utf8")); const results = data.runs?.[0]?.results ?? []; if (results.length === 0) { console.log("No Semgrep findings."); process.exit(0); } const byRule = new Map(); for (const result of results) { const key = result.ruleId || "unknown"; byRule.set(key, (byRule.get(key) ?? 0) + 1); } console.log(`Findings: ${results.length}`); console.log(""); console.log("Findings by rule:"); for (const [rule, count] of [...byRule.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) { console.log(`- ${rule}: ${count}`); } } catch (error) { console.log(`Unable to parse semgrep report: ${error}`); }'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce quality gates

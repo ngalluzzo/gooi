@@ -1,0 +1,172 @@
+{
+	"name": "@gooi/language-server",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/features/completion/list-authoring-completion-items.js",
+	"types": "./src/features/completion/list-authoring-completion-items.ts",
+	"exports": {
+		".": {
+			"types": "./src/features/completion/list-authoring-completion-items.ts",
+			"bun": "./src/features/completion/list-authoring-completion-items.ts",
+			"import": "./dist/features/completion/list-authoring-completion-items.js",
+			"default": "./dist/features/completion/list-authoring-completion-items.js"
+		},
+		"./contracts/completion": {
+			"types": "./src/contracts/completion-contracts.ts",
+			"bun": "./src/contracts/completion-contracts.ts",
+			"import": "./dist/contracts/completion-contracts.js",
+			"default": "./dist/contracts/completion-contracts.js"
+		},
+		"./contracts/code-lens": {
+			"types": "./src/contracts/code-lens-contracts.ts",
+			"bun": "./src/contracts/code-lens-contracts.ts",
+			"import": "./dist/contracts/code-lens-contracts.js",
+			"default": "./dist/contracts/code-lens-contracts.js"
+		},
+		"./contracts/diagnostics": {
+			"types": "./src/contracts/diagnostics-contracts.ts",
+			"bun": "./src/contracts/diagnostics-contracts.ts",
+			"import": "./dist/contracts/diagnostics-contracts.js",
+			"default": "./dist/contracts/diagnostics-contracts.js"
+		},
+		"./contracts/navigation": {
+			"types": "./src/contracts/navigation-contracts.ts",
+			"bun": "./src/contracts/navigation-contracts.ts",
+			"import": "./dist/contracts/navigation-contracts.js",
+			"default": "./dist/contracts/navigation-contracts.js"
+		},
+		"./contracts/navigation-results": {
+			"types": "./src/contracts/navigation-results.ts",
+			"bun": "./src/contracts/navigation-results.ts",
+			"import": "./dist/contracts/navigation-results.js",
+			"default": "./dist/contracts/navigation-results.js"
+		},
+		"./contracts/read-context": {
+			"types": "./src/contracts/read-context.ts",
+			"bun": "./src/contracts/read-context.ts",
+			"import": "./dist/contracts/read-context.js",
+			"default": "./dist/contracts/read-context.js"
+		},
+		"./contracts/rename": {
+			"types": "./src/contracts/rename-contracts.ts",
+			"bun": "./src/contracts/rename-contracts.ts",
+			"import": "./dist/contracts/rename-contracts.js",
+			"default": "./dist/contracts/rename-contracts.js"
+		},
+		"./contracts/session": {
+			"types": "./src/contracts/session-contracts.ts",
+			"bun": "./src/contracts/session-contracts.ts",
+			"import": "./dist/contracts/session-contracts.js",
+			"default": "./dist/contracts/session-contracts.js"
+		},
+		"./contracts/protocol": {
+			"types": "./src/contracts/protocol-contracts.ts",
+			"bun": "./src/contracts/protocol-contracts.ts",
+			"import": "./dist/contracts/protocol-contracts.js",
+			"default": "./dist/contracts/protocol-contracts.js"
+		},
+		"./features/actions/list": {
+			"types": "./src/features/actions/list-authoring-code-lenses.ts",
+			"bun": "./src/features/actions/list-authoring-code-lenses.ts",
+			"import": "./dist/features/actions/list-authoring-code-lenses.js",
+			"default": "./dist/features/actions/list-authoring-code-lenses.js"
+		},
+		"./features/actions/resolve": {
+			"types": "./src/features/actions/resolve-authoring-code-lens.ts",
+			"bun": "./src/features/actions/resolve-authoring-code-lens.ts",
+			"import": "./dist/features/actions/resolve-authoring-code-lens.js",
+			"default": "./dist/features/actions/resolve-authoring-code-lens.js"
+		},
+		"./features/completion/list": {
+			"types": "./src/features/completion/list-authoring-completion-items.ts",
+			"bun": "./src/features/completion/list-authoring-completion-items.ts",
+			"import": "./dist/features/completion/list-authoring-completion-items.js",
+			"default": "./dist/features/completion/list-authoring-completion-items.js"
+		},
+		"./features/completion/resolve": {
+			"types": "./src/features/completion/resolve-authoring-completion-item.ts",
+			"bun": "./src/features/completion/resolve-authoring-completion-item.ts",
+			"import": "./dist/features/completion/resolve-authoring-completion-item.js",
+			"default": "./dist/features/completion/resolve-authoring-completion-item.js"
+		},
+		"./features/diagnostics/publish": {
+			"types": "./src/features/diagnostics/publish-authoring-diagnostics.ts",
+			"bun": "./src/features/diagnostics/publish-authoring-diagnostics.ts",
+			"import": "./dist/features/diagnostics/publish-authoring-diagnostics.js",
+			"default": "./dist/features/diagnostics/publish-authoring-diagnostics.js"
+		},
+		"./features/navigation/hover": {
+			"types": "./src/features/navigation/get-authoring-hover.ts",
+			"bun": "./src/features/navigation/get-authoring-hover.ts",
+			"import": "./dist/features/navigation/get-authoring-hover.js",
+			"default": "./dist/features/navigation/get-authoring-hover.js"
+		},
+		"./features/navigation/definition": {
+			"types": "./src/features/navigation/get-authoring-definition.ts",
+			"bun": "./src/features/navigation/get-authoring-definition.ts",
+			"import": "./dist/features/navigation/get-authoring-definition.js",
+			"default": "./dist/features/navigation/get-authoring-definition.js"
+		},
+		"./features/navigation/references": {
+			"types": "./src/features/navigation/get-authoring-references.ts",
+			"bun": "./src/features/navigation/get-authoring-references.ts",
+			"import": "./dist/features/navigation/get-authoring-references.js",
+			"default": "./dist/features/navigation/get-authoring-references.js"
+		},
+		"./features/navigation/document-symbols": {
+			"types": "./src/features/navigation/list-authoring-document-symbols.ts",
+			"bun": "./src/features/navigation/list-authoring-document-symbols.ts",
+			"import": "./dist/features/navigation/list-authoring-document-symbols.js",
+			"default": "./dist/features/navigation/list-authoring-document-symbols.js"
+		},
+		"./features/navigation/workspace-symbols": {
+			"types": "./src/features/navigation/search-authoring-workspace-symbols.ts",
+			"bun": "./src/features/navigation/search-authoring-workspace-symbols.ts",
+			"import": "./dist/features/navigation/search-authoring-workspace-symbols.js",
+			"default": "./dist/features/navigation/search-authoring-workspace-symbols.js"
+		},
+		"./features/rename/apply": {
+			"types": "./src/features/rename/apply-authoring-rename.ts",
+			"bun": "./src/features/rename/apply-authoring-rename.ts",
+			"import": "./dist/features/rename/apply-authoring-rename.js",
+			"default": "./dist/features/rename/apply-authoring-rename.js"
+		},
+		"./features/rename/prepare": {
+			"types": "./src/features/rename/prepare-authoring-rename.ts",
+			"bun": "./src/features/rename/prepare-authoring-rename.ts",
+			"import": "./dist/features/rename/prepare-authoring-rename.js",
+			"default": "./dist/features/rename/prepare-authoring-rename.js"
+		},
+		"./features/session": {
+			"types": "./src/features/session/create-authoring-session.ts",
+			"bun": "./src/features/session/create-authoring-session.ts",
+			"import": "./dist/features/session/create-authoring-session.js",
+			"default": "./dist/features/session/create-authoring-session.js"
+		},
+		"./features/protocol/server": {
+			"types": "./src/features/protocol/create-authoring-protocol-server.ts",
+			"bun": "./src/features/protocol/create-authoring-protocol-server.ts",
+			"import": "./dist/features/protocol/create-authoring-protocol-server.js",
+			"default": "./dist/features/protocol/create-authoring-protocol-server.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/authoring-contracts": "workspace:*",
+		"@gooi/capability-index": "workspace:*",
+		"@gooi/symbol-graph": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

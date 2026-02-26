@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / lockedProviderSchema
+[@gooi/binding](../README.md) / lockedProviderSchema
 
 # Variable: lockedProviderSchema
 

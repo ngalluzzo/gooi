@@ -1,0 +1,109 @@
+{
+	"name": "@gooi/conformance",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/provider-conformance/run-provider-conformance.js",
+	"types": "./src/provider-conformance/run-provider-conformance.ts",
+	"exports": {
+		".": {
+			"types": "./src/provider-conformance/run-provider-conformance.ts",
+			"bun": "./src/provider-conformance/run-provider-conformance.ts",
+			"import": "./dist/provider-conformance/run-provider-conformance.js",
+			"default": "./dist/provider-conformance/run-provider-conformance.js"
+		},
+		"./provider": {
+			"types": "./src/provider-conformance/run-provider-conformance.ts",
+			"bun": "./src/provider-conformance/run-provider-conformance.ts",
+			"import": "./dist/provider-conformance/run-provider-conformance.js",
+			"default": "./dist/provider-conformance/run-provider-conformance.js"
+		},
+		"./entrypoint": {
+			"types": "./src/entrypoint-conformance/run-entrypoint-conformance.ts",
+			"bun": "./src/entrypoint-conformance/run-entrypoint-conformance.ts",
+			"import": "./dist/entrypoint-conformance/run-entrypoint-conformance.js",
+			"default": "./dist/entrypoint-conformance/run-entrypoint-conformance.js"
+		},
+		"./authoring": {
+			"types": "./src/authoring-conformance/run-authoring-conformance.ts",
+			"bun": "./src/authoring-conformance/run-authoring-conformance.ts",
+			"import": "./dist/authoring-conformance/run-authoring-conformance.js",
+			"default": "./dist/authoring-conformance/run-authoring-conformance.js"
+		},
+		"./host": {
+			"types": "./src/host-conformance/run-host-conformance.ts",
+			"bun": "./src/host-conformance/run-host-conformance.ts",
+			"import": "./dist/host-conformance/run-host-conformance.js",
+			"default": "./dist/host-conformance/run-host-conformance.js"
+		},
+		"./host-port-conformance": {
+			"types": "./src/host-port-conformance/host-port-conformance.ts",
+			"bun": "./src/host-port-conformance/host-port-conformance.ts",
+			"import": "./dist/host-port-conformance/host-port-conformance.js",
+			"default": "./dist/host-port-conformance/host-port-conformance.js"
+		},
+		"./replay-store": {
+			"types": "./src/replay-store-conformance/run-replay-store-conformance.ts",
+			"bun": "./src/replay-store-conformance/run-replay-store-conformance.ts",
+			"import": "./dist/replay-store-conformance/run-replay-store-conformance.js",
+			"default": "./dist/replay-store-conformance/run-replay-store-conformance.js"
+		},
+		"./provider-contracts": {
+			"types": "./src/provider-conformance/contracts.ts",
+			"bun": "./src/provider-conformance/contracts.ts",
+			"import": "./dist/provider-conformance/contracts.js",
+			"default": "./dist/provider-conformance/contracts.js"
+		},
+		"./entrypoint-contracts": {
+			"types": "./src/entrypoint-conformance/contracts.ts",
+			"bun": "./src/entrypoint-conformance/contracts.ts",
+			"import": "./dist/entrypoint-conformance/contracts.js",
+			"default": "./dist/entrypoint-conformance/contracts.js"
+		},
+		"./authoring-contracts": {
+			"types": "./src/authoring-conformance/contracts.ts",
+			"bun": "./src/authoring-conformance/contracts.ts",
+			"import": "./dist/authoring-conformance/contracts.js",
+			"default": "./dist/authoring-conformance/contracts.js"
+		},
+		"./host-contracts": {
+			"types": "./src/host-conformance/contracts.ts",
+			"bun": "./src/host-conformance/contracts.ts",
+			"import": "./dist/host-conformance/contracts.js",
+			"default": "./dist/host-conformance/contracts.js"
+		},
+		"./replay-store-contracts": {
+			"types": "./src/replay-store-conformance/contracts.ts",
+			"bun": "./src/replay-store-conformance/contracts.ts",
+			"import": "./dist/replay-store-conformance/contracts.js",
+			"default": "./dist/replay-store-conformance/contracts.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts --outdir ./dist --external zod --external @gooi/language-server",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/authoring-contracts": "workspace:*",
+		"@gooi/capability-index": "workspace:*",
+		"@gooi/capability-contracts": "workspace:*",
+		"@gooi/entrypoint-runtime": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/provider-runtime": "workspace:*",
+		"@gooi/language-server": "workspace:*",
+		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
+		"@gooi/binding": "workspace:*",
+		"@gooi/symbol-graph": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"name": "@gooi-marketplace/memory",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/replay-store/replay-store.js",
+	"types": "./src/replay-store/replay-store.ts",
+	"exports": {
+		"./clock": {
+			"types": "./src/clock/clock.ts",
+			"bun": "./src/clock/clock.ts",
+			"import": "./dist/clock/clock.js",
+			"default": "./dist/clock/clock.js"
+		},
+		"./identity": {
+			"types": "./src/identity/identity.ts",
+			"bun": "./src/identity/identity.ts",
+			"import": "./dist/identity/identity.js",
+			"default": "./dist/identity/identity.js"
+		},
+		"./principal": {
+			"types": "./src/principal/principal.ts",
+			"bun": "./src/principal/principal.ts",
+			"import": "./dist/principal/principal.js",
+			"default": "./dist/principal/principal.js"
+		},
+		"./replay-store": {
+			"types": "./src/replay-store/replay-store.ts",
+			"bun": "./src/replay-store/replay-store.ts",
+			"import": "./dist/replay-store/replay-store.js",
+			"default": "./dist/replay-store/replay-store.js"
+		},
+		"./activation-policy": {
+			"types": "./src/activation-policy/activation-policy.ts",
+			"bun": "./src/activation-policy/activation-policy.ts",
+			"import": "./dist/activation-policy/activation-policy.js",
+			"default": "./dist/activation-policy/activation-policy.js"
+		},
+		"./module-loader": {
+			"types": "./src/module-loader/module-loader.ts",
+			"bun": "./src/module-loader/module-loader.ts",
+			"import": "./dist/module-loader/module-loader.js",
+			"default": "./dist/module-loader/module-loader.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/clock/clock.ts --outfile ./dist/clock/clock.js --external @gooi/host-contracts/clock && bun build ./src/identity/identity.ts --outfile ./dist/identity/identity.js --external @gooi/host-contracts/identity && bun build ./src/principal/principal.ts --outfile ./dist/principal/principal.js --external @gooi/host-contracts/principal --external @gooi/host-contracts/result && bun build ./src/replay-store/replay-store.ts --outfile ./dist/replay-store/replay-store.js --external @gooi/host-contracts/replay && bun build ./src/activation-policy/activation-policy.ts --outfile ./dist/activation-policy/activation-policy.js --external @gooi/host-contracts/activation-policy && bun build ./src/module-loader/module-loader.ts --outfile ./dist/module-loader/module-loader.js --external @gooi/host-contracts/module-loader",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/host-contracts": "workspace:*"
+	},
+	"devDependencies": {
+		"@gooi/conformance": "workspace:*"
+	}
+}

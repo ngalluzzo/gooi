@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / CapabilityBinding
+[@gooi/binding](../README.md) / CapabilityBinding
 
 # Type Alias: CapabilityBinding
 

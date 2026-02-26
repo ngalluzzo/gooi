@@ -41,7 +41,7 @@ Without a first-party VS Code extension:
 
 1. Supporting non-VS Code editors in this RFC.
 2. Building custom UI panes beyond essential command and lens flows.
-3. Replacing authoring core logic in `@gooi/product-authoring-lsp`.
+3. Replacing authoring core logic in `@gooi/language-server`.
 4. Adding a separate CI pipeline for conformance/perf beyond existing test gates.
 
 ## Product outcomes and success metrics
@@ -102,7 +102,7 @@ Deterministic behavior rules:
   - `apps/gooi-vscode-extension` owns VS Code API integration, command registration,
     activation lifecycle, and client transport.
 - Kernel/domain runtime:
-  - `@gooi/product-authoring-lsp` owns authoring semantics and typed operations.
+  - `@gooi/language-server` owns authoring semantics and typed operations.
 - Capability adapters:
   - Not loaded directly by extension; consumed through compiled snapshots/index.
 - Host/platform adapters:
@@ -152,7 +152,7 @@ Feature-oriented layout:
 3. `apps/gooi-vscode-extension/src/commands/register-authoring-commands.ts`
 4. `apps/gooi-vscode-extension/src/settings/parse-extension-settings.ts`
 5. `apps/gooi-vscode-extension/src/telemetry/emit-extension-event.ts`
-6. `packages/product-authoring-lsp` remains core authoring API.
+6. `packages/lsp` remains core authoring API.
 7. `packages/conformance/src/authoring-conformance` remains acceptance authority.
 
 Bundling and build:

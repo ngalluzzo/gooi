@@ -1,0 +1,31 @@
+{
+	"name": "@gooi/binding",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/binding-plan/binding-plan.js",
+	"types": "./src/binding-plan/binding-plan.ts",
+	"exports": {
+		"./binding-plan": {
+			"types": "./src/binding-plan/binding-plan.ts",
+			"bun": "./src/binding-plan/binding-plan.ts",
+			"import": "./dist/binding-plan/binding-plan.js",
+			"default": "./dist/binding-plan/binding-plan.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/binding-plan/binding-plan.ts --outfile ./dist/binding-plan/binding-plan.js --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	}
+}

@@ -25,6 +25,7 @@ export const createProviderConformanceFixture = () => {
 					portId: contract.id,
 					portVersion: contract.version,
 					contractHash: contract.artifacts.contractHash,
+					executionHosts: ["node"],
 				},
 			],
 		},

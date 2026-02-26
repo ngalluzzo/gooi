@@ -2,7 +2,9 @@ import { describe, expect, test } from "bun:test";
 import {
 	areBindingArtifactsAligned,
 	getCapabilityBinding,
+	getCapabilityBindingResolution,
 	getLockedProvider,
+	isCapabilityReachable,
 	parseBindingPlan,
 	parseDeploymentLockfile,
 	providerHasLockedCapability,
@@ -18,7 +20,29 @@ describe("binding-plan", () => {
 				{
 					portId: "ids.generate",
 					portVersion: "1.0.0",
-					providerId: "gooi.providers.memory",
+					resolution: {
+						mode: "local",
+						targetHost: "node",
+						providerId: "gooi.providers.memory",
+					},
+				},
+				{
+					portId: "notifications.send",
+					portVersion: "1.0.0",
+					resolution: {
+						mode: "delegated",
+						targetHost: "node",
+						providerId: "gooi.providers.http",
+						delegateRouteId: "route-node-1",
+					},
+				},
+				{
+					portId: "db.write",
+					portVersion: "1.0.0",
+					resolution: {
+						mode: "unreachable",
+						reason: "No compatible execution host.",
+					},
 				},
 			],
 		});
@@ -47,7 +71,24 @@ describe("binding-plan", () => {
 		expect(areBindingArtifactsAligned(plan, lockfile)).toBe(true);
 
 		const binding = getCapabilityBinding(plan, "ids.generate", "1.0.0");
-		expect(binding?.providerId).toBe("gooi.providers.memory");
+		expect(binding?.resolution.mode).toBe("local");
+		if (binding?.resolution.mode === "local") {
+			expect(binding.resolution.targetHost).toBe("node");
+		}
+		expect(
+			getCapabilityBindingResolution(plan, "notifications.send", "1.0.0"),
+		).toEqual({
+			mode: "delegated",
+			targetHost: "node",
+			providerId: "gooi.providers.http",
+			delegateRouteId: "route-node-1",
+		});
+		expect(
+			isCapabilityReachable({
+				mode: "unreachable",
+				reason: "No compatible execution host.",
+			}),
+		).toBe(false);
 
 		const provider = getLockedProvider(
 			lockfile,

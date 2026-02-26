@@ -11,6 +11,12 @@ const capabilityContractHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
 const semverSchema = z.string().regex(semverPattern, {
 	message: "Expected semver in MAJOR.MINOR.PATCH format.",
 });
+export const executionHostSchema = z.enum([
+	"browser",
+	"node",
+	"edge",
+	"worker",
+]);
 
 /**
  * Identifier for a capability port and version pair.
@@ -28,10 +34,17 @@ export type CapabilityPortReference = z.infer<
 >;
 
 /**
+ * Runtime execution host identifier.
+ */
+export type ExecutionHost = z.infer<typeof executionHostSchema>;
+
+/**
  * Manifest declaration for one provider-fulfilled capability.
  */
 export const providerCapabilitySchema = capabilityPortReferenceSchema.extend({
 	contractHash: capabilityContractHashSchema,
+	executionHosts: z.array(executionHostSchema).min(1),
+	delegationAllowedFrom: z.array(executionHostSchema).min(1).optional(),
 });
 
 /**

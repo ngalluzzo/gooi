@@ -43,10 +43,32 @@ describe("capability-contracts", () => {
 					portVersion: "1.0.0",
 					contractHash:
 						"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					executionHosts: ["node"],
+					delegationAllowedFrom: ["browser", "edge"],
 				},
 			],
 		});
 
 		expect(parsed.providerId).toBe("gooi.providers.memory");
+		expect(parsed.capabilities[0]?.executionHosts).toEqual(["node"]);
+	});
+
+	test("rejects invalid provider capability execution host metadata", () => {
+		expect(() =>
+			parseProviderManifest({
+				providerId: "gooi.providers.memory",
+				providerVersion: "1.2.3",
+				hostApiRange: "^1.0.0",
+				capabilities: [
+					{
+						portId: "ids.generate",
+						portVersion: "1.0.0",
+						contractHash:
+							"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+						executionHosts: ["mobile"],
+					},
+				],
+			}),
+		).toThrow();
 	});
 });

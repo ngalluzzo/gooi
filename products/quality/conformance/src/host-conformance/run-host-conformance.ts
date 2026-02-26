@@ -36,7 +36,11 @@ const buildBindingPlan = (
 		{
 			portId: contract.id,
 			portVersion: contract.version,
-			providerId,
+			resolution: {
+				mode: "local",
+				targetHost: "node",
+				providerId,
+			},
 		},
 	],
 });
@@ -151,6 +155,7 @@ export const runHostConformance = async (
 					portId: input.providerContract.id,
 					portVersion: input.providerContract.version,
 					contractHash: input.providerContract.artifacts.contractHash,
+					executionHosts: ["node"],
 				},
 			],
 		},

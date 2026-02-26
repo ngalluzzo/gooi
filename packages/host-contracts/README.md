@@ -13,6 +13,7 @@ Concrete host-port implementations belong in marketplace provider packages.
 - `@gooi/host-contracts/replay`
 - `@gooi/host-contracts/activation-policy`
 - `@gooi/host-contracts/module-loader`
+- `@gooi/host-contracts/delegation`
 
 ## Quick Start
 
@@ -21,10 +22,12 @@ import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { createSystemClockPort } from "@gooi/host-contracts/clock";
 import { createSystemIdentityPort } from "@gooi/host-contracts/identity";
 import { createStrictActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
+import { createFailingCapabilityDelegationPort } from "@gooi/host-contracts/delegation";
 
 const clock = createSystemClockPort();
 const identity = createSystemIdentityPort();
 const activationPolicy = createStrictActivationPolicyPort();
+const capabilityDelegation = createFailingCapabilityDelegationPort();
 
 const ok = hostOk({ now: clock.nowIso() });
 const fail = hostFail("bad_request", "Invalid input");

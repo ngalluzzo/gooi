@@ -1,5 +1,9 @@
 import type { HostClockPort } from "@gooi/host-contracts/clock";
 import { createSystemClockPort } from "@gooi/host-contracts/clock";
+import {
+	createFailingCapabilityDelegationPort,
+	type HostCapabilityDelegationPort,
+} from "@gooi/host-contracts/delegation";
 import type { HostIdentityPort } from "@gooi/host-contracts/identity";
 import { createSystemIdentityPort } from "@gooi/host-contracts/identity";
 import type {
@@ -27,6 +31,8 @@ export interface HostPortSet {
 	readonly identity: HostIdentityPort;
 	/** Principal policy port used for policy gate evaluation. */
 	readonly principal: HostPrincipalPort<PrincipalContext, CompiledAccessPlan>;
+	/** Capability delegation port used for cross-host capability invocation routes. */
+	readonly capabilityDelegation: HostCapabilityDelegationPort;
 	/** Optional replay store for replay and conflict semantics. */
 	readonly replay?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
 }
@@ -56,4 +62,5 @@ export const createDefaultHostPorts = (): HostPortSet => ({
 		deriveRoles: ({ principal, accessPlan }) =>
 			hostOk(deriveEffectiveRoles(principal, accessPlan)),
 	}),
+	capabilityDelegation: createFailingCapabilityDelegationPort(),
 });

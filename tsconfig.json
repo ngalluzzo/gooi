@@ -3,6 +3,8 @@
 	"references": [
 		{ "path": "./packages/contracts-capability" },
 		{ "path": "./packages/authoring-contracts" },
+		{ "path": "./packages/capability-index" },
+		{ "path": "./packages/symbol-graph" },
 		{ "path": "./packages/binding-plan" },
 		{ "path": "./packages/provider-runtime" },
 		{ "path": "./packages/conformance" },

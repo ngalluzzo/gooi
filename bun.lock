@@ -45,6 +45,14 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/capability-index": {
+      "name": "@gooi/capability-index",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contracts-capability": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/conformance": {
       "name": "@gooi/conformance",
       "version": "0.1.0",
@@ -97,6 +105,13 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/spec-compiler": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "packages/symbol-graph": {
+      "name": "@gooi/symbol-graph",
+      "version": "0.1.0",
+      "dependencies": {
         "zod": "^4.3.6",
       },
     },
@@ -602,6 +617,8 @@
 
     "@gooi/binding-plan": ["@gooi/binding-plan@workspace:packages/binding-plan"],
 
+    "@gooi/capability-index": ["@gooi/capability-index@workspace:packages/capability-index"],
+
     "@gooi/conformance": ["@gooi/conformance@workspace:packages/conformance"],
 
     "@gooi/contracts-capability": ["@gooi/contracts-capability@workspace:packages/contracts-capability"],
@@ -615,6 +632,8 @@
     "@gooi/spec-compiler": ["@gooi/spec-compiler@workspace:packages/spec-compiler"],
 
     "@gooi/surface-bindings": ["@gooi/surface-bindings@workspace:packages/surface-bindings"],
+
+    "@gooi/symbol-graph": ["@gooi/symbol-graph@workspace:packages/symbol-graph"],
 
     "@hapi/hoek": ["@hapi/hoek@9.3.0", "", {}, "sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ=="],
 

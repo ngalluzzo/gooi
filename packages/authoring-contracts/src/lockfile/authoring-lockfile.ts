@@ -26,8 +26,8 @@ const envelopeVersionSetSchema = z.object({
 
 const remoteSourceSchema = z.object({
 	id: z.string().min(1),
-	url: z.string().url(),
-	fetchedAt: z.string().datetime(),
+	url: z.url(),
+	fetchedAt: z.iso.datetime(),
 });
 
 /**

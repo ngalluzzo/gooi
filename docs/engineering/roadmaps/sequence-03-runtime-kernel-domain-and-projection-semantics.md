@@ -1,0 +1,128 @@
+# Sequence 03: Runtime Kernel, Domain, and Projection Semantics
+
+## RFC Alignment
+
+- [RFC-0002](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0002-entrypoint-execution-pipeline.md)
+- [RFC-0009](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0009-domain-runtime-semantics-actions-capabilities-flows-and-session-outcomes.md)
+- [RFC-0010](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0010-projection-runtime-semantics-join-aggregate-timeline-and-history.md)
+- [RFC-0019](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0019-guard-and-invariant-runtime-contracts.md)
+- [RFC-0020](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0020-scenario-runtime-and-persona-simulation-contracts.md)
+
+## Epic 1: Entrypoint Runtime Core Semantics
+
+### Story 1.1: Enforce canonical execution pipeline
+Acceptance criteria:
+1. Execution order is deterministic from input bind through validation, policy, and runtime invocation.
+2. Query and mutation envelopes are typed and versioned.
+3. Pipeline behavior is consistent across supported surfaces.
+
+### Story 1.2: Mutation replay and idempotency guarantees
+Acceptance criteria:
+1. Mutation idempotency keys are enforced with deterministic replay outcomes.
+2. Replay conflict paths emit typed conflict diagnostics.
+3. Replay-store contract integration is test-backed.
+
+### Story 1.3: Signal emission and refresh invalidation contract
+Acceptance criteria:
+1. Mutation outcomes emit canonical signal invalidation payloads.
+2. Refresh consumers can subscribe and resolve invalidations deterministically.
+3. End-to-end fixtures verify write-to-refresh correctness.
+
+### Story 1.4: Capability reachability execution semantics
+Acceptance criteria:
+1. Entrypoint/provider runtime resolves capability calls deterministically: `local` -> `delegated` -> `capability_unreachable_error`.
+2. Delegated execution path uses explicit route metadata from deployment artifacts.
+3. Runtime never applies implicit fallback provider behavior.
+
+## Epic 2: Domain Runtime Semantics (Actions, Capabilities, Flows)
+
+### Story 2.1: Action/capability flow semantics
+Acceptance criteria:
+1. Action step execution semantics are deterministic for defaults, nulls, and unknown keys.
+2. Capability invocation contracts are validated before side effects.
+3. Domain runtime errors use typed taxonomy with stable codes.
+
+### Story 2.2: Session outcomes and policy ordering
+Acceptance criteria:
+1. Principal and access policy evaluation order is explicit and deterministic.
+2. Session outcomes include typed success/failure envelopes.
+3. Policy failures are consistent across surface transports.
+
+### Story 2.3: Domain simulation and traceability
+Acceptance criteria:
+1. Simulation mode can execute deterministic domain paths without hidden side effects.
+2. Runtime traces include action/capability step identifiers.
+3. Simulation outputs are comparable against live-run envelopes.
+
+### Story 2.4: Capability portability invariants
+Acceptance criteria:
+1. Domain logic behaves equivalently when capability binding moves between execution hosts (for example browser/wasm to node).
+2. Portability scenarios are fixture-tested without domain spec rewrites.
+3. Domain runtime traces include explicit reachability mode (`local` or `delegated`).
+
+## Epic 3: Projection Runtime Semantics
+
+### Story 3.1: Join and aggregate execution model
+Acceptance criteria:
+1. Projection join/aggregate behavior is deterministic for ordering and tie handling.
+2. Projection strategy selection is explicit and type-safe.
+3. Projection failures return typed diagnostics with source references.
+
+### Story 3.2: Timeline and history semantics
+Acceptance criteria:
+1. Timeline outputs preserve deterministic ordering across identical inputs.
+2. History windows and pagination semantics are stable.
+3. Timeline artifacts remain compatible with query and view consumers.
+
+### Story 3.3: Projection-domain parity checks
+Acceptance criteria:
+1. Projection refresh behavior matches emitted domain invalidation contracts.
+2. Projection outputs are conformance-tested against domain mutation fixtures.
+3. Regression fixtures cover stale read, conflict, and replay-adjacent edge cases.
+
+### Story 3.4: History provider operation contract enforcement
+Acceptance criteria:
+1. Timeline runtime enforces typed history operation contracts (`append`, `scan`, optional `scan_as_of`, `rebuild`, `persist`).
+2. Time-travel queries fail fast when required capabilities are absent.
+3. Duplicate event keys are handled idempotently and deterministically.
+
+### Story 3.5: Timeline accumulation drift gate
+Acceptance criteria:
+1. Timeline accumulation hash drift is detected against deployment lockfile state.
+2. Stale accumulation state is blocked with typed rebuild-required errors.
+3. Explicit rebuild workflows restore queryability with deterministic metadata.
+
+### Story 3.6: Signal migration-chain replay semantics
+Acceptance criteria:
+1. Timeline replay applies cumulative signal migration chains before handler evaluation.
+2. Missing migration-chain segments fail compile/runtime activation with typed diagnostics.
+3. Migration fixtures cover additive, breaking, and type-change payload evolution cases.
+
+## Epic 4: Guard, Invariant, and Scenario Runtime Contracts
+
+### Story 4.1: Enforce layered guard and invariant matrix
+Acceptance criteria:
+1. Collection, action, signal, flow, and projection guard/invariant behavior is enforced per canonical runtime boundary.
+2. Structural vs semantic guard ordering and failure policies are deterministic.
+3. Guard violations emit typed diagnostics/signals according to policy contracts.
+
+### Story 4.2: Implement semantic judge contract behavior
+Acceptance criteria:
+1. Semantic judge invocation follows confidence and sampling policies by environment.
+2. Missing semantic judge bindings degrade per contract rules without affecting structural guard enforcement.
+3. CI behavior for semantic guard confidence tiers is fixture-tested and deterministic.
+
+### Story 4.3: Execute scenarios/personas against canonical runtime
+Acceptance criteria:
+1. Scenario runtime executes `trigger`/`expect`/`capture` semantics against canonical entrypoint/domain/projection lanes.
+2. Persona-driven generation is lockfile-backed and deterministic by default.
+3. Scenario failures return typed scenario/guard diagnostics with step-level traceability.
+
+## Sequence Exit Criteria
+
+1. Runtime kernel semantics are deterministic and typed.
+2. Domain and projection runtimes interoperate under one contract model.
+3. Replay, policy, and invalidation guarantees are proven in fixtures.
+4. Mixed-host capability execution is deterministic and portability-safe.
+5. Timeline history/time-travel/rebuild/migration contracts are fully enforced.
+6. Guard/invariant and scenario/persona runtime contracts are fully enforced.

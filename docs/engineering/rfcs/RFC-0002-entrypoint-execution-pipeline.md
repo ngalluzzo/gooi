@@ -41,6 +41,7 @@ most important boundary: user-request to typed outcome.
 4. Define mutation signal emission semantics and refresh trigger propagation.
 5. Deliver one vertical production-grade slice that passes smoke scenarios from
    `demo.yml` without bypassing boundaries.
+6. Define deterministic capability reachability behavior across mixed execution hosts.
 
 ## Non-goals
 
@@ -48,7 +49,7 @@ most important boundary: user-request to typed outcome.
 2. Full route rendering runtime (`routes` and view node renderer) in this RFC.
 3. Full expression language standardization for every operator and optimizer.
 4. Provider marketplace ranking, billing, or trust policy.
-5. Cross-process provider transport (in-process remains the default runtime path).
+5. Cross-process provider transport protocol details (in-process remains default; delegation contract is covered here).
 
 ## Product outcomes and success metrics
 
@@ -84,9 +85,12 @@ Execution model:
 3. Apply entrypoint defaults.
 4. Validate normalized input with boundary Zod contract and normalized JSON Schema.
 5. Enforce access policy (`access.default_policy`, role derivation, entrypoint roles).
-6. Execute query projection or mutation action contract.
-7. For mutations, emit declared signals and include them in execution envelope.
-8. Return typed output envelope with trace id, outcome, and typed error variant.
+6. Resolve required capability reachability from `deployment-binding-plan` + `deployment-lockfile`.
+7. Execute query projection or mutation action contract using:
+   - local capability invocation when reachable on current host.
+   - delegated capability invocation when route is explicit and local reachability is unavailable.
+8. For mutations, emit declared signals and include them in execution envelope.
+9. Return typed output envelope with trace id, outcome, and typed error variant.
 
 Query behavior:
 
@@ -125,6 +129,8 @@ Deterministic execution semantics:
 8. Scalar coercion from string sources is explicit and deterministic:
    `int`, `number`, `bool`, and `timestamp` only.
 9. Coercion failures are rejected with `binding_error`.
+10. Capability reachability resolution order is deterministic:
+   local binding -> explicit delegated route -> `capability_unreachable_error`.
 
 Idempotency and replay semantics:
 
@@ -154,6 +160,8 @@ M2 expression profile (compiler-enforced allowlist):
 3. `Entrypoint execution envelope`: Typed runtime outcome for every invocation.
 4. `Refresh trigger`: Signal-based indication that read models may be stale.
 5. `Policy gate`: Access + validation checks required before domain execution.
+6. `Invocation host`: Host where the current runtime is executing.
+7. `Capability reachability`: Local/delegated/unreachable resolution result for required capability calls.
 
 ## Boundaries and ownership
 
@@ -163,6 +171,7 @@ M2 expression profile (compiler-enforced allowlist):
 3. Domain runtime owns action/projection semantics.
 4. Capability adapters own external side effects behind declared ports.
 5. Host adapters own trace/time/auth/session infrastructure dependencies.
+6. Entrypoint/provider runtime own capability reachability enforcement from deployment artifacts.
 
 Boundary constraints:
 
@@ -170,6 +179,7 @@ Boundary constraints:
 2. Entrypoint runtime must not depend on vendor SDKs.
 3. Domain runtime must not inspect HTTP/CLI transport details.
 4. Capability adapters must not read surface-specific payloads.
+5. Runtime must not silently downgrade unreachable capability calls to implicit fallbacks.
 
 ## Contracts and typing
 
@@ -191,6 +201,7 @@ export type InvocationEnvelope<Input> = {
   readonly entrypointId: string;
   readonly entrypointKind: "query" | "mutation";
   readonly principal: PrincipalContext;
+  readonly invocationHost: "browser" | "node" | "edge" | "worker";
   readonly input: Input;
   readonly meta: {
     readonly idempotencyKey?: string;
@@ -262,6 +273,8 @@ Error taxonomy additions:
 3. `entrypoint_not_found_error`
 4. `idempotency_conflict_error`
 5. `unsupported_expression_error`
+6. `capability_unreachable_error`
+7. `capability_delegation_error`
 
 Canonical compiled artifact contract:
 
@@ -384,6 +397,7 @@ sequenceDiagram
   participant D as Domain Runtime
   participant P as provider-runtime
   participant K as Capability Adapter
+  participant DR as "Delegation Route"
 
   C->>S: Request (HTTP/CLI/Web event)
   S->>B: Extract native inputs
@@ -398,8 +412,15 @@ sequenceDiagram
     P-->>R: activation ok | compatibility/activation error
     R->>D: Execute action graph
     D->>P: invokeCapability(call)
-    P->>K: invoke(call)
-    K-->>P: CapabilityResult
+    alt local reachability
+      P->>K: invoke(call)
+      K-->>P: CapabilityResult
+    else delegated reachability
+      P->>DR: invoke delegated capability(call, routeId)
+      DR-->>P: CapabilityResult | capability_delegation_error
+    else unreachable
+      P-->>D: capability_unreachable_error
+    end
     P-->>D: validated result/effects
     D-->>R: action output + emitted signals
     R->>R: Build RefreshTrigger[] + ResultEnvelope
@@ -526,7 +547,7 @@ Definition of done:
 
 ## Open questions
 
-1. None for M2 scope.
+None.
 
 ## Decision log
 
@@ -538,3 +559,4 @@ Definition of done:
 - `2026-02-26` - Canonical refresh invalidation contract is `signalId+version+payloadHash`; payload is optional for observability.
 - `2026-02-26` - M2 expression profile is compiler-enforced with an explicit allowlist.
 - `2026-02-26` - View-level `refresh_on_signals` is compiled to subscription artifacts in M2.
+- `2026-02-26` - Resolved mixed-host invocation behavior: required capabilities must resolve to explicit `local` or `delegated` reachability from deployment artifacts; implicit fallback is disallowed.

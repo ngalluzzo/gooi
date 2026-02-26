@@ -44,12 +44,13 @@ This breaks boundary ownership and weakens trust in the architecture.
 4. Enforce typed invocation boundary validation before domain execution.
 5. Enforce deterministic activation alignment across host API, binding plan, and lockfile.
 6. Add conformance gates that fail fast when boundary rules drift.
+7. Define host-level delegation port contracts for cross-host capability invocation.
 
 ## Non-goals
 
 1. Redesigning domain action/projection semantics.
 2. Shipping new external capability providers.
-3. Introducing cross-process provider transport in this RFC.
+3. Defining provider transport protocol implementations (only boundary contracts are in scope).
 4. Replacing existing RFC-0003/RFC-0004 authoring surfaces.
 
 ## Product outcomes and success metrics
@@ -162,12 +163,22 @@ export interface HostActivationPolicyPort {
   }) => RuntimeResult<void>;
 }
 
+export interface HostCapabilityDelegationPort {
+  invokeDelegated: (input: {
+    routeId: string;
+    traceId: string;
+    invocationId: string;
+    capabilityCall: CapabilityCall;
+  }) => Promise<CapabilityResult>;
+}
+
 export interface HostPortSet {
   clock: HostClockPort;
   identity: HostIdentityPort;
   principal: HostPrincipalPort;
   idempotency: HostIdempotencyPort;
   activationPolicy: HostActivationPolicyPort;
+  capabilityDelegation: HostCapabilityDelegationPort;
 }
 ```
 
@@ -184,6 +195,10 @@ export interface HostPortSet {
 2. `traceId`, `invocationId`, and timestamps are host-port generated.
 3. Idempotency TTL is required host policy input.
 4. Activation fails when runtime host API version disagrees with binding artifacts.
+5. Capability invocation resolution order is deterministic:
+   - local binding on current host
+   - explicit delegation route in deployment artifacts
+   - hard failure (`capability_unreachable_error`)
 
 ### Webhook integration pattern (Stripe example)
 
@@ -231,6 +246,7 @@ Inbound/outbound invariants:
 6. `Kernel`: Policy + orchestration runtime that composes host and capability adapters.
 7. `Renderer adapter`: Surface-local renderer mapping view artifacts to platform/runtime UI.
 8. `Webhook surface`: Surface adapter route that maps inbound event payloads to typed entrypoint contracts.
+9. `Delegation route`: Activation-time route used by host delegation port for cross-host capability invocation.
 
 ## Boundaries and ownership
 
@@ -249,6 +265,7 @@ Inbound/outbound invariants:
 - Host/platform adapters:
   - Own time/id/auth derivation/idempotency persistence/activation policy implementations.
   - Own cryptographic primitives and secret retrieval used by ingress verification.
+  - Own delegated capability transport execution behind `HostCapabilityDelegationPort`.
 
 Must-not-cross constraints:
 
@@ -258,6 +275,7 @@ Must-not-cross constraints:
 4. Surface adapters must not bypass centralized policy gate.
 5. Renderer adapters must not call capability adapters directly.
 6. Webhook signature verification must complete in surface+host boundary before kernel dispatch.
+7. Delegation routing decisions must come from deployment artifacts, never from surface adapters.
 
 ## Contracts and typing
 
@@ -290,6 +308,8 @@ Must-not-cross constraints:
   - `principal_derivation_error`
   - `artifact_alignment_error`
   - `entrypoint_contract_error`
+  - `capability_unreachable_error`
+  - `capability_delegation_error`
 - Compatibility policy:
   - Activation hard-fails on host-version misalignment.
 - Deprecation policy:
@@ -303,6 +323,7 @@ Feature-oriented modules:
 2. `packages/entrypoint-runtime/src/host-ports.ts`
 3. `packages/provider-runtime/src/host-ports.ts`
 4. `packages/conformance/src/host-conformance`
+5. `packages/provider-runtime/src/capability-reachability.ts`
 
 Public APIs via `package.json` exports:
 
@@ -347,6 +368,7 @@ Required tests:
 3. Unit tests: duplicate entrypoint ids fail compiler with deterministic diagnostic code.
 4. Unit tests: provider activation fails on host-version mismatch with binding artifacts.
 5. Conformance tests: host contract determinism across time/id generation and idempotency replay.
+6. Mixed-host conformance tests: local vs delegated invocation produce equivalent typed outcomes.
 
 Definition of done:
 
@@ -389,15 +411,13 @@ Definition of done:
 
 ## Open questions
 
-1. Should runtime host contracts include a first-class module loading/integrity port in M5, or defer to M6?
-   Owner: `Platform`.
-   Due: `2026-03-05`.
-2. Should principal derivation support custom predicates beyond current `derive` primitives in M5?
-   Owner: `Product Platform`.
-   Due: `2026-03-05`.
+None.
 
 ## Decision log
 
 - `2026-02-26` - RFC created to harden host boundaries and restore architectural trust.
 - `2026-02-26` - Chosen approach: explicit `HostPortSet` contracts + conformance enforcement.
 - `2026-02-26` - Architectural rule adopted: no ambient host globals in runtime orchestration paths.
+- `2026-02-26` - Resolved module loading/integrity contract timing: defer to M6 host-provider implementation track.
+- `2026-02-26` - Resolved host delegation boundary: cross-host capability calls execute through `HostCapabilityDelegationPort` with routes sourced from deployment artifacts.
+- `2026-02-26` - Resolved principal derivation scope for M5: keep current `derive` primitives only; custom predicates defer to a later RFC.

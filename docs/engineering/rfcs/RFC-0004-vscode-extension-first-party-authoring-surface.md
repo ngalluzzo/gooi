@@ -4,7 +4,7 @@
 
 - RFC: `RFC-0004`
 - Title: `VS Code Extension First-Party Authoring Surface`
-- Status: `Proposed`
+- Status: `Draft`
 - Owners: `Product Platform`
 - Reviewers: `Product`, `Developer Experience`, `Runtime Platform`
 - Created: `2026-02-26`
@@ -303,12 +303,7 @@ Alert thresholds:
 
 ## Open questions
 
-1. Should we publish to Open VSX in the same release flow or in a later phase?
-   Owner: `Developer Experience`.
-   Due: `2026-03-12`.
-2. Do we enable telemetry by default or opt-in only for initial release?
-   Owner: `Product Platform`.
-   Due: `2026-03-12`.
+None.
 
 ## Decision log
 
@@ -316,3 +311,5 @@ Alert thresholds:
 - `2026-02-26` - Bundling/build strategy fixed to Bun-only.
 - `2026-02-26` - Conformance gate fixed to existing `@gooi/conformance` package.
 - `2026-02-26` - Latency enforcement fixed to standard test suite, not separate CI pipeline.
+- `2026-02-26` - Resolved publishing sequence: ship VS Code Marketplace first, then Open VSX in a follow-up release wave.
+- `2026-02-26` - Resolved telemetry default for initial release: opt-in only.

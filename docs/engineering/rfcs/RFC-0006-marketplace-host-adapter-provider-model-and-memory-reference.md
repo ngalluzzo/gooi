@@ -1,19 +1,22 @@
-# RFC-0006: Marketplace Host Adapter Provider Model and Memory Reference Package
+# RFC-0006: Foundational Host Adapter Provider Model and Memory Reference Package
 
 ## Metadata
 
 - RFC: `RFC-0006`
-- Title: `Marketplace Host Adapter Provider Model and Memory Reference Package`
+- Title: `Foundational Host Adapter Provider Model and Memory Reference Package`
 - Status: `Implemented`
 - Owners: `Platform`
 - Reviewers: `Runtime Platform`, `Developer Experience`, `Marketplace`
 - Created: `2026-02-26`
 - Updated: `2026-02-26`
-- Target release: `Marketplace Milestone M6`
+- Target release: `Host Runtime Milestone M6`
 - Related:
   - Foundation: [RFC-0001-capability-contract-and-provider-runtime-interface.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0001-capability-contract-and-provider-runtime-interface.md)
   - Execution: [RFC-0002-entrypoint-execution-pipeline.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0002-entrypoint-execution-pipeline.md)
   - Host boundary hardening: [RFC-0005-host-adapter-contracts-and-runtime-boundary-hardening.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0005-host-adapter-contracts-and-runtime-boundary-hardening.md)
+  - Marketplace architecture: [RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md)
+  - Marketplace resolution: [RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md)
+  - Marketplace trust: [RFC-0018-marketplace-trust-certification-and-supply-chain-security.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0018-marketplace-trust-certification-and-supply-chain-security.md)
   - Host contracts package: [package.json](/Users/ngalluzzo/repos/gooi/packages/host-contracts/package.json)
   - Marketplace memory package: [package.json](/Users/ngalluzzo/repos/gooi/marketplace/memory/package.json)
   - Entrypoint runtime host API: [host.ts](/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/host.ts)
@@ -25,6 +28,11 @@
 The original draft framed marketplace provider productization as replay-store only.
 Implementation moved to a broader pattern: all core host adapters now follow one
 provider-authoring model.
+
+Scope clarification:
+
+1. RFC-0006 defines the foundational host/provider contract pattern and reference implementations.
+2. Marketplace product control-plane scope (catalog lifecycle, resolution/ranking, trust/certification operations) now lives in RFC-0016/RFC-0017/RFC-0018.
 
 What needed to be made explicit:
 
@@ -52,7 +60,7 @@ adapter type.
 
 ## Non-goals
 
-1. Marketplace ranking, billing, policy UX, or trust distribution.
+1. Marketplace control-plane product scope (catalog lifecycle, resolution/ranking, trust/certification operations).
 2. Dynamic marketplace install/registry protocol.
 3. Cross-language runtime transport for providers.
 4. Re-architecting capability-provider contracts in this RFC.
@@ -339,15 +347,7 @@ Phase 4: Conformance integration
 
 ## Open questions
 
-1. Should we add conformance suites for `clock`, `identity`, `principal`,
-   `activation-policy`, and `module-loader` as first-class feature exports (in
-   addition to `host` aggregate and `replay-store`)?
-   Owner: `Quality`.
-   Due: `2026-03-04`.
-2. Should provider manifest metadata include optional distribution metadata
-   (for example docs URL, source URL) in M7?
-   Owner: `Marketplace`.
-   Due: `2026-03-04`.
+None.
 
 ## Decision log
 
@@ -357,3 +357,6 @@ Phase 4: Conformance integration
   `@gooi/host-contracts/*` with concrete implementations in `marketplace/*`.
 - `2026-02-26` - Chosen clean-break rule: no legacy runtime-local host adapter
   implementations.
+- `2026-02-26` - Scope clarified: RFC-0006 is foundational host/provider architecture; marketplace product control-plane scope is tracked by RFC-0016/RFC-0017/RFC-0018.
+- `2026-02-26` - Resolved host conformance granularity: keep `host` aggregate and `replay-store` as required suites; add feature-specific suites only when contract complexity warrants dedicated coverage.
+- `2026-02-26` - Resolved provider listing distribution metadata ownership: evolve listing metadata in marketplace product contracts under RFC-0016, not in RFC-0006 host-provider contracts.

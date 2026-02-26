@@ -4,7 +4,7 @@
 
 - RFC: `RFC-0003`
 - Title: `Product Authoring Intelligence (LSP + Capability Index + Code Lenses)`
-- Status: `Proposed`
+- Status: `Draft`
 - Owners: `Product Platform`
 - Reviewers: `Product`, `Developer Experience`, `Runtime Platform`
 - Created: `2026-02-26`
@@ -14,6 +14,9 @@
   - Spec: [demo.yml](/Users/ngalluzzo/repos/gooi/docs/demo.yml)
   - Foundation: [RFC-0001-capability-contract-and-provider-runtime-interface.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0001-capability-contract-and-provider-runtime-interface.md)
   - Execution: [RFC-0002-entrypoint-execution-pipeline.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0002-entrypoint-execution-pipeline.md)
+  - Marketplace architecture: [RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md)
+  - Marketplace resolution: [RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md)
+  - Marketplace trust: [RFC-0018-marketplace-trust-certification-and-supply-chain-security.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0018-marketplace-trust-certification-and-supply-chain-security.md)
   - Standards: [commit-and-tsdoc-standards.md](/Users/ngalluzzo/repos/gooi/docs/engineering/commit-and-tsdoc-standards.md)
 
 ## Problem and context
@@ -108,6 +111,9 @@ A pinned snapshot artifact consumed by language server and CI:
 6. Provider availability metadata.
 7. Capability deprecation timelines and removal windows.
 8. Capability provenance (`local-spec` or `catalog` source).
+9. Certification and trust posture metadata (`certificationState`, `trustTier`, `lastVerifiedAt`).
+10. Resolution/ranking explainability metadata (policy dimensions and scored criteria provenance).
+11. Revocation and advisory signals with effective-at timestamps.
 
 Capability resolution model:
 
@@ -115,6 +121,7 @@ Capability resolution model:
 2. Completion and diagnostics must resolve capabilities from this unified index only.
 3. Collisions on the same canonical capability id across sources are compile errors (no shadowing precedence).
 4. Provider suitability remains source-agnostic after canonical capability identity is resolved.
+5. Eligibility diagnostics must combine capability compatibility with trust/certification policy from the same catalog snapshot.
 
 ### Symbol graph
 
@@ -145,6 +152,8 @@ A deterministic workspace artifact consumed by LSP and CI parity checks:
 5. Forward-compatible source metadata:
    - `sourceKind` (`workspace-local` for M3).
    - optional `remoteSource` field reserved for M4 shared snapshot distribution.
+6. Marketplace parity metadata:
+   - `resolutionProfileHash`, `trustPolicyBundleHash`, and `catalogSnapshotHash` must match between local and CI for full parity guarantees.
 
 ## Deterministic authoring semantics
 
@@ -220,6 +229,7 @@ Must-not-cross constraints:
   - LSP authoring features are read-only; runtime-backed actions enforce RFC-0002 policy gates.
 - Error taxonomy:
   - Add: `authoring_parse_error`, `authoring_symbol_error`, `rename_conflict_error`, `catalog_mismatch_error`, `artifact_mismatch_error`, `unsupported_client_capability_error`.
+  - Add: `trust_policy_mismatch_error`, `resolution_profile_mismatch_error`, `revocation_state_mismatch_error`.
 - Compatibility policy:
   - CI and CLI conformance paths hard-fail on snapshot version/hash mismatches.
   - Interactive LSP read paths degrade with explicit mismatch diagnostics.
@@ -443,9 +453,7 @@ Protocol constraints adopted from research:
 
 ## Open questions
 
-1. Non-blocking: Should we expose remote snapshot cache distribution in M4 or keep M3 strictly workspace-local?
-   Owner: `Product Platform`.
-   Due: `2026-03-18`.
+None.
 
 ## Decision log
 
@@ -460,3 +468,4 @@ Protocol constraints adopted from research:
 - `2026-02-26` - Lockfile mismatch policy clarified: degraded read path allowed, runtime-backed commands blocked.
 - `2026-02-26` - Rename CLI selector standardized to `uri + position` with optional `symbolRef`.
 - `2026-02-26` - Authoring conformance suite placement fixed to `@gooi/conformance` (`src/authoring-conformance`), not a separate package.
+- `2026-02-26` - Resolved remote snapshot rollout: M3 remains workspace-local; remote snapshot cache distribution is deferred to M4.

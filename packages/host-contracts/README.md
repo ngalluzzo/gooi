@@ -1,68 +1,31 @@
 # @gooi/host-contracts
 
-[![CI](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml)
-[![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
-[![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
-
 Typed host port contracts shared by runtime packages.
 
-## Overview
+Concrete host-port implementations belong in marketplace provider packages.
 
-`@gooi/host-contracts` defines infrastructure-facing ports used by runtime
-orchestration code: clock, identity, activation policy, and module loading.
+## Feature Entry Points
 
-## Features
-
-- Typed host-port result model (`HostPortResult`)
-- Clock and identity contracts
-- Activation-alignment policy contract
-- Module loading contract
-- System-backed permanent host adapter implementations
-
-## Installation
-
-```bash
-bun add @gooi/host-contracts
-```
+- `@gooi/host-contracts/result`
+- `@gooi/host-contracts/clock`
+- `@gooi/host-contracts/identity`
+- `@gooi/host-contracts/principal`
+- `@gooi/host-contracts/replay`
+- `@gooi/host-contracts/activation-policy`
+- `@gooi/host-contracts/module-loader`
 
 ## Quick Start
 
 ```ts
-import {
-	createStrictActivationPolicyPort,
-	createSystemClockPort,
-	createSystemIdentityPort,
-} from "@gooi/host-contracts";
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
+import { createSystemClockPort } from "@gooi/host-contracts/clock";
+import { createSystemIdentityPort } from "@gooi/host-contracts/identity";
+import { createStrictActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
 
 const clock = createSystemClockPort();
 const identity = createSystemIdentityPort();
 const activationPolicy = createStrictActivationPolicyPort();
 
-const alignment = activationPolicy.assertHostVersionAligned({
-	runtimeHostApiVersion: "1.0.0",
-	bindingPlanHostApiVersion: "1.0.0",
-	lockfileHostApiVersion: "1.0.0",
-});
+const ok = hostOk({ now: clock.nowIso() });
+const fail = hostFail("bad_request", "Invalid input");
 ```
-
-## API Summary
-
-- `HostPortResult`
-- `HostClockPort`
-- `HostIdentityPort`
-- `HostActivationPolicyPort`
-- `HostModuleLoaderPort`
-- `createSystemClockPort()`
-- `createSystemIdentityPort()`
-- `createStrictActivationPolicyPort()`
-
-## Development
-
-```bash
-bun run typecheck
-bun run test
-```
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md).

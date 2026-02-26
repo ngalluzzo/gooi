@@ -1,5 +1,13 @@
 {
-	"entryPoints": ["./src/host-contracts/host-contracts.contracts.ts"],
+	"entryPoints": [
+		"./src/result/result.ts",
+		"./src/clock/clock.ts",
+		"./src/identity/identity.ts",
+		"./src/principal/principal.ts",
+		"./src/replay/replay.ts",
+		"./src/activation-policy/activation-policy.ts",
+		"./src/module-loader/module-loader.ts"
+	],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

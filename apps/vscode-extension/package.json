@@ -1,5 +1,5 @@
 {
-	"name": "gooi-vscode-extension",
+	"name": "@gooi/vscode-extension",
 	"displayName": "Gooi",
 	"description": "First-party VS Code extension for Gooi authoring intelligence.",
 	"publisher": "ngalluzzo",
@@ -89,7 +89,7 @@
 	"dependencies": {
 		"@gooi/authoring-contracts": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
-		"@gooi/product-authoring-lsp": "workspace:*",
+		"@gooi/language-server": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",
 		"zod": "^4.3.6"
 	}

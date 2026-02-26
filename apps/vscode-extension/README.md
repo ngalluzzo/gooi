@@ -8,7 +8,7 @@ First-party VS Code extension surface for Gooi authoring intelligence (RFC-0004)
 
 ## Overview
 
-This app adapts VS Code editor APIs to `@gooi/product-authoring-lsp` handlers.
+This app adapts VS Code editor APIs to `@gooi/language-server` handlers.
 
 Features:
 

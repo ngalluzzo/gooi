@@ -5,23 +5,23 @@ import {
 import {
 	authoringCodeLensListResultSchema,
 	authoringCodeLensResolveResultSchema,
-} from "@gooi/product-authoring-lsp/contracts/code-lens";
+} from "@gooi/language-server/contracts/code-lens";
 import {
 	authoringCompletionListSchema,
 	authoringCompletionResolveResultSchema,
-} from "@gooi/product-authoring-lsp/contracts/completion";
+} from "@gooi/language-server/contracts/completion";
 import {
 	authoringDefinitionResultSchema,
 	authoringDocumentSymbolResultSchema,
 	authoringHoverResultSchema,
 	authoringReferencesResultSchema,
 	authoringWorkspaceSymbolResultSchema,
-} from "@gooi/product-authoring-lsp/contracts/navigation-results";
+} from "@gooi/language-server/contracts/navigation-results";
 import {
 	authoringPrepareRenameResultSchema,
 	authoringRenameResultSchema,
-} from "@gooi/product-authoring-lsp/contracts/rename";
-import { createAuthoringProtocolServer } from "@gooi/product-authoring-lsp/features/protocol/server";
+} from "@gooi/language-server/contracts/rename";
+import { createAuthoringProtocolServer } from "@gooi/language-server/features/protocol/server";
 import type { EditorDocument, EditorPosition } from "../contracts/host-ports";
 import type { AuthoringLanguageClient } from "../contracts/language-client";
 

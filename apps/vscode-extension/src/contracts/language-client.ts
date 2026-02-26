@@ -2,22 +2,22 @@ import type { AuthoringDiagnosticsEnvelope } from "@gooi/authoring-contracts/env
 import type {
 	AuthoringCodeLensListResult,
 	AuthoringCodeLensResolveResult,
-} from "@gooi/product-authoring-lsp/contracts/code-lens";
+} from "@gooi/language-server/contracts/code-lens";
 import type {
 	AuthoringCompletionList,
 	AuthoringCompletionResolveResult,
-} from "@gooi/product-authoring-lsp/contracts/completion";
+} from "@gooi/language-server/contracts/completion";
 import type {
 	AuthoringDefinitionResult,
 	AuthoringDocumentSymbolResult,
 	AuthoringHoverResult,
 	AuthoringReferencesResult,
 	AuthoringWorkspaceSymbolResult,
-} from "@gooi/product-authoring-lsp/contracts/navigation-results";
+} from "@gooi/language-server/contracts/navigation-results";
 import type {
 	AuthoringPrepareRenameResult,
 	AuthoringRenameResult,
-} from "@gooi/product-authoring-lsp/contracts/rename";
+} from "@gooi/language-server/contracts/rename";
 
 import type { EditorDocument, EditorPosition } from "./host-ports";
 

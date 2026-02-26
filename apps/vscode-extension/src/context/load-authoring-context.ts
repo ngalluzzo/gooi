@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import {
 	type AuthoringReadContext,
 	parseAuthoringReadContext,
-} from "@gooi/product-authoring-lsp/contracts/read-context";
+} from "@gooi/language-server/contracts/read-context";
 
 /**
  * Loads and parses the workspace authoring context artifact.

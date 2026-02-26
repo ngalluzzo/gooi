@@ -6,6 +6,23 @@ import {
 import { z } from "zod";
 
 /**
+ * Side-effect categories allowed by capability contracts.
+ */
+export const effectKindSchema = z.enum([
+	"compute",
+	"read",
+	"write",
+	"network",
+	"emit",
+	"session",
+]);
+
+/**
+ * Supported side-effect categories.
+ */
+export type EffectKind = z.infer<typeof effectKindSchema>;
+
+/**
  * JSON Schema draft targets supported for generated contract artifacts.
  */
 export const boundarySchemaTargetSchema = z.enum([
@@ -21,74 +38,11 @@ export const boundarySchemaTargetSchema = z.enum([
 export type BoundarySchemaTarget = z.infer<typeof boundarySchemaTargetSchema>;
 
 /**
- * Declared side-effect categories that capability calls may observe.
- */
-export const effectKindSchema = z.enum([
-	"read",
-	"write",
-	"emit",
-	"session",
-	"network",
-	"compute",
-]);
-
-/**
- * Side-effect categories allowed in capability contracts.
- */
-export type EffectKind = z.infer<typeof effectKindSchema>;
-
-/**
  * Generic JSON object used for generated JSON Schema artifacts.
  */
 export type JsonSchema = Readonly<Record<string, unknown>>;
 
 const jsonSchemaSchema = z.record(z.string(), z.unknown());
-
-const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
-	message: "Expected semver in MAJOR.MINOR.PATCH format.",
-});
-
-/**
- * Identifier for a capability port and version pair.
- */
-export const capabilityPortReferenceSchema = z.object({
-	portId: z.string().min(1),
-	portVersion: semverSchema,
-});
-
-/**
- * A capability reference tuple.
- */
-export type CapabilityPortReference = z.infer<
-	typeof capabilityPortReferenceSchema
->;
-
-/**
- * Manifest declaration for one provider-fulfilled capability.
- */
-export const providerCapabilitySchema = capabilityPortReferenceSchema.extend({
-	contractHash: z.string().regex(/^[a-f0-9]{64}$/),
-});
-
-/**
- * Provider capability manifest entry.
- */
-export type ProviderCapability = z.infer<typeof providerCapabilitySchema>;
-
-/**
- * Provider manifest contract used by runtime activation.
- */
-export const providerManifestSchema = z.object({
-	providerId: z.string().min(1),
-	providerVersion: semverSchema,
-	hostApiRange: z.string().min(1),
-	capabilities: z.array(providerCapabilitySchema).min(1),
-});
-
-/**
- * Provider activation manifest.
- */
-export type ProviderManifest = z.infer<typeof providerManifestSchema>;
 
 /**
  * Generated JSON Schema artifact and deterministic hash for a boundary schema.
@@ -101,6 +55,49 @@ export interface SchemaArtifact {
 	/** SHA-256 hash of normalized schema JSON. */
 	readonly hash: string;
 }
+
+/**
+ * Converts Zod schema to normalized JSON Schema artifact.
+ */
+export const buildSchemaArtifact = (
+	schema: z.ZodType<unknown>,
+	target: BoundarySchemaTarget,
+): SchemaArtifact => {
+	const generated = (
+		z as unknown as {
+			toJSONSchema: (
+				schemaValue: z.ZodType<unknown>,
+				options: {
+					target: BoundarySchemaTarget;
+					unrepresentable: "throw";
+					cycles: "ref";
+					reused: "inline";
+					io: "output";
+				},
+			) => unknown;
+		}
+	).toJSONSchema(schema, {
+		target,
+		unrepresentable: "throw",
+		cycles: "ref",
+		reused: "inline",
+		io: "output",
+	});
+
+	const parsed = jsonSchemaSchema.parse(generated);
+	const normalized = normalizeForStableJson(parsed) as JsonSchema;
+	const hash = sha256(stableStringify(normalized));
+
+	return {
+		target,
+		schema: normalized,
+		hash,
+	};
+};
+
+const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
+	message: "Expected semver in MAJOR.MINOR.PATCH format.",
+});
 
 /**
  * Full schema artifact set for capability boundary IO.
@@ -160,66 +157,7 @@ export interface DefineCapabilityPortInput {
 }
 
 /**
- * Converts Zod schema to normalized JSON Schema artifact.
- *
- * @param schema - Boundary Zod schema.
- * @param target - JSON Schema target draft.
- * @returns Generated artifact with deterministic hash.
- *
- * @example
- * const artifact = buildSchemaArtifact(z.object({ id: z.string() }), "draft-7");
- */
-export const buildSchemaArtifact = (
-	schema: z.ZodType<unknown>,
-	target: BoundarySchemaTarget,
-): SchemaArtifact => {
-	const generated = (
-		z as unknown as {
-			toJSONSchema: (
-				schemaValue: z.ZodType<unknown>,
-				options: {
-					target: BoundarySchemaTarget;
-					unrepresentable: "throw";
-					cycles: "ref";
-					reused: "inline";
-					io: "output";
-				},
-			) => unknown;
-		}
-	).toJSONSchema(schema, {
-		target,
-		unrepresentable: "throw",
-		cycles: "ref",
-		reused: "inline",
-		io: "output",
-	});
-
-	const parsed = jsonSchemaSchema.parse(generated);
-	const normalized = normalizeForStableJson(parsed) as JsonSchema;
-	const hash = sha256(stableStringify(normalized));
-
-	return {
-		target,
-		schema: normalized,
-		hash,
-	};
-};
-
-/**
  * Defines a capability contract from Zod boundary schemas.
- *
- * @param input - Capability contract definition.
- * @returns Capability contract with generated artifacts and deterministic hash.
- *
- * @example
- * const port = defineCapabilityPort({
- *   id: "ids.generate",
- *   version: "1.0.0",
- *   input: z.object({ count: z.number().int().positive() }),
- *   output: z.object({ ids: z.array(z.string()) }),
- *   error: z.object({ code: z.string(), message: z.string() }),
- *   declaredEffects: ["compute"],
- * });
  */
 export const defineCapabilityPort = (
 	input: DefineCapabilityPortInput,
@@ -266,15 +204,3 @@ export const defineCapabilityPort = (
 		},
 	};
 };
-
-/**
- * Parses and validates a provider manifest.
- *
- * @param value - Untrusted manifest value.
- * @returns Parsed provider manifest.
- *
- * @example
- * const manifest = parseProviderManifest(rawManifest);
- */
-export const parseProviderManifest = (value: unknown): ProviderManifest =>
-	providerManifestSchema.parse(value);

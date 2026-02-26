@@ -1,4 +1,4 @@
-# @gooi/contracts-capability
+# @gooi/capability-contracts
 
 [![CI](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml)
 [![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
@@ -6,9 +6,14 @@
 
 Zod-first boundary contract definitions for capability ports, provider manifests, JSON Schema artifacts, and deterministic contract hashing.
 
+## Feature Entry Points
+
+- `@gooi/capability-contracts/capability-port`
+- `@gooi/capability-contracts/provider-manifest`
+
 ## Overview
 
-`@gooi/contracts-capability` is the contract layer for RFC-0001.
+`@gooi/capability-contracts` is the contract layer for RFC-0001.
 It defines capability IO using Zod schemas, generates normalized JSON Schema artifacts, and computes stable SHA-256 hashes used by binding and activation checks.
 
 ## Features
@@ -22,13 +27,13 @@ It defines capability IO using Zod schemas, generates normalized JSON Schema art
 ## Installation
 
 ```bash
-bun add @gooi/contracts-capability
+bun add @gooi/capability-contracts
 ```
 
 ## Quick Start
 
 ```ts
-import { defineCapabilityPort } from "@gooi/contracts-capability";
+import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 
 const idsGeneratePort = defineCapabilityPort({
@@ -47,14 +52,12 @@ console.log(idsGeneratePort.artifacts.contractHash);
 
 - `defineCapabilityPort(input)`
   - Builds a typed capability contract and generated artifacts.
+- `effectKindSchema`
+  - Declares allowed observed effect categories.
 - `buildSchemaArtifact(schema, target)`
   - Converts a Zod schema to normalized JSON Schema plus hash.
 - `parseProviderManifest(value)`
   - Validates provider manifest payloads.
-- `stableStringify(value)`
-  - Produces deterministic JSON string output.
-- `sha256(value)`
-  - Computes deterministic hex digest.
 
 ## Development
 

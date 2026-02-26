@@ -3,10 +3,10 @@ import { z } from "zod";
 import {
 	buildSchemaArtifact,
 	defineCapabilityPort,
-	parseProviderManifest,
-} from "../src/contracts-capability/contracts-capability.contracts";
+} from "../src/capability-port/capability-port";
+import { parseProviderManifest } from "../src/provider-manifest/provider-manifest";
 
-describe("contracts-capability", () => {
+describe("capability-contracts", () => {
 	test("defines stable capability contract hashes", () => {
 		const definition = {
 			id: "ids.generate",

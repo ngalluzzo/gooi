@@ -1,6 +1,7 @@
 {
 	"entryPoints": [
-		"./src/contracts-capability/contracts-capability.contracts.ts"
+		"./src/capability-port/capability-port.ts",
+		"./src/provider-manifest/provider-manifest.ts"
 	],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],

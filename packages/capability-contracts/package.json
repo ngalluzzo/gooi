@@ -1,0 +1,39 @@
+{
+	"name": "@gooi/capability-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/capability-port/capability-port.js",
+	"types": "./src/capability-port/capability-port.ts",
+	"exports": {
+		"./capability-port": {
+			"types": "./src/capability-port/capability-port.ts",
+			"bun": "./src/capability-port/capability-port.ts",
+			"import": "./dist/capability-port/capability-port.js",
+			"default": "./dist/capability-port/capability-port.js"
+		},
+		"./provider-manifest": {
+			"types": "./src/provider-manifest/provider-manifest.ts",
+			"bun": "./src/provider-manifest/provider-manifest.ts",
+			"import": "./dist/provider-manifest/provider-manifest.js",
+			"default": "./dist/provider-manifest/provider-manifest.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/capability-port/capability-port.ts --outfile ./dist/capability-port/capability-port.js --external zod --external @gooi/stable-json && bun build ./src/provider-manifest/provider-manifest.ts --outfile ./dist/provider-manifest/provider-manifest.js --external zod --external @gooi/provider-manifest/base",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/provider-manifest": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

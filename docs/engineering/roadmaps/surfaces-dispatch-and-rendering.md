@@ -1,4 +1,4 @@
-# Sequence 04: Surface Dispatch and Rendering
+# Track 04: Surfaces, Dispatch, and Rendering
 
 ## RFC Alignment
 

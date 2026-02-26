@@ -1,4 +1,4 @@
-# Sequence 01: Foundation Contracts and Host Boundaries
+# Track 01: Runtime Foundations and Host Boundaries
 
 ## RFC Alignment
 

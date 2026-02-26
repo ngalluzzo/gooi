@@ -1,4 +1,4 @@
-# Sequence 02: Full App Spec and Artifact Pipeline
+# Track 02: Full App Spec and Artifact Pipeline
 
 ## RFC Alignment
 

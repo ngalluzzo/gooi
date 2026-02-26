@@ -1,4 +1,4 @@
-# Sequence 06: Progressive DX Facades
+# Track 06: Progressive DX Facades
 
 ## RFC Alignment
 

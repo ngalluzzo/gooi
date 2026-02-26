@@ -1,4 +1,4 @@
-# Sequence 05: Authoring Intelligence and VS Code Surface
+# Track 05: Authoring Intelligence and VS Code Surface
 
 ## RFC Alignment
 

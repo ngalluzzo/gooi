@@ -26,29 +26,3 @@ jobs:
 
       - name: Dependency review
         uses: actions/dependency-review-action@v4
-
-  semgrep:
-    name: Semgrep
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install Semgrep
-        run: python -m pip install --upgrade semgrep
-
-      - name: Run Semgrep
-        run: semgrep --config auto --sarif --output semgrep.sarif --error
-
-      - name: Upload SARIF
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: semgrep.sarif

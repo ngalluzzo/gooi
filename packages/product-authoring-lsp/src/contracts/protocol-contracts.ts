@@ -13,6 +13,7 @@ export const authoringProtocolMethodSchema = z.enum([
 	"gooi/pullDiagnostics",
 	"textDocument/completion",
 	"completionItem/resolve",
+	"textDocument/documentSymbol",
 	"textDocument/codeLens",
 	"codeLens/resolve",
 	"textDocument/prepareRename",

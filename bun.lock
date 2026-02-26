@@ -31,6 +31,17 @@
         "react-dom": "^19.2.4",
       },
     },
+    "apps/gooi-vscode-extension": {
+      "name": "gooi-vscode-extension",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/authoring-contracts": "workspace:*",
+        "@gooi/capability-index": "workspace:*",
+        "@gooi/product-authoring-lsp": "workspace:*",
+        "@gooi/symbol-graph": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/authoring-contracts": {
       "name": "@gooi/authoring-contracts",
       "version": "0.1.0",
@@ -1430,6 +1441,8 @@
     "global-dirs": ["global-dirs@3.0.1", "", { "dependencies": { "ini": "2.0.0" } }, "sha512-NBcGGFbBA9s1VzD41QXDG+3++t9Mn5t1FpLdhESY6oKY4gYTFpX4wO3sqGUa0Srjtbfj3szX0RnemmrVRUdULA=="],
 
     "globby": ["globby@11.1.0", "", { "dependencies": { "array-union": "^2.1.0", "dir-glob": "^3.0.1", "fast-glob": "^3.2.9", "ignore": "^5.2.0", "merge2": "^1.4.1", "slash": "^3.0.0" } }, "sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g=="],
+
+    "gooi-vscode-extension": ["gooi-vscode-extension@workspace:apps/gooi-vscode-extension"],
 
     "gopd": ["gopd@1.2.0", "", {}, "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg=="],
 

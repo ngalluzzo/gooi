@@ -1,0 +1,96 @@
+{
+	"name": "gooi-vscode-extension",
+	"displayName": "Gooi",
+	"description": "First-party VS Code extension for Gooi authoring intelligence.",
+	"publisher": "ngalluzzo",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"main": "./dist/extension.js",
+	"engines": {
+		"vscode": "^1.96.0"
+	},
+	"activationEvents": [
+		"onLanguage:gooi",
+		"onCommand:gooi.authoring.runEntrypoint",
+		"onCommand:gooi.authoring.showProviders",
+		"onCommand:gooi.authoring.showAffectedQueries"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "gooi",
+				"aliases": [
+					"Gooi",
+					"gooi"
+				],
+				"extensions": [
+					".gooi.yml",
+					".gooi.yaml"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "gooi.authoring.runEntrypoint",
+				"title": "Gooi: Run Entrypoint"
+			},
+			{
+				"command": "gooi.authoring.showProviders",
+				"title": "Gooi: Show Capability Providers"
+			},
+			{
+				"command": "gooi.authoring.showAffectedQueries",
+				"title": "Gooi: Show Affected Queries"
+			},
+			{
+				"command": "gooi.authoring.lockfileMismatch",
+				"title": "Gooi: Lockfile Mismatch"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Gooi",
+			"properties": {
+				"gooi.authoring.contextPath": {
+					"type": "string",
+					"default": ".gooi/authoring-context.json",
+					"description": "Path to the authoring context artifact relative to the workspace root."
+				},
+				"gooi.authoring.diagnosticsMode": {
+					"type": "string",
+					"enum": [
+						"push",
+						"pull"
+					],
+					"default": "push",
+					"description": "Controls diagnostics publishing behavior."
+				},
+				"gooi.authoring.enableCodeLens": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enables Gooi authoring code lenses."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"dev": "bun run build --watch",
+		"build": "bun build ./src/extension.ts --outdir ./dist --target node --format cjs --sourcemap --external vscode",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write",
+		"package:vsix": "bun run build && bunx @vscode/vsce package --no-dependencies",
+		"publish:dry-run": "bun run build && bunx @vscode/vsce publish --packagePath *.vsix --pat \"$VSCE_TOKEN\" --dry-run"
+	},
+	"dependencies": {
+		"@gooi/authoring-contracts": "workspace:*",
+		"@gooi/capability-index": "workspace:*",
+		"@gooi/product-authoring-lsp": "workspace:*",
+		"@gooi/symbol-graph": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

@@ -17,6 +17,7 @@ import { resolveAuthoringCompletionItem } from "../completion/resolve-authoring-
 import { getAuthoringDefinition } from "../navigation/get-authoring-definition";
 import { getAuthoringHover } from "../navigation/get-authoring-hover";
 import { getAuthoringReferences } from "../navigation/get-authoring-references";
+import { listAuthoringDocumentSymbols } from "../navigation/list-authoring-document-symbols";
 import { searchAuthoringWorkspaceSymbols } from "../navigation/search-authoring-workspace-symbols";
 import { applyAuthoringRename } from "../rename/apply-authoring-rename";
 import { prepareAuthoringRename } from "../rename/prepare-authoring-rename";
@@ -89,6 +90,12 @@ export const createAuthoringProtocolServer = (input: {
 						return ok(
 							request.id,
 							listAuthoringCodeLenses({ context: session.context }),
+						);
+					}
+					case "textDocument/documentSymbol": {
+						return ok(
+							request.id,
+							listAuthoringDocumentSymbols({ context: session.context }),
 						);
 					}
 					case "codeLens/resolve": {

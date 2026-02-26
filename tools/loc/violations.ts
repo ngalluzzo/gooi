@@ -18,7 +18,7 @@
  * Requires `tokei` to be installed (`brew install tokei`).
  */
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
 	BOLD,
@@ -40,44 +40,97 @@ interface LocViolation {
 	readonly excess: number;
 }
 
-interface LocBaseline {
-	readonly limit: number;
-	readonly generatedAt: string;
-	readonly violations: readonly {
-		readonly path: string;
-		readonly loc: number;
-	}[];
+interface LocException {
+	readonly path: string;
+	readonly maxLoc?: number;
+	readonly maxExcess?: number;
+	readonly reason?: string;
+	readonly expiresAt?: string;
 }
 
-async function readBaseline(
-	baselinePath: string | undefined,
-): Promise<LocBaseline | null> {
-	if (!baselinePath) {
-		return null;
+interface LocExceptionConfig {
+	readonly generatedAt?: string;
+	readonly exceptions: readonly LocException[];
+}
+
+function normalizePath(input: string): string {
+	return input.replaceAll("\\", "/");
+}
+
+function wildcardToRegExp(pattern: string): RegExp {
+	const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const wildcardPattern = escaped
+		.replaceAll("\\*", ".*")
+		.replaceAll("\\?", ".");
+	return new RegExp(`^${wildcardPattern}$`);
+}
+
+function isExpired(expiresAt: string | undefined): boolean {
+	if (!expiresAt) {
+		return false;
+	}
+	const parsed = new Date(expiresAt);
+	if (Number.isNaN(parsed.getTime())) {
+		return false;
+	}
+	return new Date() > parsed;
+}
+
+function matchesException(pattern: string, filePath: string): boolean {
+	const normalizedPattern = normalizePath(pattern);
+	const normalizedPath = normalizePath(filePath);
+
+	if (!normalizedPattern.includes("*") && !normalizedPattern.includes("?")) {
+		return normalizedPattern === normalizedPath;
+	}
+
+	return wildcardToRegExp(normalizedPattern).test(normalizedPath);
+}
+
+async function readExceptions(
+	exceptionsPath: string | undefined,
+): Promise<readonly LocException[]> {
+	if (!exceptionsPath) {
+		return [];
 	}
 	try {
-		const raw = await readFile(baselinePath, "utf8");
-		return JSON.parse(raw) as LocBaseline;
-	} catch {
-		return null;
+		const raw = await readFile(exceptionsPath, "utf8");
+		const parsed = JSON.parse(raw) as LocExceptionConfig;
+		return parsed.exceptions ?? [];
+	} catch (error) {
+		if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+			return [];
+		}
+		console.error(
+			`${RED}${BOLD}Invalid LOC exception file${R}: ${exceptionsPath}`,
+		);
+		console.error(error);
+		process.exit(1);
 	}
 }
 
-async function writeBaseline(input: {
-	baselinePath: string;
-	limit: number;
-	violations: readonly LocViolation[];
-}): Promise<void> {
-	const payload: LocBaseline = {
-		limit: input.limit,
-		generatedAt: new Date().toISOString(),
-		violations: input.violations.map((entry) => ({
-			path: entry.path,
-			loc: entry.loc,
-		})),
-	};
-	await mkdir(path.dirname(input.baselinePath), { recursive: true });
-	await writeFile(input.baselinePath, `${JSON.stringify(payload, null, 2)}\n`);
+function isExemptedByException(
+	violation: LocViolation,
+	exceptions: readonly LocException[],
+): LocException | null {
+	for (const exception of exceptions) {
+		if (!matchesException(exception.path, violation.path)) {
+			continue;
+		}
+		if (isExpired(exception.expiresAt)) {
+			continue;
+		}
+		if (
+			exception.maxExcess !== undefined &&
+			violation.excess <= exception.maxExcess
+		) {
+			return exception;
+		}
+		if (exception.maxLoc !== undefined && violation.loc <= exception.maxLoc) {
+			return exception;
+		}
+	}
+	return null;
 }
 
 // ── CLI args ──────────────────────────────────────────────────────────────────
@@ -85,10 +138,13 @@ const args = Bun.argv.slice(2);
 const rootDir = getDir(args);
 const limit = Number.parseInt(getArg(args, "limit", "250"), 10);
 const sortBy = getArg(args, "sort", "loc") as "loc" | "excess" | "name";
-const baselineArg = getArg(args, "baseline", "");
-const shouldWriteBaseline = getArg(args, "write-baseline", "false") === "true";
-const baselinePath =
-	baselineArg.length > 0 ? path.resolve(rootDir, baselineArg) : undefined;
+const exceptionsArg = getArg(
+	args,
+	"exceptions",
+	"docs/engineering/loc-exceptions.json",
+);
+const exceptionsPath =
+	exceptionsArg.length > 0 ? path.resolve(rootDir, exceptionsArg) : undefined;
 
 // ── Build file map ────────────────────────────────────────────────────────────
 const fileMap = buildFileMap(rootDir, runTokei(rootDir));
@@ -103,34 +159,34 @@ const violations = [...fileMap.entries()]
 		return b.loc - a.loc;
 	});
 
-const baseline = await readBaseline(baselinePath);
-const baselineByPath = new Map<string, number>(
-	(baseline?.violations ?? []).map((entry) => [entry.path, entry.loc]),
-);
-const regressions = baseline
-	? violations.filter((entry) => {
-			const baselineLoc = baselineByPath.get(entry.path);
-			return baselineLoc === undefined || entry.loc > baselineLoc;
-		})
-	: violations;
+const exceptions = await readExceptions(exceptionsPath);
+const regressions = violations;
 
-if (shouldWriteBaseline) {
-	if (!baselinePath) {
-		console.error(
-			`${RED}${BOLD}Missing --baseline path${R}; cannot write baseline without a file target.`,
-		);
-		process.exit(1);
-	}
-	await writeBaseline({
-		baselinePath,
-		limit,
-		violations,
-	});
-	console.log(
-		`${GRN}${BOLD}Wrote LOC baseline${R} (${violations.length} violation${violations.length === 1 ? "" : "s"}) -> ${baselinePath}`,
-	);
-	process.exit(0);
-}
+const severityGroups = regressions.reduce(
+	(acc, violation) => {
+		const exception = isExemptedByException(violation, exceptions);
+		const isCriticalViolation = violation.excess > limit;
+
+		if (isCriticalViolation) {
+			if (exception) {
+				acc.criticalExceptions.push({ violation, exception });
+			} else {
+				acc.criticalFindings.push(violation);
+			}
+		} else {
+			// no-op: non-critical findings are still reported but never fail the gate
+		}
+
+		return acc;
+	},
+	{
+		criticalFindings: [] as LocViolation[],
+		criticalExceptions: [] as {
+			violation: LocViolation;
+			exception: LocException;
+		}[],
+	},
+);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function severityColor(excess: number) {
@@ -143,6 +199,16 @@ function severityLabel(excess: number) {
 	if (excess > limit) return "critical";
 	if (excess > limit * 0.5) return "warning ";
 	return "ok+     ";
+}
+
+function exceptionAllowanceText(exception: LocException): string {
+	if (exception.maxLoc !== undefined) {
+		return `${exception.maxLoc} loc`;
+	}
+	if (exception.maxExcess !== undefined) {
+		return `${exception.maxExcess} excess`;
+	}
+	return "configured";
 }
 
 // ── Print ─────────────────────────────────────────────────────────────────────
@@ -158,14 +224,14 @@ if (regressions.length === 0) {
 	console.log(
 		frozenDebt === 0
 			? `${GRN}${BOLD}✓ No violations${R} — all files are under ${limit} loc`
-			: `${GRN}${BOLD}✓ No regressions${R} — ${frozenDebt} baseline violation${frozenDebt === 1 ? "" : "s"} are unchanged.`,
+			: `${GRN}${BOLD}✓ ${frozenDebt} violation${frozenDebt === 1 ? "" : "s"} over limit.${R}`,
 	);
 	console.log();
 	process.exit(0);
 }
 
 console.log(
-	`${BOLD}${RED}Files exceeding ${limit} loc (new/regressed)${R}  ${DIM}(${regressions.length} violation${regressions.length === 1 ? "" : "s"}, sorted by ${sortBy})${R}`,
+	`${BOLD}${RED}Files exceeding ${limit} loc${R}  ${DIM}(${regressions.length} violation${regressions.length === 1 ? "" : "s"}, sorted by ${sortBy})${R}`,
 );
 console.log(hr);
 console.log(
@@ -196,7 +262,34 @@ console.log(
 	`  ${BOLD}Worst offender:${R}  ${worst?.path} ${RED}(${worst?.loc} loc)${R}`,
 );
 console.log(`  ${BOLD}Avg loc:${R}         ${avg}`);
-console.log(
-	`  ${BOLD}Total excess:${R}    ${totEx} loc across new/regressed violations`,
-);
+console.log(`  ${BOLD}Total excess:${R}    ${totEx} loc across violations`);
 console.log();
+
+if (severityGroups.criticalExceptions.length > 0) {
+	console.log(
+		`${YEL}${BOLD}⚠ Critical findings exempted by exceptions:${R} ${severityGroups.criticalExceptions.length}`,
+	);
+	for (const { violation, exception } of severityGroups.criticalExceptions) {
+		console.log(
+			`  ${violation.path} ${DIM}(allowance: ${exceptionAllowanceText(exception)})${R}`,
+		);
+		if (exception.reason) {
+			console.log(`    ${DIM}${exception.reason}${R}`);
+		}
+	}
+	console.log();
+}
+
+const hasCritical = severityGroups.criticalFindings.length > 0;
+if (hasCritical) {
+	console.log(
+		`${RED}${BOLD}❗ LOC policy gate failed${R} — critical findings detected (excess > ${limit} loc).`,
+	);
+	process.exit(1);
+}
+
+if (severityGroups.criticalExceptions.length > 0 && !hasCritical) {
+	console.log(
+		`${YEL}${BOLD}⚠ LOC policy passed with exceptions${R}: all critical findings are exempted.`,
+	);
+}

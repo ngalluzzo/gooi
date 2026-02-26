@@ -1,0 +1,10 @@
+{
+	"generatedAt": "2026-02-26T02:00:00.000Z",
+	"exceptions": [
+		{
+			"path": "packages/provider-runtime/src/index.ts",
+			"maxLoc": 510,
+			"reason": "Temporary exception while refactoring provider runtime hot paths."
+		}
+	]
+}

@@ -1,1 +1,9 @@
 lint-staged
+
+if ! command -v tokei >/dev/null 2>&1; then
+  echo "Missing required dependency: tokei."
+  echo "Install it with: brew install tokei (or your platform package manager)."
+  exit 1
+fi
+
+bun run loc:check

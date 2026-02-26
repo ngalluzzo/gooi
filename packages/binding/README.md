@@ -20,9 +20,10 @@ bun add @gooi/binding
 
 ```ts
 import {
-  areBindingArtifactsAligned,
-  parseBindingPlan,
-  parseDeploymentLockfile,
+	areBindingArtifactsAligned,
+	getCapabilityBindingResolution,
+	parseBindingPlan,
+	parseDeploymentLockfile,
 } from "@gooi/binding/binding-plan";
 
 const plan = parseBindingPlan(rawPlan);
@@ -31,6 +32,11 @@ const lockfile = parseDeploymentLockfile(rawLockfile);
 if (!areBindingArtifactsAligned(plan, lockfile)) {
   throw new Error("Binding artifacts are not aligned.");
 }
+
+const resolution = getCapabilityBindingResolution(plan, "ids.generate", "1.0.0");
+if (resolution?.mode === "unreachable") {
+  throw new Error("Capability is unreachable on this deployment host.");
+}
 ```
 
 ## API Summary
@@ -38,6 +44,10 @@ if (!areBindingArtifactsAligned(plan, lockfile)) {
 - `parseBindingPlan(value)`
 - `parseDeploymentLockfile(value)`
 - `getCapabilityBinding(plan, portId, portVersion)`
+- `getCapabilityBindingResolution(plan, portId, portVersion)`
+- `isCapabilityReachable(resolution)`
+- `capabilityReachabilityModeSchema`
+- `executionHostSchema`
 - `getLockedProvider(lockfile, providerId, providerVersion)`
 - `providerHasLockedCapability(provider, portId, portVersion, contractHash)`
 - `areBindingArtifactsAligned(plan, lockfile)`

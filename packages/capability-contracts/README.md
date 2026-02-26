@@ -21,7 +21,7 @@ It defines capability IO using Zod schemas, generates normalized JSON Schema art
 - Zod-authored boundary contracts for input/output/error payloads
 - JSON Schema artifact generation (`draft-4`, `draft-7`, `draft-2020-12`, `openapi-3.0`)
 - Deterministic stable JSON hashing for compatibility and lockfiles
-- Typed provider manifest schema parsing
+- Typed provider manifest schema parsing with execution-host reachability metadata
 - Explicit effect declaration model
 
 ## Installation
@@ -58,6 +58,8 @@ console.log(idsGeneratePort.artifacts.contractHash);
   - Converts a Zod schema to normalized JSON Schema plus hash.
 - `parseProviderManifest(value)`
   - Validates provider manifest payloads.
+- `executionHostSchema`
+  - Canonical provider capability execution-host contract (`browser|node|edge|worker`).
 
 ## Development
 

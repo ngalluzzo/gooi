@@ -53,14 +53,26 @@ export const validateBindingRequirements = (
 			});
 		}
 
-		if (binding.providerId !== manifest.providerId) {
+		if (binding.resolution.mode === "unreachable") {
+			return fail(
+				"activation_error",
+				"Capability is unreachable in binding plan.",
+				{
+					portId: contract.id,
+					portVersion: contract.version,
+					resolutionMode: binding.resolution.mode,
+				},
+			);
+		}
+
+		if (binding.resolution.providerId !== manifest.providerId) {
 			return fail(
 				"activation_error",
 				"Capability is bound to a different provider in binding plan.",
 				{
 					portId: contract.id,
 					portVersion: contract.version,
-					expectedProviderId: binding.providerId,
+					expectedProviderId: binding.resolution.providerId,
 					actualProviderId: manifest.providerId,
 				},
 			);
@@ -80,6 +92,20 @@ export const validateBindingRequirements = (
 				{
 					portId: contract.id,
 					portVersion: contract.version,
+				},
+			);
+		}
+
+		if (
+			!manifestCapability.executionHosts.includes(binding.resolution.targetHost)
+		) {
+			return fail(
+				"activation_error",
+				"Provider manifest capability execution hosts do not satisfy binding resolution target host.",
+				{
+					portId: contract.id,
+					portVersion: contract.version,
+					targetHost: binding.resolution.targetHost,
 				},
 			);
 		}

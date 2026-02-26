@@ -5,20 +5,74 @@ const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
 });
 
 const hexHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
+export const executionHostSchema = z.enum([
+	"browser",
+	"node",
+	"edge",
+	"worker",
+]);
+export const capabilityReachabilityModeSchema = z.enum([
+	"local",
+	"delegated",
+	"unreachable",
+]);
+
+export const localCapabilityBindingResolutionSchema = z.object({
+	mode: z.literal("local"),
+	targetHost: executionHostSchema,
+	providerId: z.string().min(1),
+});
+
+export const delegatedCapabilityBindingResolutionSchema = z.object({
+	mode: z.literal("delegated"),
+	targetHost: executionHostSchema,
+	providerId: z.string().min(1),
+	delegateRouteId: z.string().min(1),
+});
+
+export const unreachableCapabilityBindingResolutionSchema = z.object({
+	mode: z.literal("unreachable"),
+	reason: z.string().min(1).optional(),
+});
+
+export const capabilityBindingResolutionSchema = z.discriminatedUnion("mode", [
+	localCapabilityBindingResolutionSchema,
+	delegatedCapabilityBindingResolutionSchema,
+	unreachableCapabilityBindingResolutionSchema,
+]);
 
 /**
- * Binding entry mapping one capability port to a provider identity.
+ * Binding resolution entry for one required capability port.
  */
 export const capabilityBindingSchema = z.object({
 	portId: z.string().min(1),
 	portVersion: semverSchema,
-	providerId: z.string().min(1),
+	resolution: capabilityBindingResolutionSchema,
 });
 
 /**
- * Capability binding model.
+ * Required capability binding model with reachability classification.
  */
 export type CapabilityBinding = z.infer<typeof capabilityBindingSchema>;
+
+/**
+ * One required capability reachability classification.
+ */
+export type CapabilityBindingResolution = z.infer<
+	typeof capabilityBindingResolutionSchema
+>;
+
+/**
+ * Supported execution host value in binding artifacts.
+ */
+export type ExecutionHost = z.infer<typeof executionHostSchema>;
+
+/**
+ * Reachability mode for required capability bindings.
+ */
+export type CapabilityReachabilityMode = z.infer<
+	typeof capabilityReachabilityModeSchema
+>;
 
 /**
  * Deployment binding plan resolved for one app environment.
@@ -104,7 +158,7 @@ export const parseDeploymentLockfile = (value: unknown): DeploymentLockfile =>
 	deploymentLockfileSchema.parse(value);
 
 /**
- * Locates the provider binding for a capability reference.
+ * Locates the binding entry for a capability reference.
  *
  * @param plan - Parsed binding plan.
  * @param portId - Capability port id.
@@ -123,6 +177,37 @@ export const getCapabilityBinding = (
 		(binding) =>
 			binding.portId === portId && binding.portVersion === portVersion,
 	) ?? null;
+
+/**
+ * Locates the reachability resolution for one capability reference.
+ *
+ * @param plan - Parsed binding plan.
+ * @param portId - Capability port id.
+ * @param portVersion - Capability port semver.
+ * @returns Reachability classification, if present.
+ *
+ * @example
+ * const resolution = getCapabilityBindingResolution(plan, "ids.generate", "1.0.0");
+ */
+export const getCapabilityBindingResolution = (
+	plan: BindingPlan,
+	portId: string,
+	portVersion: string,
+): CapabilityBindingResolution | null =>
+	getCapabilityBinding(plan, portId, portVersion)?.resolution ?? null;
+
+/**
+ * Returns true when the capability is classified as reachable (`local` or `delegated`).
+ *
+ * @param resolution - Binding reachability classification.
+ * @returns Whether the capability can be invoked.
+ *
+ * @example
+ * const reachable = isCapabilityReachable(resolution);
+ */
+export const isCapabilityReachable = (
+	resolution: CapabilityBindingResolution,
+): boolean => resolution.mode !== "unreachable";
 
 /**
  * Locates a provider lock entry by provider id and version.

@@ -1,11 +1,7 @@
-import type {
-	HostActivationPolicyPort,
-	HostClockPort,
-} from "@gooi/host-contracts";
-import {
-	createStrictActivationPolicyPort,
-	createSystemClockPort,
-} from "@gooi/host-contracts";
+import type { HostActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
+import { createStrictActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
+import type { HostClockPort } from "@gooi/host-contracts/clock";
+import { createSystemClockPort } from "@gooi/host-contracts/clock";
 
 /**
  * Host port set consumed by provider activation and lifecycle orchestration.

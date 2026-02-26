@@ -1,10 +1,13 @@
-import type { BindingPlan, DeploymentLockfile } from "@gooi/binding-plan";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/binding/binding-plan";
 import type {
 	CapabilityPortContract,
 	EffectKind,
-	ProviderManifest,
-} from "@gooi/contracts-capability";
-import type { ProviderRuntimeHostPorts } from "../../../provider-runtime-host-ports/provider-runtime-host-ports";
+} from "@gooi/capability-contracts/capability-port";
+import type { ProviderManifest } from "@gooi/capability-contracts/provider-manifest";
+import type { ProviderRuntimeHostPorts } from "../host";
 
 /**
  * Runtime error categories for provider activation and invocation.
@@ -136,6 +139,74 @@ export interface ActivateProviderInput {
 	readonly activatedAt?: string;
 	/** Optional host ports for clock and activation policy behavior. */
 	readonly hostPorts?: ProviderRuntimeHostPorts;
+}
+
+/**
+ * Shared provider-runtime defaults for orchestration calls.
+ */
+export interface CreateProviderRuntimeInput {
+	/** Host API version for compatibility checks. */
+	readonly hostApiVersion: string;
+	/** Capability contracts expected for runtime invocations. */
+	readonly contracts: readonly CapabilityPortContract[];
+	/** Optional resolved binding plan artifact for enforcement. */
+	readonly bindingPlan?: BindingPlan;
+	/** Optional lockfile artifact for deterministic provider resolution. */
+	readonly lockfile?: DeploymentLockfile;
+	/** Optional host ports for clock and activation policy behavior. */
+	readonly hostPorts?: ProviderRuntimeHostPorts;
+}
+
+/**
+ * Activation input for one provider module under runtime defaults.
+ */
+export interface ActivateProviderRuntimeInput {
+	/** Untrusted provider module loaded from runtime. */
+	readonly providerModule: ProviderModule;
+	/** Optional host API version override. */
+	readonly hostApiVersion?: string;
+	/** Optional capability contract override. */
+	readonly contracts?: readonly CapabilityPortContract[];
+	/** Optional resolved binding plan artifact for enforcement. */
+	readonly bindingPlan?: BindingPlan;
+	/** Optional lockfile artifact for deterministic provider resolution. */
+	readonly lockfile?: DeploymentLockfile;
+	/** Optional activation timestamp override. */
+	readonly activatedAt?: string;
+	/** Optional host ports for clock and activation policy behavior. */
+	readonly hostPorts?: ProviderRuntimeHostPorts;
+}
+
+/**
+ * One-shot activation/invocation input for runtime convenience execution.
+ */
+export interface RunProviderCapabilityInput
+	extends ActivateProviderRuntimeInput {
+	/** Capability invocation envelope sent to provider instances. */
+	readonly call: CapabilityCall;
+}
+
+/**
+ * Provider-runtime orchestration API for provider activation and invocation.
+ */
+export interface ProviderRuntime {
+	/** Activates one provider module using runtime defaults and optional overrides. */
+	readonly activate: (
+		input: ActivateProviderRuntimeInput,
+	) => Promise<RuntimeResult<ActivatedProvider>>;
+	/** Invokes one capability on an activated provider. */
+	readonly invoke: (
+		activated: ActivatedProvider,
+		call: CapabilityCall,
+	) => Promise<RuntimeResult<CapabilityResult>>;
+	/** Deactivates one activated provider instance. */
+	readonly deactivate: (
+		activated: ActivatedProvider,
+	) => Promise<RuntimeResult<void>>;
+	/** Runs activate -> invoke -> deactivate for one capability call. */
+	readonly run: (
+		input: RunProviderCapabilityInput,
+	) => Promise<RuntimeResult<CapabilityResult>>;
 }
 
 /**

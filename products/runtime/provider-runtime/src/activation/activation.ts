@@ -1,8 +1,8 @@
+import { isHostApiCompatible } from "../compatibility/compatibility";
 import {
 	createDefaultProviderRuntimeHostPorts,
 	type ProviderRuntimeHostPorts,
-} from "../../../provider-runtime-host-ports/provider-runtime-host-ports";
-import { isHostApiCompatible } from "../compatibility/compatibility";
+} from "../host";
 import { capabilityKey } from "../shared/capability-key";
 import { fail, ok } from "../shared/result";
 import type {

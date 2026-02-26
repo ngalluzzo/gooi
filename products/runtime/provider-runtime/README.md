@@ -29,34 +29,40 @@ bun add @gooi/provider-runtime
 ## Quick Start
 
 ```ts
-import { activateProvider, invokeCapability } from "@gooi/provider-runtime";
+import { createProviderRuntime } from "@gooi/provider-runtime";
 
-const activated = await activateProvider({
-  providerModule,
+const runtime = createProviderRuntime({
   hostApiVersion: "1.0.0",
   contracts: [capabilityContract],
 });
+
+const activated = await runtime.activate({ providerModule });
 
 if (!activated.ok) {
   throw new Error(activated.error.message);
 }
 
-const result = await invokeCapability(activated.value, {
+const result = await runtime.invoke(activated.value, {
   portId: capabilityContract.id,
   portVersion: capabilityContract.version,
   input: { count: 2 },
   principal: { subject: "user_1", roles: ["authenticated"] },
   ctx: { id: "inv_1", traceId: "trace_1", now: new Date().toISOString() },
 });
+
+await runtime.deactivate(activated.value);
 ```
 
 ## API Summary
 
+- `createProviderRuntime(config)`
+- `runtime.activate(input)`
+- `runtime.invoke(activated, call)`
+- `runtime.deactivate(activated)`
+- `runtime.run(input)`
 - `activateProvider(input)`
 - `invokeCapability(activated, call)`
 - `deactivateProvider(activated)`
-- `isHostApiCompatible(range, version)`
-- `ensureObservedEffectsDeclared(declared, observed)`
 
 ## Development
 

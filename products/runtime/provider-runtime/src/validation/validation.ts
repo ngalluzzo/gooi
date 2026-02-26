@@ -4,12 +4,12 @@ import {
 	type DeploymentLockfile,
 	getCapabilityBinding,
 	getLockedProvider,
-} from "@gooi/binding-plan";
+} from "@gooi/binding/binding-plan";
+import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import {
-	type CapabilityPortContract,
 	type ProviderManifest,
 	parseProviderManifest,
-} from "@gooi/contracts-capability";
+} from "@gooi/capability-contracts/provider-manifest";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
 

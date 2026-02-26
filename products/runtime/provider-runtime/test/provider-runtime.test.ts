@@ -1,11 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { defineCapabilityPort } from "@gooi/contracts-capability";
+import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
-import {
-	activateProvider,
-	invokeCapability,
-	type ProviderModule,
-} from "../src/provider-runtime/provider-runtime";
+import { activateProvider } from "../src/activation/activation";
+import type { ProviderModule } from "../src/engine";
+import { invokeCapability } from "../src/invocation/invocation";
 
 const createContract = () =>
 	defineCapabilityPort({

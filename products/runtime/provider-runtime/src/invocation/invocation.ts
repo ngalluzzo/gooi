@@ -1,4 +1,4 @@
-import { effectKindSchema } from "@gooi/contracts-capability";
+import { effectKindSchema } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 import { ensureObservedEffectsDeclared } from "../effects/effects";
 import { capabilityKey } from "../shared/capability-key";

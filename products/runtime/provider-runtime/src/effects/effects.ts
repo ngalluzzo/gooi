@@ -1,4 +1,4 @@
-import type { EffectKind } from "@gooi/contracts-capability";
+import type { EffectKind } from "@gooi/capability-contracts/capability-port";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
 

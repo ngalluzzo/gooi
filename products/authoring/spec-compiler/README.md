@@ -18,6 +18,7 @@ Deterministic compiler for Gooi composable entrypoint specs.
 - Compiled surface bindings and access plan artifacts
 - Compiled binding requirements artifact for deployment resolver inputs
 - Artifact manifest references with compatibility metadata for emitted artifacts
+- Cross-section capability reference validation for reachability requirements
 - Compiled query refresh subscription index from `refresh_on_signals`
 - Typed diagnostics for compile failures
 

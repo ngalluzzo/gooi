@@ -1,0 +1,10 @@
+# Sort by lines of code descending
+sort = "code"
+
+# Terminal output width
+columns = 120
+
+types = ["TypeScript", "TSX"]
+
+# Count doc strings as comments (cleaner code counts)
+treat_doc_strings_as_comments = true

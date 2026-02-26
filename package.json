@@ -1,0 +1,60 @@
+{
+  "name": "gooi",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "marketplace/*",
+    "capabilities/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "dev": "bun dev:apps && bun dev:pkg && bun dev:tools",
+    "dev:apps": "bun -F './apps/*' dev",
+    "dev:pkg": "bun -F './capabilities/*' -F './features/*' -F './features/*/packages/*' dev",
+    "dev:tools": "bun -F './tools/*' dev",
+    "doc": "typedoc",
+    "typecheck": "bun typecheck:pkg",
+    "typecheck:pkg": "bun --parallel --workspaces typecheck",
+    "test": "bun test:pkg",
+    "test:coverage": "bun run test --coverage",
+    "test:pkg": "bun --parallel --workspaces test",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "format": "biome format . --write",
+    "loc:tree": "bun ./tools/loc/tree",
+    "loc:diff": "bun ./tools/loc/diff",
+    "loc:check": "bun ./tools/loc/violations",
+    "security": "semgrep --config auto",
+    "security:ci": "bun security --output semgrep-results.sarif --sarif --error",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "bun lint:fix",
+      "bun format",
+      "bun test --bail",
+      "bun typecheck"
+    ]
+  },
+  "catalog": {
+    "zod": "^4.3.6",
+    "@biomejs/biome": "^2.4.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.4",
+    "@types/bun": "^1.3.9",
+    "typedoc": "^0.28.17",
+    "typedoc-plugin-markdown": "^4.10.0",
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6",
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "engines": {
+    "bun": ">=1.3.9"
+  },
+  "packageManager": "bun@1.3.9",
+  "type": "module"
+}

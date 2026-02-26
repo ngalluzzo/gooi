@@ -1,0 +1,22 @@
+[test]
+coveragePathIgnorePatterns = [
+  # Test files
+  "**/test/**",
+
+  # Configuration files
+  "*.config.js",
+  "*.config.ts",
+
+  # Schemas
+  "**/schemas/**",
+  "**/*-types.ts",
+
+  # Build output
+  "dist/**",
+  "build/**",
+  "bin/**",
+
+  # Generated code
+  "generated/**",
+  "**/*.generated.ts",
+]

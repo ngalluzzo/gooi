@@ -1,0 +1,1588 @@
+# GOOI HELLO WORLD DEMO (V8 — Annotated)
+#
+# ARCHITECTURE OVERVIEW
+# ---------------------
+# The spec is organized into distinct layers, each with a clear owner and scope.
+# Everything above `wiring` is pure declaration and runtime-agnostic.
+# `wiring` is where the real world connects — all adapter concerns live there.
+#
+# Core concept map:
+#   domain.projections  →  queries    (read implementation  → read interface)
+#   domain.actions      →  mutations  (write implementation → write interface)
+#   views.screens       →  routes     (render implementation → navigation interface)
+#
+# Concept owners:
+#   domain   — owned by the business
+#   session  — owned by the user
+#   routes    — owned by the surface
+#   wiring   — owned by the infrastructure
+
+app:
+  id: hello-world-demo-v8
+  name: "Hello World Demo V8"
+  tz: UTC
+  history:
+    enabled: true
+    provider: gooi-marketplace-bun-sqlite@^1.0.0
+    retention: 365d
+
+# =============================================================================
+# DOMAIN
+# =============================================================================
+# The business model. Everything here is fair game for the full framework
+# machinery — signals, flows, moderation, projections.
+#
+# Internal vs exposed:
+#   Actions and projections defined here are NOT public by default.
+#   They are only reachable externally if explicitly surfaced via a
+#   query, mutation, or route. Internal actions (e.g. log_rejection)
+#   can be called by flows and other actions without ever being exposed.
+#
+# ctx — runtime-provided execution context, fixed shape, not configurable:
+#   ctx.id       — unique ID for this execution (replaces ctx.requestId)
+#   ctx.now      — current timestamp
+#   ctx.traceId  — trace ID for observability (do not construct manually)
+#   These are ambient facts about the current execution. Authors reference
+#   them in expressions. The runtime guarantees their presence.
+domain:
+  collections:
+    users:
+      fields:
+        id: id!
+        name: text!
+        avatar_url: text
+        created_at: timestamp!
+
+    hello_messages:
+      fields:
+        id: id!
+        user_id: id!
+        message: text!
+        created_at: timestamp!
+        moderation:
+          object:
+            allowed: bool!
+            reason: text
+      invariants:
+        on_fail: abort
+        structural:
+          - description: "Message writes require non-empty message and user_id."
+            rule:
+              and:
+                - "!==":
+                    - var: message
+                    - ""
+                - "!==":
+                    - var: user_id
+                    - ""
+
+    hello_rejections:
+      fields:
+        id: id!
+        user_id: id!
+        message: text!
+        created_at: timestamp!
+        reason: text
+
+    hello_message_audit:
+      fields:
+        id: id!
+        message_id: id!
+        user_id: id!
+        message: text!
+        created_at: timestamp!
+
+  # ---------------------------------------------------------------------------
+  # SIGNALS
+  # ---------------------------------------------------------------------------
+  # Domain events. Signals are the source of truth for invalidation —
+  # queries subscribe to them via refresh_on_signals rather than manually
+  # invalidating after mutations (contrast with TanStack's invalidateQueries).
+  # Signals also drive flows for stateful orchestration and side-effects.
+  signals:
+    custom:
+      message.created:
+        description: "A message was successfully posted to the guestbook"
+        version: 3
+        payload:
+          id: id!
+          user_id: id!
+          message: text!
+          created_at: timestamp!
+          channel: text!
+          message_length: int!
+        migrate:
+          - from_version: 1
+            payload:
+              id:
+                $expr:
+                  var: payload.id
+              user_id:
+                $expr:
+                  var: payload.user_id
+              message:
+                $expr:
+                  var: payload.message
+              created_at:
+                $expr:
+                  var: payload.created_at
+              channel: direct
+          - from_version: 2
+            payload:
+              id:
+                $expr:
+                  var: payload.id
+              user_id:
+                $expr:
+                  var: payload.user_id
+              message:
+                $expr:
+                  var: payload.message
+              created_at:
+                $expr:
+                  var: payload.created_at
+              channel:
+                $expr:
+                  var: payload.channel
+              message_length: 0
+
+      message.rejected:
+        description: "A message was rejected by moderation"
+        payload:
+          id: id!
+          user_id: id!
+          message: text!
+          created_at: timestamp!
+          reason: text!
+        guards:
+          on_fail: emit_violation
+          structural:
+            - description: "Rejected messages must include a reason."
+              rule:
+                "!==":
+                  - var: reason
+                  - ""
+          semantic:
+            - description: "Rejection reason should explain what to fix."
+              rule: "The rejection reason should be actionable and specific."
+              confidence: low
+
+      message.deleted:
+        description: "A message was removed from the guestbook"
+        payload:
+          id: id!
+          deleted_at: timestamp!
+
+  # ---------------------------------------------------------------------------
+  # CAPABILITIES
+  # ---------------------------------------------------------------------------
+  # Reusable, testable, pure domain logic.
+  # These are authored in app space and executed locally by the domain runtime.
+  capabilities:
+    message.is_allowed:
+      in:
+        message: text!
+      out:
+        allowed: bool!
+        reason: text
+      do:
+        - expr:
+            trim:
+              - var: [input.message, ""]
+          as: normalized
+        - expr:
+            and:
+              - "!==":
+                  - var: normalized
+                  - ""
+              - "!contains":
+                  - to_lower:
+                      var: normalized
+                  - spam
+          as: allowed
+      return:
+        allowed:
+          $expr:
+            var: allowed
+        reason:
+          $expr:
+            if:
+              - var: allowed
+              - null
+              - "Blocked by moderation policy (empty or contains spam)"
+
+  # ---------------------------------------------------------------------------
+  # ACTIONS
+  # ---------------------------------------------------------------------------
+  # Atomic domain commands. Actions own the full side-effect story:
+  # capability calls, signal emissions, and session cleanup.
+  #
+  # failure.* declares action-level error semantics explicitly so behavior
+  # is visible without reading runtime internals.
+  #
+  # effects is a contract, not documentation: compile/runtime must reject
+  # observed side effects that are not declared.
+  #
+  # Call steps may declare lightweight async controls (timeout/retry/error policy)
+  # for single-step external work without forcing a flow.
+  #
+  # Internal actions (no corresponding mutation) are only callable by flows
+  # and other actions. Their absence from mutations is the signal — no flags needed.
+  #
+  # Actions call session.write explicitly rather than mutating session directly.
+  # This keeps the capability boundary real and enforceable, and gives a
+  # consistent place to hook rate limiting, conflict resolution, etc. later.
+  actions:
+    # Internal — called by flows only
+    guestbook.log_rejection:
+      description: "Record rejected messages for moderation review"
+      effects: [write]
+      failure:
+        on_step_error: abort
+        on_signal_error: log_and_continue
+        rollback:
+          mode: none
+      in:
+        id: id!
+        user_id: id!
+        message: text!
+        reason: text!
+        created_at: timestamp!
+      do:
+        - call: collections.write
+          timeout_ms: 1500
+          on_timeout: fail
+          on_error: fail
+          retry:
+            max_attempts: 2
+            backoff_ms: 100
+          with:
+            patch:
+              op: upsert
+              collection: hello_rejections
+              id:
+                $expr:
+                  var: input.id
+              value:
+                id:
+                  $expr:
+                    var: input.id
+                user_id:
+                  $expr:
+                    var: input.user_id
+                message:
+                  $expr:
+                    var: input.message
+                created_at:
+                  $expr:
+                    var: input.created_at
+                reason:
+                  $expr:
+                    var: input.reason
+      return:
+        ok: true
+
+    guestbook.notify_rejection:
+      description: "Placeholder side-effect target (email/slack/etc)"
+      failure:
+        on_step_error: abort
+        on_signal_error: log_and_continue
+        rollback:
+          mode: none
+      in:
+        id: id!
+        reason: text!
+      return:
+        ok: true
+
+    # Exposed via mutations below
+    guestbook.submit:
+      description: "Submit a new message to the guestbook"
+      effects: [emit, session, write]
+      guards:
+        on_fail: abort
+        pre:
+          structural:
+            - description: "submit_message requires non-empty input.message."
+              rule:
+                "!==":
+                  - var: input.message
+                  - ""
+          semantic: []
+        post:
+          structural:
+            - description: "Moderation result must always produce allowed bool."
+              rule:
+                "!=":
+                  - var: moderation.allowed
+                  - null
+          semantic: []
+      session_outcome_intent:
+        on_success: clear
+        on_rejection: preserve
+        on_error: preserve
+        reason: "Preserve draft.message on rejection so the author can edit and retry."
+      failure:
+        on_step_error: abort
+        on_signal_error: log_and_continue
+        rollback:
+          mode: none
+      in:
+        message: text!
+      do:
+        - call: ids.generate
+          timeout_ms: 1500
+          on_timeout: fail
+          on_error: fail
+          retry:
+            max_attempts: 2
+            backoff_ms: 100
+          with:
+            prefix:
+              $expr:
+                cat:
+                  - "msg_"
+                  - var: principal.subject
+            count: 1
+          as: generated_ids
+        - call: message.is_allowed
+          timeout_ms: 500
+          on_timeout: fail
+          on_error: fail
+          with:
+            message:
+              $expr:
+                var: input.message
+          as: moderation
+
+        - if:
+            var: moderation.allowed
+          then:
+            - call: collections.write
+              timeout_ms: 1500
+              on_timeout: fail
+              on_error: fail
+              retry:
+                max_attempts: 2
+                backoff_ms: 100
+              with:
+                atomicity:
+                  mode: required
+                  unit_id: submit_message
+                patches:
+                  - op: upsert
+                    collection: hello_messages
+                    id:
+                      $expr:
+                        var: generated_ids.ids.0
+                    value:
+                      id:
+                        $expr:
+                          var: generated_ids.ids.0
+                      user_id:
+                        $expr:
+                          var: principal.subject
+                      message:
+                        $expr:
+                          var: input.message
+                      created_at:
+                        $expr:
+                          var: ctx.now
+                      moderation:
+                        allowed:
+                          $expr:
+                            var: moderation.allowed
+                        reason:
+                          $expr:
+                            var: moderation.reason
+                  - op: upsert
+                    collection: hello_message_audit
+                    id:
+                      $expr:
+                        var: generated_ids.ids.0
+                    value:
+                      id:
+                        $expr:
+                          var: generated_ids.ids.0
+                      message_id:
+                        $expr:
+                          var: generated_ids.ids.0
+                      user_id:
+                        $expr:
+                          var: principal.subject
+                      message:
+                        $expr:
+                          var: input.message
+                      created_at:
+                        $expr:
+                          var: ctx.now
+                  - op: update
+                    collection: hello_message_audit
+                    id:
+                      $expr:
+                        var: generated_ids.ids.0
+                    value:
+                      id:
+                        $expr:
+                          var: generated_ids.ids.0
+                      message_id:
+                        $expr:
+                          var: generated_ids.ids.0
+                      user_id:
+                        $expr:
+                          var: principal.subject
+                      message:
+                        $expr:
+                          var: input.message
+                      created_at:
+                        $expr:
+                          var: ctx.now
+            - call: session.write
+              timeout_ms: 500
+              on_timeout: fail
+              on_error: fail
+              with:
+                patch:
+                  op: set
+                  path: draft.message
+                  value: ""
+      emits:
+        - signal: message.created
+          when:
+            var: moderation.allowed
+          payload:
+            id:
+              $expr:
+                var: generated_ids.ids.0
+            user_id:
+              $expr:
+                var: principal.subject
+            message:
+              $expr:
+                var: input.message
+            created_at:
+              $expr:
+                var: ctx.now
+            channel: web
+            message_length: 0
+        - signal: message.rejected
+          when:
+            "!":
+              - var: moderation.allowed
+          payload:
+            id:
+              $expr:
+                var: generated_ids.ids.0
+            user_id:
+              $expr:
+                var: principal.subject
+            message:
+              $expr:
+                var: input.message
+            created_at:
+              $expr:
+                var: ctx.now
+            reason:
+              $expr:
+                var: moderation.reason
+      return:
+        ok:
+          $expr:
+            var: moderation.allowed
+        moderation:
+          $expr:
+            var: moderation
+
+    guestbook.delete:
+      description: "Delete a message from the guestbook"
+      effects: [emit, write]
+      failure:
+        on_step_error: abort
+        on_signal_error: log_and_continue
+        rollback:
+          mode: none
+      in:
+        id: id!
+      do:
+        - call: collections.write
+          timeout_ms: 1500
+          on_timeout: fail
+          on_error: fail
+          retry:
+            max_attempts: 2
+            backoff_ms: 100
+          with:
+            patch:
+              op: delete
+              collection: hello_messages
+              id:
+                $expr:
+                  var: input.id
+      emits:
+        - signal: message.deleted
+          payload:
+            id:
+              $expr:
+                var: input.id
+            deleted_at:
+              $expr:
+                var: ctx.now
+      return:
+        ok: true
+
+  # ---------------------------------------------------------------------------
+  # FLOWS
+  # ---------------------------------------------------------------------------
+  # Stateful orchestration and side-effect management.
+  # Flows react to signals and coordinate sequences of action calls.
+  # They are the right place for multi-step processes, retries, and
+  # anything that needs to outlive a single request.
+  flows:
+    rejection_followup:
+      description: "Stateful orchestration for rejected messages"
+      on: [message.rejected]
+      correlate_by:
+        var: payload.user_id
+      state:
+        last_rejection_id: id
+      lifecycle:
+        state_ttl_seconds: 3600
+        max_idempotency_keys: 500
+        max_runs_per_correlation: 200
+      idempotency:
+        key:
+          var: payload.id
+        policy: dedupe
+      steps:
+        - run: guestbook.log_rejection
+          with:
+            id:
+              $expr:
+                var: payload.id
+            user_id:
+              $expr:
+                var: payload.user_id
+            message:
+              $expr:
+                var: payload.message
+            reason:
+              $expr:
+                var: payload.reason
+            created_at:
+              $expr:
+                var: payload.created_at
+        - run: guestbook.notify_rejection
+          with:
+            id:
+              $expr:
+                var: payload.id
+            reason:
+              $expr:
+                var: payload.reason
+          retry:
+            max_attempts: 3
+            backoff_ms: 500
+
+  # ---------------------------------------------------------------------------
+  # PROJECTIONS
+  # ---------------------------------------------------------------------------
+  # Read-optimized, derived representations of collections.
+  # Projections are the read side of the domain — they never mutate anything.
+  #
+  # Each strategy compiles to a well-defined IR subgraph (scan, filter, join,
+  # aggregate, sort, page nodes). Authors never write IR directly — strategies
+  # are the declarative surface. Adding a new strategy means writing a new
+  # compiler that emits valid IR nodes; the runtime and providers don't change.
+  #
+  # Four tiers of increasing power:
+  #   Tier 1 — from_collection: scan → filter → sort → page
+  #   Tier 2 — join:            scan + scan → join → project → sort → page
+  #   Tier 3 — aggregate:       scan → join → aggregate → sort → page
+  #   Tier 4 — timeline:        history_scan → order → group → accumulate → persist → page
+  #
+  # Projections are not public by default. They are exposed externally
+  # only via a named query in the queries section below.
+  #
+  # For complex reporting that doesn't fit any strategy, a `computed` strategy
+  # can drop to a raw provider query — the leaky abstraction is acknowledged
+  # and contained within the projection definition rather than hidden.
+  projections:
+    # Tier 1: from_collection
+    # Compiles to: scan → filter → sort → page
+    latest_messages:
+      strategy: from_collection
+      collection: hello_messages
+      where:
+        "==":
+          - var: row.user_id
+          - var: principal.subject
+      search:
+        arg: q
+        fields: [message]
+      sort:
+        by_arg: sort_by
+        order_arg: sort_order
+        allowed: [created_at, message]
+        default_by: created_at
+        default_order: desc
+      pagination:
+        mode: page
+        page_arg: page
+        page_size_arg: page_size
+        default_page_size: 10
+        max_page_size: 50
+
+    # Tier 2: join
+    # Compiles to: scan + scan → join → project → sort → page
+    # Enriches messages with author profile fields from the users collection.
+    messages_with_authors:
+      strategy: join
+      primary:
+        collection: hello_messages
+        as: m
+      where:
+        "==":
+          - var: row.user_id
+          - var: principal.subject
+      join:
+        - collection: users
+          as: u
+          type: left
+          on:
+            "==":
+              - var: m.user_id
+              - var: u.id
+          fields:
+            - u.name as author_name
+            - u.avatar_url as author_avatar_url
+      fields:
+        - m.id
+        - m.message
+        - m.created_at
+        - m.user_id
+        - author_name
+        - author_avatar_url
+      search:
+        arg: q
+        fields: [m.message, author_name]
+      sort:
+        by_arg: sort_by
+        order_arg: sort_order
+        allowed: [m.created_at, author_name]
+        default_by: m.created_at
+        default_order: desc
+      pagination:
+        mode: page
+        page_arg: page
+        page_size_arg: page_size
+        default_page_size: 10
+        max_page_size: 50
+
+    # Tier 3: aggregate
+    # Compiles to: scan → join → aggregate → sort → page
+    # Per-user activity summary — message count and last/first post time.
+    # The join block is reused from tier 2, so joining before grouping
+    # is natural and consistent rather than a special case.
+    user_activity:
+      strategy: aggregate
+      primary:
+        collection: hello_messages
+        as: m
+      join:
+        - collection: users
+          as: u
+          type: left
+          on:
+            "==":
+              - var: m.user_id
+              - var: u.id
+          fields:
+            - u.name as author_name
+      group_by: [m.user_id, author_name]
+      metrics:
+        - id: message_count
+          op: count
+        - id: last_posted_at
+          op: max
+          field: m.created_at
+        - id: first_posted_at
+          op: min
+          field: m.created_at
+      sort:
+        default_by: message_count
+        default_order: desc
+      pagination:
+        mode: page
+        page_arg: page
+        page_size_arg: page_size
+        default_page_size: 20
+        max_page_size: 100
+
+    # Tier 4: timeline
+    # Compiles to: history_scan → order → group → accumulate → persist → page
+    # Projection state is rebuilt from signal history and returned with lifecycle
+    # meta (rebuild_status/progress/history_complete).
+    user_message_state_timeline:
+      strategy: timeline
+      signals: [message.created, message.rejected, message.deleted]
+      group_by: [payload.user_id]
+      order_by:
+        field: emitted_at
+        direction: asc
+      start:
+        message_count: 0
+        rejection_count: 0
+        last_message: null
+        last_channel: null
+        last_event_at: null
+      when:
+        message.created:
+          message_count:
+            $expr:
+              "+":
+                - var: acc.message_count
+                - 1
+          last_message:
+            $expr:
+              var: payload.message
+          last_channel:
+            $expr:
+              var: payload.channel
+          last_event_at:
+            $expr:
+              var: signal.emitted_at
+        message.rejected:
+          rejection_count:
+            $expr:
+              "+":
+                - var: acc.rejection_count
+                - 1
+          last_event_at:
+            $expr:
+              var: signal.emitted_at
+        message.deleted:
+          message_count:
+            $expr:
+              "-":
+                - var: acc.message_count
+                - 1
+          last_event_at:
+            $expr:
+              var: signal.emitted_at
+      rebuild:
+        mode: full
+      persist:
+        retention: 365d
+      pagination:
+        mode: page
+        page_arg: page
+        page_size_arg: page_size
+        default_page_size: 20
+        max_page_size: 100
+
+    # Timeline event-log mode (`group_by: null` + `when: null`)
+    # keeps a raw, paged, queryable stream of historical signal records.
+    message_event_log:
+      strategy: timeline
+      signals: [message.created, message.rejected, message.deleted]
+      group_by: []
+      order_by:
+        field: emitted_at
+        direction: desc
+      start: null
+      when: null
+      rebuild:
+        mode: full
+      persist:
+        retention: 365d
+      pagination:
+        mode: page
+        page_arg: page
+        page_size_arg: page_size
+        default_page_size: 25
+        max_page_size: 100
+
+# =============================================================================
+# SESSION
+# =============================================================================
+# Ephemeral user workspace state. A first-class peer of domain — not nested
+# under it — because session is owned by the user, not the business.
+#
+# Session is structurally similar to a collection (typed fields, read/write,
+# familiar syntax) but with fundamentally different lifecycle semantics:
+#   - No signals emitted on writes
+#   - No flows react to it
+#   - Not queryable across users
+#   - Lifecycle tied to the user's current workspace, not a business event
+#
+# session.read and session.write are explicit capabilities, mirroring
+# projections.read / collections.write. This makes the boundary real and enforceable.
+# statePath on input nodes is sugar over session.write — the runtime
+# resolves it, but the capability is what's actually called.
+#
+# The backing store and scope are provider concerns configured at deploy/runtime
+# (not in app source):
+#   scope: tab    — truly ephemeral, cleared on tab close
+#   scope: user   — survives across tabs, tied to identity
+# Swapping providers (memory → redis) requires no changes to app definition.
+#
+# Authenticated identity is provided by the runtime principal context
+# (`principal.subject`, `principal.roles`, claims). It is intentionally
+# distinct from session state.
+session:
+  fields:
+    draft:
+      object:
+        message: text
+    search_query: text
+    sort_by: text
+    sort_order: text
+    page: int
+    page_size: int
+    active_tab: text
+  defaults:
+    draft:
+      message: ""
+    search_query: ""
+    sort_by: created_at
+    sort_order: desc
+    page: 1
+    page_size: 10
+    active_tab: messages
+
+# =============================================================================
+# VIEWS
+# =============================================================================
+# The logical render graph. Runtime-agnostic — this is not a web concept.
+# A CLI runtime renders the same nodes via Ink. A voice runtime could walk
+# the same tree. The polymorphism lives in wiring.surfaces where each
+# runtime declares which providers it uses to render each node type.
+#
+# Two sub-concepts:
+#   nodes   — reusable, composable UI building blocks. Concrete provider
+#             implementations are selected at deploy time via marketplace index.
+#   screens — named compositions of nodes with data bindings. Screens
+#             are the render targets for routes.
+#
+# Screens reference queries by name for data binding. Signal-driven
+# invalidation (refresh_on_signals) is the primary cache invalidation
+# mechanism — more principled than manual invalidation because the domain
+# signals are the source of truth, not the call site.
+views:
+  nodes:
+    - id: app_shell
+      type: provider-layouts.shell.app
+      props:
+        contentPadding: md
+        maxContentWidth: 960
+        collapsible: false
+      children:
+        - hero_title
+        - hero_subtitle
+        - tab_bar
+        - tab_panel_messages
+        - tab_panel_activity
+        - tab_panel_timeline
+
+    - id: hero_title
+      type: text.heading
+      props:
+        text: "Hello from Gooi"
+        level: 1
+
+    - id: hero_subtitle
+      type: text.body
+      props:
+        text: "Same domain logic, multiple trigger surfaces"
+
+    - id: tab_bar
+      type: navigation.tabs
+      props:
+        value:
+          $expr:
+            var: session.active_tab
+        statePath: active_tab
+        tabs:
+          - id: messages
+            label: "Messages"
+          - id: activity
+            label: "Activity"
+          - id: timeline
+            label: "Timeline"
+
+    - id: tab_panel_messages
+      type: layout.panel
+      props:
+        visible:
+          $expr:
+            "==":
+              - var: session.active_tab
+              - messages
+      children:
+        - message_input
+        - send_button
+        - messages_heading
+        - message_count
+        - messages_table
+        - delete_hint
+
+    - id: message_input
+      type: field.input.text
+      props:
+        label: "Your Message"
+        placeholder: "Say hello to the world..."
+        value:
+          $expr:
+            var: session.draft.message
+        statePath: draft.message
+
+    - id: send_button
+      type: action.button
+      props:
+        text: "Send Message"
+        interactions:
+          submit:
+            trigger: onPress
+            dispatch:
+              entrypointKind: mutation
+              entrypointId: submit_message
+              input:
+                message:
+                  $expr:
+                    var: session.draft.message
+            optimistic:
+              pendingText: "Sending..."
+
+    - id: messages_heading
+      type: text.heading
+      props:
+        text: "Recent Messages"
+        level: 2
+
+    - id: message_count
+      type: text.body
+      props:
+        text:
+          $expr:
+            cat:
+              - var: data.messages.length
+              - " messages"
+
+    - id: messages_table
+      type: collections.table
+      props:
+        rows:
+          $expr:
+            var: data.messages
+        columns: [author_avatar_url, author_name, message, created_at]
+        emptyText: "No messages yet. Be the first to say hello!"
+        interactions:
+          delete_row:
+            trigger: onRowAction
+            label: "Delete"
+            dispatch:
+              entrypointKind: mutation
+              entrypointId: delete_message
+              input:
+                id:
+                  $from: row.id
+            optimistic:
+              pendingText: "Deleting..."
+
+    - id: delete_hint
+      type: text.body
+      props:
+        text: "Tip: Use Delete in each row to remove a message."
+
+    - id: tab_panel_activity
+      type: layout.panel
+      props:
+        visible:
+          $expr:
+            "==":
+              - var: session.active_tab
+              - activity
+      children:
+        - activity_heading
+        - activity_table
+
+    - id: tab_panel_timeline
+      type: layout.panel
+      props:
+        visible:
+          $expr:
+            "==":
+              - var: session.active_tab
+              - timeline
+      children:
+        - timeline_heading
+        - timeline_state_table
+        - timeline_event_log_heading
+        - timeline_event_log_table
+
+    - id: activity_heading
+      type: text.heading
+      props:
+        text: "User Activity"
+        level: 2
+
+    - id: activity_table
+      type: collections.table
+      props:
+        rows:
+          $expr:
+            var: data.activity
+        columns: [author_name, message_count, last_posted_at, first_posted_at]
+        emptyText: "No activity yet."
+
+    - id: timeline_heading
+      type: text.heading
+      props:
+        text: "Timeline State (Event-Sourced)"
+        level: 2
+
+    - id: timeline_state_table
+      type: collections.table
+      props:
+        rows:
+          $expr:
+            var: data.user_message_state
+        columns:
+          [
+            user_id,
+            message_count,
+            rejection_count,
+            last_message,
+            last_channel,
+            last_event_at,
+          ]
+        emptyText: "No timeline state yet."
+
+    - id: timeline_event_log_heading
+      type: text.heading
+      props:
+        text: "Event Log (Timeline Raw Stream)"
+        level: 2
+
+    - id: timeline_event_log_table
+      type: collections.table
+      props:
+        rows:
+          $expr:
+            var: data.message_event_log
+        columns: [signal_name, event_key, message, reason, emitted_at]
+        emptyText: "No events recorded yet."
+
+  screens:
+    - id: home
+      data:
+        messages:
+          query: list_messages_with_authors
+          refresh_on_signals: [message.created, message.deleted]
+          args:
+            q:
+              $expr:
+                var: session.search_query
+            sort_by:
+              $expr:
+                var: session.sort_by
+            sort_order:
+              $expr:
+                var: session.sort_order
+            page:
+              $expr:
+                var: session.page
+            page_size:
+              $expr:
+                var: session.page_size
+        activity:
+          query: get_user_activity
+          refresh_on_signals: [message.created]
+          args:
+            page:
+              $expr:
+                var: session.page
+            page_size:
+              $expr:
+                var: session.page_size
+        user_message_state:
+          query: get_user_message_state
+          refresh_on_signals: [message.created, message.rejected]
+          args:
+            as_of: null
+            page: 1
+            page_size: 20
+        message_event_log:
+          query: list_message_event_log
+          refresh_on_signals: [message.created, message.rejected]
+          args:
+            as_of: null
+            page: 1
+            page_size: 25
+      root_nodes:
+        - app_shell
+
+# =============================================================================
+# QUERIES
+# =============================================================================
+# Public read interface. Typed entrypoints into domain.projections.
+# A projection is the implementation (how data is shaped and fetched).
+# A query is the public contract (the typed, named, externally-callable surface).
+# They are separate because a projection can exist without being exposed,
+# and the same projection could theoretically be exposed under multiple
+# query contracts with different input shapes.
+#
+# Analogous to TanStack Query's query definitions — cacheable, no side effects.
+# The runtime uses the query's input shape for cache key construction.
+#
+# Access is declared inline — co-located with the entrypoint it protects.
+# Queries are called directly by surfaces (HTTP, CLI) without going through
+# a route, so access cannot live on routes alone.
+queries:
+  - id: list_messages
+    access:
+      roles: [authenticated]
+    where:
+      "==":
+        - var: row.user_id
+        - var: principal.subject
+    in:
+      q: text
+      sort_by: text
+      sort_order: text
+      page: int
+      page_size: int
+    defaults:
+      sort_by: created_at
+      sort_order: desc
+      page: 1
+      page_size: 10
+    returns:
+      projection: latest_messages
+
+  - id: list_messages_with_authors
+    access:
+      roles: [authenticated]
+    where:
+      "==":
+        - var: row.user_id
+        - var: principal.subject
+    in:
+      q: text
+      sort_by: text
+      sort_order: text
+      page: int
+      page_size: int
+    defaults:
+      sort_by: created_at
+      sort_order: desc
+      page: 1
+      page_size: 10
+    returns:
+      projection: messages_with_authors
+
+  - id: get_user_activity
+    access:
+      roles: [authenticated]
+    in:
+      page: int
+      page_size: int
+    defaults:
+      page: 1
+      page_size: 20
+    returns:
+      projection: user_activity
+
+  - id: get_user_message_state
+    access:
+      roles: [authenticated]
+    where:
+      "==":
+        - var: row.user_id
+        - var: principal.subject
+    in:
+      as_of: timestamp
+      page: int
+      page_size: int
+    defaults:
+      page: 1
+      page_size: 20
+    returns:
+      projection: user_message_state_timeline
+      as_of:
+        $expr:
+          var: input.as_of
+
+  - id: list_message_event_log
+    access:
+      roles: [authenticated]
+    where:
+      "==":
+        - var: row.user_id
+        - var: principal.subject
+    in:
+      as_of: timestamp
+      page: int
+      page_size: int
+    defaults:
+      page: 1
+      page_size: 25
+    returns:
+      projection: message_event_log
+      as_of:
+        $expr:
+          var: input.as_of
+
+# =============================================================================
+# MUTATIONS
+# =============================================================================
+# Public write interface. Typed entrypoints into domain.actions.
+# An action is the implementation (what happens, step by step).
+# A mutation is the public contract (the typed, named, externally-callable surface).
+# Internal actions (log_rejection, notify_rejection) have no corresponding
+# mutation — their absence is intentional and self-documenting.
+#
+# Analogous to TanStack Query's mutation definitions — cause side effects,
+# emit signals, drive invalidation downstream.
+#
+# Access is declared inline for the same reason as queries — mutations are
+# called directly by surfaces and must be self-describing.
+mutations:
+  - id: submit_message
+    access:
+      roles: [authenticated]
+    in:
+      message: text!
+    run:
+      actionId: guestbook.submit
+      input:
+        message:
+          $expr:
+            var: input.message
+
+  - id: delete_message
+    access:
+      roles: [admin]
+    in:
+      id: id!
+    run:
+      actionId: guestbook.delete
+      input:
+        id:
+          $expr:
+            var: input.id
+
+# =============================================================================
+# ROUTES
+# =============================================================================
+# Navigation interface. Typed entrypoints into views.screens.
+# A screen is the implementation (nodes, data bindings, layout).
+# A route is the public contract (the typed, named, navigable entrypoint).
+#
+# Routes are runtime-agnostic — a web runtime navigates to them,
+# a CLI runtime renders them in the terminal, etc.
+# How inputs arrive (URL params, CLI args) is a wiring concern, not declared here.
+#
+# Access is inline here too for consistency, even though routes are the
+# most visible entrypoint. All three entrypoint types follow the same pattern.
+routes:
+  - id: view_home
+    access:
+      roles: [authenticated]
+    in:
+      search_query: text
+      sort_by: text
+      sort_order: text
+      page: int
+      page_size: int
+    defaults:
+      sort_by: created_at
+      sort_order: desc
+      page: 1
+      page_size: 10
+    renders: home
+
+# =============================================================================
+# PERSONAS + SCENARIOS
+# =============================================================================
+personas:
+  guest:
+    description: "Authenticated user who submits normal messages."
+    traits:
+      tone: neutral
+    history: []
+    tags: [authenticated]
+  spammer:
+    description: "Authenticated user attempting spam content."
+    traits:
+      tone: aggressive
+    history: []
+    tags: [authenticated]
+
+scenarios:
+  happy_submit_smoke:
+    tags: [smoke, happy]
+    context:
+      persona: guest
+      principal:
+        subject: user_1
+    steps:
+      - trigger:
+          mutation: submit_message
+          input:
+            message: "hello from scenario"
+      - expect:
+          query: list_messages
+          guards:
+            structural:
+              - description: "happy path should produce at least one row"
+                rule:
+                  "!=":
+                    - var: rows.0.id
+                    - null
+            semantic:
+              - description: "Returned rows should be readable by a normal guest."
+                rule: "Rows should include a human-readable guestbook message."
+                confidence: low
+
+  rejection_submit_smoke:
+    tags: [smoke, rejection]
+    context:
+      persona: spammer
+      principal:
+        subject: user_1
+    steps:
+      - trigger:
+          mutation: submit_message
+          input:
+            message: "spam offer now"
+      - expect:
+          query: list_messages
+          guards:
+            structural:
+              - description: "rejection flow keeps previous accepted rows available"
+                rule:
+                  "!=":
+                    - var: rows.0.id
+                    - null
+            semantic: []
+
+  timeline_meta_and_as_of_smoke:
+    tags: [smoke, timeline, time_travel]
+    context:
+      persona: guest
+      principal:
+        subject: user_timeline
+    steps:
+      - trigger:
+          mutation: submit_message
+          input:
+            message: "timeline first event"
+        capture:
+          first_event_at:
+            var: ctx.now
+      - trigger:
+          mutation: submit_message
+          input:
+            message: "timeline second event"
+      - expect:
+          query: get_user_message_state
+          args:
+            as_of:
+              $expr:
+                var: captured.first_event_at
+            page: 1
+            page_size: 20
+          guards:
+            structural:
+              - description: "time travel should include only the first accepted message"
+                rule:
+                  "==":
+                    - var: rows.0.message_count
+                    - 1
+              - description: "timeline query should expose rebuild lifecycle status"
+                rule:
+                  "==":
+                    - var: result.output.meta.rebuild_status
+                    - complete
+              - description: "timeline query should expose history completeness"
+                rule:
+                  "==":
+                    - var: result.output.meta.history_complete
+                    - true
+            semantic: []
+
+# =============================================================================
+# WIRING
+# =============================================================================
+# The anti-corruption layer. Everything adapter-specific lives here.
+# The domain, session, views, queries, mutations, and routes above are
+# pure declarations — they never know which surface is calling them.
+#
+# wiring.surfaces maps each surface's native concepts (URL params, HTTP
+# methods, CLI flags) to the framework's runtime-agnostic entrypoints.
+# CLI command bindings use explicit command match objects (`path`, `when.flags`)
+# to avoid ambiguous shared-prefix template parsing.
+# Adding a new surface (websocket, gRPC, SMS) requires no changes above
+# this section.
+#
+# Provider and adapter bindings are NOT authored here.
+# They are resolved from marketplace listings into deployment artifacts
+# (deployment-binding-plan + deployment-lockfile), then enforced at runtime.
+# If a required capability has no valid local binding and no bridge route,
+# activation/invocation fails hard (no implicit fallback provider behavior).
+#
+# wiring.requirements declares optional vendor-neutral deploy constraints.
+# Concrete provider/adapter releases are selected from marketplace index at
+# deploy time into deployment-binding-plan + deployment-lockfile artifacts.
+wiring:
+  surfaces:
+    web:
+      routes:
+        view_home:
+          bind:
+            search_query: query.q
+            sort_by: query.sort_by
+            sort_order: query.sort_order
+            page: query.page
+            page_size: query.page_size
+      mutations:
+        submit_message:
+          bind:
+            message: body.message
+        delete_message:
+          bind:
+            id: body.id
+
+    http:
+      queries:
+        list_messages:
+          method: GET
+          path: /messages
+          bind:
+            q: query.q
+            sort_by: query.sort_by
+            sort_order: query.sort_order
+            page: query.page
+            page_size: query.page_size
+        list_messages_with_authors:
+          method: GET
+          path: /messages/enriched
+          bind:
+            q: query.q
+            sort_by: query.sort_by
+            sort_order: query.sort_order
+            page: query.page
+            page_size: query.page_size
+        get_user_activity:
+          method: GET
+          path: /users/activity
+          bind:
+            page: query.page
+            page_size: query.page_size
+        get_user_message_state:
+          method: GET
+          path: /users/message-state
+          bind:
+            as_of: query.as_of
+            page: query.page
+            page_size: query.page_size
+        list_message_event_log:
+          method: GET
+          path: /messages/events
+          bind:
+            as_of: query.as_of
+            page: query.page
+            page_size: query.page_size
+      mutations:
+        submit_message:
+          method: POST
+          path: /messages
+          bind:
+            message: body.message
+        delete_message:
+          method: DELETE
+          path: /messages/:id
+          bind:
+            id: path.id
+
+    cli:
+      queries:
+        list_messages:
+          command:
+            path: messages list
+          bind:
+            q: args.query
+            sort_by: flags.sort-by
+            sort_order: flags.sort-order
+            page: flags.page
+            page_size: flags.page-size
+        list_messages_with_authors:
+          command:
+            path: messages list
+            when:
+              flags:
+                enriched: true
+          bind:
+            q: args.query
+            sort_by: flags.sort-by
+            sort_order: flags.sort-order
+            page: flags.page
+            page_size: flags.page-size
+        get_user_activity:
+          command:
+            path: users activity
+          bind:
+            page: flags.page
+            page_size: flags.page-size
+        get_user_message_state:
+          command:
+            path: users message-state
+          bind:
+            as_of: flags.as-of
+            page: flags.page
+            page_size: flags.page-size
+        list_message_event_log:
+          command:
+            path: messages events
+          bind:
+            as_of: flags.as-of
+            page: flags.page
+            page_size: flags.page-size
+      mutations:
+        submit_message:
+          command:
+            path: messages send
+          bind:
+            message: args.message
+        delete_message:
+          command:
+            path: messages delete
+          bind:
+            id: args.id
+
+# =============================================================================
+# ACCESS
+# =============================================================================
+# Role definitions only. Per-entrypoint access is declared inline on each
+# query, mutation, and route — not here. This section is the canonical
+# source of role semantics (including derived roles) the runtime enforces.
+# default_policy provides deny-by-default protection when an entrypoint omits
+# an explicit access clause.
+#
+# Internal actions and projections have no access surface —
+# they are unreachable externally by definition, not by permission.
+access:
+  default_policy: deny
+  roles:
+    anonymous:
+      description: "Unauthenticated caller identity."
+    authenticated:
+      description: "Derived when auth context has a valid subject."
+      derive:
+        auth_is_authenticated: []
+    admin:
+      description: "Derived from auth claims (e.g. upstream IdP role mapping)."
+      extends: [authenticated]
+      derive:
+        auth_claim_equals: [is_admin, true]

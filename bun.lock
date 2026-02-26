@@ -83,6 +83,16 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/product-authoring-lsp": {
+      "name": "@gooi/product-authoring-lsp",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/authoring-contracts": "workspace:*",
+        "@gooi/capability-index": "workspace:*",
+        "@gooi/symbol-graph": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/provider-runtime": {
       "name": "@gooi/provider-runtime",
       "version": "0.1.0",
@@ -626,6 +636,8 @@
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:packages/entrypoint-runtime"],
+
+    "@gooi/product-authoring-lsp": ["@gooi/product-authoring-lsp@workspace:packages/product-authoring-lsp"],
 
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:packages/provider-runtime"],
 

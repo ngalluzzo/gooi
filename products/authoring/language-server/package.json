@@ -1,5 +1,5 @@
 {
-	"name": "@gooi/product-authoring-lsp",
+	"name": "@gooi/language-server",
 	"version": "0.1.0",
 	"type": "module",
 	"main": "./dist/features/completion/list-authoring-completion-items.js",

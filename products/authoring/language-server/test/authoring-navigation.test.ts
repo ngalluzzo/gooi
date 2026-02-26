@@ -7,7 +7,7 @@ import { listAuthoringDocumentSymbols } from "../src/features/navigation/list-au
 import { searchAuthoringWorkspaceSymbols } from "../src/features/navigation/search-authoring-workspace-symbols";
 import { authoringReadFixture } from "./fixtures/authoring-read.fixture";
 
-describe("product-authoring-lsp navigation read path", () => {
+describe("lsp navigation read path", () => {
 	test("resolves hover for capability symbol under cursor", () => {
 		const result = getAuthoringHover({
 			context: authoringReadFixture,

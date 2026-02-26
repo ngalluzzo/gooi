@@ -31,5 +31,5 @@
 	"excludeInternal": true,
 	"readme": "./README.md",
 	"plugin": ["typedoc-plugin-markdown"],
-	"out": "../../apps/docs/docs/api/product-authoring-lsp"
+	"out": "../../apps/docs/docs/api/lsp"
 }

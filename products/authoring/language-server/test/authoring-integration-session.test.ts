@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { createAuthoringSession } from "../src/features/session/create-authoring-session";
 import { authoringReadFixture } from "./fixtures/authoring-read.fixture";
 
-describe("product-authoring-lsp session integration", () => {
+describe("lsp session integration", () => {
 	test("runs didChange -> diagnostics -> completion loop", () => {
 		const session = createAuthoringSession({
 			context: authoringReadFixture,

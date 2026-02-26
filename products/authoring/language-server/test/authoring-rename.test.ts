@@ -4,7 +4,7 @@ import { applyAuthoringRename } from "../src/features/rename/apply-authoring-ren
 import { prepareAuthoringRename } from "../src/features/rename/prepare-authoring-rename";
 import { authoringActionAndRenameFixture } from "./fixtures/authoring-action-and-rename.fixture";
 
-describe("product-authoring-lsp rename flows", () => {
+describe("lsp rename flows", () => {
 	test("prepares rename from expression variable cursor by resolving declaration", () => {
 		const result = prepareAuthoringRename({
 			context: authoringActionAndRenameFixture,

@@ -29,7 +29,7 @@ const collectSamples = (fn: () => void): readonly number[] => {
 	return samples;
 };
 
-describe("product-authoring-lsp latency thresholds", () => {
+describe("lsp latency thresholds", () => {
 	test("keeps completion p95 below 50ms", () => {
 		const p95 = percentile95(
 			collectSamples(() => {

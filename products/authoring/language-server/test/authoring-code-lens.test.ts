@@ -4,7 +4,7 @@ import { listAuthoringCodeLenses } from "../src/features/actions/list-authoring-
 import { resolveAuthoringCodeLens } from "../src/features/actions/resolve-authoring-code-lens";
 import { authoringActionAndRenameFixture } from "./fixtures/authoring-action-and-rename.fixture";
 
-describe("product-authoring-lsp code lens actions", () => {
+describe("lsp code lens actions", () => {
 	test("lists deterministic code lenses for default phase-4 actions", () => {
 		const result = listAuthoringCodeLenses({
 			context: authoringActionAndRenameFixture,

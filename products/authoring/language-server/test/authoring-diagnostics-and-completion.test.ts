@@ -8,7 +8,7 @@ import { publishAuthoringDiagnostics } from "../src/features/diagnostics/publish
 import { authoringReadFixture } from "./fixtures/authoring-read.fixture";
 import completionDoGolden from "./fixtures/completion-do.golden.json";
 
-describe("product-authoring-lsp completion and diagnostics", () => {
+describe("lsp completion and diagnostics", () => {
 	test("lists deterministic capability completions in do blocks", () => {
 		const result = listAuthoringCompletionItems({
 			context: authoringReadFixture,

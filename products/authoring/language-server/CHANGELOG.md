@@ -1,4 +1,4 @@
-# @gooi/product-authoring-lsp
+# @gooi/language-server
 
 ## 0.1.0
 

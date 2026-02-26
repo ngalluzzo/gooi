@@ -1,4 +1,4 @@
-# @gooi/product-authoring-lsp
+# @gooi/language-server
 
 [![CI](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml)
 [![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
@@ -8,7 +8,7 @@ Snapshot-driven handlers for RFC-0003 authoring intelligence read and action pat
 
 ## Overview
 
-`@gooi/product-authoring-lsp` implements product authoring LSP handlers for:
+`@gooi/language-server` implements product authoring LSP handlers for:
 completion, hover, diagnostics, symbol navigation, code lenses, and rename-safe edits.
 
 The package is deterministic and artifact-driven. It consumes:
@@ -33,13 +33,13 @@ The package is deterministic and artifact-driven. It consumes:
 ## Installation
 
 ```bash
-bun add @gooi/product-authoring-lsp
+bun add @gooi/language-server
 ```
 
 ## Quick Start
 
 ```ts
-import { listAuthoringCompletionItems } from "@gooi/product-authoring-lsp";
+import { listAuthoringCompletionItems } from "@gooi/language-server";
 
 const result = listAuthoringCompletionItems({
   context,

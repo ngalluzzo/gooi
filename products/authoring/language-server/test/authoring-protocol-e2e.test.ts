@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { createAuthoringProtocolServer } from "../src/features/protocol/create-authoring-protocol-server";
 import { authoringActionAndRenameFixture } from "./fixtures/authoring-action-and-rename.fixture";
 
-describe("product-authoring-lsp protocol e2e", () => {
+describe("lsp protocol e2e", () => {
 	test("routes completion, code lens, and rename over protocol messages", () => {
 		const server = createAuthoringProtocolServer({
 			context: authoringActionAndRenameFixture,

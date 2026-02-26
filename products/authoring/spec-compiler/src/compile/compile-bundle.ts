@@ -11,6 +11,10 @@ import {
 	type CompiledRoleDeriveRule,
 	type CompileEntrypointBundleResult,
 } from "./compile.contracts";
+import {
+	compileArtifactManifest,
+	compileBindingRequirementsArtifact,
+} from "./compile-binding-requirements-artifact";
 import { compileBindings } from "./compile-bindings";
 import { compileEntrypoints } from "./compile-entrypoints";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
@@ -159,6 +163,10 @@ export const compileEntrypointBundle = (
 
 	const artifactVersion = artifactVersionSchema.value;
 	const sourceSpecHash = sha256(stableStringify(spec));
+	const bindingRequirementsArtifact = compileBindingRequirementsArtifact(
+		reachabilityOutput.requirements,
+	);
+	const artifactManifest = compileArtifactManifest(bindingRequirementsArtifact);
 	const partialBundle: Omit<CompiledEntrypointBundle, "artifactHash"> = {
 		artifactVersion,
 		compilerVersion: input.compilerVersion,
@@ -166,6 +174,8 @@ export const compileEntrypointBundle = (
 		entrypoints: entrypointOutput.entrypoints,
 		bindings: bindingOutput.bindings,
 		reachabilityRequirements: reachabilityOutput.requirements,
+		bindingRequirementsArtifact,
+		artifactManifest,
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan: compileAccessPlan(spec),
 		schemaArtifacts: entrypointOutput.schemaArtifacts,

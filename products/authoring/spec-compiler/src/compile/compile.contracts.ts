@@ -104,6 +104,89 @@ export interface CompiledReachabilityRequirement {
 }
 
 /**
+ * Version identifier for compiled binding requirements artifacts.
+ */
+export const compiledBindingRequirementsArtifactVersionSchema =
+	z.literal("1.0.0");
+
+/**
+ * Version identifier of the compiled binding requirements artifact.
+ */
+export type CompiledBindingRequirementsArtifactVersion = z.infer<
+	typeof compiledBindingRequirementsArtifactVersionSchema
+>;
+
+/**
+ * Version identifier for compiled artifact manifest outputs.
+ */
+export const compiledArtifactManifestVersionSchema = z.literal("2.0.0");
+
+/**
+ * Version identifier of the compiled artifact manifest.
+ */
+export type CompiledArtifactManifestVersion = z.infer<
+	typeof compiledArtifactManifestVersionSchema
+>;
+
+/**
+ * Compatibility metadata for deployment resolver/runtime consumers.
+ */
+export interface CompiledBindingRequirementsCompatibility {
+	/** Resolver input contract this artifact satisfies. */
+	readonly resolverInputContract: "CapabilityReachabilityRequirement@1.0.0";
+	/** Runtime resolution contract this artifact targets. */
+	readonly runtimeResolutionContract: "CapabilityBindingResolution@1.0.0";
+	/** Reachability modes guaranteed by this artifact. */
+	readonly supportedModes: readonly CompiledReachabilityMode[];
+}
+
+/**
+ * Deterministic deployment resolver input artifact for binding requirements.
+ */
+export interface CompiledBindingRequirements {
+	/** Stable artifact identity used by manifest references. */
+	readonly artifactId: "CompiledBindingRequirements";
+	/** Binding requirements artifact schema version. */
+	readonly artifactVersion: CompiledBindingRequirementsArtifactVersion;
+	/** Canonical requirements keyed by `<portId>@<portVersion>`. */
+	readonly requirements: Readonly<
+		Record<string, CompiledReachabilityRequirement>
+	>;
+	/** Compatibility metadata for resolver/runtime contract handoff. */
+	readonly compatibility: CompiledBindingRequirementsCompatibility;
+	/** SHA-256 hash of normalized artifact JSON excluding this field. */
+	readonly artifactHash: string;
+}
+
+/**
+ * Manifest reference for compiled binding requirements artifacts.
+ */
+export interface CompiledBindingRequirementsArtifactReference {
+	/** Artifact identity. */
+	readonly artifactId: CompiledBindingRequirements["artifactId"];
+	/** Artifact version. */
+	readonly artifactVersion: CompiledBindingRequirements["artifactVersion"];
+	/** Artifact hash for integrity checks. */
+	readonly artifactHash: string;
+	/** Compatibility metadata used by consuming lanes. */
+	readonly compatibility: CompiledBindingRequirementsCompatibility;
+}
+
+/**
+ * Deterministic manifest of lane artifact references.
+ */
+export interface CompiledArtifactManifest {
+	/** Manifest schema version. */
+	readonly artifactVersion: CompiledArtifactManifestVersion;
+	/** Referenced lane artifacts keyed by canonical artifact role id. */
+	readonly artifacts: Readonly<{
+		readonly bindingRequirements: CompiledBindingRequirementsArtifactReference;
+	}>;
+	/** SHA-256 hash of normalized manifest JSON excluding this field. */
+	readonly aggregateHash: string;
+}
+
+/**
  * Compiled query or mutation entrypoint contract.
  */
 export interface CompiledEntrypoint {
@@ -216,6 +299,10 @@ export interface CompiledEntrypointBundle {
 	readonly reachabilityRequirements?: Readonly<
 		Record<string, CompiledReachabilityRequirement>
 	>;
+	/** Deployment resolver input artifact for reachability requirements. */
+	readonly bindingRequirementsArtifact: CompiledBindingRequirements;
+	/** Manifest references for emitted lane artifacts. */
+	readonly artifactManifest: CompiledArtifactManifest;
 	/** Refresh subscriptions keyed by query id. */
 	readonly refreshSubscriptions: Readonly<
 		Record<string, CompiledRefreshSubscription>

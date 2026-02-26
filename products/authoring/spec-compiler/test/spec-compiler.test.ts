@@ -42,6 +42,27 @@ describe("spec-compiler", () => {
 		expect(
 			first.bundle.reachabilityRequirements?.["ids.generate@1.0.0"]?.mode,
 		).toBe("local");
+		expect(first.bundle.bindingRequirementsArtifact.artifactId).toBe(
+			"CompiledBindingRequirements",
+		);
+		expect(
+			first.bundle.bindingRequirementsArtifact.requirements[
+				"ids.generate@1.0.0"
+			]?.mode,
+		).toBe("local");
+		expect(
+			first.bundle.bindingRequirementsArtifact.compatibility.supportedModes,
+		).toEqual(["local", "delegated", "unreachable"]);
+		expect(
+			first.bundle.artifactManifest.artifacts.bindingRequirements.artifactId,
+		).toBe("CompiledBindingRequirements");
+		expect(
+			first.bundle.artifactManifest.artifacts.bindingRequirements.artifactHash,
+		).toBe(first.bundle.bindingRequirementsArtifact.artifactHash);
+		expect(
+			first.bundle.artifactManifest.artifacts.bindingRequirements.compatibility
+				.resolverInputContract,
+		).toBe("CapabilityReachabilityRequirement@1.0.0");
 		const subscription = first.bundle.refreshSubscriptions.list_messages;
 		expect(subscription).toBeDefined();
 		if (subscription !== undefined) {
@@ -52,6 +73,12 @@ describe("spec-compiler", () => {
 		}
 		expect(first.bundle.artifactHash).toBe(second.bundle.artifactHash);
 		expect(first.bundle.sourceSpecHash).toBe(second.bundle.sourceSpecHash);
+		expect(first.bundle.bindingRequirementsArtifact.artifactHash).toBe(
+			second.bundle.bindingRequirementsArtifact.artifactHash,
+		);
+		expect(first.bundle.artifactManifest.aggregateHash).toBe(
+			second.bundle.artifactManifest.aggregateHash,
+		);
 	});
 
 	test("fails compilation when unsupported scalar annotation is used", () => {

@@ -78,6 +78,49 @@
 			"mode": "delegated"
 		}
 	},
+	"bindingRequirementsArtifact": {
+		"artifactId": "CompiledBindingRequirements",
+		"artifactVersion": "1.0.0",
+		"requirements": {
+			"ids.generate@1.0.0": {
+				"portId": "ids.generate",
+				"portVersion": "1.0.0",
+				"mode": "local"
+			},
+			"legacy.audit@1.0.0": {
+				"portId": "legacy.audit",
+				"portVersion": "1.0.0",
+				"mode": "unreachable"
+			},
+			"notifications.send@1.0.0": {
+				"portId": "notifications.send",
+				"portVersion": "1.0.0",
+				"mode": "delegated"
+			}
+		},
+		"compatibility": {
+			"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
+			"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
+			"supportedModes": ["local", "delegated", "unreachable"]
+		},
+		"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd"
+	},
+	"artifactManifest": {
+		"artifactVersion": "2.0.0",
+		"artifacts": {
+			"bindingRequirements": {
+				"artifactId": "CompiledBindingRequirements",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd",
+				"compatibility": {
+					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
+					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
+					"supportedModes": ["local", "delegated", "unreachable"]
+				}
+			}
+		},
+		"aggregateHash": "f6a57a692ddf71249931ac91c3bc7beb81481965ddb0a64d891aab7d574339f9"
+	},
 	"refreshSubscriptions": {
 		"list_messages": {
 			"queryId": "list_messages",
@@ -160,5 +203,5 @@
 			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"
 		}
 	},
-	"artifactHash": "38ae0fd974b47ebc5194df2f52d1e77719c9b71ce78c4d068fad17792ed9a3ba"
+	"artifactHash": "cf2c09cf2ae1a247015217e1af0f4f14af556520626bea915e3772c40ca5e169"
 }

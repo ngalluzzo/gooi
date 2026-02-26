@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { executeEntrypoint } from "../src/execute-entrypoint";
 import { createInMemoryIdempotencyStore } from "../src/idempotency-store";
 import {
@@ -118,6 +119,157 @@ describe("entrypoint-runtime", () => {
 		expect(conflict.ok).toBe(false);
 		if (!conflict.ok) {
 			expect(conflict.error?.code).toBe("idempotency_conflict_error");
+		}
+	});
+
+	test("does not allow privileged access based on caller-supplied tags alone", async () => {
+		const compiled = compileEntrypointBundle({
+			compilerVersion: "1.0.0",
+			spec: {
+				access: {
+					default_policy: "deny",
+					roles: {
+						anonymous: {},
+						authenticated: {},
+						admin: {
+							derive: { auth_claim_equals: ["is_admin", true] },
+						},
+					},
+				},
+				queries: [
+					{
+						id: "admin_only_query",
+						access: { roles: ["admin"] },
+						in: {},
+						returns: { projection: "admin_projection" },
+					},
+				],
+				mutations: [],
+				wiring: {
+					surfaces: {
+						http: {
+							queries: {
+								admin_only_query: {
+									bind: {},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+		expect(compiled.ok).toBe(true);
+		if (!compiled.ok) {
+			return;
+		}
+
+		const binding = compiled.bundle.bindings["http:query:admin_only_query"];
+		expect(binding).toBeDefined();
+		if (binding === undefined) {
+			return;
+		}
+
+		const result = await executeEntrypoint({
+			bundle: compiled.bundle,
+			binding,
+			request: {},
+			principal: {
+				subject: null,
+				claims: {},
+				tags: ["admin"],
+			},
+			domainRuntime: {
+				executeQuery: async () => ({
+					ok: true,
+					output: { ok: true },
+					observedEffects: ["read"],
+				}),
+				executeMutation: async () => ({
+					ok: false,
+					error: { message: "not used" },
+					observedEffects: [],
+				}),
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error?.code).toBe("access_denied_error");
+		}
+	});
+
+	test("rejects payloads that violate compiled input schema before domain execution", async () => {
+		const compiled = compileEntrypointBundle({
+			compilerVersion: "1.0.0",
+			spec: {
+				access: {
+					default_policy: "deny",
+					roles: { authenticated: {} },
+				},
+				queries: [
+					{
+						id: "typed_query",
+						access: { roles: ["authenticated"] },
+						in: { page: "int!" },
+						returns: { projection: "latest_messages" },
+					},
+				],
+				mutations: [],
+				wiring: {
+					surfaces: {
+						http: {
+							queries: {
+								typed_query: {
+									bind: { page: "query.page" },
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+		expect(compiled.ok).toBe(true);
+		if (!compiled.ok) {
+			return;
+		}
+
+		const binding = compiled.bundle.bindings["http:query:typed_query"];
+		expect(binding).toBeDefined();
+		if (binding === undefined) {
+			return;
+		}
+
+		const calls = { query: 0 };
+		const result = await executeEntrypoint({
+			bundle: compiled.bundle,
+			binding,
+			request: { query: { page: true } },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			domainRuntime: {
+				executeQuery: async () => {
+					calls.query += 1;
+					return {
+						ok: true,
+						output: { ok: true },
+						observedEffects: ["read"],
+					};
+				},
+				executeMutation: async () => ({
+					ok: false,
+					error: { message: "not used" },
+					observedEffects: [],
+				}),
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		expect(calls.query).toBe(0);
+		if (!result.ok) {
+			expect(result.error?.code).toBe("validation_error");
 		}
 	});
 });

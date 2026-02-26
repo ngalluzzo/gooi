@@ -35,6 +35,17 @@ const unsupportedScalarDiagnostic = (
 	hint: "Use one of: text, id, int, number, bool, timestamp with optional ! suffix.",
 });
 
+const duplicateEntrypointDiagnostic = (
+	kind: CompiledEntrypointKind,
+	path: string,
+	id: string,
+): CompileDiagnostic => ({
+	severity: "error",
+	code: "duplicate_entrypoint_id",
+	path,
+	message: `Duplicate ${kind} id \`${id}\` is not allowed.`,
+});
+
 const compileOneEntrypoint = (
 	kind: CompiledEntrypointKind,
 	specEntrypoint: {
@@ -99,12 +110,21 @@ export const compileEntrypoints = (
 	const entrypoints: Record<string, CompiledEntrypoint> = {};
 	const schemaArtifacts: Record<string, CompiledJsonSchemaArtifact> = {};
 	const diagnostics: CompileDiagnostic[] = [];
+	const seenQueryIds = new Set<string>();
+	const seenMutationIds = new Set<string>();
 
 	for (let index = 0; index < spec.queries.length; index += 1) {
 		const query = spec.queries[index];
 		if (query === undefined) {
 			continue;
 		}
+		if (seenQueryIds.has(query.id)) {
+			diagnostics.push(
+				duplicateEntrypointDiagnostic("query", `queries.${index}.id`, query.id),
+			);
+			continue;
+		}
+		seenQueryIds.add(query.id);
 		const output = compileOneEntrypoint("query", query, `queries.${index}`);
 		Object.assign(entrypoints, output.entrypoints);
 		Object.assign(schemaArtifacts, output.schemaArtifacts);
@@ -116,6 +136,17 @@ export const compileEntrypoints = (
 		if (mutation === undefined) {
 			continue;
 		}
+		if (seenMutationIds.has(mutation.id)) {
+			diagnostics.push(
+				duplicateEntrypointDiagnostic(
+					"mutation",
+					`mutations.${index}.id`,
+					mutation.id,
+				),
+			);
+			continue;
+		}
+		seenMutationIds.add(mutation.id);
 		const output = compileOneEntrypoint(
 			"mutation",
 			mutation,

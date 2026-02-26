@@ -118,6 +118,31 @@ export interface CompiledRefreshSubscription {
 }
 
 /**
+ * Supported role-derivation rule kinds.
+ */
+export type CompiledRoleDeriveRule =
+	| {
+			readonly kind: "auth_is_authenticated";
+	  }
+	| {
+			readonly kind: "auth_claim_equals";
+			readonly claim: string;
+			readonly expected: unknown;
+	  };
+
+/**
+ * Compiled role definition used by policy gate evaluation.
+ */
+export interface CompiledRoleDefinition {
+	/** Role identifier declared in access policy. */
+	readonly roleId: string;
+	/** Parent roles that this role extends. */
+	readonly extends: readonly string[];
+	/** Deterministic role derivation rules. */
+	readonly deriveRules: readonly CompiledRoleDeriveRule[];
+}
+
+/**
  * Compiled access rules used at invocation policy gate.
  */
 export interface CompiledAccessPlan {
@@ -125,6 +150,8 @@ export interface CompiledAccessPlan {
 	readonly defaultPolicy: "allow" | "deny";
 	/** Known role ids declared by the spec. */
 	readonly knownRoles: readonly string[];
+	/** Compiled role definitions keyed by role id. */
+	readonly roleDefinitions: Readonly<Record<string, CompiledRoleDefinition>>;
 	/** Entrypoint role bindings keyed by `<kind>:<id>`. */
 	readonly entrypointRoles: Readonly<Record<string, readonly string[]>>;
 }

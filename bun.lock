@@ -73,6 +73,7 @@
         "@gooi/capability-index": "workspace:*",
         "@gooi/contracts-capability": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
         "@gooi/product-authoring-lsp": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
@@ -93,10 +94,15 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/contracts-capability": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/surface-bindings": "workspace:*",
         "zod": "^4.3.6",
       },
+    },
+    "packages/host-contracts": {
+      "name": "@gooi/host-contracts",
+      "version": "0.1.0",
     },
     "packages/product-authoring-lsp": {
       "name": "@gooi/product-authoring-lsp",
@@ -114,6 +120,7 @@
       "dependencies": {
         "@gooi/binding-plan": "workspace:*",
         "@gooi/contracts-capability": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -651,6 +658,8 @@
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:packages/entrypoint-runtime"],
+
+    "@gooi/host-contracts": ["@gooi/host-contracts@workspace:packages/host-contracts"],
 
     "@gooi/product-authoring-lsp": ["@gooi/product-authoring-lsp@workspace:packages/product-authoring-lsp"],
 

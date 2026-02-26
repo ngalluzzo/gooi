@@ -29,6 +29,12 @@
 			"import": "./dist/authoring-conformance/run-authoring-conformance.js",
 			"default": "./dist/authoring-conformance/run-authoring-conformance.js"
 		},
+		"./host": {
+			"types": "./src/host-conformance/run-host-conformance.ts",
+			"bun": "./src/host-conformance/run-host-conformance.ts",
+			"import": "./dist/host-conformance/run-host-conformance.js",
+			"default": "./dist/host-conformance/run-host-conformance.js"
+		},
 		"./provider-contracts": {
 			"types": "./src/provider-conformance/contracts.ts",
 			"bun": "./src/provider-conformance/contracts.ts",
@@ -47,6 +53,12 @@
 			"import": "./dist/authoring-conformance/contracts.js",
 			"default": "./dist/authoring-conformance/contracts.js"
 		},
+		"./host-contracts": {
+			"types": "./src/host-conformance/contracts.ts",
+			"bun": "./src/host-conformance/contracts.ts",
+			"import": "./dist/host-conformance/contracts.js",
+			"default": "./dist/host-conformance/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -56,7 +68,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts --outdir ./dist --external zod --external @gooi/product-authoring-lsp",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts --outdir ./dist --external zod --external @gooi/product-authoring-lsp",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -67,6 +79,7 @@
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/contracts-capability": "workspace:*",
 		"@gooi/entrypoint-runtime": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
 		"@gooi/provider-runtime": "workspace:*",
 		"@gooi/product-authoring-lsp": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",

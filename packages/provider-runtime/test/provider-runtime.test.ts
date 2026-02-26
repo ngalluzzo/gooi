@@ -158,4 +158,56 @@ describe("provider-runtime", () => {
 			expect(result.error.kind).toBe("effect_violation_error");
 		}
 	});
+
+	test("fails activation when runtime host API version does not match binding artifacts", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+			{
+				hostApiRange: "*",
+			},
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion: "2.0.0",
+			contracts: [contract],
+			bindingPlan: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				capabilityBindings: [
+					{
+						portId: "ids.generate",
+						portVersion: "1.0.0",
+						providerId: "gooi.providers.test",
+					},
+				],
+			},
+			lockfile: {
+				appId: "hello-world-demo-v8",
+				environment: "dev",
+				hostApiVersion: "1.0.0",
+				providers: [
+					{
+						providerId: "gooi.providers.test",
+						providerVersion: "1.2.3",
+						integrity: "sha256:abc123",
+						capabilities: [
+							{
+								portId: "ids.generate",
+								portVersion: "1.0.0",
+								contractHash: contract.artifacts.contractHash,
+							},
+						],
+					},
+				],
+			},
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("activation_error");
+		}
+	});
 });

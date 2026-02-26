@@ -31,6 +31,7 @@ const createProviderModule = (
 				portId: "ids.generate",
 				portVersion: "1.0.0",
 				contractHash,
+				executionHosts: ["node"],
 			},
 		],
 	},
@@ -88,7 +89,11 @@ describe("provider-runtime", () => {
 					{
 						portId: "ids.generate",
 						portVersion: "1.0.0",
-						providerId: "gooi.providers.test",
+						resolution: {
+							mode: "local",
+							targetHost: "node",
+							providerId: "gooi.providers.test",
+						},
 					},
 				],
 			},
@@ -178,7 +183,11 @@ describe("provider-runtime", () => {
 					{
 						portId: "ids.generate",
 						portVersion: "1.0.0",
-						providerId: "gooi.providers.test",
+						resolution: {
+							mode: "local",
+							targetHost: "node",
+							providerId: "gooi.providers.test",
+						},
 					},
 				],
 			},

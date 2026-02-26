@@ -73,4 +73,51 @@ describe("spec-compiler", () => {
 			);
 		}
 	});
+
+	test("fails compilation when duplicate entrypoint ids are declared", () => {
+		const result = compileEntrypointBundle({
+			compilerVersion: "1.0.0",
+			spec: {
+				access: {
+					default_policy: "deny",
+					roles: {
+						authenticated: {},
+					},
+				},
+				queries: [
+					{
+						id: "list_messages",
+						access: { roles: ["authenticated"] },
+						in: { page: "int" },
+						returns: { projection: "latest_messages" },
+					},
+					{
+						id: "list_messages",
+						access: { roles: ["authenticated"] },
+						in: { q: "text" },
+						returns: { projection: "messages_with_authors" },
+					},
+				],
+				mutations: [],
+				wiring: {
+					surfaces: {
+						http: {
+							queries: {
+								list_messages: {
+									bind: { q: "query.q" },
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics.map((item) => item.code)).toContain(
+				"duplicate_entrypoint_id",
+			);
+		}
+	});
 });

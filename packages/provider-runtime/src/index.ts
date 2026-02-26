@@ -13,6 +13,10 @@ import {
 	parseProviderManifest,
 } from "@gooi/contracts-capability";
 import { z } from "zod";
+import {
+	createDefaultProviderRuntimeHostPorts,
+	type ProviderRuntimeHostPorts,
+} from "./host-ports";
 
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/);
 
@@ -144,6 +148,8 @@ export interface ActivateProviderInput {
 	readonly lockfile?: DeploymentLockfile;
 	/** Optional activation timestamp override. */
 	readonly activatedAt?: string;
+	/** Optional host ports for clock and activation policy behavior. */
+	readonly hostPorts?: ProviderRuntimeHostPorts;
 }
 
 /**
@@ -468,6 +474,7 @@ const validateBindingRequirements = (
 export const activateProvider = async (
 	input: ActivateProviderInput,
 ): Promise<RuntimeResult<ActivatedProvider>> => {
+	const hostPorts = input.hostPorts ?? createDefaultProviderRuntimeHostPorts();
 	const parsedManifestResult = providerManifestSafeParse(
 		input.providerModule.manifest,
 	);
@@ -505,6 +512,19 @@ export const activateProvider = async (
 	}
 
 	if (input.bindingPlan && input.lockfile) {
+		const alignment = hostPorts.activationPolicy.assertHostVersionAligned({
+			runtimeHostApiVersion: input.hostApiVersion,
+			bindingPlanHostApiVersion: input.bindingPlan.hostApiVersion,
+			lockfileHostApiVersion: input.lockfile.hostApiVersion,
+		});
+		if (!alignment.ok) {
+			return fail(
+				"activation_error",
+				alignment.error.message,
+				alignment.error.details,
+			);
+		}
+
 		const bindingValidation = validateBindingRequirements(
 			manifest,
 			input.contracts,
@@ -522,7 +542,7 @@ export const activateProvider = async (
 	try {
 		instance = await input.providerModule.activate({
 			hostApiVersion: input.hostApiVersion,
-			activatedAt: input.activatedAt ?? new Date().toISOString(),
+			activatedAt: input.activatedAt ?? hostPorts.clock.nowIso(),
 		});
 	} catch (error) {
 		return fail("activation_error", "Provider activation failed.", {

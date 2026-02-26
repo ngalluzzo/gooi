@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 /**
  * @module violations
  * List files that exceed a lines-of-code threshold.
@@ -17,6 +18,8 @@
  * Requires `tokei` to be installed (`brew install tokei`).
  */
 
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 import {
 	BOLD,
 	buildFileMap,
@@ -30,8 +33,6 @@ import {
 	runTokei,
 	YEL,
 } from "./helpers";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 
 interface LocViolation {
 	readonly path: string;

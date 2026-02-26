@@ -1,10 +1,10 @@
 {
-  "limit": 250,
-  "generatedAt": "2026-02-26T01:50:26.987Z",
-  "violations": [
-    {
-      "path": "packages/provider-runtime/src/index.ts",
-      "loc": 492
-    }
-  ]
+	"limit": 250,
+	"generatedAt": "2026-02-26T01:50:26.987Z",
+	"violations": [
+		{
+			"path": "packages/provider-runtime/src/index.ts",
+			"loc": 492
+		}
+	]
 }

@@ -4,19 +4,19 @@
 [![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
 [![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
 
-Provider conformance harness for RFC-0001 runtime behavior checks.
+Conformance harness for RFC-0001 provider runtime and RFC-0002 entrypoint runtime behavior checks.
 
 ## Overview
 
-`@gooi/conformance` runs a minimal conformance suite against a provider module and capability contract.
-It verifies activation succeeds, invalid input is rejected, valid input succeeds, and effect enforcement behavior is preserved.
+`@gooi/conformance` runs conformance suites across two feature surfaces:
+provider runtime checks and entrypoint runtime checks.
 
 ## Features
 
-- Standardized conformance report shape
-- Named RFC-0001 baseline checks
-- Integration with `@gooi/provider-runtime`
-- Optional binding-plan and lockfile enforcement during checks
+- Provider runtime checks (`runProviderConformance`)
+- Entrypoint runtime checks (`runEntrypointConformance`)
+- Named check IDs with machine-readable reports
+- Optional binding-plan and lockfile enforcement for provider checks
 
 ## Installation
 
@@ -27,7 +27,10 @@ bun add @gooi/conformance
 ## Quick Start
 
 ```ts
-import { runProviderConformance } from "@gooi/conformance";
+import {
+  runProviderConformance,
+} from "@gooi/conformance/provider";
+import { runEntrypointConformance } from "@gooi/conformance/entrypoint";
 
 const report = await runProviderConformance({
   providerModule,
@@ -43,8 +46,9 @@ console.log(report.passed, report.checks);
 ## API Summary
 
 - `runProviderConformance(input)`
-- `ConformanceReport`
-- `ConformanceCheckResult`
+- `runEntrypointConformance(input)`
+- `ProviderConformanceReport`
+- `EntrypointConformanceReport`
 
 ## Development
 

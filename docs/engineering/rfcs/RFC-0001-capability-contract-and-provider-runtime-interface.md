@@ -153,6 +153,7 @@ export type ProviderManifest = {
   readonly capabilities: readonly {
     readonly portId: string;
     readonly portVersion: string;
+    readonly contractHash: string;
   }[];
 };
 ```

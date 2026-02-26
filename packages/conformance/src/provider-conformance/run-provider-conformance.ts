@@ -1,106 +1,45 @@
-import type { BindingPlan, DeploymentLockfile } from "@gooi/binding-plan";
-import type { CapabilityPortContract } from "@gooi/contracts-capability";
 import {
 	activateProvider,
 	deactivateProvider,
 	invokeCapability,
-	type ProviderModule,
 } from "@gooi/provider-runtime";
-
-/**
- * Named conformance checks for provider-runtime behavior.
- */
-export type ConformanceCheckId =
-	| "activation_succeeds"
-	| "invalid_input_rejected"
-	| "valid_input_succeeds"
-	| "declared_effects_enforced";
-
-/**
- * Result for one conformance check.
- */
-export interface ConformanceCheckResult {
-	/** Stable check identifier. */
-	readonly id: ConformanceCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
-
-/**
- * Conformance report for one provider module.
- */
-export interface ConformanceReport {
-	/** Provider id under test. */
-	readonly providerId: string;
-	/** Host API version used during evaluation. */
-	readonly hostApiVersion: string;
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly ConformanceCheckResult[];
-}
-
-/**
- * Input required for conformance checks.
- */
-export interface RunConformanceInput {
-	/** Provider module under test. */
-	readonly providerModule: ProviderModule;
-	/** Host API version used for activation. */
-	readonly hostApiVersion: string;
-	/** Capability contract exercised by conformance test. */
-	readonly contract: CapabilityPortContract;
-	/** Valid input expected to pass contract validation. */
-	readonly validInput: unknown;
-	/** Invalid input expected to fail contract validation. */
-	readonly invalidInput: unknown;
-	/** Optional plan artifact for activation enforcement. */
-	readonly bindingPlan?: BindingPlan;
-	/** Optional lockfile artifact for activation enforcement. */
-	readonly lockfile?: DeploymentLockfile;
-}
+import type {
+	ProviderConformanceCheckId,
+	ProviderConformanceCheckResult,
+	ProviderConformanceReport,
+	RunProviderConformanceInput,
+} from "./contracts";
 
 const buildCheck = (
-	id: ConformanceCheckId,
+	id: ProviderConformanceCheckId,
 	passed: boolean,
 	detail: string,
-): ConformanceCheckResult => ({
+): ProviderConformanceCheckResult => ({
 	id,
 	passed,
 	detail,
 });
 
 /**
- * Runs the minimal RFC-0001 provider conformance suite.
+ * Runs the provider conformance suite.
  *
- * @param input - Conformance harness input.
- * @returns Conformance report with named checks.
+ * @param input - Provider conformance input.
+ * @returns Provider conformance report with named checks.
  *
  * @example
- * const report = await runProviderConformance({
- *   providerModule,
- *   hostApiVersion: "1.0.0",
- *   contract,
- *   validInput: { count: 1 },
- *   invalidInput: { count: 0 },
- * });
+ * const report = await runProviderConformance(input);
  */
 export const runProviderConformance = async (
-	input: RunConformanceInput,
-): Promise<ConformanceReport> => {
-	const checks: ConformanceCheckResult[] = [];
-
-	const activationInput = {
+	input: RunProviderConformanceInput,
+): Promise<ProviderConformanceReport> => {
+	const checks: ProviderConformanceCheckResult[] = [];
+	const activated = await activateProvider({
 		providerModule: input.providerModule,
 		hostApiVersion: input.hostApiVersion,
 		contracts: [input.contract],
 		...(input.bindingPlan ? { bindingPlan: input.bindingPlan } : {}),
 		...(input.lockfile ? { lockfile: input.lockfile } : {}),
-	};
-
-	const activated = await activateProvider(activationInput);
+	});
 
 	if (!activated.ok) {
 		checks.push(
@@ -110,7 +49,6 @@ export const runProviderConformance = async (
 				`Activation failed: ${activated.error.kind} - ${activated.error.message}`,
 			),
 		);
-
 		return {
 			providerId: "unknown",
 			hostApiVersion: input.hostApiVersion,
@@ -120,24 +58,18 @@ export const runProviderConformance = async (
 	}
 
 	checks.push(buildCheck("activation_succeeds", true, "Activation succeeded."));
-
 	const providerId = activated.value.manifest.providerId;
-
 	const invalidInputResult = await invokeCapability(activated.value, {
 		portId: input.contract.id,
 		portVersion: input.contract.version,
 		input: input.invalidInput,
-		principal: {
-			subject: "conformance-user",
-			roles: ["authenticated"],
-		},
+		principal: { subject: "conformance-user", roles: ["authenticated"] },
 		ctx: {
 			id: "conformance-invalid",
 			traceId: "trace-invalid",
 			now: new Date().toISOString(),
 		},
 	});
-
 	checks.push(
 		buildCheck(
 			"invalid_input_rejected",
@@ -153,17 +85,13 @@ export const runProviderConformance = async (
 		portId: input.contract.id,
 		portVersion: input.contract.version,
 		input: input.validInput,
-		principal: {
-			subject: "conformance-user",
-			roles: ["authenticated"],
-		},
+		principal: { subject: "conformance-user", roles: ["authenticated"] },
 		ctx: {
 			id: "conformance-valid",
 			traceId: "trace-valid",
 			now: new Date().toISOString(),
 		},
 	});
-
 	checks.push(
 		buildCheck(
 			"valid_input_succeeds",
@@ -175,7 +103,6 @@ export const runProviderConformance = async (
 				: `${validInputResult.error.kind}: ${validInputResult.error.message}`,
 		),
 	);
-
 	checks.push(
 		buildCheck(
 			"declared_effects_enforced",
@@ -185,9 +112,7 @@ export const runProviderConformance = async (
 				: `${validInputResult.error.kind}: ${validInputResult.error.message}`,
 		),
 	);
-
 	await deactivateProvider(activated.value);
-
 	return {
 		providerId,
 		hostApiVersion: input.hostApiVersion,

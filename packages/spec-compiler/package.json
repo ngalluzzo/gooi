@@ -1,0 +1,44 @@
+{
+	"name": "@gooi/spec-compiler",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/compile-bundle.js",
+	"types": "./src/compile-bundle.ts",
+	"exports": {
+		".": {
+			"types": "./src/compile-bundle.ts",
+			"bun": "./src/compile-bundle.ts",
+			"import": "./dist/compile-bundle.js",
+			"default": "./dist/compile-bundle.js"
+		},
+		"./contracts": {
+			"types": "./src/contracts.ts",
+			"bun": "./src/contracts.ts",
+			"import": "./dist/contracts.js",
+			"default": "./dist/contracts.js"
+		},
+		"./authoring-spec": {
+			"types": "./src/authoring-spec.ts",
+			"bun": "./src/authoring-spec.ts",
+			"import": "./dist/authoring-spec.js",
+			"default": "./dist/authoring-spec.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/*.ts --outdir ./dist --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/contracts-capability": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

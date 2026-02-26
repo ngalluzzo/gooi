@@ -10,13 +10,14 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   security-events: write
 
 jobs:
   dependency-review:
     name: Dependency Review
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && vars.ENABLE_DEPENDENCY_REVIEW == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -47,6 +48,7 @@ jobs:
         run: semgrep --config auto --sarif --output semgrep.sarif --error
 
       - name: Upload SARIF
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif

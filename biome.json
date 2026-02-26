@@ -20,6 +20,10 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"performance": {
+				"noBarrelFile": "error",
+				"noReExportAll": "error"
+			},
 			"suspicious": {
 				"noUnknownAtRules": "off"
 			}

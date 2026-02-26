@@ -6,8 +6,10 @@
 		"./src/contracts/diagnostics-contracts.ts",
 		"./src/contracts/navigation-contracts.ts",
 		"./src/contracts/navigation-results.ts",
+		"./src/contracts/protocol-contracts.ts",
 		"./src/contracts/read-context.ts",
 		"./src/contracts/rename-contracts.ts",
+		"./src/contracts/session-contracts.ts",
 		"./src/features/actions/list-authoring-code-lenses.ts",
 		"./src/features/actions/resolve-authoring-code-lens.ts",
 		"./src/features/completion/list-authoring-completion-items.ts",
@@ -18,8 +20,10 @@
 		"./src/features/navigation/get-authoring-references.ts",
 		"./src/features/navigation/list-authoring-document-symbols.ts",
 		"./src/features/navigation/search-authoring-workspace-symbols.ts",
+		"./src/features/protocol/create-authoring-protocol-server.ts",
 		"./src/features/rename/apply-authoring-rename.ts",
-		"./src/features/rename/prepare-authoring-rename.ts"
+		"./src/features/rename/prepare-authoring-rename.ts",
+		"./src/features/session/create-authoring-session.ts"
 	],
 	"entryPointStrategy": "resolve",
 	"excludePrivate": true,

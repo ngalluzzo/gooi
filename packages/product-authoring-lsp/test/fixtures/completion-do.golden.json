@@ -1,0 +1,29 @@
+{
+	"parity": {
+		"status": "matched",
+		"lockfileHash": "520198390c3b9b96bf36af376dcef1aacd7e262be1c4114e0cdd9fab72050ed6",
+		"issues": []
+	},
+	"items": [
+		{
+			"label": "gooi-marketplace-bun-sqlite.insert_message",
+			"kind": "capability",
+			"insertText": "gooi-marketplace-bun-sqlite.insert_message",
+			"deprecated": false,
+			"data": {
+				"capabilityId": "gooi-marketplace-bun-sqlite.insert_message",
+				"capabilityVersion": "1.0.0"
+			}
+		},
+		{
+			"label": "message.is_allowed",
+			"kind": "capability",
+			"insertText": "message.is_allowed",
+			"deprecated": false,
+			"data": {
+				"capabilityId": "message.is_allowed",
+				"capabilityVersion": "1.0.0"
+			}
+		}
+	]
+}

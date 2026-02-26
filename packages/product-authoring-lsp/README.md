@@ -26,6 +26,9 @@ The package is deterministic and artifact-driven. It consumes:
 - Graph-backed definition/references and symbol listing helpers
 - Code lens list/resolve for run, provider visibility, and affected-query actions
 - Rename preflight (`prepareRename`) and workspace edits (`rename`) with conflict checks
+- Stateful session helpers for `didOpen` / `didChange` integration loops
+- Protocol test server for LSP-style message routing in E2E fixture tests
+- Latency threshold tests enforcing RFC-0003 p95 targets in the test suite
 
 ## Installation
 
@@ -60,6 +63,8 @@ console.log(result.parity.status, result.items.map((item) => item.label));
 - `searchAuthoringWorkspaceSymbols(value)`
 - `prepareAuthoringRename(value)`
 - `applyAuthoringRename(value)`
+- `createAuthoringSession(value)`
+- `createAuthoringProtocolServer(value)`
 
 ## Development
 

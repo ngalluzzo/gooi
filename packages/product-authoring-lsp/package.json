@@ -53,6 +53,18 @@
 			"import": "./dist/contracts/rename-contracts.js",
 			"default": "./dist/contracts/rename-contracts.js"
 		},
+		"./contracts/session": {
+			"types": "./src/contracts/session-contracts.ts",
+			"bun": "./src/contracts/session-contracts.ts",
+			"import": "./dist/contracts/session-contracts.js",
+			"default": "./dist/contracts/session-contracts.js"
+		},
+		"./contracts/protocol": {
+			"types": "./src/contracts/protocol-contracts.ts",
+			"bun": "./src/contracts/protocol-contracts.ts",
+			"import": "./dist/contracts/protocol-contracts.js",
+			"default": "./dist/contracts/protocol-contracts.js"
+		},
 		"./features/actions/list": {
 			"types": "./src/features/actions/list-authoring-code-lenses.ts",
 			"bun": "./src/features/actions/list-authoring-code-lenses.ts",
@@ -125,6 +137,18 @@
 			"import": "./dist/features/rename/prepare-authoring-rename.js",
 			"default": "./dist/features/rename/prepare-authoring-rename.js"
 		},
+		"./features/session": {
+			"types": "./src/features/session/create-authoring-session.ts",
+			"bun": "./src/features/session/create-authoring-session.ts",
+			"import": "./dist/features/session/create-authoring-session.js",
+			"default": "./dist/features/session/create-authoring-session.js"
+		},
+		"./features/protocol/server": {
+			"types": "./src/features/protocol/create-authoring-protocol-server.ts",
+			"bun": "./src/features/protocol/create-authoring-protocol-server.ts",
+			"import": "./dist/features/protocol/create-authoring-protocol-server.js",
+			"default": "./dist/features/protocol/create-authoring-protocol-server.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -134,7 +158,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/rename/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
+		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

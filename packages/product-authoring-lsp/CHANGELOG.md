@@ -12,3 +12,6 @@
 - Phase 4 code lens list/resolve handlers for run, providers, and affected-query actions.
 - Phase 4 rename preflight and workspace-edit handlers with collision diagnostics.
 - Fixture-first tests for code lenses, prepare rename, and rename edit generation.
+- Integration session support for `didOpen` / `didChange` diagnostics and completion loops.
+- Protocol E2E test server for message-level authoring handler routing.
+- Completion ordering golden fixture and p95 latency threshold tests in suite.

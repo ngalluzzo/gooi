@@ -23,6 +23,12 @@
 			"import": "./dist/entrypoint-conformance/run-entrypoint-conformance.js",
 			"default": "./dist/entrypoint-conformance/run-entrypoint-conformance.js"
 		},
+		"./authoring": {
+			"types": "./src/authoring-conformance/run-authoring-conformance.ts",
+			"bun": "./src/authoring-conformance/run-authoring-conformance.ts",
+			"import": "./dist/authoring-conformance/run-authoring-conformance.js",
+			"default": "./dist/authoring-conformance/run-authoring-conformance.js"
+		},
 		"./provider-contracts": {
 			"types": "./src/provider-conformance/contracts.ts",
 			"bun": "./src/provider-conformance/contracts.ts",
@@ -35,6 +41,12 @@
 			"import": "./dist/entrypoint-conformance/contracts.js",
 			"default": "./dist/entrypoint-conformance/contracts.js"
 		},
+		"./authoring-contracts": {
+			"types": "./src/authoring-conformance/contracts.ts",
+			"bun": "./src/authoring-conformance/contracts.ts",
+			"import": "./dist/authoring-conformance/contracts.js",
+			"default": "./dist/authoring-conformance/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -44,18 +56,22 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts --outdir ./dist --external zod",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts --outdir ./dist --external zod --external @gooi/product-authoring-lsp",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/authoring-contracts": "workspace:*",
 		"@gooi/binding-plan": "workspace:*",
+		"@gooi/capability-index": "workspace:*",
 		"@gooi/contracts-capability": "workspace:*",
 		"@gooi/entrypoint-runtime": "workspace:*",
 		"@gooi/provider-runtime": "workspace:*",
+		"@gooi/product-authoring-lsp": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-bindings": "workspace:*",
+		"@gooi/symbol-graph": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

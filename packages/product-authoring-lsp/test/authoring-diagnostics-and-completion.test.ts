@@ -1,11 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
 import { createAuthoringLockfile } from "@gooi/authoring-contracts/lockfile";
-
+import { authoringCompletionListSchema } from "../src/contracts/completion-contracts";
 import { listAuthoringCompletionItems } from "../src/features/completion/list-authoring-completion-items";
 import { resolveAuthoringCompletionItem } from "../src/features/completion/resolve-authoring-completion-item";
 import { publishAuthoringDiagnostics } from "../src/features/diagnostics/publish-authoring-diagnostics";
 import { authoringReadFixture } from "./fixtures/authoring-read.fixture";
+import completionDoGolden from "./fixtures/completion-do.golden.json";
 
 describe("product-authoring-lsp completion and diagnostics", () => {
 	test("lists deterministic capability completions in do blocks", () => {
@@ -15,10 +16,9 @@ describe("product-authoring-lsp completion and diagnostics", () => {
 		});
 
 		expect(result.parity.status).toBe("matched");
-		expect(result.items.map((item) => item.label)).toEqual([
-			"gooi-marketplace-bun-sqlite.insert_message",
-			"message.is_allowed",
-		]);
+		expect(result).toEqual(
+			authoringCompletionListSchema.parse(completionDoGolden),
+		);
 	});
 
 	test("lists signal completions in refresh_on_signals blocks", () => {

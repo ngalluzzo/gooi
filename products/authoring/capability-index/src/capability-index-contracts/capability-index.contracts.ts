@@ -1,4 +1,4 @@
-import { effectKindSchema } from "@gooi/contracts-capability";
+import { effectKindSchema } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 
 /**
@@ -23,8 +23,8 @@ export const capabilityProviderAvailabilitySchema = z.object({
 const capabilityDeprecationSchema = z.object({
 	isDeprecated: z.boolean(),
 	replacementCapabilityId: z.string().min(1).optional(),
-	deprecatedAt: z.string().datetime().optional(),
-	removalAt: z.string().datetime().optional(),
+	deprecatedAt: z.iso.datetime().optional(),
+	removalAt: z.iso.datetime().optional(),
 });
 
 const capabilityIoSchemaRefsSchema = z.object({

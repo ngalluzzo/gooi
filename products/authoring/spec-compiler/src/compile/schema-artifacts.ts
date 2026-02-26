@@ -2,7 +2,7 @@ import {
 	buildSchemaArtifact,
 	type JsonSchema,
 	type SchemaArtifact,
-} from "@gooi/contracts-capability";
+} from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 import type {
 	CompiledInputField,

@@ -38,7 +38,7 @@
 		"format": "biome format . --write"
 	},
 	"dependencies": {
-		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}

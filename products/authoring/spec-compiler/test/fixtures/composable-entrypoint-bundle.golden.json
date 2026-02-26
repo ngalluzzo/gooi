@@ -1,7 +1,7 @@
 {
 	"artifactVersion": "1.0.0",
 	"compilerVersion": "1.0.0",
-	"sourceSpecHash": "2bae3df7d12bdabbdbbb625dd1accf8c6c00d130bc84a4eeb01b29745660bc48",
+	"sourceSpecHash": "39bafeb14ae6aaa4e2ac94f8447d17e45d11a4d95220c2bc0c63e8790a243ca8",
 	"entrypoints": {
 		"query:list_messages": {
 			"id": "list_messages",
@@ -59,6 +59,23 @@
 			"fieldBindings": {
 				"message": "body.message"
 			}
+		}
+	},
+	"reachabilityRequirements": {
+		"ids.generate@1.0.0": {
+			"portId": "ids.generate",
+			"portVersion": "1.0.0",
+			"mode": "local"
+		},
+		"legacy.audit@1.0.0": {
+			"portId": "legacy.audit",
+			"portVersion": "1.0.0",
+			"mode": "unreachable"
+		},
+		"notifications.send@1.0.0": {
+			"portId": "notifications.send",
+			"portVersion": "1.0.0",
+			"mode": "delegated"
 		}
 	},
 	"refreshSubscriptions": {
@@ -143,5 +160,5 @@
 			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"
 		}
 	},
-	"artifactHash": "35b7b82f3bf1e6a257dc09d6ebd9ef38099f66424f302b3d47c1ecd072eed0ee"
+	"artifactHash": "38ae0fd974b47ebc5194df2f52d1e77719c9b71ce78c4d068fad17792ed9a3ba"
 }

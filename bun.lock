@@ -31,6 +31,13 @@
         "react-dom": "^19.2.4",
       },
     },
+    "packages/authoring-contracts": {
+      "name": "@gooi/authoring-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
     "packages/binding-plan": {
       "name": "@gooi/binding-plan",
       "version": "0.1.0",
@@ -38,16 +45,28 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/capability-index": {
+      "name": "@gooi/capability-index",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contracts-capability": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/conformance": {
       "name": "@gooi/conformance",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/authoring-contracts": "workspace:*",
         "@gooi/binding-plan": "workspace:*",
+        "@gooi/capability-index": "workspace:*",
         "@gooi/contracts-capability": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/product-authoring-lsp": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/surface-bindings": "workspace:*",
+        "@gooi/symbol-graph": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -65,6 +84,16 @@
         "@gooi/contracts-capability": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/surface-bindings": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "packages/product-authoring-lsp": {
+      "name": "@gooi/product-authoring-lsp",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/authoring-contracts": "workspace:*",
+        "@gooi/capability-index": "workspace:*",
+        "@gooi/symbol-graph": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -90,6 +119,13 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/spec-compiler": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "packages/symbol-graph": {
+      "name": "@gooi/symbol-graph",
+      "version": "0.1.0",
+      "dependencies": {
         "zod": "^4.3.6",
       },
     },
@@ -591,7 +627,11 @@
 
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
 
+    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:packages/authoring-contracts"],
+
     "@gooi/binding-plan": ["@gooi/binding-plan@workspace:packages/binding-plan"],
+
+    "@gooi/capability-index": ["@gooi/capability-index@workspace:packages/capability-index"],
 
     "@gooi/conformance": ["@gooi/conformance@workspace:packages/conformance"],
 
@@ -601,11 +641,15 @@
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:packages/entrypoint-runtime"],
 
+    "@gooi/product-authoring-lsp": ["@gooi/product-authoring-lsp@workspace:packages/product-authoring-lsp"],
+
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:packages/provider-runtime"],
 
     "@gooi/spec-compiler": ["@gooi/spec-compiler@workspace:packages/spec-compiler"],
 
     "@gooi/surface-bindings": ["@gooi/surface-bindings@workspace:packages/surface-bindings"],
+
+    "@gooi/symbol-graph": ["@gooi/symbol-graph@workspace:packages/symbol-graph"],
 
     "@hapi/hoek": ["@hapi/hoek@9.3.0", "", {}, "sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ=="],
 

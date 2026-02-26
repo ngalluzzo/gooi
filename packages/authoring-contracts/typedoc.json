@@ -1,0 +1,17 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": [
+		"./src/lockfile/authoring-lockfile.ts",
+		"./src/envelopes/authoring-request-envelope.ts",
+		"./src/envelopes/authoring-result-envelope.ts",
+		"./src/envelopes/authoring-error-envelope.ts",
+		"./src/envelopes/authoring-diagnostics-envelope.ts"
+	],
+	"entryPointStrategy": "resolve",
+	"excludePrivate": true,
+	"excludeProtected": true,
+	"excludeInternal": true,
+	"readme": "./README.md",
+	"plugin": ["typedoc-plugin-markdown"],
+	"out": "../../apps/docs/docs/api/authoring-contracts"
+}

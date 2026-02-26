@@ -1,8 +1,8 @@
-[**@gooi/contracts-capability**](../README.md)
+[**@gooi/capability-contracts**](../README.md)
 
 ***
 
-[@gooi/contracts-capability](../README.md) / providerManifestSchema
+[@gooi/capability-contracts](../README.md) / providerManifestSchema
 
 # Variable: providerManifestSchema
 

@@ -5,9 +5,9 @@ title: API Reference
 
 API documentation is generated from package-level Typedoc.
 
-- [@gooi/binding-plan](./binding-plan)
+- [@gooi/binding](./binding-plan)
 - [@gooi/conformance](./conformance)
-- [@gooi/contracts-capability](./contracts-capability)
+- [@gooi/capability-contracts](./capability-contracts)
 - [@gooi/provider-runtime](./provider-runtime)
 
 Run from repo root:

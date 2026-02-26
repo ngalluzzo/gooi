@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / DeploymentLockfile
+[@gooi/binding](../README.md) / DeploymentLockfile
 
 # Type Alias: DeploymentLockfile
 

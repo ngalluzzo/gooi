@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / LockedProvider
+[@gooi/binding](../README.md) / LockedProvider
 
 # Type Alias: LockedProvider
 

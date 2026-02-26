@@ -1,8 +1,8 @@
-**@gooi/contracts-capability**
+**@gooi/capability-contracts**
 
 ***
 
-# @gooi/contracts-capability
+# @gooi/capability-contracts
 
 ## Interfaces
 

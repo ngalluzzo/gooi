@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / getCapabilityBinding
+[@gooi/binding](../README.md) / getCapabilityBinding
 
 # Function: getCapabilityBinding()
 

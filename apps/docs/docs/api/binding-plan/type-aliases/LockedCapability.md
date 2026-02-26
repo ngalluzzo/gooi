@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / LockedCapability
+[@gooi/binding](../README.md) / LockedCapability
 
 # Type Alias: LockedCapability
 

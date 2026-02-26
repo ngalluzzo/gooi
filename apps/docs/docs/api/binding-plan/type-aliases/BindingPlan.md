@@ -1,8 +1,8 @@
-[**@gooi/binding-plan**](../README.md)
+[**@gooi/binding**](../README.md)
 
 ***
 
-[@gooi/binding-plan](../README.md) / BindingPlan
+[@gooi/binding](../README.md) / BindingPlan
 
 # Type Alias: BindingPlan
 

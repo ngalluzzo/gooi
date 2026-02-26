@@ -1,8 +1,8 @@
-[**@gooi/contracts-capability**](../README.md)
+[**@gooi/capability-contracts**](../README.md)
 
 ***
 
-[@gooi/contracts-capability](../README.md) / BoundarySchemaTarget
+[@gooi/capability-contracts](../README.md) / BoundarySchemaTarget
 
 # Type Alias: BoundarySchemaTarget
 

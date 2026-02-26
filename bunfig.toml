@@ -1,4 +1,7 @@
 [test]
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"
+coverageThreshold = { line = 0.85, function = 0.95, statement = 0.85 }
 coveragePathIgnorePatterns = [
   # Test files
   "**/test/**",

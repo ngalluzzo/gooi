@@ -1,5 +1,9 @@
 # @gooi/contracts-capability
 
+[![CI](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml)
+[![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
+[![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
+
 Zod-first boundary contract definitions for capability ports, provider manifests, JSON Schema artifacts, and deterministic contract hashing.
 
 ## Overview

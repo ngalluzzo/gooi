@@ -24,6 +24,8 @@
 		"loc:tree": "bun ./tools/loc/tree",
 		"loc:diff": "bun ./tools/loc/diff",
 		"loc:check": "bun ./tools/loc/violations",
+		"loc:check:baseline": "bun ./tools/loc/violations --baseline=docs/engineering/loc-baseline.json",
+		"loc:baseline:write": "bun ./tools/loc/violations --baseline=docs/engineering/loc-baseline.json --write-baseline=true",
 		"changeset": "changeset",
 		"changeset:status": "changeset status --verbose",
 		"version-packages": "changeset version && bun install",

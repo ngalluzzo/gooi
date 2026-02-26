@@ -1,17 +1,20 @@
 {
 	"files": [],
 	"references": [
-		{ "path": "./apps/gooi-vscode-extension" },
-		{ "path": "./packages/contracts-capability" },
-		{ "path": "./packages/binding-plan" },
+		{ "path": "./apps/vscode-extension" },
+		{ "path": "./packages/provider-manifest" },
+		{ "path": "./packages/capability-contracts" },
+		{ "path": "./packages/binding" },
+		{ "path": "./packages/surface-contracts" },
 		{ "path": "./products/authoring/authoring-contracts" },
-		{ "path": "./products/authoring/product-authoring-lsp" },
+		{ "path": "./products/authoring/language-server" },
 		{ "path": "./products/authoring/capability-index" },
 		{ "path": "./products/authoring/symbol-graph" },
 		{ "path": "./products/runtime/provider-runtime" },
 		{ "path": "./products/quality/conformance" },
 		{ "path": "./products/authoring/spec-compiler" },
-		{ "path": "./packages/surface-bindings" },
-		{ "path": "./products/runtime/entrypoint-runtime" }
+		{ "path": "./products/runtime/entrypoint-runtime" },
+		{ "path": "./products/runtime/surface-runtime" },
+		{ "path": "./marketplace/memory" }
 	]
 }

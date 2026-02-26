@@ -8,6 +8,10 @@ import {
 	createSystemClockPort,
 } from "../src/clock/clock";
 import {
+	createFailingCapabilityDelegationPort,
+	createHostCapabilityDelegationProvider,
+} from "../src/delegation/delegation";
+import {
 	createHostIdentityProvider,
 	createSystemIdentityPort,
 } from "../src/identity/identity";
@@ -103,6 +107,34 @@ describe("host-contracts", () => {
 		expect(loaded?.result.ok).toBe(true);
 	});
 
+	test("creates fail-hard capability delegation port", async () => {
+		const delegation = createFailingCapabilityDelegationPort();
+		const result = await delegation.invokeDelegated({
+			routeId: "route-1",
+			traceId: "trace-1",
+			invocationId: "invocation-1",
+			capabilityCall: {
+				portId: "ids.generate",
+				portVersion: "1.0.0",
+				input: { count: 1 },
+				principal: {
+					subject: "user_1",
+					roles: ["authenticated"],
+				},
+				ctx: {
+					id: "ctx-1",
+					traceId: "trace-1",
+					now: "2026-02-26T00:00:00.000Z",
+				},
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("capability_delegation_error");
+		}
+	});
+
 	test("creates replay-store provider definitions", () => {
 		const provider = createHostReplayStoreProvider({
 			manifest: {
@@ -171,6 +203,14 @@ describe("host-contracts", () => {
 			},
 			createPort: createDynamicImportModuleLoaderPort,
 		});
+		const delegationProvider = createHostCapabilityDelegationProvider({
+			manifest: {
+				providerId: "gooi.providers.memory",
+				providerVersion: "1.0.0",
+				hostApiRange: "^1.0.0",
+			},
+			createPort: createFailingCapabilityDelegationPort,
+		});
 
 		expect(clockProvider.manifest.contract.id).toBe("gooi.host.clock");
 		expect(identityProvider.manifest.contract.id).toBe("gooi.host.identity");
@@ -180,6 +220,9 @@ describe("host-contracts", () => {
 		);
 		expect(moduleLoaderProvider.manifest.contract.id).toBe(
 			"gooi.host.module-loader",
+		);
+		expect(delegationProvider.manifest.contract.id).toBe(
+			"gooi.host.capability-delegation",
 		);
 	});
 });

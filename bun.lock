@@ -73,6 +73,7 @@
         "@gooi/capability-index": "workspace:*",
         "@gooi/contracts-capability": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
         "@gooi/product-authoring-lsp": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",

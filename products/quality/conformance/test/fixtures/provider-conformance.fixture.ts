@@ -1,4 +1,4 @@
-import { defineCapabilityPort } from "@gooi/contracts-capability";
+import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import type { CapabilityCall, ProviderModule } from "@gooi/provider-runtime";
 import { z } from "zod";
 

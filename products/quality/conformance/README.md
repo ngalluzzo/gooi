@@ -9,14 +9,18 @@ and RFC-0003 authoring intelligence behavior checks.
 
 ## Overview
 
-`@gooi/conformance` runs conformance suites across three feature surfaces:
-provider runtime checks, entrypoint runtime checks, and authoring intelligence checks.
+`@gooi/conformance` runs conformance suites across runtime and authoring
+surfaces: provider runtime checks, entrypoint runtime checks, replay-store host
+provider checks, and authoring intelligence checks.
 
 ## Features
 
 - Provider runtime checks (`runProviderConformance`)
 - Entrypoint runtime checks (`runEntrypointConformance`)
+- Host runtime checks (`runHostConformance`)
+- Replay-store host provider checks (`runReplayStoreConformance`)
 - Authoring checks (`runAuthoringConformance`)
+- Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
 
@@ -33,6 +37,8 @@ import {
   runProviderConformance,
 } from "@gooi/conformance/provider";
 import { runEntrypointConformance } from "@gooi/conformance/entrypoint";
+import { runHostConformance } from "@gooi/conformance/host";
+import { runReplayStoreConformance } from "@gooi/conformance/replay-store";
 import { runAuthoringConformance } from "@gooi/conformance/authoring";
 
 const report = await runProviderConformance({
@@ -50,10 +56,29 @@ console.log(report.passed, report.checks);
 
 - `runProviderConformance(input)`
 - `runEntrypointConformance(input)`
+- `runHostConformance(input)`
+- `runReplayStoreConformance(input)`
 - `runAuthoringConformance(input)`
+- `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
+- `HostConformanceReport`
 - `AuthoringConformanceReport`
+
+## Export Paths
+
+- `@gooi/conformance` (provider suite default)
+- `@gooi/conformance/provider`
+- `@gooi/conformance/entrypoint`
+- `@gooi/conformance/host`
+- `@gooi/conformance/replay-store`
+- `@gooi/conformance/authoring`
+- `@gooi/conformance/host-port-conformance`
+- `@gooi/conformance/provider-contracts`
+- `@gooi/conformance/entrypoint-contracts`
+- `@gooi/conformance/host-contracts`
+- `@gooi/conformance/replay-store-contracts`
+- `@gooi/conformance/authoring-contracts`
 
 ## Development
 

@@ -1,10 +1,10 @@
-import { listAuthoringCodeLenses } from "@gooi/product-authoring-lsp/features/actions/list";
-import { resolveAuthoringCodeLens } from "@gooi/product-authoring-lsp/features/actions/resolve";
-import { listAuthoringCompletionItems } from "@gooi/product-authoring-lsp/features/completion/list";
-import { publishAuthoringDiagnostics } from "@gooi/product-authoring-lsp/features/diagnostics/publish";
-import { getAuthoringDefinition } from "@gooi/product-authoring-lsp/features/navigation/definition";
-import { applyAuthoringRename } from "@gooi/product-authoring-lsp/features/rename/apply";
-import { prepareAuthoringRename } from "@gooi/product-authoring-lsp/features/rename/prepare";
+import { listAuthoringCodeLenses } from "@gooi/language-server/features/actions/list";
+import { resolveAuthoringCodeLens } from "@gooi/language-server/features/actions/resolve";
+import { listAuthoringCompletionItems } from "@gooi/language-server/features/completion/list";
+import { publishAuthoringDiagnostics } from "@gooi/language-server/features/diagnostics/publish";
+import { getAuthoringDefinition } from "@gooi/language-server/features/navigation/definition";
+import { applyAuthoringRename } from "@gooi/language-server/features/rename/apply";
+import { prepareAuthoringRename } from "@gooi/language-server/features/rename/prepare";
 
 import {
 	type AuthoringConformanceCheck,

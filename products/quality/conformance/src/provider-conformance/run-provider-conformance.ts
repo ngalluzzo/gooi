@@ -1,24 +1,12 @@
+import { createProviderRuntime } from "@gooi/provider-runtime";
 import {
-	activateProvider,
-	deactivateProvider,
-	invokeCapability,
-} from "@gooi/provider-runtime";
+	areHostPortConformanceChecksPassing,
+	buildHostPortConformanceCheck,
+} from "../host-port-conformance/host-port-conformance";
 import type {
-	ProviderConformanceCheckId,
-	ProviderConformanceCheckResult,
 	ProviderConformanceReport,
 	RunProviderConformanceInput,
 } from "./contracts";
-
-const buildCheck = (
-	id: ProviderConformanceCheckId,
-	passed: boolean,
-	detail: string,
-): ProviderConformanceCheckResult => ({
-	id,
-	passed,
-	detail,
-});
 
 /**
  * Runs the provider conformance suite.
@@ -32,18 +20,20 @@ const buildCheck = (
 export const runProviderConformance = async (
 	input: RunProviderConformanceInput,
 ): Promise<ProviderConformanceReport> => {
-	const checks: ProviderConformanceCheckResult[] = [];
-	const activated = await activateProvider({
-		providerModule: input.providerModule,
+	const checks: Array<ProviderConformanceReport["checks"][number]> = [];
+	const runtime = createProviderRuntime({
 		hostApiVersion: input.hostApiVersion,
 		contracts: [input.contract],
 		...(input.bindingPlan ? { bindingPlan: input.bindingPlan } : {}),
 		...(input.lockfile ? { lockfile: input.lockfile } : {}),
 	});
+	const activated = await runtime.activate({
+		providerModule: input.providerModule,
+	});
 
 	if (!activated.ok) {
 		checks.push(
-			buildCheck(
+			buildHostPortConformanceCheck(
 				"activation_succeeds",
 				false,
 				`Activation failed: ${activated.error.kind} - ${activated.error.message}`,
@@ -57,9 +47,15 @@ export const runProviderConformance = async (
 		};
 	}
 
-	checks.push(buildCheck("activation_succeeds", true, "Activation succeeded."));
+	checks.push(
+		buildHostPortConformanceCheck(
+			"activation_succeeds",
+			true,
+			"Activation succeeded.",
+		),
+	);
 	const providerId = activated.value.manifest.providerId;
-	const invalidInputResult = await invokeCapability(activated.value, {
+	const invalidInputResult = await runtime.invoke(activated.value, {
 		portId: input.contract.id,
 		portVersion: input.contract.version,
 		input: input.invalidInput,
@@ -71,7 +67,7 @@ export const runProviderConformance = async (
 		},
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"invalid_input_rejected",
 			!invalidInputResult.ok &&
 				invalidInputResult.error.kind === "validation_error",
@@ -81,7 +77,7 @@ export const runProviderConformance = async (
 		),
 	);
 
-	const validInputResult = await invokeCapability(activated.value, {
+	const validInputResult = await runtime.invoke(activated.value, {
 		portId: input.contract.id,
 		portVersion: input.contract.version,
 		input: input.validInput,
@@ -93,7 +89,7 @@ export const runProviderConformance = async (
 		},
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"valid_input_succeeds",
 			validInputResult.ok && validInputResult.value.ok,
 			validInputResult.ok
@@ -104,7 +100,7 @@ export const runProviderConformance = async (
 		),
 	);
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"declared_effects_enforced",
 			validInputResult.ok,
 			validInputResult.ok
@@ -112,11 +108,11 @@ export const runProviderConformance = async (
 				: `${validInputResult.error.kind}: ${validInputResult.error.message}`,
 		),
 	);
-	await deactivateProvider(activated.value);
+	await runtime.deactivate(activated.value);
 	return {
 		providerId,
 		hostApiVersion: input.hostApiVersion,
-		passed: checks.every((check) => check.passed),
+		passed: areHostPortConformanceChecksPassing(checks),
 		checks,
 	};
 };

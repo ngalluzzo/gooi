@@ -1,17 +1,13 @@
-import { executeEntrypoint } from "@gooi/entrypoint-runtime";
-import { createInMemoryIdempotencyStore } from "@gooi/entrypoint-runtime/idempotency-store";
+import { runEntrypoint } from "@gooi/entrypoint-runtime";
+import { createHostReplayStorePort } from "@gooi/host-contracts/replay";
+import {
+	areHostPortConformanceChecksPassing,
+	buildHostPortConformanceCheck,
+} from "../host-port-conformance/host-port-conformance";
 import type {
-	EntrypointConformanceCheckId,
-	EntrypointConformanceCheckResult,
 	EntrypointConformanceReport,
 	RunEntrypointConformanceInput,
 } from "./contracts";
-
-const buildCheck = (
-	id: EntrypointConformanceCheckId,
-	passed: boolean,
-	detail: string,
-): EntrypointConformanceCheckResult => ({ id, passed, detail });
 
 /**
  * Runs the RFC-0002 entrypoint runtime conformance suite.
@@ -25,9 +21,23 @@ const buildCheck = (
 export const runEntrypointConformance = async (
 	input: RunEntrypointConformanceInput,
 ): Promise<EntrypointConformanceReport> => {
-	const checks: EntrypointConformanceCheckResult[] = [];
-	const store = createInMemoryIdempotencyStore();
-	const query = await executeEntrypoint({
+	const checks: Array<EntrypointConformanceReport["checks"][number]> = [];
+	const records = new Map<
+		string,
+		{
+			readonly inputHash: string;
+			readonly result: Awaited<ReturnType<typeof runEntrypoint>>;
+		}
+	>();
+	const store = createHostReplayStorePort<
+		Awaited<ReturnType<typeof runEntrypoint>>
+	>({
+		load: async (scopeKey) => records.get(scopeKey) ?? null,
+		save: async ({ scopeKey, record }) => {
+			records.set(scopeKey, record);
+		},
+	});
+	const query = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.queryBinding,
 		request: input.queryRequest,
@@ -35,14 +45,14 @@ export const runEntrypointConformance = async (
 		domainRuntime: input.domainRuntime,
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"query_executes",
 			query.ok,
 			query.ok ? "Query executed successfully." : "Query execution failed.",
 		),
 	);
 
-	const unauthorized = await executeEntrypoint({
+	const unauthorized = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.queryBinding,
 		request: input.queryRequest,
@@ -50,7 +60,7 @@ export const runEntrypointConformance = async (
 		domainRuntime: input.domainRuntime,
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"access_denied_enforced",
 			!unauthorized.ok && unauthorized.error?.code === "access_denied_error",
 			unauthorized.ok
@@ -59,7 +69,7 @@ export const runEntrypointConformance = async (
 		),
 	);
 
-	const bindingError = await executeEntrypoint({
+	const bindingError = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.mutationBinding,
 		request: {},
@@ -67,7 +77,7 @@ export const runEntrypointConformance = async (
 		domainRuntime: input.domainRuntime,
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"binding_error_enforced",
 			!bindingError.ok && bindingError.error?.code === "binding_error",
 			bindingError.ok
@@ -76,17 +86,17 @@ export const runEntrypointConformance = async (
 		),
 	);
 
-	const mutation = await executeEntrypoint({
+	const mutation = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.mutationBinding,
 		request: input.mutationRequest,
 		principal: input.authorizedPrincipal,
 		domainRuntime: input.domainRuntime,
-		idempotencyStore: store,
+		replayStore: store,
 		idempotencyKey: "conformance-key",
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"refresh_subscription_matched",
 			mutation.ok &&
 				mutation.meta.affectedQueryIds.includes(
@@ -98,17 +108,17 @@ export const runEntrypointConformance = async (
 		),
 	);
 
-	const replay = await executeEntrypoint({
+	const replay = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.mutationBinding,
 		request: input.mutationRequest,
 		principal: input.authorizedPrincipal,
 		domainRuntime: input.domainRuntime,
-		idempotencyStore: store,
+		replayStore: store,
 		idempotencyKey: "conformance-key",
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"idempotency_replay_enforced",
 			replay.ok && replay.meta.replayed,
 			replay.ok
@@ -117,17 +127,17 @@ export const runEntrypointConformance = async (
 		),
 	);
 
-	const conflict = await executeEntrypoint({
+	const conflict = await runEntrypoint({
 		bundle: input.bundle,
 		binding: input.mutationBinding,
 		request: input.mutationConflictRequest,
 		principal: input.authorizedPrincipal,
 		domainRuntime: input.domainRuntime,
-		idempotencyStore: store,
+		replayStore: store,
 		idempotencyKey: "conformance-key",
 	});
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"idempotency_conflict_enforced",
 			!conflict.ok && conflict.error?.code === "idempotency_conflict_error",
 			conflict.ok
@@ -138,7 +148,7 @@ export const runEntrypointConformance = async (
 
 	return {
 		artifactHash: input.bundle.artifactHash,
-		passed: checks.every((check) => check.passed),
+		passed: areHostPortConformanceChecksPassing(checks),
 		checks,
 		...(mutation.ok ? { lastMutationResult: mutation } : {}),
 	};

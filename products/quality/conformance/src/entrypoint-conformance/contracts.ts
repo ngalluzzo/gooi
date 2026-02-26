@@ -1,13 +1,13 @@
 import type {
-	PrincipalContext,
-	ResultEnvelope,
-} from "@gooi/entrypoint-runtime/contracts";
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime/domain-runtime-port";
+	DomainRuntimePort,
+	runEntrypoint,
+} from "@gooi/entrypoint-runtime";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
 } from "@gooi/spec-compiler/contracts";
-import type { SurfaceRequestPayload } from "@gooi/surface-bindings";
+import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
 /**
  * Named conformance checks for entrypoint runtime behavior.
@@ -43,7 +43,7 @@ export interface EntrypointConformanceReport {
 	/** Individual check outcomes. */
 	readonly checks: readonly EntrypointConformanceCheckResult[];
 	/** Last successful mutation result for debugging. */
-	readonly lastMutationResult?: ResultEnvelope<unknown, unknown>;
+	readonly lastMutationResult?: Awaited<ReturnType<typeof runEntrypoint>>;
 }
 
 /**

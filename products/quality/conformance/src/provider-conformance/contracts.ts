@@ -1,5 +1,8 @@
-import type { BindingPlan, DeploymentLockfile } from "@gooi/binding-plan";
-import type { CapabilityPortContract } from "@gooi/contracts-capability";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/binding/binding-plan";
+import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import type { ProviderModule } from "@gooi/provider-runtime";
 
 /**

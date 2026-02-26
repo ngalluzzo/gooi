@@ -1,5 +1,4 @@
-import type { SignalEnvelope } from "@gooi/entrypoint-runtime/contracts";
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime/domain-runtime-port";
+import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
@@ -80,14 +79,14 @@ export const createEntrypointConformanceFixture = () => {
 		}),
 		executeMutation: async (input) => {
 			const payload = { message: input.input.message ?? "" };
-			const signal: SignalEnvelope = {
+			const signal = {
 				envelopeVersion: "1.0.0",
 				signalId: "message.created",
 				signalVersion: 1,
 				payload,
 				payloadHash: sha256(stableStringify(payload)),
 				emittedAt: input.ctx.now,
-			};
+			} as const;
 			return {
 				ok: true,
 				output: { accepted: true },

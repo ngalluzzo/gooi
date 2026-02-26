@@ -1,4 +1,4 @@
-import { defineCapabilityPort } from "@gooi/contracts-capability";
+import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 import { createEntrypointConformanceFixture } from "./entrypoint-conformance.fixture";
 

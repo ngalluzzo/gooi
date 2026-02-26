@@ -35,6 +35,18 @@
 			"import": "./dist/host-conformance/run-host-conformance.js",
 			"default": "./dist/host-conformance/run-host-conformance.js"
 		},
+		"./host-port-conformance": {
+			"types": "./src/host-port-conformance/host-port-conformance.ts",
+			"bun": "./src/host-port-conformance/host-port-conformance.ts",
+			"import": "./dist/host-port-conformance/host-port-conformance.js",
+			"default": "./dist/host-port-conformance/host-port-conformance.js"
+		},
+		"./replay-store": {
+			"types": "./src/replay-store-conformance/run-replay-store-conformance.ts",
+			"bun": "./src/replay-store-conformance/run-replay-store-conformance.ts",
+			"import": "./dist/replay-store-conformance/run-replay-store-conformance.js",
+			"default": "./dist/replay-store-conformance/run-replay-store-conformance.js"
+		},
 		"./provider-contracts": {
 			"types": "./src/provider-conformance/contracts.ts",
 			"bun": "./src/provider-conformance/contracts.ts",
@@ -59,6 +71,12 @@
 			"import": "./dist/host-conformance/contracts.js",
 			"default": "./dist/host-conformance/contracts.js"
 		},
+		"./replay-store-contracts": {
+			"types": "./src/replay-store-conformance/contracts.ts",
+			"bun": "./src/replay-store-conformance/contracts.ts",
+			"import": "./dist/replay-store-conformance/contracts.js",
+			"default": "./dist/replay-store-conformance/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -68,23 +86,23 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts --outdir ./dist --external zod --external @gooi/product-authoring-lsp",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts --outdir ./dist --external zod --external @gooi/language-server",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
 		"@gooi/authoring-contracts": "workspace:*",
-		"@gooi/binding-plan": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
-		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/entrypoint-runtime": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/provider-runtime": "workspace:*",
-		"@gooi/product-authoring-lsp": "workspace:*",
+		"@gooi/language-server": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
-		"@gooi/surface-bindings": "workspace:*",
+		"@gooi/binding": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",
 		"zod": "^4.3.6"
 	}

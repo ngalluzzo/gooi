@@ -1,25 +1,25 @@
-import type { BindingPlan, DeploymentLockfile } from "@gooi/binding-plan";
-import { executeEntrypoint } from "@gooi/entrypoint-runtime";
-import { createDefaultEntrypointHostPorts } from "@gooi/entrypoint-runtime/host-ports";
-import { hostFail, hostOk } from "@gooi/host-contracts";
-import {
-	activateProvider,
-	deactivateProvider,
-	type ProviderModule,
-} from "@gooi/provider-runtime";
-import type { ProviderRuntimeHostPorts } from "@gooi/provider-runtime/host-ports";
 import type {
-	HostConformanceCheckId,
-	HostConformanceCheckResult,
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/binding/binding-plan";
+import {
+	createDefaultHostPorts,
+	createEntrypointRuntime,
+} from "@gooi/entrypoint-runtime";
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
+import {
+	createProviderRuntime,
+	type ProviderModule,
+	type ProviderRuntimeHostPorts,
+} from "@gooi/provider-runtime";
+import {
+	areHostPortConformanceChecksPassing,
+	buildHostPortConformanceCheck,
+} from "../host-port-conformance/host-port-conformance";
+import type {
 	HostConformanceReport,
 	RunHostConformanceInput,
 } from "./contracts";
-
-const buildCheck = (
-	id: HostConformanceCheckId,
-	passed: boolean,
-	detail: string,
-): HostConformanceCheckResult => ({ id, passed, detail });
 
 const buildBindingPlan = (
 	hostApiVersion: string,
@@ -79,7 +79,7 @@ const buildLockfile = (
 export const runHostConformance = async (
 	input: RunHostConformanceInput,
 ): Promise<HostConformanceReport> => {
-	const checks: HostConformanceCheckResult[] = [];
+	const checks: Array<HostConformanceReport["checks"][number]> = [];
 
 	const entrypointClockValues = [
 		"2026-02-26T00:00:00.000Z",
@@ -87,7 +87,7 @@ export const runHostConformance = async (
 	];
 	let entrypointClockIndex = 0;
 	const entrypointHostPorts = {
-		...createDefaultEntrypointHostPorts(),
+		...createDefaultHostPorts(),
 		clock: {
 			nowIso: () => {
 				const value =
@@ -102,18 +102,20 @@ export const runHostConformance = async (
 			newInvocationId: () => "inv_host_conformance",
 		},
 	};
-
-	const queryResult = await executeEntrypoint({
+	const entrypointRuntime = createEntrypointRuntime({
 		bundle: input.bundle,
-		binding: input.queryBinding,
-		request: input.queryRequest,
-		principal: input.principal,
 		domainRuntime: input.domainRuntime,
 		hostPorts: entrypointHostPorts,
 	});
 
+	const queryResult = await entrypointRuntime.run({
+		binding: input.queryBinding,
+		request: input.queryRequest,
+		principal: input.principal,
+	});
+
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"entrypoint_host_identity_used",
 			queryResult.traceId === "trace_host_conformance" &&
 				queryResult.invocationId === "inv_host_conformance",
@@ -125,7 +127,7 @@ export const runHostConformance = async (
 	);
 
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"entrypoint_host_clock_used",
 			queryResult.timings.startedAt === "2026-02-26T00:00:00.000Z" &&
 				queryResult.timings.completedAt === "2026-02-26T00:00:01.000Z",
@@ -171,16 +173,18 @@ export const runHostConformance = async (
 			assertHostVersionAligned: () => hostOk(undefined),
 		},
 	};
-
-	const providerActivation = await activateProvider({
-		providerModule,
+	const providerRuntime = createProviderRuntime({
 		hostApiVersion: input.providerHostApiVersion,
 		contracts: [input.providerContract],
 		hostPorts: providerHostPorts,
 	});
 
+	const providerActivation = await providerRuntime.activate({
+		providerModule,
+	});
+
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"provider_host_clock_used",
 			providerActivation.ok &&
 				capturedActivatedAt === "2026-02-26T02:00:00.000Z",
@@ -192,7 +196,7 @@ export const runHostConformance = async (
 	);
 
 	if (providerActivation.ok) {
-		await deactivateProvider(providerActivation.value);
+		await providerRuntime.deactivate(providerActivation.value);
 	}
 
 	const alignedPlan = buildBindingPlan(
@@ -211,10 +215,8 @@ export const runHostConformance = async (
 		},
 	);
 
-	const rejectingPolicyActivation = await activateProvider({
+	const rejectingPolicyActivation = await providerRuntime.activate({
 		providerModule,
-		hostApiVersion: input.providerHostApiVersion,
-		contracts: [input.providerContract],
 		bindingPlan: alignedPlan,
 		lockfile: alignedLockfile,
 		hostPorts: {
@@ -230,7 +232,7 @@ export const runHostConformance = async (
 	});
 
 	checks.push(
-		buildCheck(
+		buildHostPortConformanceCheck(
 			"provider_activation_policy_used",
 			!rejectingPolicyActivation.ok &&
 				rejectingPolicyActivation.error.kind === "activation_error" &&
@@ -246,7 +248,7 @@ export const runHostConformance = async (
 	);
 
 	return {
-		passed: checks.every((check) => check.passed),
+		passed: areHostPortConformanceChecksPassing(checks),
 		checks,
 	};
 };

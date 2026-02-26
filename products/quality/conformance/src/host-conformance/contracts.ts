@@ -1,11 +1,11 @@
-import type { CapabilityPortContract } from "@gooi/contracts-capability";
-import type { PrincipalContext } from "@gooi/entrypoint-runtime/contracts";
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime/domain-runtime-port";
+import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
 } from "@gooi/spec-compiler/contracts";
-import type { SurfaceRequestPayload } from "@gooi/surface-bindings";
+import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
 /**
  * Named conformance checks for host port behavior.

@@ -48,10 +48,6 @@ const buildEntrypointInputSchema = (
 
 /**
  * Validates bound entrypoint input against the compiled scalar contract.
- *
- * @param entrypoint - Compiled entrypoint contract.
- * @param value - Bound input payload.
- * @returns Validation success with parsed value or typed details.
  */
 export const validateEntrypointInput = (
 	entrypoint: CompiledEntrypoint,

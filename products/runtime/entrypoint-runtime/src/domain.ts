@@ -1,15 +1,13 @@
-import type { EffectKind } from "@gooi/contracts-capability";
+import type { EffectKind } from "@gooi/capability-contracts/capability-port";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypoint,
 	CompiledEntrypointKind,
 } from "@gooi/spec-compiler/contracts";
-import type {
-	PrincipalContext,
-	SignalEnvelope,
-} from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
+import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 
 /**
- * Input payload passed to query and mutation domain execution ports.
+ * Domain execution contracts are in-process runtime ports with trusted callers.
  */
 export interface DomainExecutionInput {
 	/** Entrypoint contract selected by runtime dispatcher. */

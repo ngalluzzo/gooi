@@ -1,5 +1,5 @@
 {
-	"entryPoints": ["./src/execute-entrypoint/execute-entrypoint.ts"],
+	"entryPoints": ["./src/engine.ts"],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

@@ -2,38 +2,14 @@
 	"name": "@gooi/entrypoint-runtime",
 	"version": "0.1.0",
 	"type": "module",
-	"main": "./dist/execute-entrypoint/execute-entrypoint.js",
-	"types": "./src/execute-entrypoint/execute-entrypoint.ts",
+	"main": "./dist/engine.js",
+	"types": "./src/engine.ts",
 	"exports": {
 		".": {
-			"types": "./src/execute-entrypoint/execute-entrypoint.ts",
-			"bun": "./src/execute-entrypoint/execute-entrypoint.ts",
-			"import": "./dist/execute-entrypoint/execute-entrypoint.js",
-			"default": "./dist/execute-entrypoint/execute-entrypoint.js"
-		},
-		"./contracts": {
-			"types": "./src/entrypoint-runtime-contracts/entrypoint-runtime.contracts.ts",
-			"bun": "./src/entrypoint-runtime-contracts/entrypoint-runtime.contracts.ts",
-			"import": "./dist/entrypoint-runtime-contracts/entrypoint-runtime.contracts.js",
-			"default": "./dist/entrypoint-runtime-contracts/entrypoint-runtime.contracts.js"
-		},
-		"./domain-runtime-port": {
-			"types": "./src/domain-runtime-port/domain-runtime-port.ts",
-			"bun": "./src/domain-runtime-port/domain-runtime-port.ts",
-			"import": "./dist/domain-runtime-port/domain-runtime-port.js",
-			"default": "./dist/domain-runtime-port/domain-runtime-port.js"
-		},
-		"./host-ports": {
-			"types": "./src/host-ports/host-ports.ts",
-			"bun": "./src/host-ports/host-ports.ts",
-			"import": "./dist/host-ports/host-ports.js",
-			"default": "./dist/host-ports/host-ports.js"
-		},
-		"./idempotency-store": {
-			"types": "./src/idempotency-store/idempotency-store.ts",
-			"bun": "./src/idempotency-store/idempotency-store.ts",
-			"import": "./dist/idempotency-store/idempotency-store.js",
-			"default": "./dist/idempotency-store/idempotency-store.js"
+			"types": "./src/engine.ts",
+			"bun": "./src/engine.ts",
+			"import": "./dist/engine.js",
+			"default": "./dist/engine.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -44,16 +20,17 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/execute-entrypoint/execute-entrypoint.ts --outfile ./dist/execute-entrypoint/execute-entrypoint.js --external zod --external @gooi/surface-bindings && bun build ./src/entrypoint-runtime-contracts/entrypoint-runtime.contracts.ts --outfile ./dist/entrypoint-runtime-contracts/entrypoint-runtime.contracts.js --external zod --external @gooi/contracts-capability && bun build ./src/domain-runtime-port/domain-runtime-port.ts --outfile ./dist/domain-runtime-port/domain-runtime-port.js --external zod --external @gooi/contracts-capability && bun build ./src/host-ports/host-ports.ts --outfile ./dist/host-ports/host-ports.js --external zod --external @gooi/contracts-capability --external @gooi/host-contracts --external @gooi/spec-compiler --external @gooi/surface-bindings && bun build ./src/idempotency-store/idempotency-store.ts --outfile ./dist/idempotency-store/idempotency-store.js --external zod",
+		"build": "bun build ./src/engine.ts --outfile ./dist/engine.js --external zod --external @gooi/surface-runtime --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/spec-compiler --external @gooi/stable-json --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/principal && bun build ./src/host.ts --outfile ./dist/host.js --external zod --external @gooi/host-contracts/clock --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/result --external @gooi/surface-contracts/result-envelope --external @gooi/spec-compiler && bun build ./src/domain.ts --outfile ./dist/domain.js --external @gooi/spec-compiler --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/principal --external @gooi/surface-contracts/signal-envelope",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
-		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
-		"@gooi/surface-bindings": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"@gooi/surface-runtime": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}

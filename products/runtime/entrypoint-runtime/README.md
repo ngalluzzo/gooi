@@ -1,58 +1,24 @@
 # @gooi/entrypoint-runtime
 
-[![CI](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/ci.yml)
-[![Security](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/security.yml)
-[![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
-
-Composable entrypoint execution runtime for Gooi.
-
-## Overview
-
-`@gooi/entrypoint-runtime` executes compiled query and mutation entrypoints with deterministic policy gates, typed envelopes, idempotency replay semantics, and signal-based refresh trigger matching.
-
-## Features
-
-- Invocation and result envelope contracts with explicit versioning
-- Access gate enforcement over compiled access plan and principal context
-- Surface binding normalization via `@gooi/surface-bindings`
-- Query/mutation dispatch through domain runtime ports
-- Mutation idempotency replay and conflict handling
-- Refresh trigger generation and affected query matching
-
-## Installation
-
-```bash
-bun add @gooi/entrypoint-runtime
-```
+Composable runtime engine for executing compiled query and mutation entrypoints.
 
 ## Quick Start
 
 ```ts
-import { executeEntrypoint } from "@gooi/entrypoint-runtime";
+import { createEntrypointRuntime } from "@gooi/entrypoint-runtime";
 
-const result = await executeEntrypoint({
+const runtime = createEntrypointRuntime({
   bundle,
+  domainRuntime,
+});
+
+const result = await runtime.run({
   binding,
   request,
   principal,
-  domainRuntime,
 });
 ```
 
-## API Summary
+## Public API
 
-- `executeEntrypoint(input)`
-- `createInMemoryIdempotencyStore()`
-- `PrincipalContext`
-- `ResultEnvelope`
-
-## Development
-
-```bash
-bun run typecheck
-bun run test
-```
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md).
+- `@gooi/entrypoint-runtime` -> `createEntrypointRuntime(config)`, `runEntrypoint(input)`, `createDefaultHostPorts()`, `DomainRuntimePort`

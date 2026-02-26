@@ -4,6 +4,9 @@
 		{ "path": "./packages/contracts-capability" },
 		{ "path": "./packages/binding-plan" },
 		{ "path": "./packages/provider-runtime" },
-		{ "path": "./packages/conformance" }
+		{ "path": "./packages/conformance" },
+		{ "path": "./packages/spec-compiler" },
+		{ "path": "./packages/surface-bindings" },
+		{ "path": "./packages/entrypoint-runtime" }
 	]
 }

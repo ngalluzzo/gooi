@@ -1,0 +1,130 @@
+{
+	"artifactVersion": "1.0.0",
+	"compilerVersion": "1.0.0",
+	"sourceSpecHash": "2bae3df7d12bdabbdbbb625dd1accf8c6c00d130bc84a4eeb01b29745660bc48",
+	"entrypoints": {
+		"query:list_messages": {
+			"id": "list_messages",
+			"kind": "query",
+			"inputFields": {
+				"page": {
+					"scalarType": "int",
+					"required": false
+				},
+				"page_size": {
+					"scalarType": "int",
+					"required": false
+				},
+				"q": {
+					"scalarType": "text",
+					"required": false
+				}
+			},
+			"defaultInput": {
+				"page": 1,
+				"page_size": 10
+			},
+			"accessRoles": ["authenticated"],
+			"schemaArtifactKey": "entrypoint.query.list_messages.input"
+		},
+		"mutation:submit_message": {
+			"id": "submit_message",
+			"kind": "mutation",
+			"inputFields": {
+				"message": {
+					"scalarType": "text",
+					"required": true
+				}
+			},
+			"defaultInput": {},
+			"accessRoles": ["authenticated"],
+			"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
+		}
+	},
+	"bindings": {
+		"http:query:list_messages": {
+			"surfaceId": "http",
+			"entrypointKind": "query",
+			"entrypointId": "list_messages",
+			"fieldBindings": {
+				"page": "query.page",
+				"page_size": "query.page_size",
+				"q": "query.q"
+			}
+		},
+		"http:mutation:submit_message": {
+			"surfaceId": "http",
+			"entrypointKind": "mutation",
+			"entrypointId": "submit_message",
+			"fieldBindings": {
+				"message": "body.message"
+			}
+		}
+	},
+	"refreshSubscriptions": {
+		"list_messages": {
+			"queryId": "list_messages",
+			"signalIds": ["message.created", "message.deleted"]
+		}
+	},
+	"accessPlan": {
+		"defaultPolicy": "deny",
+		"knownRoles": ["admin", "anonymous", "authenticated"],
+		"entrypointRoles": {
+			"query:list_messages": ["authenticated"],
+			"mutation:submit_message": ["authenticated"]
+		}
+	},
+	"schemaArtifacts": {
+		"entrypoint.query.list_messages.input": {
+			"target": "draft-7",
+			"schema": {
+				"~standard": {
+					"jsonSchema": {},
+					"vendor": "zod",
+					"version": 1
+				},
+				"$schema": "http://json-schema.org/draft-07/schema#",
+				"additionalProperties": false,
+				"properties": {
+					"page": {
+						"maximum": 9007199254740991,
+						"minimum": -9007199254740991,
+						"type": "integer"
+					},
+					"page_size": {
+						"maximum": 9007199254740991,
+						"minimum": -9007199254740991,
+						"type": "integer"
+					},
+					"q": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"hash": "6b7380fc71516d1a1d952044a093d88072b3a340860c3f752d59f32c0bfe7c85"
+		},
+		"entrypoint.mutation.submit_message.input": {
+			"target": "draft-7",
+			"schema": {
+				"~standard": {
+					"jsonSchema": {},
+					"vendor": "zod",
+					"version": 1
+				},
+				"$schema": "http://json-schema.org/draft-07/schema#",
+				"additionalProperties": false,
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": ["message"],
+				"type": "object"
+			},
+			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"
+		}
+	},
+	"artifactHash": "2895e2e2adcf18a3370500a5406c7e9a3ba733c3341fb42b00b657e86d4731df"
+}

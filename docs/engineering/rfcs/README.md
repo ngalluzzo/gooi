@@ -37,6 +37,9 @@ Status changes must be reflected in RFC metadata and decision log.
 - Do not leak concerns across surface, kernel, provider, and host boundaries.
 - Avoid OOP in design examples; prefer functional modules and pure data contracts.
 - Do not use barrel files for public APIs; use package `exports`.
+- Include deterministic semantics for inputs/defaults/errors/effects when behavior can vary by runtime.
+- Define canonical artifact and envelope contracts with explicit versioning.
+- Every open question must include an owner and target decision date.
 
 See style standards:
 - [commit-and-tsdoc-standards.md](/Users/ngalluzzo/repos/gooi/docs/engineering/commit-and-tsdoc-standards.md)
@@ -60,3 +63,12 @@ Minimum required sections:
 11. Open questions
 12. Decision log
 
+## Quality gate
+
+Before moving RFC status from `Draft` to `Proposed`, confirm:
+
+1. Contract and artifact shapes are explicit enough for an independent implementation.
+2. Deterministic behavior rules are documented for precedence/order/unknown/null handling.
+3. Envelope schemas and error taxonomy are centralized and versioned.
+4. Operational targets include numeric alertable thresholds.
+5. Open questions have owners and dates.

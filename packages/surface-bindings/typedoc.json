@@ -1,8 +1,5 @@
 {
-	"entryPoints": [
-		"src/provider-conformance/run-provider-conformance.ts",
-		"src/entrypoint-conformance/run-entrypoint-conformance.ts"
-	],
+	"entryPoints": ["src/index.ts"],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

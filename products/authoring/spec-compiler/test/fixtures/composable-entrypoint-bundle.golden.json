@@ -1,7 +1,7 @@
 {
 	"artifactVersion": "1.0.0",
 	"compilerVersion": "1.0.0",
-	"sourceSpecHash": "39bafeb14ae6aaa4e2ac94f8447d17e45d11a4d95220c2bc0c63e8790a243ca8",
+	"sourceSpecHash": "864f2a8aaf884302d636936e68dee1d11f2066674ed10d26197fbcd246c55047",
 	"entrypoints": {
 		"query:list_messages": {
 			"id": "list_messages",
@@ -203,5 +203,5 @@
 			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"
 		}
 	},
-	"artifactHash": "cf2c09cf2ae1a247015217e1af0f4f14af556520626bea915e3772c40ca5e169"
+	"artifactHash": "0560bf089f58be741234b289af0e34a0cfffdf5e491e60c9497973903aa1f88d"
 }

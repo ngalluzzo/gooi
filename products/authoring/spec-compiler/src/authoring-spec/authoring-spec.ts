@@ -43,6 +43,11 @@ const reachabilityRequirementSchema = z.object({
 	mode: z.enum(["local", "delegated", "unreachable"]),
 });
 
+const capabilityDeclarationSchema = z.object({
+	id: z.string().min(1),
+	version: semverSchema,
+});
+
 const surfaceSchema = z
 	.object({
 		queries: z.record(z.string(), wiredQuerySchema).optional(),
@@ -64,6 +69,7 @@ const screenSchema = z.object({
  * Authoring spec subset accepted by RFC-0002 phase 1 compiler.
  */
 export const authoringEntrypointSpecSchema = z.object({
+	capabilities: z.array(capabilityDeclarationSchema).optional(),
 	access: z.object({
 		default_policy: z.enum(["allow", "deny"]),
 		roles: z.record(z.string(), z.unknown()),

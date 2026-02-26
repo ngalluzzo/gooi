@@ -5,6 +5,8 @@ import {
 	createBindingFieldMismatchFixture,
 	createComposableEntrypointSpecFixture,
 	createInvalidReachabilityModeFixture,
+	createUnknownReachabilityCapabilityIdFixture,
+	createUnknownReachabilityCapabilityVersionFixture,
 	createUnsupportedScalarSpecFixture,
 } from "./fixtures/composable-entrypoint-spec.fixture";
 
@@ -42,6 +44,12 @@ describe("spec-compiler", () => {
 		expect(
 			first.bundle.reachabilityRequirements?.["ids.generate@1.0.0"]?.mode,
 		).toBe("local");
+		expect(
+			first.bundle.reachabilityRequirements?.["notifications.send@1.0.0"]?.mode,
+		).toBe("delegated");
+		expect(
+			first.bundle.reachabilityRequirements?.["legacy.audit@1.0.0"]?.mode,
+		).toBe("unreachable");
 		expect(first.bundle.bindingRequirementsArtifact.artifactId).toBe(
 			"CompiledBindingRequirements",
 		);
@@ -185,6 +193,42 @@ describe("spec-compiler", () => {
 			expect(result.diagnostics[0]?.code).toBe("authoring_spec_invalid");
 			expect(result.diagnostics[0]?.path).toBe(
 				"wiring.requirements.capabilities.0.mode",
+			);
+		}
+	});
+
+	test("fails compilation when reachability references an unknown capability id", () => {
+		const fixture = createUnknownReachabilityCapabilityIdFixture();
+		const result = compileEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics[0]?.code).toBe(
+				"reachability_requirement_capability_id_not_found",
+			);
+			expect(result.diagnostics[0]?.path).toBe(
+				"wiring.requirements.capabilities.0.portId",
+			);
+		}
+	});
+
+	test("fails compilation when reachability references an unknown capability version", () => {
+		const fixture = createUnknownReachabilityCapabilityVersionFixture();
+		const result = compileEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics[0]?.code).toBe(
+				"reachability_requirement_capability_version_not_found",
+			);
+			expect(result.diagnostics[0]?.path).toBe(
+				"wiring.requirements.capabilities.0.portVersion",
 			);
 		}
 	});

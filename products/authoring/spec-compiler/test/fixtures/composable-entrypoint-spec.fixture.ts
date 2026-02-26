@@ -2,6 +2,20 @@
  * Returns a valid composable entrypoint authoring spec fixture.
  */
 export const createComposableEntrypointSpecFixture = () => ({
+	capabilities: [
+		{
+			id: "notifications.send",
+			version: "1.0.0",
+		},
+		{
+			id: "ids.generate",
+			version: "1.0.0",
+		},
+		{
+			id: "legacy.audit",
+			version: "1.0.0",
+		},
+	],
 	access: {
 		default_policy: "deny" as const,
 		roles: {
@@ -155,6 +169,44 @@ export const createInvalidReachabilityModeFixture = () => {
 			...first,
 			mode: "remote",
 		} as unknown as (typeof requirements)[number];
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unknown capability id reference.
+ */
+export const createUnknownReachabilityCapabilityIdFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			portId: "ids.unknown",
+		};
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unknown capability version reference.
+ */
+export const createUnknownReachabilityCapabilityVersionFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			portVersion: "9.9.9",
+		};
 	}
 	return fixture;
 };

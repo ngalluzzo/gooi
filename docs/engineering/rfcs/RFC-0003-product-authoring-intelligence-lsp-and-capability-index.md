@@ -233,7 +233,7 @@ Feature-oriented package plan:
 1. `packages/authoring-contracts`
 2. `packages/capability-index`
 3. `packages/symbol-graph`
-4. `packages/product-authoring-lsp`
+4. `packages/lsp`
 5. `packages/conformance` (`src/authoring-conformance` feature modules)
 
 Public APIs via `package.json` exports:
@@ -276,7 +276,7 @@ flowchart LR
   CapabilitySources["Capability Contracts + Marketplace Metadata"] --> CapabilityIndex["CapabilityIndexSnapshot"]
   CapabilityIndex --> Lockfile
 
-  Editor["LSP Client (VS Code / JetBrains / Neovim)"] --> LSP["product-authoring-lsp"]
+  Editor["LSP Client (VS Code / JetBrains / Neovim)"] --> LSP["lsp"]
   EntrypointBundle --> LSP
   SymbolGraph --> LSP
   CapabilityIndex --> LSP

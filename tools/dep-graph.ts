@@ -2,6 +2,8 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const PACKAGES_DIR = join(import.meta.dir, "../packages");
+const PRODUCTS_DIR = join(import.meta.dir, "../products");
+const TOOLS_DIR = join(import.meta.dir, "../tools");
 const SCOPE = "@gooi/";
 
 interface PkgJson {
@@ -12,18 +14,46 @@ interface PkgJson {
 }
 
 async function loadPackages(): Promise<PkgJson[]> {
-	const dirs = await readdir(PACKAGES_DIR, { withFileTypes: true });
 	const pkgs: PkgJson[] = [];
+	const seen = new Set<string>();
 
-	for (const d of dirs) {
-		if (!d.isDirectory()) continue;
-		const pkgPath = join(PACKAGES_DIR, d.name, "package.json");
+	const tryLoad = async (pkgPath: string) => {
 		try {
 			const raw = await readFile(pkgPath, "utf-8");
-			pkgs.push(JSON.parse(raw));
+			const parsed = JSON.parse(raw) as PkgJson;
+			if (!seen.has(parsed.name)) {
+				seen.add(parsed.name);
+				pkgs.push(parsed);
+			}
 		} catch {
 			// skip dirs without package.json
 		}
+	};
+
+	const packageDirs = await readdir(PACKAGES_DIR, { withFileTypes: true });
+	for (const d of packageDirs) {
+		if (!d.isDirectory()) continue;
+		await tryLoad(join(PACKAGES_DIR, d.name, "package.json"));
+	}
+
+	const productCategories = await readdir(PRODUCTS_DIR, { withFileTypes: true });
+	for (const category of productCategories) {
+		if (!category.isDirectory()) continue;
+		const productDirs = await readdir(join(PRODUCTS_DIR, category.name), {
+			withFileTypes: true,
+		});
+		for (const d of productDirs) {
+			if (!d.isDirectory()) continue;
+			await tryLoad(
+				join(PRODUCTS_DIR, category.name, d.name, "package.json"),
+			);
+		}
+	}
+
+	const toolDirs = await readdir(TOOLS_DIR, { withFileTypes: true });
+	for (const d of toolDirs) {
+		if (!d.isDirectory()) continue;
+		await tryLoad(join(TOOLS_DIR, d.name, "package.json"));
 	}
 
 	return pkgs;
@@ -75,7 +105,7 @@ async function main() {
 	const pkgs = await loadPackages();
 
 	if (pkgs.length === 0) {
-		console.error("No packages found in packages/");
+		console.error("No packages found in packages/, products/*/*, or tools/*.");
 		process.exit(1);
 	}
 

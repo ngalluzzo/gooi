@@ -1,5 +1,5 @@
 {
-	"entryPoints": ["src/index.ts"],
+	"entryPoints": ["./src/contracts-capability/contracts-capability.contracts.ts"],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

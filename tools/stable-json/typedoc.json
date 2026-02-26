@@ -1,0 +1,9 @@
+{
+	"entryPoints": ["./src/stable-json/stable-json.ts"],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
+}

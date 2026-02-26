@@ -4,7 +4,7 @@ import {
 	buildSchemaArtifact,
 	defineCapabilityPort,
 	parseProviderManifest,
-} from "../src/index";
+} from "../src/contracts-capability/contracts-capability.contracts";
 
 describe("contracts-capability", () => {
 	test("defines stable capability contract hashes", () => {

@@ -1,0 +1,51 @@
+{
+	"name": "@gooi/capability-index",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/build-capability-index-snapshot/build-capability-index-snapshot.js",
+	"types": "./src/build-capability-index-snapshot/build-capability-index-snapshot.ts",
+	"exports": {
+		".": {
+			"types": "./src/build-capability-index-snapshot/build-capability-index-snapshot.ts",
+			"bun": "./src/build-capability-index-snapshot/build-capability-index-snapshot.ts",
+			"import": "./dist/build-capability-index-snapshot/build-capability-index-snapshot.js",
+			"default": "./dist/build-capability-index-snapshot/build-capability-index-snapshot.js"
+		},
+		"./contracts": {
+			"types": "./src/capability-index-contracts/capability-index.contracts.ts",
+			"bun": "./src/capability-index-contracts/capability-index.contracts.ts",
+			"import": "./dist/capability-index-contracts/capability-index.contracts.js",
+			"default": "./dist/capability-index-contracts/capability-index.contracts.js"
+		},
+		"./parse": {
+			"types": "./src/parse-capability-index-snapshot/parse-capability-index-snapshot.ts",
+			"bun": "./src/parse-capability-index-snapshot/parse-capability-index-snapshot.ts",
+			"import": "./dist/parse-capability-index-snapshot/parse-capability-index-snapshot.js",
+			"default": "./dist/parse-capability-index-snapshot/parse-capability-index-snapshot.js"
+		},
+		"./resolve": {
+			"types": "./src/resolve-capability/resolve-capability.ts",
+			"bun": "./src/resolve-capability/resolve-capability.ts",
+			"import": "./dist/resolve-capability/resolve-capability.js",
+			"default": "./dist/resolve-capability/resolve-capability.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/build-capability-index-snapshot/build-capability-index-snapshot.ts --outfile ./dist/build-capability-index-snapshot/build-capability-index-snapshot.js --external zod --external @gooi/contracts-capability --external @gooi/stable-json && bun build ./src/capability-index-contracts/capability-index.contracts.ts --outfile ./dist/capability-index-contracts/capability-index.contracts.js --external zod --external @gooi/contracts-capability && bun build ./src/parse-capability-index-snapshot/parse-capability-index-snapshot.ts --outfile ./dist/parse-capability-index-snapshot/parse-capability-index-snapshot.js --external zod --external @gooi/contracts-capability --external @gooi/stable-json && bun build ./src/resolve-capability/resolve-capability.ts --outfile ./dist/resolve-capability/resolve-capability.js --external zod --external @gooi/contracts-capability",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

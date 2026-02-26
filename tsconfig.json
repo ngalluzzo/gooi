@@ -3,15 +3,15 @@
 	"references": [
 		{ "path": "./apps/gooi-vscode-extension" },
 		{ "path": "./packages/contracts-capability" },
-		{ "path": "./packages/authoring-contracts" },
-		{ "path": "./packages/capability-index" },
-		{ "path": "./packages/symbol-graph" },
-		{ "path": "./packages/product-authoring-lsp" },
 		{ "path": "./packages/binding-plan" },
-		{ "path": "./packages/provider-runtime" },
-		{ "path": "./packages/conformance" },
-		{ "path": "./packages/spec-compiler" },
+		{ "path": "./products/authoring/authoring-contracts" },
+		{ "path": "./products/authoring/product-authoring-lsp" },
+		{ "path": "./products/authoring/capability-index" },
+		{ "path": "./products/authoring/symbol-graph" },
+		{ "path": "./products/runtime/provider-runtime" },
+		{ "path": "./products/quality/conformance" },
+		{ "path": "./products/authoring/spec-compiler" },
 		{ "path": "./packages/surface-bindings" },
-		{ "path": "./packages/entrypoint-runtime" }
+		{ "path": "./products/runtime/entrypoint-runtime" }
 	]
 }

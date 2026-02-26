@@ -1,0 +1,40 @@
+{
+	"name": "@gooi/provider-runtime",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/provider-runtime/provider-runtime.js",
+	"types": "./src/provider-runtime/provider-runtime.ts",
+	"exports": {
+		".": {
+			"types": "./src/provider-runtime/provider-runtime.ts",
+			"bun": "./src/provider-runtime/provider-runtime.ts",
+			"import": "./dist/provider-runtime/provider-runtime.js",
+			"default": "./dist/provider-runtime/provider-runtime.js"
+		},
+		"./host-ports": {
+			"types": "./src/provider-runtime-host-ports/provider-runtime-host-ports.ts",
+			"bun": "./src/provider-runtime-host-ports/provider-runtime-host-ports.ts",
+			"import": "./dist/provider-runtime-host-ports/provider-runtime-host-ports.js",
+			"default": "./dist/provider-runtime-host-ports/provider-runtime-host-ports.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/provider-runtime/provider-runtime.ts --outfile ./dist/provider-runtime/provider-runtime.js --external zod && bun build ./src/provider-runtime-host-ports/provider-runtime-host-ports.ts --outfile ./dist/provider-runtime-host-ports/provider-runtime-host-ports.js --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/binding-plan": "workspace:*",
+		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

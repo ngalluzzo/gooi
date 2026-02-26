@@ -42,13 +42,6 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/authoring-contracts": {
-      "name": "@gooi/authoring-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "zod": "^4.3.6",
-      },
-    },
     "packages/binding-plan": {
       "name": "@gooi/binding-plan",
       "version": "0.1.0",
@@ -56,15 +49,70 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/capability-index": {
+    "packages/contracts-capability": {
+      "name": "@gooi/contracts-capability",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "packages/host-contracts": {
+      "name": "@gooi/host-contracts",
+      "version": "0.1.0",
+    },
+    "packages/surface-bindings": {
+      "name": "@gooi/surface-bindings",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/spec-compiler": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/authoring/authoring-contracts": {
+      "name": "@gooi/authoring-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/authoring/capability-index": {
       "name": "@gooi/capability-index",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contracts-capability": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/authoring/product-authoring-lsp": {
+      "name": "@gooi/product-authoring-lsp",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/authoring-contracts": "workspace:*",
+        "@gooi/capability-index": "workspace:*",
+        "@gooi/symbol-graph": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/authoring/spec-compiler": {
+      "name": "@gooi/spec-compiler",
       "version": "0.1.0",
       "dependencies": {
         "@gooi/contracts-capability": "workspace:*",
         "zod": "^4.3.6",
       },
     },
-    "packages/conformance": {
+    "products/authoring/symbol-graph": {
+      "name": "@gooi/symbol-graph",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/quality/conformance": {
       "name": "@gooi/conformance",
       "version": "0.1.0",
       "dependencies": {
@@ -82,14 +130,7 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/contracts-capability": {
-      "name": "@gooi/contracts-capability",
-      "version": "0.1.0",
-      "dependencies": {
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/entrypoint-runtime": {
+    "products/runtime/entrypoint-runtime": {
       "name": "@gooi/entrypoint-runtime",
       "version": "0.1.0",
       "dependencies": {
@@ -100,21 +141,7 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/host-contracts": {
-      "name": "@gooi/host-contracts",
-      "version": "0.1.0",
-    },
-    "packages/product-authoring-lsp": {
-      "name": "@gooi/product-authoring-lsp",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/authoring-contracts": "workspace:*",
-        "@gooi/capability-index": "workspace:*",
-        "@gooi/symbol-graph": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/provider-runtime": {
+    "products/runtime/provider-runtime": {
       "name": "@gooi/provider-runtime",
       "version": "0.1.0",
       "dependencies": {
@@ -124,28 +151,9 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/spec-compiler": {
-      "name": "@gooi/spec-compiler",
+    "tools/stable-json": {
+      "name": "@gooi/stable-json",
       "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contracts-capability": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/surface-bindings": {
-      "name": "@gooi/surface-bindings",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/spec-compiler": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/symbol-graph": {
-      "name": "@gooi/symbol-graph",
-      "version": "0.1.0",
-      "dependencies": {
-        "zod": "^4.3.6",
-      },
     },
   },
   "catalog": {
@@ -645,31 +653,33 @@
 
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
 
-    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:packages/authoring-contracts"],
+    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:products/authoring/authoring-contracts"],
 
     "@gooi/binding-plan": ["@gooi/binding-plan@workspace:packages/binding-plan"],
 
-    "@gooi/capability-index": ["@gooi/capability-index@workspace:packages/capability-index"],
+    "@gooi/capability-index": ["@gooi/capability-index@workspace:products/authoring/capability-index"],
 
-    "@gooi/conformance": ["@gooi/conformance@workspace:packages/conformance"],
+    "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
 
     "@gooi/contracts-capability": ["@gooi/contracts-capability@workspace:packages/contracts-capability"],
 
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 
-    "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:packages/entrypoint-runtime"],
+    "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 
     "@gooi/host-contracts": ["@gooi/host-contracts@workspace:packages/host-contracts"],
 
-    "@gooi/product-authoring-lsp": ["@gooi/product-authoring-lsp@workspace:packages/product-authoring-lsp"],
+    "@gooi/product-authoring-lsp": ["@gooi/product-authoring-lsp@workspace:products/authoring/product-authoring-lsp"],
 
-    "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:packages/provider-runtime"],
+    "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:products/runtime/provider-runtime"],
 
-    "@gooi/spec-compiler": ["@gooi/spec-compiler@workspace:packages/spec-compiler"],
+    "@gooi/spec-compiler": ["@gooi/spec-compiler@workspace:products/authoring/spec-compiler"],
+
+    "@gooi/stable-json": ["@gooi/stable-json@workspace:tools/stable-json"],
 
     "@gooi/surface-bindings": ["@gooi/surface-bindings@workspace:packages/surface-bindings"],
 
-    "@gooi/symbol-graph": ["@gooi/symbol-graph@workspace:packages/symbol-graph"],
+    "@gooi/symbol-graph": ["@gooi/symbol-graph@workspace:products/authoring/symbol-graph"],
 
     "@hapi/hoek": ["@hapi/hoek@9.3.0", "", {}, "sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ=="],
 

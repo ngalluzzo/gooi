@@ -6,7 +6,7 @@ import {
 	parseBindingPlan,
 	parseDeploymentLockfile,
 	providerHasLockedCapability,
-} from "../src/index";
+} from "../src/binding-plan/binding-plan";
 
 describe("binding-plan", () => {
 	test("parses binding plan and lockfile", () => {

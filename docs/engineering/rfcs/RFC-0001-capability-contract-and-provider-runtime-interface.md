@@ -37,11 +37,12 @@ boundaries, and non-portable behavior.
 3. Enforce boundary rules between surface adapters, kernel, capability adapters, and host adapters.
 4. Establish deterministic compatibility checks and activation failures.
 5. Establish this RFC format as the baseline for future product-engineering proposals.
+6. Define capability reachability contracts across execution hosts with explicit delegation behavior.
 
 ## Non-goals
 
 1. Shipping specific external providers (Terraform, GitHub Actions, Retool, etc.).
-2. Defining cross-process transport (gRPC/JSON-RPC) for polyglot providers.
+2. Defining cross-process transport protocol details (gRPC/JSON-RPC/etc.) for polyglot providers.
 3. Implementing full projection/query/action runtime in this RFC.
 4. Introducing OOP frameworks or class-based plugin APIs.
 
@@ -78,6 +79,9 @@ including explicit effects, failure modes, and deployment binding artifacts.
 5. `Host adapter`: Runtime environment dependency port (clock, trace, auth, module loading).
 6. `Binding plan`: Environment-specific provider selection for required ports.
 7. `Lockfile`: Deterministic provider versions/digests used by activation.
+8. `Execution host`: Runtime environment where a capability adapter executes (for example: `browser`, `node`).
+9. `Capability reachability`: Whether a capability can execute on the current host locally or via explicit delegation.
+10. `Delegation route`: Typed activation-time route used to invoke a capability on a different execution host.
 
 `Kernel adapter` is not a first-class term. Kernel is the orchestrator and policy
 engine; it consumes host adapters and capability adapters.
@@ -125,6 +129,16 @@ Compatibility rules:
 3. Breaking contract changes require major version bump.
 4. Activation requires matching contract hash from generated artifacts.
 
+Execution-host reachability rules:
+
+1. Provider manifest declares capability-level supported execution hosts.
+2. Binding plan resolution classifies each required capability as:
+   - `local` (invokable on current host), or
+   - `delegated` (invoked through explicit delegation route to another host), or
+   - `unreachable` (hard failure).
+3. Runtime must never implicitly fall back to undeclared providers or undeclared transport paths.
+4. If required capability is `unreachable`, activation fails with typed error.
+
 Error taxonomy:
 
 1. `validation_error`
@@ -133,6 +147,8 @@ Error taxonomy:
 4. `invocation_error`
 5. `timeout_error`
 6. `effect_violation_error`
+7. `capability_unreachable_error`
+8. `capability_delegation_error`
 
 ### Contract sketch
 
@@ -154,7 +170,20 @@ export type ProviderManifest = {
     readonly portId: string;
     readonly portVersion: string;
     readonly contractHash: string;
+    readonly executionHosts: readonly ("browser" | "node" | "edge" | "worker")[];
+    readonly delegationAllowedFrom?: readonly ("browser" | "node" | "edge" | "worker")[];
   }[];
+};
+```
+
+```ts
+export type CapabilityResolutionMode = "local" | "delegated";
+
+export type CapabilityBindingResolution = {
+  readonly portId: string;
+  readonly mode: CapabilityResolutionMode;
+  readonly targetHost: "browser" | "node" | "edge" | "worker";
+  readonly delegateRouteId?: string;
 };
 ```
 
@@ -211,6 +240,7 @@ Phase 3:
 1. Land binding plan and lockfile validation.
 2. Enforce activation with resolved plan and lockfile.
 3. Publish provider authoring guide and examples.
+4. Land execution-host reachability and delegation-route validation.
 
 ## Test strategy and acceptance criteria
 
@@ -219,6 +249,7 @@ Required tests:
 1. Unit tests for schemas, compatibility, and error taxonomy.
 2. Integration tests for activate -> invoke -> deactivate lifecycle.
 3. Conformance tests with fixture providers and golden outputs.
+4. Reachability tests for local/delegated/unreachable capability bindings.
 
 Definition of done:
 
@@ -226,6 +257,7 @@ Definition of done:
 2. Invalid input/output is rejected with typed errors.
 3. Undeclared effects fail execution.
 4. Public exports are explicit in `package.json`.
+5. Required capabilities are either explicitly reachable (`local`/`delegated`) or activation fails.
 
 ## Operational readiness
 
@@ -254,12 +286,14 @@ Definition of done:
 
 ## Open questions
 
-1. Should lockfile include provider checksum/signature requirements in M1 or M2?
-2. Which JSON Schema draft is pinned for host-provider contracts in M1?
-3. Should capability timeout policy live in binding plan or entrypoint spec?
+None.
 
 ## Decision log
 
 - `2026-02-26` - RFC created as first merged PRD+RFC baseline.
 - `2026-02-26` - Chosen adapter families: surface, capability, host.
 - `2026-02-26` - Boundary IO contracts are Zod-authored and hard-required.
+- `2026-02-26` - Resolved lockfile integrity policy: provider checksums are required in M1; signature fields are optional and enforcement is trust-policy-driven in later milestones.
+- `2026-02-26` - Resolved schema draft pin: host-provider JSON Schema profile is pinned to draft `2020-12`.
+- `2026-02-26` - Resolved timeout ownership: capability timeout policy is defined in binding plans, not entrypoint specs.
+- `2026-02-26` - Resolved capability reachability contract: binding plan must classify required capabilities as `local` or `delegated`; otherwise activation hard-fails.

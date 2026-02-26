@@ -234,7 +234,7 @@ Feature-oriented package plan:
 2. `packages/capability-index`
 3. `packages/symbol-graph`
 4. `packages/product-authoring-lsp`
-5. `packages/authoring-conformance`
+5. `packages/conformance` (`src/authoring-conformance` feature modules)
 
 Public APIs via `package.json` exports:
 
@@ -459,3 +459,4 @@ Protocol constraints adopted from research:
 - `2026-02-26` - Symbol graph scope expanded to include expression-local and ambient symbols.
 - `2026-02-26` - Lockfile mismatch policy clarified: degraded read path allowed, runtime-backed commands blocked.
 - `2026-02-26` - Rename CLI selector standardized to `uri + position` with optional `symbolRef`.
+- `2026-02-26` - Authoring conformance suite placement fixed to `@gooi/conformance` (`src/authoring-conformance`), not a separate package.

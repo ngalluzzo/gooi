@@ -3,7 +3,10 @@ import type {
 	CompiledEntrypoint,
 	CompiledEntrypointKind,
 } from "@gooi/spec-compiler/contracts";
-import type { PrincipalContext, SignalEnvelope } from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
+import type {
+	PrincipalContext,
+	SignalEnvelope,
+} from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
 
 /**
  * Input payload passed to query and mutation domain execution ports.

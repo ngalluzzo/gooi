@@ -1,8 +1,8 @@
-import { sha256, stableStringify } from "@gooi/contracts-capability";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import type { CompiledSurfaceBinding } from "@gooi/spec-compiler/contracts";
-import type { SignalEnvelope } from "../../src/entrypoint-runtime-contracts/entrypoint-runtime.contracts";
+import { sha256, stableStringify } from "@gooi/stable-json";
 import type { DomainRuntimePort } from "../../src/domain-runtime-port/domain-runtime-port";
+import type { SignalEnvelope } from "../../src/entrypoint-runtime-contracts/entrypoint-runtime.contracts";
 
 /**
  * Domain runtime fixture with call counters for query and mutation ports.

@@ -36,7 +36,9 @@ async function loadPackages(): Promise<PkgJson[]> {
 		await tryLoad(join(PACKAGES_DIR, d.name, "package.json"));
 	}
 
-	const productCategories = await readdir(PRODUCTS_DIR, { withFileTypes: true });
+	const productCategories = await readdir(PRODUCTS_DIR, {
+		withFileTypes: true,
+	});
 	for (const category of productCategories) {
 		if (!category.isDirectory()) continue;
 		const productDirs = await readdir(join(PRODUCTS_DIR, category.name), {
@@ -44,9 +46,7 @@ async function loadPackages(): Promise<PkgJson[]> {
 		});
 		for (const d of productDirs) {
 			if (!d.isDirectory()) continue;
-			await tryLoad(
-				join(PRODUCTS_DIR, category.name, d.name, "package.json"),
-			);
+			await tryLoad(join(PRODUCTS_DIR, category.name, d.name, "package.json"));
 		}
 	}
 

@@ -1,8 +1,8 @@
+import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	type CapabilityIndexSnapshot,
 	capabilityIndexSnapshotSchema,
 } from "../capability-index-contracts/capability-index.contracts";
-import { sha256, stableStringify } from "@gooi/stable-json";
 
 /**
  * Parses and validates a capability index snapshot.

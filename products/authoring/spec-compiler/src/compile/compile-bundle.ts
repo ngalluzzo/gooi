@@ -1,11 +1,8 @@
-import { sha256, stableStringify } from "@gooi/contracts-capability";
+import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	authoringEntrypointSpecSchema,
 	parseAuthoringEntrypointSpec,
 } from "../authoring-spec/authoring-spec";
-import { compileBindings } from "./compile-bindings";
-import { compileEntrypoints } from "./compile-entrypoints";
-import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 import {
 	artifactVersionSchema,
 	type CompileDiagnostic,
@@ -14,6 +11,9 @@ import {
 	type CompiledRoleDeriveRule,
 	type CompileEntrypointBundleResult,
 } from "./compile.contracts";
+import { compileBindings } from "./compile-bindings";
+import { compileEntrypoints } from "./compile-entrypoints";
+import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 
 /**
  * Input payload for compiling a deterministic entrypoint bundle.

@@ -54,6 +54,7 @@
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-bindings": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

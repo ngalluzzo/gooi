@@ -83,6 +83,7 @@
 		"@gooi/provider-runtime": "workspace:*",
 		"@gooi/product-authoring-lsp": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
 		"@gooi/surface-bindings": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",
 		"zod": "^4.3.6"

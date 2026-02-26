@@ -1,11 +1,11 @@
 import type { EffectKind } from "@gooi/contracts-capability";
 import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
+import type { DomainRuntimePort } from "../domain-runtime-port/domain-runtime-port";
 import type {
 	PrincipalContext,
 	ResultEnvelope,
 	SignalEnvelope,
 } from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
-import type { DomainRuntimePort } from "../domain-runtime-port/domain-runtime-port";
 import { buildRefreshTriggers, resolveAffectedQueryIds } from "./refresh";
 
 const envelopeVersion = "1.0.0" as const;

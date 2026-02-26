@@ -39,6 +39,7 @@
 	},
 	"dependencies": {
 		"@gooi/contracts-capability": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

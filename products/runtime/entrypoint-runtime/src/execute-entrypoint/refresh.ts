@@ -1,5 +1,8 @@
 import type { CompiledRefreshSubscription } from "@gooi/spec-compiler/contracts";
-import type { RefreshTrigger, SignalEnvelope } from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
+import type {
+	RefreshTrigger,
+	SignalEnvelope,
+} from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
 
 /**
  * Derives refresh triggers from emitted mutation signals.

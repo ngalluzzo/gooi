@@ -1,11 +1,11 @@
+import { sha256, stableStringify } from "@gooi/stable-json";
+import { deriveSignalImpactEdges } from "../derive-signal-impact-edges/derive-signal-impact-edges";
 import {
 	type BuildSymbolGraphSnapshotInput,
 	type SymbolGraphSnapshot,
 	type SymbolReferenceEdge,
 	symbolGraphSnapshotSchema,
 } from "../symbol-graph-contracts/symbol-graph.contracts";
-import { deriveSignalImpactEdges } from "../derive-signal-impact-edges/derive-signal-impact-edges";
-import { sha256, stableStringify } from "@gooi/stable-json";
 
 /**
  * Builds a deterministic symbol graph snapshot.

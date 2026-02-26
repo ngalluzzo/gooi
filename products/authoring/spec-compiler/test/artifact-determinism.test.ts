@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stableStringify } from "@gooi/contracts-capability";
+import { stableStringify } from "@gooi/stable-json";
 import { compileEntrypointBundle } from "../src/compile/compile-bundle";
 import { createComposableEntrypointSpecFixture } from "./fixtures/composable-entrypoint-spec.fixture";
 

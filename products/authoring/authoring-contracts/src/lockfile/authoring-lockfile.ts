@@ -1,6 +1,5 @@
-import { z } from "zod";
-
 import { sha256, stableStringify } from "@gooi/stable-json";
+import { z } from "zod";
 
 const artifactHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
 const envelopeVersionSchema = z.literal("1.0.0");

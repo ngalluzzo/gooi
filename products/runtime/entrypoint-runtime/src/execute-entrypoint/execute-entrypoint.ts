@@ -1,25 +1,25 @@
-import { sha256, stableStringify } from "@gooi/contracts-capability";
 import type {
 	CompiledEntrypoint,
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
 } from "@gooi/spec-compiler/contracts";
+import { sha256, stableStringify } from "@gooi/stable-json";
 import type { SurfaceRequestPayload } from "@gooi/surface-bindings";
 import { bindSurfaceInput } from "@gooi/surface-bindings";
-import { isAccessAllowed } from "./access-gate";
+import type { DomainRuntimePort } from "../domain-runtime-port/domain-runtime-port";
 import type {
 	InvocationEnvelope,
 	PrincipalContext,
 	ResultEnvelope,
 	TypedErrorEnvelope,
 } from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
-import type { DomainRuntimePort } from "../domain-runtime-port/domain-runtime-port";
-import { executeEntrypointTail } from "./execute-entrypoint-tail";
 import {
 	createDefaultEntrypointHostPorts,
 	type EntrypointHostPorts,
 } from "../host-ports/host-ports";
 import type { IdempotencyStore } from "../idempotency-store/idempotency-store";
+import { isAccessAllowed } from "./access-gate";
+import { executeEntrypointTail } from "./execute-entrypoint-tail";
 import { validateEntrypointInput } from "./input-validation";
 
 /**

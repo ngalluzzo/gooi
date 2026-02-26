@@ -1,7 +1,7 @@
-import { sha256, stableStringify } from "@gooi/contracts-capability";
 import type { SignalEnvelope } from "@gooi/entrypoint-runtime/contracts";
 import type { DomainRuntimePort } from "@gooi/entrypoint-runtime/domain-runtime-port";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
+import { sha256, stableStringify } from "@gooi/stable-json";
 
 /**
  * Builds entrypoint conformance fixture input.

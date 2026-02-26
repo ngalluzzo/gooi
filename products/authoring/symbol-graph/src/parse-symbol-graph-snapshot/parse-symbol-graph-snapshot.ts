@@ -1,8 +1,8 @@
+import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	type SymbolGraphSnapshot,
 	symbolGraphSnapshotSchema,
 } from "../symbol-graph-contracts/symbol-graph.contracts";
-import { sha256, stableStringify } from "@gooi/stable-json";
 
 /**
  * Parses and validates a symbol graph snapshot.

@@ -11,8 +11,8 @@ import {
 } from "@gooi/host-contracts";
 import type { CompiledAccessPlan } from "@gooi/spec-compiler/contracts";
 import { z } from "zod";
-import { deriveEffectiveRoles } from "../execute-entrypoint/access-gate";
 import type { PrincipalContext } from "../entrypoint-runtime-contracts/entrypoint-runtime.contracts";
+import { deriveEffectiveRoles } from "../execute-entrypoint/access-gate";
 import type { IdempotencyRecord } from "../idempotency-store/idempotency-store";
 
 /**

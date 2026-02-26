@@ -1,10 +1,10 @@
+import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	type BuildCapabilityIndexSnapshotInput,
 	type CapabilityIndexEntry,
 	type CapabilityIndexSnapshot,
 	capabilityIndexSnapshotSchema,
 } from "../capability-index-contracts/capability-index.contracts";
-import { sha256, stableStringify } from "@gooi/stable-json";
 
 /**
  * Builds a deterministic capability index snapshot from local and catalog capabilities.

@@ -16,6 +16,7 @@ import type {
 import type { DomainRuntimePort } from "./domain-runtime-port";
 import { executeEntrypointTail } from "./execute-entrypoint-tail";
 import type { IdempotencyStore } from "./idempotency-store";
+import { validateEntrypointInput } from "./input-validation";
 
 /**
  * Input payload for deterministic entrypoint runtime execution.
@@ -181,6 +182,44 @@ export const executeEntrypoint = async (
 		input: bound.value,
 	};
 
+	if (input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey] === undefined) {
+		return errorResult(
+			resolvedInvocation,
+			input.bundle.artifactHash,
+			startedAt,
+			errorEnvelope(
+				"validation_error",
+				"Compiled entrypoint schema artifact is missing.",
+				false,
+				{
+					entrypointId: entrypoint.id,
+					entrypointKind: entrypoint.kind,
+					schemaArtifactKey: entrypoint.schemaArtifactKey,
+				},
+			),
+		);
+	}
+
+	const validatedInput = validateEntrypointInput(entrypoint, bound.value);
+	if (!validatedInput.ok) {
+		return errorResult(
+			resolvedInvocation,
+			input.bundle.artifactHash,
+			startedAt,
+			errorEnvelope(
+				"validation_error",
+				"Entrypoint input validation failed.",
+				false,
+				validatedInput.details,
+			),
+		);
+	}
+
+	const validatedInvocation = {
+		...resolvedInvocation,
+		input: validatedInput.value,
+	};
+
 	let scope: string | null = null;
 	let inputHash: string | null = null;
 	if (
@@ -188,7 +227,7 @@ export const executeEntrypoint = async (
 		input.idempotencyKey &&
 		input.idempotencyStore
 	) {
-		inputHash = sha256(stableStringify(resolvedInvocation.input));
+		inputHash = sha256(stableStringify(validatedInvocation.input));
 		scope = idempotencyScopeKey(
 			entrypoint,
 			input.principal,
@@ -197,12 +236,12 @@ export const executeEntrypoint = async (
 		const existing = await input.idempotencyStore.load(scope);
 		if (existing !== null) {
 			if (existing.inputHash !== inputHash) {
-				return errorResult(
-					resolvedInvocation,
-					input.bundle.artifactHash,
-					startedAt,
-					errorEnvelope(
-						"idempotency_conflict_error",
+					return errorResult(
+						validatedInvocation,
+						input.bundle.artifactHash,
+						startedAt,
+						errorEnvelope(
+							"idempotency_conflict_error",
 						"Idempotency key reuse conflict.",
 						false,
 					),
@@ -217,7 +256,7 @@ export const executeEntrypoint = async (
 
 	const result = await executeEntrypointTail({
 		entrypoint,
-		invocation: resolvedInvocation,
+		invocation: validatedInvocation,
 		startedAt,
 		artifactHash: input.bundle.artifactHash,
 		domainRuntime: input.domainRuntime,

@@ -1,6 +1,7 @@
 {
 	"files": [],
 	"references": [
+		{ "path": "./apps/gooi-vscode-extension" },
 		{ "path": "./packages/contracts-capability" },
 		{ "path": "./packages/authoring-contracts" },
 		{ "path": "./packages/capability-index" },

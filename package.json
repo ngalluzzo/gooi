@@ -44,7 +44,7 @@
 		"*.{ts,tsx}": [
 			"bun lint:fix",
 			"bun format",
-			"bun test --bail",
+			"bash -lc 'bun test --bail'",
 			"bash -lc 'bun typecheck'"
 		]
 	},

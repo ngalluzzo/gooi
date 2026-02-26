@@ -76,6 +76,34 @@ export type CompiledEntrypointKind = z.infer<
 >;
 
 /**
+ * Reachability modes supported by runtime and resolver contracts.
+ */
+export const compiledReachabilityModeSchema = z.enum([
+	"local",
+	"delegated",
+	"unreachable",
+]);
+
+/**
+ * Reachability mode value for required capabilities.
+ */
+export type CompiledReachabilityMode = z.infer<
+	typeof compiledReachabilityModeSchema
+>;
+
+/**
+ * Canonical reachability requirement for one capability.
+ */
+export interface CompiledReachabilityRequirement {
+	/** Capability port identifier. */
+	readonly portId: string;
+	/** Capability port semantic version. */
+	readonly portVersion: string;
+	/** Required execution reachability mode. */
+	readonly mode: CompiledReachabilityMode;
+}
+
+/**
  * Compiled query or mutation entrypoint contract.
  */
 export interface CompiledEntrypoint {
@@ -184,6 +212,10 @@ export interface CompiledEntrypointBundle {
 	readonly entrypoints: Readonly<Record<string, CompiledEntrypoint>>;
 	/** Surface bindings keyed by `<surface>:<kind>:<id>`. */
 	readonly bindings: Readonly<Record<string, CompiledSurfaceBinding>>;
+	/** Reachability requirements keyed by `<portId>@<portVersion>`. */
+	readonly reachabilityRequirements?: Readonly<
+		Record<string, CompiledReachabilityRequirement>
+	>;
 	/** Refresh subscriptions keyed by query id. */
 	readonly refreshSubscriptions: Readonly<
 		Record<string, CompiledRefreshSubscription>

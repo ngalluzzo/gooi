@@ -66,6 +66,25 @@ export const createComposableEntrypointSpecFixture = () => ({
 				},
 			},
 		},
+		requirements: {
+			capabilities: [
+				{
+					portId: "notifications.send",
+					portVersion: "1.0.0",
+					mode: "delegated" as const,
+				},
+				{
+					portId: "ids.generate",
+					portVersion: "1.0.0",
+					mode: "local" as const,
+				},
+				{
+					portId: "legacy.audit",
+					portVersion: "1.0.0",
+					mode: "unreachable" as const,
+				},
+			],
+		},
 	},
 	views: {
 		screens: [
@@ -102,5 +121,40 @@ export const createBindingFieldMismatchFixture = () => {
 	const bindMap = fixture.wiring.surfaces.http.queries.list_messages
 		.bind as Record<string, string>;
 	bindMap.not_declared = "query.not_declared";
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with conflicting reachability declarations.
+ */
+export const createAmbiguousReachabilityRequirementsFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		requirements.push({
+			portId: "ids.generate",
+			portVersion: "1.0.0",
+			mode: "delegated",
+		});
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unsupported reachability mode.
+ */
+export const createInvalidReachabilityModeFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			mode: "remote",
+		} as unknown as (typeof requirements)[number];
+	}
 	return fixture;
 };

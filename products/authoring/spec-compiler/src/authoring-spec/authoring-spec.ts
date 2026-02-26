@@ -3,6 +3,9 @@ import { z } from "zod";
 const typedFieldSchema = z.string().regex(/^[a-z_]+!?$/);
 const defaultsSchema = z.record(z.string(), z.unknown());
 const bindMapSchema = z.record(z.string(), z.string().min(1));
+const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
+	message: "Expected semver in MAJOR.MINOR.PATCH format.",
+});
 
 const accessSchema = z.object({
 	roles: z.array(z.string().min(1)).min(1),
@@ -34,6 +37,12 @@ const wiredMutationSchema = z.object({
 	bind: bindMapSchema,
 });
 
+const reachabilityRequirementSchema = z.object({
+	portId: z.string().min(1),
+	portVersion: semverSchema,
+	mode: z.enum(["local", "delegated", "unreachable"]),
+});
+
 const surfaceSchema = z
 	.object({
 		queries: z.record(z.string(), wiredQuerySchema).optional(),
@@ -63,6 +72,11 @@ export const authoringEntrypointSpecSchema = z.object({
 	mutations: z.array(mutationSchema),
 	wiring: z.object({
 		surfaces: z.record(z.string(), surfaceSchema),
+		requirements: z
+			.object({
+				capabilities: z.array(reachabilityRequirementSchema).optional(),
+			})
+			.optional(),
 	}),
 	views: z
 		.object({

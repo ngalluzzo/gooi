@@ -159,4 +159,86 @@ describe("entrypoint-runtime cross-surface consistency", () => {
 			expectedInput,
 		]);
 	});
+
+	test("returns consistent policy denial envelopes across supported surfaces", async () => {
+		const fixture = createCompiledMutationFixture();
+		expect(fixture.webBinding).toBeDefined();
+		expect(fixture.httpBinding).toBeDefined();
+		expect(fixture.cliBinding).toBeDefined();
+		if (
+			fixture.webBinding === undefined ||
+			fixture.httpBinding === undefined ||
+			fixture.cliBinding === undefined
+		) {
+			return;
+		}
+
+		let mutationCallCount = 0;
+		const domainRuntime: DomainRuntimePort = {
+			executeQuery: async () => ({
+				ok: false,
+				error: { message: "not used" },
+				observedEffects: [] as const,
+			}),
+			executeMutation: async () => {
+				mutationCallCount += 1;
+				return {
+					ok: true,
+					output: { accepted: true },
+					observedEffects: ["write"] as const,
+					emittedSignals: [] as const,
+				};
+			},
+		};
+
+		const principal = {
+			subject: null,
+			claims: {},
+			tags: [],
+		};
+
+		const webResult = await runEntrypoint({
+			bundle: fixture.bundle,
+			binding: fixture.webBinding,
+			request: { body: { message: "same message" } },
+			principal,
+			domainRuntime,
+		});
+		const httpResult = await runEntrypoint({
+			bundle: fixture.bundle,
+			binding: fixture.httpBinding,
+			request: { body: { message: "same message" } },
+			principal,
+			domainRuntime,
+		});
+		const cliResult = await runEntrypoint({
+			bundle: fixture.bundle,
+			binding: fixture.cliBinding,
+			request: { args: { message: "same message" } },
+			principal,
+			domainRuntime,
+		});
+
+		expect(webResult.ok).toBe(false);
+		expect(httpResult.ok).toBe(false);
+		expect(cliResult.ok).toBe(false);
+		if (webResult.ok || httpResult.ok || cliResult.ok) {
+			return;
+		}
+		expect(webResult.error).toBeDefined();
+		expect(httpResult.error).toBeDefined();
+		expect(cliResult.error).toBeDefined();
+		if (
+			webResult.error === undefined ||
+			httpResult.error === undefined ||
+			cliResult.error === undefined
+		) {
+			return;
+		}
+
+		expect(webResult.error.code).toBe("access_denied_error");
+		expect(httpResult.error.code).toBe("access_denied_error");
+		expect(cliResult.error.code).toBe("access_denied_error");
+		expect(mutationCallCount).toBe(0);
+	});
 });

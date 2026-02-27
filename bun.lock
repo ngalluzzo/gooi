@@ -165,6 +165,17 @@
         "zod": "^4.3.6",
       },
     },
+    "products/runtime/domain-runtime": {
+      "name": "@gooi/domain-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/capability-contracts": "workspace:*",
+        "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "products/runtime/entrypoint-runtime": {
       "name": "@gooi/entrypoint-runtime",
       "version": "0.1.0",
@@ -714,6 +725,8 @@
     "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
 
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
+
+    "@gooi/domain-runtime": ["@gooi/domain-runtime@workspace:products/runtime/domain-runtime"],
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 

@@ -1,7 +1,19 @@
-import { authoringLockfileSchema } from "@gooi/authoring-contracts/lockfile";
+import {
+	authoringArtifactIdentitySchema,
+	authoringLockfileSchema,
+	authoringRequiredArtifactIds,
+} from "@gooi/authoring-contracts/lockfile";
 import { capabilityIndexSnapshotSchema } from "@gooi/capability-index/contracts";
 import { symbolGraphSnapshotSchema } from "@gooi/symbol-graph/contracts";
 import { z } from "zod";
+
+const compiledEntrypointBundleIdentitySchema = authoringArtifactIdentitySchema
+	.extend({
+		artifactId: z.literal(
+			authoringRequiredArtifactIds.compiledEntrypointBundle,
+		),
+	})
+	.strict();
 
 /**
  * Snapshot-backed document context required by authoring read-path features.
@@ -10,6 +22,7 @@ export const authoringReadContextSchema = z.object({
 	documentUri: z.string().min(1),
 	documentPath: z.string().min(1),
 	documentText: z.string(),
+	compiledEntrypointBundleIdentity: compiledEntrypointBundleIdentitySchema,
 	capabilityIndexSnapshot: capabilityIndexSnapshotSchema,
 	symbolGraphSnapshot: symbolGraphSnapshotSchema,
 	lockfile: authoringLockfileSchema,

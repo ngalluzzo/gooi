@@ -3,9 +3,21 @@
 	"sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 	"sourceKind": "workspace-local",
 	"requiredArtifacts": {
-		"compiledEntrypointBundle": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-		"capabilityIndexSnapshot": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-		"symbolGraphSnapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+		"compiledEntrypointBundle": {
+			"artifactId": "CompiledEntrypointBundle",
+			"artifactVersion": "1.0.0",
+			"artifactHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+		},
+		"capabilityIndexSnapshot": {
+			"artifactId": "CapabilityIndexSnapshot",
+			"artifactVersion": "1.0.0",
+			"artifactHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+		},
+		"symbolGraphSnapshot": {
+			"artifactId": "SymbolGraphSnapshot",
+			"artifactVersion": "1.0.0",
+			"artifactHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+		}
 	},
 	"catalogSnapshot": {
 		"catalogSource": "demo-catalog",
@@ -18,5 +30,5 @@
 		"authoringErrorEnvelope": "1.0.0",
 		"authoringDiagnosticsEnvelope": "1.0.0"
 	},
-	"artifactHash": "95e1160b0499c7986449bf142c8c093a109202f5448ec661d0f7e23c0b8bb779"
+	"artifactHash": "3f99cc4004e8b89fc1516ca9bbb4c8c3002f575e8f1a2969217c1625f47e1443"
 }

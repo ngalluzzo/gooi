@@ -1,5 +1,6 @@
 import {
 	type AuthoringLockfile,
+	authoringRequiredArtifactIds,
 	createAuthoringLockfile,
 } from "@gooi/authoring-contracts/lockfile";
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
@@ -143,6 +144,7 @@ const symbolGraphInput: BuildSymbolGraphSnapshotInput = {
 };
 
 const createLockfile = (input: {
+	readonly compiledEntrypointBundleHash: string;
 	readonly capabilityIndexHash: string;
 	readonly symbolGraphHash: string;
 	readonly catalogHash: string;
@@ -152,9 +154,21 @@ const createLockfile = (input: {
 		sourceHash: "4".repeat(64),
 		sourceKind: "workspace-local",
 		requiredArtifacts: {
-			compiledEntrypointBundle: "5".repeat(64),
-			capabilityIndexSnapshot: input.capabilityIndexHash,
-			symbolGraphSnapshot: input.symbolGraphHash,
+			compiledEntrypointBundle: {
+				artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+				artifactVersion: "1.0.0",
+				artifactHash: input.compiledEntrypointBundleHash,
+			},
+			capabilityIndexSnapshot: {
+				artifactId: authoringRequiredArtifactIds.capabilityIndexSnapshot,
+				artifactVersion: capabilityIndexSnapshot.artifactVersion,
+				artifactHash: input.capabilityIndexHash,
+			},
+			symbolGraphSnapshot: {
+				artifactId: authoringRequiredArtifactIds.symbolGraphSnapshot,
+				artifactVersion: symbolGraphSnapshot.artifactVersion,
+				artifactHash: input.symbolGraphHash,
+			},
 		},
 		catalogSnapshot: {
 			catalogSource: "demo-catalog",
@@ -172,6 +186,11 @@ const createLockfile = (input: {
 const capabilityIndexSnapshot =
 	buildCapabilityIndexSnapshot(capabilityIndexInput);
 const symbolGraphSnapshot = buildSymbolGraphSnapshot(symbolGraphInput);
+const compiledEntrypointBundleIdentity = {
+	artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+	artifactVersion: "1.0.0",
+	artifactHash: "5".repeat(64),
+} as const;
 
 /**
  * Creates authoring conformance fixture input.
@@ -182,15 +201,20 @@ export const createAuthoringConformanceFixture =
 			documentUri: "spec://docs/demo.yml",
 			documentPath: "docs/demo.yml",
 			documentText: `actions:\n  guestbook.submit:\n    do:\n      - message.is_allowed\n      - gooi-marketplace-bun-sqlite.insert_message\nemits:\n  - message.created\nqueries:\n  home.data.messages:\n    refresh_on_signals:\n      - message.created\nrefs:\n  - generated_ids.ids.0\n  - payload.user_id\nstep_names:\n  - generated_ids\n  - existing_ids\n`,
+			compiledEntrypointBundleIdentity,
 			capabilityIndexSnapshot,
 			symbolGraphSnapshot,
 			lockfile: createLockfile({
+				compiledEntrypointBundleHash:
+					compiledEntrypointBundleIdentity.artifactHash,
 				capabilityIndexHash: capabilityIndexSnapshot.artifactHash,
 				symbolGraphHash: symbolGraphSnapshot.artifactHash,
 				catalogHash: capabilityIndexSnapshot.catalogIdentity.catalogHash,
 			}),
 		},
 		staleLockfile: createLockfile({
+			compiledEntrypointBundleHash:
+				compiledEntrypointBundleIdentity.artifactHash,
 			capabilityIndexHash: "8".repeat(64),
 			symbolGraphHash: symbolGraphSnapshot.artifactHash,
 			catalogHash: capabilityIndexSnapshot.catalogIdentity.catalogHash,

@@ -4,10 +4,28 @@ import { z } from "zod";
 const artifactHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
 const envelopeVersionSchema = z.literal("1.0.0");
 
+/**
+ * Canonical artifact ids referenced by authoring lockfile parity checks.
+ */
+export const authoringRequiredArtifactIds = {
+	compiledEntrypointBundle: "CompiledEntrypointBundle",
+	capabilityIndexSnapshot: "CapabilityIndexSnapshot",
+	symbolGraphSnapshot: "SymbolGraphSnapshot",
+} as const;
+
+/**
+ * Canonical artifact identity used by lockfile parity.
+ */
+export const authoringArtifactIdentitySchema = z.object({
+	artifactId: z.string().min(1),
+	artifactVersion: z.string().min(1),
+	artifactHash: artifactHashSchema,
+});
+
 const requiredArtifactsSchema = z.object({
-	compiledEntrypointBundle: artifactHashSchema,
-	capabilityIndexSnapshot: artifactHashSchema,
-	symbolGraphSnapshot: artifactHashSchema,
+	compiledEntrypointBundle: authoringArtifactIdentitySchema,
+	capabilityIndexSnapshot: authoringArtifactIdentitySchema,
+	symbolGraphSnapshot: authoringArtifactIdentitySchema,
 });
 
 const catalogSnapshotSchema = z.object({

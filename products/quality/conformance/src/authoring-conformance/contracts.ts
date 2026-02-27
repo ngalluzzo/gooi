@@ -51,6 +51,7 @@ export const runAuthoringConformanceInputSchema = z.object({
 		documentUri: z.string().min(1),
 		documentPath: z.string().min(1),
 		documentText: z.string(),
+		compiledEntrypointBundleIdentity: z.unknown(),
 		capabilityIndexSnapshot: z.unknown(),
 		symbolGraphSnapshot: z.unknown(),
 		lockfile: z.unknown(),

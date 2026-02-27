@@ -42,9 +42,21 @@ const lockfile = createAuthoringLockfile({
 	sourceHash: "a".repeat(64),
 	sourceKind: "workspace-local",
 	requiredArtifacts: {
-		compiledEntrypointBundle: "b".repeat(64),
-		capabilityIndexSnapshot: "c".repeat(64),
-		symbolGraphSnapshot: "d".repeat(64),
+		compiledEntrypointBundle: {
+			artifactId: "CompiledEntrypointBundle",
+			artifactVersion: "1.0.0",
+			artifactHash: "b".repeat(64),
+		},
+		capabilityIndexSnapshot: {
+			artifactId: "CapabilityIndexSnapshot",
+			artifactVersion: "1.0.0",
+			artifactHash: "c".repeat(64),
+		},
+		symbolGraphSnapshot: {
+			artifactId: "SymbolGraphSnapshot",
+			artifactVersion: "1.0.0",
+			artifactHash: "d".repeat(64),
+		},
 	},
 	catalogSnapshot: {
 		catalogSource: "local-catalog",

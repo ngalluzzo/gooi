@@ -1,19 +1,23 @@
 import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
-import { normalizeObservedEffects } from "./actions/effects";
-import { runActionPlan } from "./actions/run-action-plan";
-import type {
-	DomainActionPlan,
-	DomainCapabilityHandler,
-	DomainQueryHandler,
-} from "./contracts/action-plan";
 import {
 	areDomainMutationEnvelopesComparable,
 	type DomainMutationEnvelope,
 	type DomainQueryEnvelope,
 	type DomainRuntimeMode,
 	domainRuntimeEnvelopeVersion,
-} from "./contracts/envelopes";
-import { createDomainRuntimeError } from "./contracts/errors";
+} from "../execution-core/envelopes";
+import { createDomainRuntimeError } from "../execution-core/errors";
+import type {
+	DomainActionPlan,
+	DomainCapabilityHandler,
+	DomainGuardRuntime,
+} from "../mutation-path/contracts";
+import { runMutationPath } from "../mutation-path/run-mutation-path";
+import type { DomainQueryHandler } from "../query-path/contracts";
+import {
+	type QueryPathExecutionInput,
+	runQueryPath,
+} from "../query-path/run-query-path";
 
 type MutationPortInput = Parameters<DomainRuntimePort["executeMutation"]>[0];
 type QueryPortInput = Parameters<DomainRuntimePort["executeQuery"]>[0];
@@ -21,7 +25,7 @@ type DomainPortResult = Awaited<
 	ReturnType<DomainRuntimePort["executeMutation"]>
 >;
 
-interface QueryExecutionInput {
+interface RuntimeExecutionInput {
 	readonly entrypointId: string;
 	readonly input: Readonly<Record<string, unknown>>;
 	readonly principal: MutationPortInput["principal"];
@@ -37,16 +41,17 @@ export interface CreateDomainRuntimeInput {
 	readonly mutationEntrypointActionMap: Readonly<Record<string, string>>;
 	readonly actions: Readonly<Record<string, DomainActionPlan>>;
 	readonly capabilities: Readonly<Record<string, DomainCapabilityHandler>>;
+	readonly guards?: DomainGuardRuntime;
 	readonly queries?: Readonly<Record<string, DomainQueryHandler>>;
 }
 
 export interface DomainRuntime {
 	readonly port: DomainRuntimePort;
 	readonly executeMutationEnvelope: (
-		input: QueryExecutionInput,
+		input: RuntimeExecutionInput,
 	) => Promise<DomainMutationEnvelope>;
 	readonly executeQueryEnvelope: (
-		input: QueryExecutionInput,
+		input: RuntimeExecutionInput,
 	) => Promise<DomainQueryEnvelope>;
 	readonly areComparable: (
 		live: DomainMutationEnvelope,
@@ -79,7 +84,7 @@ const mapQueryEnvelopeToDomainResult = (
 });
 
 const buildActionNotFoundEnvelope = (
-	execution: QueryExecutionInput,
+	execution: RuntimeExecutionInput,
 	message: string,
 	details: Readonly<Record<string, unknown>>,
 	actionId = "unknown",
@@ -107,19 +112,23 @@ const buildActionNotFoundEnvelope = (
 	},
 });
 
-const buildQueryTrace = (execution: QueryExecutionInput) => ({
-	mode: execution.ctx.mode,
-	entrypointId: execution.entrypointId,
-	invocationId: execution.ctx.invocationId,
-	traceId: execution.ctx.traceId,
-	steps: [],
+const toQueryExecution = (
+	input: RuntimeExecutionInput,
+): QueryPathExecutionInput => ({
+	entrypointId: input.entrypointId,
+	input: input.input,
+	principal: input.principal,
+	ctx: input.ctx,
 });
 
+/**
+ * Composes canonical mutation and query execution paths behind DomainRuntimePort.
+ */
 export const createDomainRuntime = (
 	input: CreateDomainRuntimeInput,
 ): DomainRuntime => {
 	const executeMutationEnvelope = async (
-		execution: QueryExecutionInput,
+		execution: RuntimeExecutionInput,
 	): Promise<DomainMutationEnvelope> => {
 		const actionId = input.mutationEntrypointActionMap[execution.entrypointId];
 		if (actionId === undefined) {
@@ -140,74 +149,24 @@ export const createDomainRuntime = (
 			);
 		}
 
-		return runActionPlan({
+		return runMutationPath({
 			entrypointId: execution.entrypointId,
 			action,
 			capabilities: input.capabilities,
 			input: execution.input,
 			principal: execution.principal,
+			...(input.guards === undefined ? {} : { guardRuntime: input.guards }),
 			ctx: execution.ctx,
 		});
 	};
 
 	const executeQueryEnvelope = async (
-		execution: QueryExecutionInput,
-	): Promise<DomainQueryEnvelope> => {
-		const handler = input.queries?.[execution.entrypointId];
-		const trace = buildQueryTrace(execution);
-		if (handler === undefined) {
-			return {
-				envelopeVersion: domainRuntimeEnvelopeVersion,
-				mode: execution.ctx.mode,
-				entrypointId: execution.entrypointId,
-				ok: false,
-				error: createDomainRuntimeError(
-					"query_not_found_error",
-					"No query handler exists for this entrypoint.",
-					{ entrypointId: execution.entrypointId },
-				),
-				observedEffects: [],
-				trace,
-			};
-		}
-
-		const result = await handler.run(execution);
-		const traced = {
-			...trace,
-			steps: [
-				{
-					stepId: "query.run",
-					phase: "invoke" as const,
-					status: result.ok ? ("ok" as const) : ("error" as const),
-				},
-			],
-		};
-		if (!result.ok) {
-			return {
-				envelopeVersion: domainRuntimeEnvelopeVersion,
-				mode: execution.ctx.mode,
-				entrypointId: execution.entrypointId,
-				ok: false,
-				error: createDomainRuntimeError(
-					"capability_invocation_error",
-					"Query handler returned a failed typed result.",
-					{ entrypointId: execution.entrypointId, error: result.error },
-				),
-				observedEffects: normalizeObservedEffects(result.observedEffects),
-				trace: traced,
-			};
-		}
-
-		return {
-			envelopeVersion: domainRuntimeEnvelopeVersion,
-			mode: execution.ctx.mode,
-			entrypointId: execution.entrypointId,
-			ok: true,
-			output: result.output,
-			observedEffects: normalizeObservedEffects(result.observedEffects),
-			trace: traced,
-		};
-	};
+		execution: RuntimeExecutionInput,
+	): Promise<DomainQueryEnvelope> =>
+		runQueryPath({
+			execution: toQueryExecution(execution),
+			...(input.queries === undefined ? {} : { queries: input.queries }),
+		});
 
 	const port: DomainRuntimePort = {
 		executeQuery: async (queryInput: QueryPortInput) => {

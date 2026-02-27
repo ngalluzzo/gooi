@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/engine";
+import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime action/capability semantics", () => {
 	test("applies deterministic defaults and preserves explicit nulls", async () => {

@@ -9,6 +9,10 @@ export const domainRuntimeErrorCodeSchema = z.enum([
 	"action_step_input_error",
 	"capability_contract_error",
 	"capability_invocation_error",
+	"collection_invariant_error",
+	"action_guard_error",
+	"signal_guard_error",
+	"flow_guard_error",
 	"session_outcome_error",
 ]);
 

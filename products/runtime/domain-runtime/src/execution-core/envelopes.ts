@@ -21,7 +21,12 @@ export interface DomainTraceStep {
 	/** Capability identifier attached to this step when applicable. */
 	readonly capabilityId?: string;
 	/** Trace phase kind. */
-	readonly phase: "resolve_input" | "validate_contract" | "invoke" | "session";
+	readonly phase:
+		| "resolve_input"
+		| "validate_contract"
+		| "invoke"
+		| "guard"
+		| "session";
 	/** Deterministic step status. */
 	readonly status: "ok" | "error" | "skipped";
 	/** Optional structured detail payload for diagnostics. */

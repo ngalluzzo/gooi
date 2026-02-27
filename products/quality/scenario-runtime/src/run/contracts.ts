@@ -15,6 +15,9 @@ export type ScenarioExecutionProfile =
 	| "default_ci"
 	| "production_smoke";
 
+export const defaultScenarioExecutionProfile: ScenarioExecutionProfile =
+	"simulation";
+
 export interface TriggerInvocationResult {
 	readonly ok: boolean;
 	readonly output?: unknown;
@@ -41,6 +44,8 @@ export interface RunScenarioInput {
 		readonly entrypointId: string;
 		readonly input: Readonly<Record<string, unknown>>;
 		readonly context: {
+			readonly profile?: ScenarioExecutionProfile;
+			readonly environment?: GuardRuntimeEnvironment;
 			readonly principal?: Readonly<Record<string, unknown>>;
 			readonly session?: Readonly<Record<string, unknown>>;
 			readonly persona?: CompiledPersonaDefinition;

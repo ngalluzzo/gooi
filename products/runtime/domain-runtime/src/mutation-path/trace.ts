@@ -2,7 +2,7 @@ import type {
 	DomainRuntimeMode,
 	DomainTraceEnvelope,
 	DomainTraceStep,
-} from "../contracts/envelopes";
+} from "../execution-core/envelopes";
 
 interface CreateTraceInput {
 	readonly mode: DomainRuntimeMode;

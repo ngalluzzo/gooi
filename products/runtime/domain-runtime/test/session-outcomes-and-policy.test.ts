@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/engine";
+import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime session outcomes and policy ordering", () => {
 	test("applies typed success/failure session outcome envelopes deterministically", async () => {

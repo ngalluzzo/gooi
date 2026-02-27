@@ -17,17 +17,12 @@ export const runGuardConformance = async (
 ): Promise<GuardConformanceReport> => {
 	const checks: Array<GuardConformanceReport["checks"][number]> = [];
 
-	const invariant = input.evaluateInvariant({
-		definition: input.collectionInvariant,
-		context: { message: null },
-	});
-	const action = await input.evaluateGuard({
-		definition: input.actionGuard,
-		context: { input: { message: "hello" } },
-		environment: "simulation",
-		semanticJudge: {
-			evaluate: async () => ({ pass: true }),
-		},
+	const matrix = await input.evaluateBoundaryMatrix({
+		collectionInvariant: input.collectionInvariant,
+		actionGuard: input.actionGuard,
+		signalGuard: input.signalGuard,
+		flowGuard: input.flowGuard,
+		projectionGuard: input.projectionGuard,
 	});
 	const signal = await input.evaluateGuard({
 		definition: input.signalGuard,
@@ -39,17 +34,20 @@ export const runGuardConformance = async (
 		context: { steps: { notify: { ok: false } } },
 		environment: "simulation",
 	});
-	const projection = await input.evaluateGuard({
-		definition: input.projectionGuard,
-		context: { row: { user_id: null } },
-		environment: "simulation",
-	});
 
 	checks.push(
 		buildCheck(
 			"layered_matrix_enforced",
-			!invariant.ok && action.ok && signal.ok && flow.ok && projection.ok,
-			!invariant.ok && action.ok && signal.ok && flow.ok && projection.ok
+			matrix.collectionInvariantBlocked &&
+				matrix.actionGuardPassed &&
+				matrix.signalGuardPassed &&
+				matrix.flowGuardPassed &&
+				matrix.projectionGuardPassed,
+			matrix.collectionInvariantBlocked &&
+				matrix.actionGuardPassed &&
+				matrix.signalGuardPassed &&
+				matrix.flowGuardPassed &&
+				matrix.projectionGuardPassed
 				? "Collection/action/signal/flow/projection guard boundaries enforce as declared."
 				: "Expected layered primitive enforcement outcomes were not observed.",
 		),

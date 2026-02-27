@@ -1,9 +1,13 @@
-import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type {
+	CompiledGuardDefinition,
+	GuardRuntimeEnvironment,
+} from "@gooi/guard-contracts/plans/guard-plan";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
 } from "@gooi/scenario-contracts/plans/scenario-plan";
+import type { ScenarioExecutionProfile } from "../../src/run/contracts";
 
 const signalExpectationGuard: CompiledGuardDefinition = {
 	sourceRef: {
@@ -120,6 +124,8 @@ export const createScenarioInvokerFixture = () => ({
 		readonly entrypointId: string;
 		readonly input: Readonly<Record<string, unknown>>;
 		readonly context: {
+			readonly profile?: ScenarioExecutionProfile;
+			readonly environment?: GuardRuntimeEnvironment;
 			readonly principal?: Readonly<Record<string, unknown>>;
 			readonly session?: Readonly<Record<string, unknown>>;
 			readonly persona?: CompiledPersonaDefinition;

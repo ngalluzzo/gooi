@@ -16,6 +16,7 @@ import { executeAggregateProjection } from "../strategies/aggregate";
 import { executeFromCollectionProjection } from "../strategies/from-collection";
 import { executeJoinProjection } from "../strategies/join";
 import { executeTimelineProjection } from "../strategies/timeline";
+import { applyProjectionGuards } from "./apply-projection-guards";
 import type { ExecuteProjectionContext } from "./contracts";
 import {
 	type RebuildTimelineProjectionInput,
@@ -96,6 +97,7 @@ const toEnvelope = (
 			| typeof executeTimelineProjection
 		>
 	>,
+	guardMeta?: NonNullable<ProjectionResultEnvelope["meta"]>["guards"],
 ): ProjectionResultEnvelope => {
 	if (!result.ok) {
 		return {
@@ -113,6 +115,7 @@ const toEnvelope = (
 			strategy: plan.strategy,
 			artifactHash,
 			pagination: result.value.pagination,
+			...(guardMeta === undefined ? {} : { guards: guardMeta }),
 			...(result.value.timeline === undefined
 				? {}
 				: { timeline: result.value.timeline }),
@@ -161,7 +164,34 @@ export const createProjectionRuntime = (): ProjectionRuntime => ({
 				input.plan,
 				context,
 			);
-			return toEnvelope(input.plan, input.artifactHash, strategyResult);
+			if (!strategyResult.ok) {
+				return toEnvelope(input.plan, input.artifactHash, strategyResult);
+			}
+			const guardedRows = applyProjectionGuards({
+				plan: input.plan,
+				rows: strategyResult.value.rows,
+				args: input.args,
+				asOf: context.asOf,
+			});
+			if (!guardedRows.ok) {
+				return {
+					envelopeVersion: projectionResultEnvelopeVersion,
+					ok: false,
+					error: guardedRows.error,
+				};
+			}
+			return toEnvelope(
+				input.plan,
+				input.artifactHash,
+				{
+					ok: true,
+					value: {
+						...strategyResult.value,
+						rows: guardedRows.rows,
+					},
+				},
+				guardedRows.guardMeta,
+			);
 		} catch (error) {
 			return {
 				envelopeVersion: projectionResultEnvelopeVersion,

@@ -1,8 +1,8 @@
-import type { DomainCapabilityInputContract } from "../contracts/action-plan";
 import {
 	createDomainRuntimeError,
 	type DomainRuntimeTypedError,
-} from "../contracts/errors";
+} from "../execution-core/errors";
+import type { DomainCapabilityInputContract } from "./contracts";
 
 export type CapabilityInputValidationResult =
 	| { readonly ok: true }

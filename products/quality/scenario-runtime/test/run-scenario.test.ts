@@ -145,4 +145,98 @@ describe("scenario-runtime", () => {
 		expect(run.ok).toBe(false);
 		expect(run.error?.code).toBe("scenario_policy_error");
 	});
+
+	test("maps default_ci profile runs to ci guard environment", async () => {
+		const happyPath = getScenario("happy_path");
+		const expectStep = happyPath.steps[1];
+		if (expectStep?.kind !== "expect") {
+			throw new Error("happy_path fixture is missing expect step at index 1.");
+		}
+		const run = await runScenario({
+			scenario: {
+				...happyPath,
+				steps: [
+					{
+						kind: "trigger",
+						trigger: {
+							entrypointKind: "mutation",
+							entrypointId: "submit_message",
+							generate: false,
+							input: { message: "hello" },
+						},
+					},
+					expectStep,
+				],
+			},
+			personas: scenarioPlanSetFixture.personas,
+			profile: "default_ci",
+			traceId: "trace_ci_environment",
+			invocationId: "invocation_ci_environment",
+			invokeEntrypoint: async () => ({
+				ok: true,
+				output: { message: "hello" },
+				emittedSignals: [
+					{
+						signalId: "message.created",
+						payload: { message: "hello" },
+					},
+				],
+			}),
+		});
+
+		expect(run.ok).toBe(false);
+		expect(run.error?.code).toBe("scenario_guard_error");
+		expect(run.error?.details?.error).toMatchObject({
+			code: "signal_guard_error",
+		});
+	});
+
+	test("passes resolved profile/environment through trigger invocation context", async () => {
+		let invocationContext: Readonly<Record<string, unknown>> | undefined;
+		const run = await runScenario({
+			scenario: {
+				...getScenario("rejection_path"),
+				steps: [
+					{
+						kind: "trigger",
+						trigger: {
+							entrypointKind: "mutation",
+							entrypointId: "submit_message",
+							input: { message: "hello" },
+						},
+					},
+					{
+						kind: "expect",
+						expect: {
+							kind: "signal",
+							signalId: "message.created",
+						},
+					},
+				],
+			},
+			personas: scenarioPlanSetFixture.personas,
+			profile: "production_smoke",
+			traceId: "trace_profile_context",
+			invocationId: "invocation_profile_context",
+			invokeEntrypoint: async (input) => {
+				invocationContext = input.context;
+				return {
+					ok: true,
+					output: { message: "hello" },
+					emittedSignals: [
+						{
+							signalId: "message.created",
+							payload: { message: "hello" },
+						},
+					],
+				};
+			},
+		});
+
+		expect(run.ok).toBe(true);
+		expect(invocationContext).toMatchObject({
+			profile: "production_smoke",
+			environment: "production",
+		});
+	});
 });

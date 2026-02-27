@@ -1,11 +1,8 @@
-import type {
-	DomainActionStepInputPlan,
-	DomainValueSource,
-} from "../contracts/action-plan";
 import {
 	createDomainRuntimeError,
 	type DomainRuntimeTypedError,
-} from "../contracts/errors";
+} from "../execution-core/errors";
+import type { DomainActionStepInputPlan, DomainValueSource } from "./contracts";
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 	typeof value === "object" && value !== null;

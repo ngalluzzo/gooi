@@ -1,5 +1,5 @@
 {
-	"entryPoints": ["./src/engine.ts"],
+	"entryPoints": ["./src/runtime/create-domain-runtime.ts"],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

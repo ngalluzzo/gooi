@@ -2,19 +2,20 @@ import type { EffectKind } from "@gooi/capability-contracts/capability-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 import type {
+	DomainMutationEnvelope,
+	DomainRuntimeMode,
+	DomainTraceEnvelope,
+} from "../execution-core/envelopes";
+import { createDomainRuntimeError } from "../execution-core/errors";
+import type {
 	DomainActionPlan,
 	DomainActionStepPlan,
 	DomainCapabilityHandler,
 	DomainCapabilityInvocationResult,
-} from "../contracts/action-plan";
-import type {
-	DomainMutationEnvelope,
-	DomainRuntimeMode,
-	DomainTraceEnvelope,
-} from "../contracts/envelopes";
-import { createDomainRuntimeError } from "../contracts/errors";
+} from "./contracts";
 import { sanitizeSimulationEffects } from "./effects";
 import { buildFailureEnvelope } from "./failure-envelope";
+import { evaluateDomainInvariant } from "./guard-boundaries/evaluate-guards";
 import { resolveStepInput } from "./resolve-step-input";
 import { appendActionTraceStep } from "./trace";
 import { validateCapabilityInput } from "./validate-capability-input";
@@ -111,6 +112,39 @@ export const executeActionStep = async (
 		phase: "resolve_input",
 		status: "ok",
 	});
+
+	for (const invariant of input.step.invariants ?? []) {
+		const invariantOutcome = evaluateDomainInvariant({
+			definition: invariant,
+			context: resolvedInput.value,
+			now: input.ctx.now,
+		});
+		input.state.emittedSignals.push(...invariantOutcome.emittedSignals);
+		input.state.trace = appendActionTraceStep(input.state.trace, {
+			stepId: input.step.stepId,
+			capabilityId: input.step.capabilityId,
+			phase: "guard",
+			status: invariantOutcome.ok ? "ok" : "error",
+			detail: {
+				boundary: "collection_invariant",
+				...invariantOutcome.detail,
+			},
+		});
+		if (!invariantOutcome.ok) {
+			return failStep(
+				input,
+				invariantOutcome.error ??
+					createDomainRuntimeError(
+						"collection_invariant_error",
+						"Collection invariant blocked action step execution.",
+						{
+							stepId: input.step.stepId,
+							capabilityId: input.step.capabilityId,
+						},
+					),
+			);
+		}
+	}
 
 	const capability = input.capabilities[input.step.capabilityId];
 	if (capability === undefined) {

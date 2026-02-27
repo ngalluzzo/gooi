@@ -1,7 +1,13 @@
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
+import type {
+	CompiledGuardDefinition,
+	CompiledGuardPolicyPlan,
+	CompiledInvariantDefinition,
+} from "@gooi/guard-contracts/plans/guard-plan";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
-import type { DomainRuntimeMode } from "./envelopes";
+import type { DomainRuntimeMode } from "../execution-core/envelopes";
 
 /**
  * Value source for action step input resolution.
@@ -42,6 +48,38 @@ export interface DomainActionStepPlan {
 	readonly capabilityId: string;
 	/** Deterministic input resolution plan for this step. */
 	readonly input: DomainActionStepInputPlan;
+	/** Optional collection invariants evaluated before step invocation. */
+	readonly invariants?: readonly CompiledInvariantDefinition[];
+}
+
+/**
+ * Action-level guard plan declarations.
+ */
+export interface DomainActionGuardPlan {
+	/** Guard evaluated before the first step executes. */
+	readonly pre?: CompiledGuardDefinition;
+	/** Guard evaluated after all steps complete and before result finalization. */
+	readonly post?: CompiledGuardDefinition;
+}
+
+/**
+ * Signal guard binding for emitted signal ids.
+ */
+export interface DomainSignalGuardPlan {
+	/** Signal id this guard applies to. */
+	readonly signalId: string;
+	/** Guard definition evaluated against emitted signal context. */
+	readonly definition: CompiledGuardDefinition;
+}
+
+/**
+ * Flow guard binding evaluated on action outcome context.
+ */
+export interface DomainFlowGuardPlan {
+	/** Flow id represented by this guard binding. */
+	readonly flowId: string;
+	/** Guard definition evaluated against flow outcome context. */
+	readonly definition: CompiledGuardDefinition;
 }
 
 /**
@@ -62,31 +100,14 @@ export interface DomainActionPlan {
 	readonly actionId: string;
 	/** Ordered action step plans. */
 	readonly steps: readonly DomainActionStepPlan[];
+	/** Optional action pre/post guards. */
+	readonly guards?: DomainActionGuardPlan;
+	/** Optional emitted-signal guard bindings keyed by signal id. */
+	readonly signalGuards?: readonly DomainSignalGuardPlan[];
+	/** Optional flow-outcome guard bindings. */
+	readonly flowGuards?: readonly DomainFlowGuardPlan[];
 	/** Session outcome policy applied after action classification. */
 	readonly session: DomainSessionOutcomePolicy;
-}
-
-/**
- * Domain query handler contract.
- */
-export interface DomainQueryHandler {
-	/** Runs one deterministic query path. */
-	readonly run: (input: {
-		readonly entrypointId: string;
-		readonly input: Readonly<Record<string, unknown>>;
-		readonly principal: PrincipalContext;
-		readonly ctx: {
-			readonly invocationId: string;
-			readonly traceId: string;
-			readonly now: string;
-			readonly mode: DomainRuntimeMode;
-		};
-	}) => Promise<{
-		readonly ok: boolean;
-		readonly output?: unknown;
-		readonly error?: unknown;
-		readonly observedEffects: readonly EffectKind[];
-	}>;
 }
 
 /**
@@ -140,4 +161,14 @@ export interface DomainCapabilityHandler {
 	readonly simulate?: (
 		input: DomainCapabilityInvocationInput,
 	) => Promise<DomainCapabilityInvocationResult>;
+}
+
+/**
+ * Domain guard runtime dependencies for action/signal/flow evaluation.
+ */
+export interface DomainGuardRuntime {
+	/** Optional global guard policy defaults. */
+	readonly policyPlan?: CompiledGuardPolicyPlan;
+	/** Optional semantic judge capability used by semantic guard tiers. */
+	readonly semanticJudge?: SemanticJudgePort;
 }

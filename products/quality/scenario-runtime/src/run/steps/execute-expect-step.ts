@@ -37,6 +37,12 @@ const resolveExpectation = async (input: {
 			entrypointId: expectation.queryId,
 			input: expectation.args ?? {},
 			context: {
+				...(input.runInput.profile === undefined
+					? {}
+					: { profile: input.runInput.profile }),
+				...(input.runInput.environment === undefined
+					? {}
+					: { environment: input.runInput.environment }),
 				...(input.scenario.context.principal === undefined
 					? {}
 					: { principal: input.scenario.context.principal }),

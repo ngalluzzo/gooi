@@ -98,6 +98,7 @@
       "name": "@gooi/projection-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/guard-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -176,6 +177,7 @@
         "@gooi/binding": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
+        "@gooi/domain-runtime": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
         "@gooi/guard-runtime": "workspace:*",
@@ -209,7 +211,10 @@
       "dependencies": {
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/guard-runtime": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -240,6 +245,8 @@
       "name": "@gooi/projection-runtime",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/guard-runtime": "workspace:*",
         "@gooi/projection-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
       },

@@ -31,7 +31,20 @@ export interface RunGuardConformanceInput {
 	readonly actionGuard: CompiledGuardDefinition;
 	readonly signalGuard: CompiledGuardDefinition;
 	readonly flowGuard: CompiledGuardDefinition;
-	readonly projectionGuard: CompiledGuardDefinition;
+	readonly projectionGuard: CompiledInvariantDefinition;
+	readonly evaluateBoundaryMatrix: (input: {
+		readonly collectionInvariant: CompiledInvariantDefinition;
+		readonly actionGuard: CompiledGuardDefinition;
+		readonly signalGuard: CompiledGuardDefinition;
+		readonly flowGuard: CompiledGuardDefinition;
+		readonly projectionGuard: CompiledInvariantDefinition;
+	}) => Promise<{
+		readonly collectionInvariantBlocked: boolean;
+		readonly actionGuardPassed: boolean;
+		readonly signalGuardPassed: boolean;
+		readonly flowGuardPassed: boolean;
+		readonly projectionGuardPassed: boolean;
+	}>;
 	readonly evaluateInvariant: (input: {
 		readonly definition: CompiledInvariantDefinition;
 		readonly context: Readonly<Record<string, unknown>>;

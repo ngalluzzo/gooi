@@ -1,14 +1,14 @@
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
-import type { DomainActionPlan } from "../contracts/action-plan";
+import { normalizeObservedEffects } from "../execution-core/effects/normalize-observed-effects";
 import {
 	type DomainMutationEnvelope,
 	type DomainRuntimeMode,
 	type DomainTraceEnvelope,
 	domainRuntimeEnvelopeVersion,
-} from "../contracts/envelopes";
-import type { DomainRuntimeTypedError } from "../contracts/errors";
-import { normalizeObservedEffects } from "./effects";
+} from "../execution-core/envelopes";
+import type { DomainRuntimeTypedError } from "../execution-core/errors";
+import type { DomainActionPlan } from "./contracts";
 import { buildSessionOutcome } from "./session-outcome";
 import { appendActionTraceStep } from "./trace";
 

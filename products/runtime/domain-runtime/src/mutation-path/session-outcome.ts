@@ -1,12 +1,12 @@
-import type { DomainSessionOutcomePolicy } from "../contracts/action-plan";
 import {
 	type DomainSessionOutcomeEnvelope,
 	domainRuntimeEnvelopeVersion,
-} from "../contracts/envelopes";
+} from "../execution-core/envelopes";
 import {
 	createDomainRuntimeError,
 	type DomainRuntimeTypedError,
-} from "../contracts/errors";
+} from "../execution-core/errors";
+import type { DomainSessionOutcomePolicy } from "./contracts";
 
 export type SessionOutcomeBuildResult =
 	| { readonly ok: true; readonly value: DomainSessionOutcomeEnvelope }

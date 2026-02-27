@@ -10,7 +10,10 @@ import {
 	type RunScenarioInput,
 	type RuntimeState,
 } from "./contracts";
-import { validateScenarioProfile } from "./policies/validate-scenario-profile";
+import {
+	profileToGuardEnvironment,
+	validateScenarioProfile,
+} from "./policies/validate-scenario-profile";
 import { executeCaptureStep } from "./steps/execute-capture-step";
 import { executeExpectStep } from "./steps/execute-expect-step";
 import { executeTriggerStep } from "./steps/execute-trigger-step";
@@ -53,8 +56,12 @@ export const runScenario = async (
 			...lockBase.generated,
 		},
 	} satisfies MutableScenarioGeneratedInputLockSnapshot;
+	const resolvedEnvironment =
+		input.environment ?? profileToGuardEnvironment(policy.profile);
 	const runtimeInput: RunScenarioInput = {
 		...input,
+		profile: policy.profile,
+		environment: resolvedEnvironment,
 		generateInput: input.generateInput ?? generateTriggerInput,
 	};
 	const state: RuntimeState = {

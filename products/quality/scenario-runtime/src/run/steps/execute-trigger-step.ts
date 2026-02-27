@@ -68,6 +68,12 @@ export const executeTriggerStep = async (input: {
 		entrypointId: step.trigger.entrypointId,
 		input: resolvedInput.input,
 		context: {
+			...(input.runInput.profile === undefined
+				? {}
+				: { profile: input.runInput.profile }),
+			...(input.runInput.environment === undefined
+				? {}
+				: { environment: input.runInput.environment }),
 			...(input.scenario.context.principal === undefined
 				? {}
 				: { principal: input.scenario.context.principal }),

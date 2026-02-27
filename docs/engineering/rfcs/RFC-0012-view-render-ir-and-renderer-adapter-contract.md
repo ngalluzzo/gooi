@@ -111,15 +111,15 @@ flowchart LR
 sequenceDiagram
   participant Surf as "Web/CLI Renderer Adapter"
   participant RK as "Render Kernel"
-  participant ER as "Entrypoint Runtime"
+  participant EK as "Execution Kernel"
 
   Surf->>RK: render screen home with data+session context
   RK-->>Surf: evaluated tree + interaction bindings
   Surf->>Surf: user presses send_button
   Surf->>RK: onPress(nodeId=send_button)
   RK-->>Surf: dispatch intent mutation:submit_message(input=...)
-  Surf->>ER: invoke mutation through dispatch runtime
-  ER-->>Surf: result envelope
+  Surf->>EK: invoke mutation through dispatch runtime
+  EK-->>Surf: result envelope
   Surf->>RK: update context + re-render
 ```
 
@@ -151,7 +151,7 @@ sequenceDiagram
   - interaction list order deterministic by authored order.
   - node evaluation order deterministic pre-order traversal.
 - Idempotency/replay behavior (for write paths):
-  - interaction intents rely on entrypoint runtime replay semantics, not renderer-local retries.
+  - interaction intents rely on kernel runtime replay semantics, not renderer-local retries.
 
 ### Authoring impact
 
@@ -179,7 +179,7 @@ Authoring intelligence requirements introduced by this RFC:
   - own native UI API integration and event plumbing only.
 - Render kernel:
   - owns evaluation semantics and interaction intent emission.
-- Entrypoint runtime:
+- Kernel runtime:
   - owns invocation policy/execution for intents.
 - Host/platform adapters:
   - own native lifecycle, rendering resources, and local storage integration.
@@ -188,7 +188,7 @@ Must-not-cross constraints:
 
 1. Renderer adapters must not embed business/domain logic.
 2. Render kernel must not depend on UI framework internals.
-3. Interaction handlers must not bypass dispatch/entrypoint runtime.
+3. Interaction handlers must not bypass dispatch/kernel runtime.
 4. Node/provider selection must be artifact-driven, not runtime ad hoc lookup.
 
 ## Contracts and typing

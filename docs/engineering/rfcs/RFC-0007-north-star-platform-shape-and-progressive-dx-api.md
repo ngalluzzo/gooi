@@ -138,7 +138,7 @@ flowchart LR
 
   subgraph RuntimeLane["Runtime Lane (consumers)"]
     SurfaceBinder["surface-runtime bind (transport -> typed input)"]
-    EntrypointAdapter["entrypoint-runtime dispatch adapter"]
+    SurfaceAdapterRuntime["surface adapter runtime (dispatch + bind)"]
     SemanticEngines["domain/projection/guard semantic engines"]
     ProviderRuntime["provider-runtime"]
   end
@@ -159,15 +159,15 @@ flowchart LR
   BindingRequirements --> Resolver
   Resolver --> BindingArtifacts
   BindingArtifacts --> KernelBindingGate
-  SurfaceBinder --> EntrypointAdapter
-  EntrypointAdapter --> KernelInvoke
+  SurfaceBinder --> SurfaceAdapterRuntime
+  SurfaceAdapterRuntime --> KernelInvoke
   KernelInvoke --> KernelBindingGate
   KernelBindingGate --> SemanticEngines
   KernelBindingGate --> ProviderRuntime
   Quality --> SurfaceBinder
   Quality --> Resolver
   Quality --> KernelBindingGate
-  Quality --> EntrypointAdapter
+  Quality --> SurfaceAdapterRuntime
 ```
 
 ### Canonical runtime invocation sequence
@@ -175,7 +175,7 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant SA as "Surface Adapter"
-  participant EA as "Entrypoint Runtime Adapter"
+  participant EA as "Surface Runtime Adapter"
   participant K as "Execution Kernel"
   participant HP as "Host Ports"
   participant SE as "Semantic Engine (domain/projection/guard)"
@@ -289,10 +289,11 @@ Embedded runtime:
 
 ```ts
 import { createKernelRuntime } from "@gooi/execution-kernel";
-import { createEntrypointRuntime } from "@gooi/entrypoint-runtime";
+import { bindSurfaceInput } from "@gooi/surface-runtime";
 import { createProviderRuntime } from "@gooi/provider-runtime";
 
 const kernel = createKernelRuntime({...});
+const bound = bindSurfaceInput({ request, entrypoint, binding });
 ```
 
 Full platform facade:
@@ -453,7 +454,7 @@ Provider-manifest layering:
 `products/runtime/*`:
 
 1. `@gooi/surface-runtime`
-2. `@gooi/entrypoint-runtime`
+2. `@gooi/surface-dispatch-runtime` (planned in Track 04)
 3. `@gooi/provider-runtime`
 4. `@gooi/domain-runtime`
 5. `@gooi/projection-runtime`

@@ -44,7 +44,7 @@ Product gap:
 2. Domain action/projection semantics (RFC-0009, RFC-0010).
 3. Provider/runtime activation policies.
 4. API gateway and infra-specific deployment topology.
-5. Capability reachability/delegation decisions (owned by entrypoint/provider runtime).
+5. Capability reachability/delegation decisions (owned by kernel/provider runtime).
 
 ## Product outcomes and success metrics
 
@@ -80,7 +80,7 @@ flowchart LR
   Native["Native Request/Event (http/web/cli/webhook)"] --> Dispatch["Surface Dispatch Runtime"]
   Dispatch --> Plan["CompiledSurfaceDispatchPlan"]
   Dispatch --> Bind["Surface Binder"]
-  Bind --> Invoke["Entrypoint Runtime (query/mutation/route)"]
+  Bind --> Invoke["Execution Kernel (query/mutation/route invoke)"]
   Dispatch --> Trace["Dispatch Trace Envelope"]
 ```
 
@@ -114,15 +114,15 @@ sequenceDiagram
   participant HTTP as "HTTP Adapter"
   participant SDR as "Surface Dispatch Runtime"
   participant BR as "Surface Binder"
-  participant ER as "Entrypoint Runtime"
+  participant EK as "Execution Kernel"
 
   HTTP->>SDR: request(method=GET,path=/messages,query=...)
   SDR->>SDR: match compiled http dispatch plan
   SDR-->>HTTP: matched handler(query:list_messages)
   HTTP->>BR: bind payload buckets -> entrypoint input
   BR-->>HTTP: bound input
-  HTTP->>ER: invoke query entrypoint envelope
-  ER-->>HTTP: typed result envelope
+  HTTP->>EK: invoke query entrypoint envelope
+  EK-->>HTTP: typed result envelope
 ```
 
 ### Failure sequence diagram (CLI ambiguity)
@@ -154,7 +154,7 @@ sequenceDiagram
 - Context propagation requirements:
   - dispatch result includes `surfaceId` and `invocationHost` for downstream reachability checks.
 - Idempotency/replay behavior (for write paths):
-  - handled by entrypoint runtime and replay stores after dispatch.
+  - handled by kernel runtime and replay stores after dispatch.
 
 ### Authoring impact
 
@@ -229,7 +229,7 @@ Must-not-cross constraints:
 - Surface/host context schema:
   - dispatch output includes `surfaceId` and `invocationHost` fields with stable enum contracts.
 - Access evaluation order:
-  - unchanged; post-dispatch policy gate in entrypoint runtime.
+  - unchanged; post-dispatch policy gate in kernel runtime.
 - Error taxonomy:
   - `dispatch_not_found_error`
   - `dispatch_ambiguous_error`
@@ -277,7 +277,7 @@ Single entry per feature:
 - Why this boundary is correct:
   - dispatch behavior is runtime lane logic; contracts are reusable and tool-consumable.
 - Primary consumers (internal/external):
-  - adapters, entrypoint runtime integration, conformance tooling.
+  - adapters, execution-kernel integration, conformance tooling.
 - Coupling expectations:
   - depends on compiled plan contracts and surface contracts.
   - no dependency on domain runtime or marketplace implementation internals.

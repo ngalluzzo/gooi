@@ -38,8 +38,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # TypeDoc generated output
 typedoc/
 
-# Claude Code - shared hooks/settings committed; local overrides ignored
-.claude/*
-!.claude/settings.json
-!.claude/hooks
-!.claude/hooks/**
+# Claude Code local settings (machine-specific)
+.claude/

@@ -1,0 +1,10 @@
+{
+	"entryPoints": [
+		"./src/plans/projection-plan.ts",
+		"./src/plans/timeline-history-policy.ts",
+		"./src/ports/history-port-contract.ts",
+		"./src/envelopes/projection-result-envelope.ts",
+		"./src/errors/projection-errors.ts"
+	],
+	"out": "docs"
+}

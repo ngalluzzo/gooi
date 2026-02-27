@@ -6,6 +6,7 @@ import {
 	createBindingPlan,
 	createContract,
 	createDelegatedResolution,
+	createLocalResolution,
 	createLockfile,
 	createProviderModule,
 	hostApiVersion,
@@ -72,7 +73,48 @@ describe("provider-runtime reachability", () => {
 		expect(result.value.output).toEqual({
 			ids: ["delegated_1", "delegated_2"],
 		});
+		expect(result.value.reachabilityMode).toBe("delegated");
 		expect(delegatedCalls).toEqual(["route-node-1"]);
+	});
+
+	test("reports local reachability metadata when invocation resolves locally", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [contract],
+			bindingPlan: createBindingPlan(createLocalResolution()),
+			lockfile: createLockfile(contract.artifacts.contractHash),
+		});
+		expect(activated.ok).toBe(true);
+		if (!activated.ok) {
+			return;
+		}
+
+		const result = await invokeCapability(activated.value, {
+			portId: "ids.generate",
+			portVersion: "1.0.0",
+			input: { count: 1 },
+			principal: {
+				subject: "user_1",
+				roles: ["authenticated"],
+			},
+			ctx: {
+				id: "invocation_local",
+				traceId: "trace_local",
+				now: "2026-02-27T00:00:00.000Z",
+			},
+		});
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.value.reachabilityMode).toBe("local");
 	});
 
 	test("fails delegated invocation without implicit local fallback", async () => {

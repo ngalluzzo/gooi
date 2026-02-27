@@ -6,6 +6,7 @@ import type {
 	ResultEnvelope,
 	TypedErrorEnvelope,
 } from "@gooi/surface-contracts/result-envelope";
+import { calculateIsoDurationMs } from "../timing/duration";
 
 export const errorEnvelope = (
 	code: string,
@@ -39,7 +40,7 @@ export const errorResult = (
 		timings: {
 			startedAt,
 			completedAt,
-			durationMs: Math.max(0, Date.parse(completedAt) - Date.parse(startedAt)),
+			durationMs: calculateIsoDurationMs(startedAt, completedAt),
 		},
 		meta: { replayed: false, artifactHash, affectedQueryIds: [] },
 	};

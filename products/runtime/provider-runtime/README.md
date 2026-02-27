@@ -39,6 +39,11 @@ import { createProviderRuntime } from "@gooi/provider-runtime";
 const runtime = createProviderRuntime({
   hostApiVersion: "1.0.0",
   contracts: [capabilityContract],
+  hostPorts: {
+    clock,
+    activationPolicy,
+    capabilityDelegation,
+  },
 });
 
 const activated = await runtime.activate({ providerModule });

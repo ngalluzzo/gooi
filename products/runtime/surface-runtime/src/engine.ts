@@ -8,6 +8,9 @@ import {
 	type SurfaceRequestPayload,
 } from "@gooi/surface-contracts/surface-request";
 
+const isoTimestampPattern =
+	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
+
 const fail = (
 	message: string,
 	details?: Readonly<Record<string, unknown>>,
@@ -52,11 +55,10 @@ const coerceScalarValue = (
 			return null;
 		}
 		case "timestamp": {
-			const parsed = new Date(value);
-			if (Number.isNaN(parsed.getTime())) {
+			if (!isoTimestampPattern.test(value)) {
 				return null;
 			}
-			return parsed.toISOString();
+			return value;
 		}
 		case "text":
 		case "id":

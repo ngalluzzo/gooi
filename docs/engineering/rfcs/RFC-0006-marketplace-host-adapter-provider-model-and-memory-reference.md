@@ -80,8 +80,8 @@ adapter type.
   - Provider setup boilerplate `<= 80` lines before implementation logic.
 - Explicit latency/availability target(s) with numeric thresholds:
   - In-memory reference provider operations (`clock`, `identity`, `principal`,
-    `replay-store`, `activation-policy`, `module-loader`) remain local in-process
-    and deterministic in CI.
+    `replay-store`, `activation-policy`, `module-loader`, `module-integrity`,
+    `capability-delegation`) remain local in-process and deterministic in CI.
   - Conformance suite success rate `100%` on default branch.
 
 ## Proposal
@@ -96,6 +96,8 @@ Current host adapter feature set:
 4. `replay-store`
 5. `activation-policy`
 6. `module-loader`
+7. `module-integrity`
+8. `capability-delegation`
 
 For each feature:
 
@@ -223,8 +225,8 @@ Must-not-cross constraints:
   - `products/runtime/provider-runtime/src/{engine.ts,host.ts}`
   - `products/quality/conformance/src/*-conformance/*`
 - Public APIs via `package.json` exports:
-  - `@gooi/host-contracts/{clock,identity,principal,replay,activation-policy,module-loader,result}`
-  - `@gooi-marketplace/memory/{clock,identity,principal,replay-store,activation-policy,module-loader}`
+  - `@gooi/host-contracts/{clock,identity,principal,replay,activation-policy,module-loader,module-integrity,delegation,result}`
+  - `@gooi-marketplace/memory/{clock,identity,principal,replay-store,activation-policy,module-loader,module-integrity,delegation}`
   - `@gooi/entrypoint-runtime/{.,host,domain}`
   - `@gooi/provider-runtime/{.,host}`
   - `@gooi/conformance/{provider,entrypoint,authoring,host,replay-store,...contracts}`
@@ -287,7 +289,7 @@ Phase 3: Marketplace memory reference implementations
   - one reference implementation per core host feature in `marketplace/memory`.
 - Deliverables:
   - `clock`, `identity`, `principal`, `replay-store`, `activation-policy`,
-    `module-loader` features.
+    `module-loader`, `module-integrity`, `delegation` features.
 
 Phase 4: Conformance integration
 

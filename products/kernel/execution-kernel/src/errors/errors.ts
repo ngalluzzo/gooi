@@ -6,7 +6,7 @@ import type {
 	ResultEnvelope,
 	TypedErrorEnvelope,
 } from "@gooi/surface-contracts/result-envelope";
-import { calculateIsoDurationMs } from "./duration";
+import { calculateIsoDurationMs } from "../time/duration";
 
 export const errorEnvelope = (
 	code: string,

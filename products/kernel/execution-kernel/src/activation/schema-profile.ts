@@ -5,7 +5,7 @@ import type {
 } from "@gooi/spec-compiler/contracts";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import { errorEnvelope, errorResult } from "./errors";
+import { errorEnvelope, errorResult } from "../errors/errors";
 
 interface ValidateSchemaProfileInput {
 	readonly bundle: CompiledEntrypointBundle;

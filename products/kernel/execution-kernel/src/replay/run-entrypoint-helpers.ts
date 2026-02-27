@@ -1,7 +1,7 @@
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
-import { idempotencyScopeKey } from "./errors";
-import type { RunEntrypointInput } from "./types";
+import type { RunEntrypointInput } from "../entrypoint/types";
+import { idempotencyScopeKey } from "../errors/errors";
 
 interface InvocationMetaInput {
 	readonly bundle: RunEntrypointInput["bundle"];

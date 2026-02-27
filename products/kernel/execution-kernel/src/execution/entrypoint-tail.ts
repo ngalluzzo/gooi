@@ -4,9 +4,12 @@ import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
 import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
-import { calculateIsoDurationMs } from "./duration";
-import { buildRefreshTriggers, resolveAffectedQueryIds } from "./refresh";
-import type { DomainRuntimePort } from "./types";
+import type { DomainRuntimePort } from "../entrypoint/types";
+import {
+	buildRefreshTriggers,
+	resolveAffectedQueryIds,
+} from "../refresh/refresh";
+import { calculateIsoDurationMs } from "../time/duration";
 
 const envelopeVersion = surfaceEnvelopeVersion;
 

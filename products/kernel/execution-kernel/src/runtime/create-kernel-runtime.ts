@@ -6,7 +6,7 @@ import type {
 	KernelRuntime,
 	CreateKernelRuntimeInput as SharedCreateKernelRuntimeInput,
 } from "@gooi/kernel-contracts/runtime";
-import { createKernelTraceEnvelope } from "./trace";
+import { createKernelTraceEnvelope } from "../trace/trace";
 export type CreateKernelRuntimeInput = SharedCreateKernelRuntimeInput;
 
 const defaultNowIso = (): string => new Date().toISOString();

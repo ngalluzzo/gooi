@@ -2,28 +2,28 @@ import { getMissingHostPortSetMembers } from "@gooi/host-contracts/portset";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
-import {
-	buildInvocationEnvelope,
-	resolveEntrypoint,
-} from "./entrypoint-resolution";
-import { executeEntrypointTail } from "./entrypoint-tail";
-import { errorEnvelope, errorResult } from "./errors";
+import { buildRuntimeActivationReport } from "../activation/runtime-activation-report";
+import { validateSchemaProfile } from "../activation/schema-profile";
+import { validateRuntimeArtifactManifest } from "../activation/validate-artifact-manifest";
+import { errorEnvelope, errorResult } from "../errors/errors";
 import {
 	buildInvalidReplayTtlResult,
 	buildMissingHostPortsResult,
-} from "./fallback-errors";
-import { validateEntrypointInput } from "./input-validation";
-import { resolvePolicyGate } from "./policy-gate";
+} from "../errors/fallback-errors";
+import { executeEntrypointTail } from "../execution/entrypoint-tail";
+import { validateEntrypointInput } from "../input/input-validation";
+import {
+	buildInvocationEnvelope,
+	resolveEntrypoint,
+} from "../invocation/entrypoint-resolution";
+import { resolvePolicyGate } from "../policy/policy-gate";
 import {
 	buildInvocationMeta,
 	defaultReplayTtlSeconds,
 	isValidReplayTtlSeconds,
 	resolveMutationReplayScope,
-} from "./run-entrypoint-helpers";
-import { buildRuntimeActivationReport } from "./runtime-activation-report";
-import { validateSchemaProfile } from "./schema-profile";
+} from "../replay/run-entrypoint-helpers";
 import type { RunEntrypointInput } from "./types";
-import { validateRuntimeArtifactManifest } from "./validate-artifact-manifest";
 
 /**
  * Executes one compiled query or mutation entrypoint invocation.

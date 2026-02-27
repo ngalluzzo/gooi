@@ -2,20 +2,20 @@
 	"name": "@gooi/execution-kernel",
 	"version": "0.1.0",
 	"type": "module",
-	"main": "./dist/create-kernel-runtime.js",
-	"types": "./src/create-kernel-runtime.ts",
+	"main": "./dist/runtime/create-kernel-runtime.js",
+	"types": "./src/runtime/create-kernel-runtime.ts",
 	"exports": {
 		".": {
-			"types": "./src/create-kernel-runtime.ts",
-			"bun": "./src/create-kernel-runtime.ts",
-			"import": "./dist/create-kernel-runtime.js",
-			"default": "./dist/create-kernel-runtime.js"
+			"types": "./src/runtime/create-kernel-runtime.ts",
+			"bun": "./src/runtime/create-kernel-runtime.ts",
+			"import": "./dist/runtime/create-kernel-runtime.js",
+			"default": "./dist/runtime/create-kernel-runtime.js"
 		},
 		"./create": {
-			"types": "./src/create-kernel-runtime.ts",
-			"bun": "./src/create-kernel-runtime.ts",
-			"import": "./dist/create-kernel-runtime.js",
-			"default": "./dist/create-kernel-runtime.js"
+			"types": "./src/runtime/create-kernel-runtime.ts",
+			"bun": "./src/runtime/create-kernel-runtime.ts",
+			"import": "./dist/runtime/create-kernel-runtime.js",
+			"default": "./dist/runtime/create-kernel-runtime.js"
 		},
 		"./entrypoint": {
 			"types": "./src/entrypoint/run-entrypoint.ts",
@@ -24,10 +24,10 @@
 			"default": "./dist/entrypoint/run-entrypoint.js"
 		},
 		"./trace": {
-			"types": "./src/trace.ts",
-			"bun": "./src/trace.ts",
-			"import": "./dist/trace.js",
-			"default": "./dist/trace.js"
+			"types": "./src/trace/trace.ts",
+			"bun": "./src/trace/trace.ts",
+			"import": "./dist/trace/trace.js",
+			"default": "./dist/trace/trace.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -38,7 +38,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/entrypoint/run-entrypoint.ts --outfile ./dist/entrypoint/run-entrypoint.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime --external @gooi/kernel-contracts/semantic-engine && bun build ./src/trace.ts --outfile ./dist/trace.js",
+		"build": "bun build ./src/runtime/create-kernel-runtime.ts --outfile ./dist/runtime/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/entrypoint/run-entrypoint.ts --outfile ./dist/entrypoint/run-entrypoint.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime --external @gooi/kernel-contracts/semantic-engine && bun build ./src/trace/trace.ts --outfile ./dist/trace/trace.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

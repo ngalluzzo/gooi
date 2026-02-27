@@ -5,9 +5,9 @@ import type {
 } from "@gooi/spec-compiler/contracts";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type { HostPortSet } from "../entrypoint/types";
+import { entrypointKey, errorEnvelope, errorResult } from "../errors/errors";
 import { deriveEffectiveRoles, isAccessAllowedForRoles } from "./access-policy";
-import { entrypointKey, errorEnvelope, errorResult } from "./errors";
-import type { HostPortSet } from "./types";
 
 const normalizeRoles = (roles: readonly string[]): readonly string[] =>
 	[...new Set(roles)].sort((left, right) => left.localeCompare(right));

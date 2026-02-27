@@ -3,8 +3,8 @@ import type { CompiledEntrypointKind } from "@gooi/spec-compiler/contracts";
 import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type { HostPortContractIssue } from "../entrypoint/types";
 import { errorEnvelope, errorResult } from "./errors";
-import type { HostPortContractIssue } from "./types";
 
 export const hostPortValidationFallbackNow = "1970-01-01T00:00:00.000Z";
 export const hostPortValidationFallbackTraceId = "trace_host_port_missing";

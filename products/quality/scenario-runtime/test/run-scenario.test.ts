@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { reportPersonaCoverage } from "../src/coverage/report-persona-coverage";
+import { reportPersonaCoverage } from "../src/reports/report-persona-coverage";
 import { runScenario } from "../src/run/run-scenario";
 import { runScenarioSuite } from "../src/suite/run-scenario-suite";
 import {

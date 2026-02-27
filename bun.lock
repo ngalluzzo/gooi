@@ -95,6 +95,13 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/conformance-contracts": {
+      "name": "@gooi/conformance-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
     "packages/guard-contracts": {
       "name": "@gooi/guard-contracts",
       "version": "0.1.0",
@@ -794,6 +801,8 @@
     "@gooi/capability-index": ["@gooi/capability-index@workspace:products/authoring/capability-index"],
 
     "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
+
+    "@gooi/conformance-contracts": ["@gooi/conformance-contracts@workspace:packages/conformance-contracts"],
 
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 

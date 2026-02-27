@@ -48,6 +48,8 @@ Acceptance criteria:
 1. One execution-spine contract defines orchestration order across query and mutation paths.
 2. Runtime package dependency map distinguishes orchestration ownership from semantic engine ownership.
 3. Legacy orchestration paths are inventory-listed with explicit deletion owners.
+Artifacts:
+1. [/Users/ngalluzzo/repos/gooi/docs/engineering/runtime/execution-spine-contract-and-dependency-map.md](/Users/ngalluzzo/repos/gooi/docs/engineering/runtime/execution-spine-contract-and-dependency-map.md)
 
 #### Story 6.2: Route query/mutation execution through kernel spine
 Acceptance criteria:

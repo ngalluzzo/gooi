@@ -23,6 +23,12 @@
 			"import": "./dist/invoke.js",
 			"default": "./dist/invoke.js"
 		},
+		"./execution-spine": {
+			"types": "./src/execution-spine.ts",
+			"bun": "./src/execution-spine.ts",
+			"import": "./dist/execution-spine.js",
+			"default": "./dist/execution-spine.js"
+		},
 		"./trace": {
 			"types": "./src/trace.ts",
 			"bun": "./src/trace.ts",
@@ -38,7 +44,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/kernel-host-bridge/host-portset && bun build ./src/invoke.ts --outfile ./dist/invoke.js && bun build ./src/trace.ts --outfile ./dist/trace.js",
+		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/kernel-host-bridge/host-portset && bun build ./src/invoke.ts --outfile ./dist/invoke.js && bun build ./src/execution-spine.ts --outfile ./dist/execution-spine.js && bun build ./src/trace.ts --outfile ./dist/trace.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

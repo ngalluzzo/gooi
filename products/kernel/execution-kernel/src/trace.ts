@@ -1,7 +1,9 @@
+import type { KernelExecutionSpineStage } from "./execution-spine";
+
 export interface KernelTraceInput {
 	readonly entrypointId: string;
 	readonly kind: "query" | "mutation";
-	readonly stage: string;
+	readonly stage: KernelExecutionSpineStage;
 	readonly invocationId?: string;
 	readonly traceId?: string;
 	readonly metadata?: Readonly<Record<string, unknown>>;
@@ -12,7 +14,7 @@ export interface KernelTraceEnvelope {
 	readonly invocationId: string;
 	readonly entrypointId: string;
 	readonly kind: "query" | "mutation";
-	readonly stage: string;
+	readonly stage: KernelExecutionSpineStage;
 	readonly timestamp: string;
 	readonly metadata?: Readonly<Record<string, unknown>>;
 }

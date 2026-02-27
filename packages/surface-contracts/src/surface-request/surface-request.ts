@@ -1,6 +1,10 @@
+import {
+	type JsonObject,
+	jsonObjectSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
-const requestBucketSchema = z.record(z.string(), z.unknown());
+const requestBucketSchema = jsonObjectSchema;
 
 /**
  * Runtime schema for native surface request payload buckets.
@@ -18,7 +22,13 @@ export const surfaceRequestPayloadSchema = z
 /**
  * Native surface request payload buckets consumed by binding contracts.
  */
-export type SurfaceRequestPayload = z.infer<typeof surfaceRequestPayloadSchema>;
+export type SurfaceRequestPayload = {
+	readonly path?: JsonObject | undefined;
+	readonly query?: JsonObject | undefined;
+	readonly body?: JsonObject | undefined;
+	readonly args?: JsonObject | undefined;
+	readonly flags?: JsonObject | undefined;
+};
 
 /**
  * Parses one untrusted surface request payload.

@@ -1,3 +1,4 @@
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import {
 	createHostPortProvider,
 	createHostPortProviderManifest,
@@ -41,7 +42,7 @@ export interface DelegatedInvocationContext {
 export interface DelegatedCapabilityCall {
 	readonly portId: string;
 	readonly portVersion: string;
-	readonly input: unknown;
+	readonly input: JsonValue;
 	readonly principal: DelegatedPrincipalContext;
 	readonly ctx: DelegatedInvocationContext;
 }
@@ -51,8 +52,8 @@ export interface DelegatedCapabilityCall {
  */
 export interface DelegatedCapabilityResult {
 	readonly ok: boolean;
-	readonly output?: unknown;
-	readonly error?: unknown;
+	readonly output?: JsonValue;
+	readonly error?: JsonValue;
 	readonly observedEffects: readonly DelegatedObservedEffectKind[];
 }
 

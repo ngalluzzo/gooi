@@ -1,3 +1,7 @@
+import {
+	type JsonValue,
+	jsonValueSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 import {
@@ -29,7 +33,7 @@ export const authoringRequestEnvelopeSchema = z.object({
 	requestId: authoringRequestIdSchema,
 	requestedAt: authoringTimestampSchema,
 	operation: authoringOperationSchema,
-	payload: z.unknown(),
+	payload: jsonValueSchema,
 	meta: z
 		.object({
 			traceId: z.string().min(1),
@@ -41,9 +45,12 @@ export const authoringRequestEnvelopeSchema = z.object({
 /**
  * Parsed authoring request envelope.
  */
-export type AuthoringRequestEnvelope = z.infer<
-	typeof authoringRequestEnvelopeSchema
->;
+export type AuthoringRequestEnvelope = Omit<
+	z.infer<typeof authoringRequestEnvelopeSchema>,
+	"payload"
+> & {
+	readonly payload: JsonValue;
+};
 
 /**
  * Parses an untrusted authoring request envelope.

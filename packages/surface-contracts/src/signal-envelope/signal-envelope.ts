@@ -1,3 +1,7 @@
+import {
+	type JsonObject,
+	jsonObjectSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import { surfaceEnvelopeVersionSchema } from "../envelope-version/envelope-version";
 
@@ -8,7 +12,7 @@ export const signalEnvelopeSchema = z.object({
 	envelopeVersion: surfaceEnvelopeVersionSchema,
 	signalId: z.string().min(1),
 	signalVersion: z.number().int().nonnegative(),
-	payload: z.record(z.string(), z.unknown()).optional(),
+	payload: jsonObjectSchema.optional(),
 	payloadHash: z.string().min(1),
 	emittedAt: z.iso.datetime({ offset: true }),
 });
@@ -16,7 +20,12 @@ export const signalEnvelopeSchema = z.object({
 /**
  * Emitted signal envelope.
  */
-export type SignalEnvelope = z.infer<typeof signalEnvelopeSchema>;
+export type SignalEnvelope = Omit<
+	z.infer<typeof signalEnvelopeSchema>,
+	"payload"
+> & {
+	readonly payload?: JsonObject | undefined;
+};
 
 /**
  * Parses one untrusted signal envelope.

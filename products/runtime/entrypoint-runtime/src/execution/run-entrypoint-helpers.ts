@@ -7,7 +7,7 @@ interface InvocationMetaInput {
 	readonly bundle: SharedRunEntrypointInput["bundle"];
 	readonly binding: SharedRunEntrypointInput["binding"];
 	readonly principal: SharedRunEntrypointInput["principal"];
-	readonly idempotencyKey?: string;
+	readonly idempotencyKey?: string | undefined;
 	readonly invocationId?: string;
 	readonly traceId?: string;
 	readonly now?: string;

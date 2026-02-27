@@ -2,6 +2,12 @@ import {
 	type EffectKind,
 	effectKindSchema,
 } from "@gooi/capability-contracts/capability-port";
+import {
+	type JsonObject,
+	type JsonValue,
+	jsonObjectSchema,
+	jsonValueSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import {
 	type SurfaceEnvelopeVersion,
@@ -22,25 +28,27 @@ export const typedErrorEnvelopeSchema = z.object({
 	code: z.string().min(1),
 	message: z.string().min(1),
 	retryable: z.boolean(),
-	details: z.record(z.string(), z.unknown()).optional(),
-	typed: z.unknown().optional(),
+	details: jsonObjectSchema.optional(),
+	typed: jsonValueSchema.optional(),
 });
 
 type ParsedTypedErrorEnvelope = z.infer<typeof typedErrorEnvelopeSchema>;
 
 type TypedErrorEnvelopeShape = Omit<
 	ParsedTypedErrorEnvelope,
-	"typed" | "envelopeVersion"
+	"details" | "typed" | "envelopeVersion"
 > & {
 	readonly envelopeVersion: SurfaceEnvelopeVersion;
+	readonly details?: JsonObject | undefined;
 };
 
 /**
  * Structured typed execution error envelope.
  */
-export type TypedErrorEnvelope<TTypedError> = TypedErrorEnvelopeShape & {
-	readonly typed?: TTypedError | undefined;
-};
+export type TypedErrorEnvelope<TTypedError = JsonValue> =
+	TypedErrorEnvelopeShape & {
+		readonly typed?: TTypedError | undefined;
+	};
 
 /**
  * Runtime schema for result envelopes returned by entrypoint execution.
@@ -50,7 +58,7 @@ export const resultEnvelopeSchema = z.object({
 	traceId: z.string().min(1),
 	invocationId: z.string().min(1),
 	ok: z.boolean(),
-	output: z.unknown().optional(),
+	output: jsonValueSchema.optional(),
 	error: typedErrorEnvelopeSchema.optional(),
 	emittedSignals: z.array(signalEnvelopeSchema),
 	observedEffects: z.array(effectKindSchema),
@@ -84,7 +92,10 @@ type ResultEnvelopeShape = Omit<
 /**
  * Result envelope returned by runtime entrypoint execution.
  */
-export type ResultEnvelope<TOutput, TTypedError> = ResultEnvelopeShape & {
+export type ResultEnvelope<
+	TOutput = JsonValue,
+	TTypedError = JsonValue,
+> = ResultEnvelopeShape & {
 	readonly output?: TOutput | undefined;
 	readonly error?: TypedErrorEnvelope<TTypedError> | undefined;
 	readonly emittedSignals: readonly SignalEnvelope[];
@@ -102,11 +113,11 @@ export type ResultEnvelope<TOutput, TTypedError> = ResultEnvelopeShape & {
  */
 export const parseTypedErrorEnvelope = (
 	value: unknown,
-): TypedErrorEnvelope<unknown> => typedErrorEnvelopeSchema.parse(value);
+): TypedErrorEnvelope<JsonValue> => typedErrorEnvelopeSchema.parse(value);
 
 /**
  * Parses one untrusted result envelope.
  */
 export const parseResultEnvelope = (
 	value: unknown,
-): ResultEnvelope<unknown, unknown> => resultEnvelopeSchema.parse(value);
+): ResultEnvelope<JsonValue, JsonValue> => resultEnvelopeSchema.parse(value);

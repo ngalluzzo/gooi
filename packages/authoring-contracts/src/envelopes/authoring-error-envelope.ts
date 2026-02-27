@@ -1,3 +1,7 @@
+import {
+	type JsonObject,
+	jsonObjectSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 import {
@@ -26,7 +30,7 @@ const errorShapeSchema = z.object({
 	code: authoringErrorCodeSchema,
 	message: z.string().min(1),
 	retryable: z.boolean(),
-	details: z.record(z.string(), z.unknown()).optional(),
+	details: jsonObjectSchema.optional(),
 });
 
 /**
@@ -42,9 +46,14 @@ export const authoringErrorEnvelopeSchema = z.object({
 /**
  * Parsed failure envelope returned by authoring handlers.
  */
-export type AuthoringErrorEnvelope = z.infer<
-	typeof authoringErrorEnvelopeSchema
->;
+export type AuthoringErrorEnvelope = Omit<
+	z.infer<typeof authoringErrorEnvelopeSchema>,
+	"error"
+> & {
+	readonly error: Omit<z.infer<typeof errorShapeSchema>, "details"> & {
+		readonly details?: JsonObject | undefined;
+	};
+};
 
 /**
  * Parses an untrusted authoring failure envelope.

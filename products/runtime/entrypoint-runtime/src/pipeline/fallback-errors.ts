@@ -17,7 +17,7 @@ interface FallbackInvocationInput {
 		readonly entrypointKind: CompiledEntrypointKind;
 	};
 	readonly principal: PrincipalContext;
-	readonly idempotencyKey?: string;
+	readonly idempotencyKey?: string | undefined;
 	readonly traceId?: string;
 	readonly invocationId?: string;
 	readonly now?: string;

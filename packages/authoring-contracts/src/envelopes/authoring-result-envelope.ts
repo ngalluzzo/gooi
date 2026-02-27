@@ -1,3 +1,7 @@
+import {
+	type JsonValue,
+	jsonValueSchema,
+} from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 import {
@@ -19,7 +23,7 @@ export const authoringResultEnvelopeSchema = z.object({
 	envelopeVersion: authoringEnvelopeVersionSchema,
 	requestId: authoringRequestIdSchema,
 	ok: z.literal(true),
-	result: z.unknown(),
+	result: jsonValueSchema,
 	timings: timingsSchema,
 	meta: z
 		.object({
@@ -31,9 +35,12 @@ export const authoringResultEnvelopeSchema = z.object({
 /**
  * Parsed success envelope returned by authoring handlers.
  */
-export type AuthoringResultEnvelope = z.infer<
-	typeof authoringResultEnvelopeSchema
->;
+export type AuthoringResultEnvelope = Omit<
+	z.infer<typeof authoringResultEnvelopeSchema>,
+	"result"
+> & {
+	readonly result: JsonValue;
+};
 
 /**
  * Parses an untrusted authoring success envelope.

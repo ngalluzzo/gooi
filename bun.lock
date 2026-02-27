@@ -77,6 +77,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -124,6 +125,7 @@
       "name": "@gooi/host-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/provider-manifest": "workspace:*",
       },
     },
@@ -152,6 +154,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/capability-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "zod": "^4.3.6",
@@ -285,6 +288,7 @@
       "dependencies": {
         "@gooi/binding": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "zod": "^4.3.6",
       },

@@ -20,7 +20,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/engine.ts --outfile ./dist/engine.js --external zod --external @gooi/binding/artifact-alignment/policy --external @gooi/binding/binding-plan/contracts --external @gooi/binding/binding-plan/lookup --external @gooi/binding/lockfile/contracts --external @gooi/binding/lockfile/integrity --external @gooi/binding/lockfile/lookup --external @gooi/binding/reachability/contracts --external @gooi/capability-contracts/capability-port --external @gooi/capability-contracts/provider-manifest --external @gooi/host-contracts/activation-policy --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/module-integrity --external @gooi/host-contracts/module-loader && bun build ./src/host.ts --outfile ./dist/host.js --external zod --external @gooi/host-contracts/activation-policy --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/module-integrity --external @gooi/host-contracts/module-loader",
+		"build": "bun build ./src/engine.ts --outfile ./dist/engine.js --external zod --external @gooi/binding/artifact-alignment/policy --external @gooi/binding/binding-plan/contracts --external @gooi/binding/binding-plan/lookup --external @gooi/binding/lockfile/contracts --external @gooi/binding/lockfile/integrity --external @gooi/binding/lockfile/lookup --external @gooi/binding/reachability/contracts --external @gooi/capability-contracts/capability-port --external @gooi/capability-contracts/provider-manifest --external @gooi/contract-primitives/json --external @gooi/host-contracts/activation-policy --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/module-integrity --external @gooi/host-contracts/module-loader && bun build ./src/host.ts --outfile ./dist/host.js --external zod --external @gooi/host-contracts/activation-policy --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/module-integrity --external @gooi/host-contracts/module-loader",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@gooi/binding": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
+		"@gooi/contract-primitives": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}

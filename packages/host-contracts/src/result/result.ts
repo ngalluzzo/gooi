@@ -1,3 +1,5 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
+
 /**
  * Structured host port error payload.
  */
@@ -7,7 +9,7 @@ export interface HostPortError {
 	/** Human-readable error message. */
 	readonly message: string;
 	/** Optional structured error details. */
-	readonly details?: Readonly<Record<string, unknown>>;
+	readonly details?: JsonObject;
 }
 
 /**
@@ -28,7 +30,7 @@ export const hostOk = <T>(value: T): HostPortResult<T> => ({ ok: true, value });
 export const hostFail = (
 	code: string,
 	message: string,
-	details?: Readonly<Record<string, unknown>>,
+	details?: JsonObject,
 ): HostPortResult<never> => ({
 	ok: false,
 	error: details === undefined ? { code, message } : { code, message, details },

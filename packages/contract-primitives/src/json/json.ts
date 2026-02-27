@@ -11,16 +11,17 @@ export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 
 /**
- * Recursive JSON object contract used by shared surfaces.
+ * Shared object payload contract used by cross-lane transport surfaces.
+ *
+ * Runtime parsers enforce JSON-encodable values; the type remains permissive
+ * for incremental migration compatibility across packages.
  */
-export interface JsonObject {
-	readonly [key: string]: JsonValue;
-}
+export type JsonObject = Readonly<Record<string, unknown>>;
 
 /**
- * Recursive JSON array contract used by shared surfaces.
+ * Shared array payload contract used by cross-lane transport surfaces.
  */
-export interface JsonArray extends ReadonlyArray<JsonValue> {}
+export type JsonArray = readonly unknown[];
 
 /**
  * Zod schema for recursive JSON values.

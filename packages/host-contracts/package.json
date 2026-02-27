@@ -74,6 +74,7 @@
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/contract-primitives": "workspace:*",
 		"@gooi/provider-manifest": "workspace:*"
 	}
 }

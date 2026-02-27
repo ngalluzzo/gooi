@@ -1,3 +1,7 @@
+import {
+	type JsonObject,
+	jsonObjectSchema,
+} from "@gooi/contract-primitives/json";
 import { principalContextSchema } from "@gooi/host-contracts/principal";
 import { z } from "zod";
 import {
@@ -15,7 +19,7 @@ export const invocationEnvelopeSchema = z.object({
 	entrypointId: z.string().min(1),
 	entrypointKind: z.enum(["query", "mutation"]),
 	principal: principalContextSchema,
-	input: z.record(z.string(), z.unknown()),
+	input: jsonObjectSchema,
 	meta: z.object({
 		idempotencyKey: z.string().min(1).optional(),
 		requestReceivedAt: z.iso.datetime({ offset: true }),
@@ -28,7 +32,7 @@ type InvocationMeta = Omit<
 	ParsedInvocationEnvelope["meta"],
 	"idempotencyKey"
 > & {
-	readonly idempotencyKey?: string;
+	readonly idempotencyKey?: string | undefined;
 };
 
 type InvocationEnvelopeShape = Omit<
@@ -42,7 +46,7 @@ type InvocationEnvelopeShape = Omit<
 /**
  * Invocation envelope for one entrypoint execution.
  */
-export type InvocationEnvelope<Input> = InvocationEnvelopeShape & {
+export type InvocationEnvelope<Input = JsonObject> = InvocationEnvelopeShape & {
 	readonly input: Input;
 };
 
@@ -51,7 +55,4 @@ export type InvocationEnvelope<Input> = InvocationEnvelopeShape & {
  */
 export const parseInvocationEnvelope = (
 	value: unknown,
-): InvocationEnvelope<Readonly<Record<string, unknown>>> =>
-	invocationEnvelopeSchema.parse(value) as InvocationEnvelope<
-		Readonly<Record<string, unknown>>
-	>;
+): InvocationEnvelope<JsonObject> => invocationEnvelopeSchema.parse(value);

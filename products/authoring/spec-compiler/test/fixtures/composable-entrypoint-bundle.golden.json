@@ -251,19 +251,560 @@
 	},
 	"artifactManifest": {
 		"artifactVersion": "2.0.0",
+		"hashAlgorithm": "sha256",
 		"artifacts": {
+			"authoringCanonicalModel": {
+				"refVersion": "1.0.0",
+				"lane": "authoring",
+				"artifactId": "CompiledAuthoringCanonicalModel",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "212231095e08427c44c517aacde371b441aa88a2d81a5de4549bead5670cf150",
+				"hashAlgorithm": "sha256"
+			},
 			"bindingRequirements": {
+				"refVersion": "1.0.0",
+				"lane": "marketplace",
 				"artifactId": "CompiledBindingRequirements",
 				"artifactVersion": "1.0.0",
-				"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd",
+				"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8",
+				"hashAlgorithm": "sha256",
 				"compatibility": {
 					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
 					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
 					"supportedModes": ["local", "delegated", "unreachable"]
 				}
+			},
+			"qualityConformanceSeed": {
+				"refVersion": "1.0.0",
+				"lane": "quality",
+				"artifactId": "CompiledQualityConformanceSeed",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547",
+				"hashAlgorithm": "sha256"
+			},
+			"runtimeEntrypointContracts": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledRuntimeEntrypointContracts",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "15e85df8cf36515adc74a581289b32c614b035932ab6e7d5efd674a7935b11d2",
+				"hashAlgorithm": "sha256"
 			}
 		},
-		"aggregateHash": "f6a57a692ddf71249931ac91c3bc7beb81481965ddb0a64d891aab7d574339f9"
+		"aggregateHash": "7b07412bd9fbe27b8fcda3e95f1c9be92e48b25a064d39575c63dc012d6c3963"
+	},
+	"laneArtifacts": {
+		"authoringCanonicalModel": {
+			"artifactId": "CompiledAuthoringCanonicalModel",
+			"artifactVersion": "1.0.0",
+			"lane": "authoring",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"sections": {
+					"app": {
+						"id": "hello_world_demo",
+						"name": "Hello World Demo",
+						"tz": "UTC"
+					},
+					"domain": {
+						"collections": {},
+						"signals": {
+							"message.created": {},
+							"message.deleted": {}
+						},
+						"capabilities": {
+							"notifications.send": {
+								"version": "1.0.0"
+							},
+							"ids.generate": {
+								"version": "1.0.0"
+							},
+							"legacy.audit": {
+								"version": "1.0.0"
+							}
+						},
+						"actions": {
+							"guestbook.submit": {}
+						},
+						"flows": {
+							"rejection_followup": {}
+						},
+						"projections": {
+							"latest_messages": {},
+							"messages_with_authors": {}
+						}
+					},
+					"session": {
+						"fields": {}
+					},
+					"views": {
+						"nodes": [
+							{
+								"id": "messages_list",
+								"type": "list"
+							}
+						],
+						"screens": [
+							{
+								"id": "home",
+								"data": {
+									"messages": {
+										"query": "list_messages",
+										"refresh_on_signals": ["message.created", "message.deleted"]
+									}
+								}
+							}
+						]
+					},
+					"routes": [
+						{
+							"id": "home_route",
+							"access": {
+								"roles": ["authenticated"]
+							},
+							"renders": "home"
+						}
+					],
+					"personas": {
+						"frustrated_enterprise_buyer": {
+							"description": "Senior ops manager with low patience who expects direct answers."
+						}
+					},
+					"scenarios": {
+						"happy_path_message_submission": {
+							"context": {
+								"persona": "frustrated_enterprise_buyer"
+							},
+							"steps": [
+								{
+									"trigger": {
+										"mutation": "submit_message"
+									},
+									"expect": {
+										"query": "list_messages",
+										"projection": "latest_messages",
+										"flow_completed": "rejection_followup"
+									}
+								}
+							]
+						}
+					},
+					"wiring": {
+						"surfaces": {
+							"http": {
+								"queries": {
+									"list_messages": {
+										"bind": {
+											"page": "query.page",
+											"page_size": "query.page_size",
+											"q": "query.q"
+										}
+									}
+								},
+								"mutations": {
+									"submit_message": {
+										"bind": {
+											"message": "body.message"
+										}
+									}
+								},
+								"routes": {
+									"home_route": {
+										"bind": {}
+									}
+								}
+							}
+						},
+						"requirements": {
+							"capabilities": [
+								{
+									"portId": "notifications.send",
+									"portVersion": "1.0.0",
+									"mode": "delegated"
+								},
+								{
+									"portId": "ids.generate",
+									"portVersion": "1.0.0",
+									"mode": "local"
+								},
+								{
+									"portId": "legacy.audit",
+									"portVersion": "1.0.0",
+									"mode": "unreachable"
+								}
+							]
+						}
+					},
+					"access": {
+						"default_policy": "deny",
+						"roles": {
+							"anonymous": {},
+							"authenticated": {},
+							"admin": {}
+						}
+					}
+				},
+				"references": {
+					"queryIds": ["list_messages"],
+					"mutationIds": ["submit_message"],
+					"routeIds": ["home_route"],
+					"screenIds": ["home"],
+					"actionIds": ["guestbook.submit"],
+					"projectionIds": ["latest_messages", "messages_with_authors"],
+					"capabilityRefs": [
+						"ids.generate@1.0.0",
+						"legacy.audit@1.0.0",
+						"notifications.send@1.0.0"
+					],
+					"personaIds": ["frustrated_enterprise_buyer"],
+					"scenarioIds": ["happy_path_message_submission"]
+				}
+			},
+			"artifactHash": "212231095e08427c44c517aacde371b441aa88a2d81a5de4549bead5670cf150"
+		},
+		"bindingRequirements": {
+			"artifactId": "CompiledBindingRequirements",
+			"artifactVersion": "1.0.0",
+			"lane": "marketplace",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"artifactId": "CompiledBindingRequirements",
+				"artifactVersion": "1.0.0",
+				"requirements": {
+					"ids.generate@1.0.0": {
+						"portId": "ids.generate",
+						"portVersion": "1.0.0",
+						"mode": "local"
+					},
+					"legacy.audit@1.0.0": {
+						"portId": "legacy.audit",
+						"portVersion": "1.0.0",
+						"mode": "unreachable"
+					},
+					"notifications.send@1.0.0": {
+						"portId": "notifications.send",
+						"portVersion": "1.0.0",
+						"mode": "delegated"
+					}
+				},
+				"compatibility": {
+					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
+					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
+					"supportedModes": ["local", "delegated", "unreachable"]
+				},
+				"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd"
+			},
+			"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8"
+		},
+		"qualityConformanceSeed": {
+			"artifactId": "CompiledQualityConformanceSeed",
+			"artifactVersion": "1.0.0",
+			"lane": "quality",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"queryIds": ["list_messages"],
+				"mutationIds": ["submit_message"],
+				"routeIds": ["home_route"],
+				"screenIds": ["home"],
+				"personaIds": ["frustrated_enterprise_buyer"],
+				"scenarioIds": ["happy_path_message_submission"]
+			},
+			"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547"
+		},
+		"runtimeEntrypointContracts": {
+			"artifactId": "CompiledRuntimeEntrypointContracts",
+			"artifactVersion": "1.0.0",
+			"lane": "runtime",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"entrypoints": {
+					"query:list_messages": {
+						"id": "list_messages",
+						"kind": "query",
+						"inputFields": {
+							"page": {
+								"scalarType": "int",
+								"required": false
+							},
+							"page_size": {
+								"scalarType": "int",
+								"required": false
+							},
+							"q": {
+								"scalarType": "text",
+								"required": false
+							}
+						},
+						"defaultInput": {
+							"page": 1,
+							"page_size": 10
+						},
+						"accessRoles": ["authenticated"],
+						"schemaArtifactKey": "entrypoint.query.list_messages.input"
+					},
+					"mutation:submit_message": {
+						"id": "submit_message",
+						"kind": "mutation",
+						"inputFields": {
+							"message": {
+								"scalarType": "text",
+								"required": true
+							}
+						},
+						"defaultInput": {},
+						"accessRoles": ["authenticated"],
+						"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
+					}
+				},
+				"bindings": {
+					"http:query:list_messages": {
+						"surfaceId": "http",
+						"entrypointKind": "query",
+						"entrypointId": "list_messages",
+						"fieldBindings": {
+							"page": "query.page",
+							"page_size": "query.page_size",
+							"q": "query.q"
+						}
+					},
+					"http:mutation:submit_message": {
+						"surfaceId": "http",
+						"entrypointKind": "mutation",
+						"entrypointId": "submit_message",
+						"fieldBindings": {
+							"message": "body.message"
+						}
+					}
+				},
+				"refreshSubscriptions": {
+					"list_messages": {
+						"queryId": "list_messages",
+						"signalIds": ["message.created", "message.deleted"]
+					}
+				},
+				"accessPlan": {
+					"defaultPolicy": "deny",
+					"knownRoles": ["admin", "anonymous", "authenticated"],
+					"roleDefinitions": {
+						"admin": {
+							"roleId": "admin",
+							"extends": [],
+							"deriveRules": []
+						},
+						"anonymous": {
+							"roleId": "anonymous",
+							"extends": [],
+							"deriveRules": []
+						},
+						"authenticated": {
+							"roleId": "authenticated",
+							"extends": [],
+							"deriveRules": []
+						}
+					},
+					"entrypointRoles": {
+						"query:list_messages": ["authenticated"],
+						"mutation:submit_message": ["authenticated"]
+					}
+				},
+				"schemaArtifacts": {
+					"entrypoint.query.list_messages.input": {
+						"target": "draft-2020-12",
+						"schema": {
+							"~standard": {
+								"jsonSchema": {},
+								"vendor": "zod",
+								"version": 1
+							},
+							"$schema": "https://json-schema.org/draft/2020-12/schema",
+							"additionalProperties": false,
+							"properties": {
+								"page": {
+									"maximum": 9007199254740991,
+									"minimum": -9007199254740991,
+									"type": "integer"
+								},
+								"page_size": {
+									"maximum": 9007199254740991,
+									"minimum": -9007199254740991,
+									"type": "integer"
+								},
+								"q": {
+									"type": "string"
+								}
+							},
+							"type": "object"
+						},
+						"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d"
+					},
+					"entrypoint.mutation.submit_message.input": {
+						"target": "draft-2020-12",
+						"schema": {
+							"~standard": {
+								"jsonSchema": {},
+								"vendor": "zod",
+								"version": 1
+							},
+							"$schema": "https://json-schema.org/draft/2020-12/schema",
+							"additionalProperties": false,
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							},
+							"required": ["message"],
+							"type": "object"
+						},
+						"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
+					}
+				},
+				"sections": {
+					"app": {
+						"id": "hello_world_demo",
+						"name": "Hello World Demo",
+						"tz": "UTC"
+					},
+					"domain": {
+						"collections": {},
+						"signals": {
+							"message.created": {},
+							"message.deleted": {}
+						},
+						"capabilities": {
+							"notifications.send": {
+								"version": "1.0.0"
+							},
+							"ids.generate": {
+								"version": "1.0.0"
+							},
+							"legacy.audit": {
+								"version": "1.0.0"
+							}
+						},
+						"actions": {
+							"guestbook.submit": {}
+						},
+						"flows": {
+							"rejection_followup": {}
+						},
+						"projections": {
+							"latest_messages": {},
+							"messages_with_authors": {}
+						}
+					},
+					"session": {
+						"fields": {}
+					},
+					"views": {
+						"nodes": [
+							{
+								"id": "messages_list",
+								"type": "list"
+							}
+						],
+						"screens": [
+							{
+								"id": "home",
+								"data": {
+									"messages": {
+										"query": "list_messages",
+										"refresh_on_signals": ["message.created", "message.deleted"]
+									}
+								}
+							}
+						]
+					},
+					"routes": [
+						{
+							"id": "home_route",
+							"access": {
+								"roles": ["authenticated"]
+							},
+							"renders": "home"
+						}
+					],
+					"personas": {
+						"frustrated_enterprise_buyer": {
+							"description": "Senior ops manager with low patience who expects direct answers."
+						}
+					},
+					"scenarios": {
+						"happy_path_message_submission": {
+							"context": {
+								"persona": "frustrated_enterprise_buyer"
+							},
+							"steps": [
+								{
+									"trigger": {
+										"mutation": "submit_message"
+									},
+									"expect": {
+										"query": "list_messages",
+										"projection": "latest_messages",
+										"flow_completed": "rejection_followup"
+									}
+								}
+							]
+						}
+					},
+					"wiring": {
+						"surfaces": {
+							"http": {
+								"queries": {
+									"list_messages": {
+										"bind": {
+											"page": "query.page",
+											"page_size": "query.page_size",
+											"q": "query.q"
+										}
+									}
+								},
+								"mutations": {
+									"submit_message": {
+										"bind": {
+											"message": "body.message"
+										}
+									}
+								},
+								"routes": {
+									"home_route": {
+										"bind": {}
+									}
+								}
+							}
+						},
+						"requirements": {
+							"capabilities": [
+								{
+									"portId": "notifications.send",
+									"portVersion": "1.0.0",
+									"mode": "delegated"
+								},
+								{
+									"portId": "ids.generate",
+									"portVersion": "1.0.0",
+									"mode": "local"
+								},
+								{
+									"portId": "legacy.audit",
+									"portVersion": "1.0.0",
+									"mode": "unreachable"
+								}
+							]
+						}
+					},
+					"access": {
+						"default_policy": "deny",
+						"roles": {
+							"anonymous": {},
+							"authenticated": {},
+							"admin": {}
+						}
+					}
+				}
+			},
+			"artifactHash": "15e85df8cf36515adc74a581289b32c614b035932ab6e7d5efd674a7935b11d2"
+		}
 	},
 	"refreshSubscriptions": {
 		"list_messages": {
@@ -347,5 +888,5 @@
 			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 		}
 	},
-	"artifactHash": "8f44fae86bb416fbde3246969cb4c0a227616d8d34d0dce84efa7bd10d1d4e8b"
+	"artifactHash": "8ecedb4b3729d2fce7455371028061e01a4f0bf3ca892e8e9aa70418bfde7aab"
 }

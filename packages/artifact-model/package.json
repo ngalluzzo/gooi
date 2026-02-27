@@ -1,0 +1,44 @@
+{
+	"name": "@gooi/artifact-model",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/manifest/manifest.js",
+	"types": "./src/manifest/manifest.ts",
+	"exports": {
+		"./manifest": {
+			"types": "./src/manifest/manifest.ts",
+			"bun": "./src/manifest/manifest.ts",
+			"import": "./dist/manifest/manifest.js",
+			"default": "./dist/manifest/manifest.js"
+		},
+		"./validation": {
+			"types": "./src/validation/validate-manifest.ts",
+			"bun": "./src/validation/validate-manifest.ts",
+			"import": "./dist/validation/validate-manifest.js",
+			"default": "./dist/validation/validate-manifest.js"
+		},
+		"./bundle": {
+			"types": "./src/bundle/bundle.ts",
+			"bun": "./src/bundle/bundle.ts",
+			"import": "./dist/bundle/bundle.js",
+			"default": "./dist/bundle/bundle.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/manifest/manifest.ts --outfile ./dist/manifest/manifest.js --external zod --external @gooi/stable-json && bun build ./src/validation/validate-manifest.ts --outfile ./dist/validation/validate-manifest.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest && bun build ./src/bundle/bundle.ts --target=node --outfile ./dist/bundle/bundle.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest --external @gooi/artifact-model/validation",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/stable-json": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

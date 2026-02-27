@@ -50,12 +50,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/plans/projection-plan.ts --outfile ./dist/plans/projection-plan.js --external zod --external @gooi/projection-contracts/plans/signal-migration-plan && bun build ./src/plans/timeline-history-policy.ts --outfile ./dist/plans/timeline-history-policy.js --external zod && bun build ./src/plans/signal-migration-plan.ts --outfile ./dist/plans/signal-migration-plan.js --external zod && bun build ./src/ports/history-port-contract.ts --outfile ./dist/ports/history-port-contract.js --external zod && bun build ./src/envelopes/projection-result-envelope.ts --outfile ./dist/envelopes/projection-result-envelope.js --external zod --external @gooi/projection-contracts/errors/projection-errors --external @gooi/projection-contracts/plans/projection-plan && bun build ./src/errors/projection-errors.ts --outfile ./dist/errors/projection-errors.js --external zod --external @gooi/projection-contracts/plans/projection-plan",
+		"build": "bun build ./src/plans/projection-plan.ts --outfile ./dist/plans/projection-plan.js --external zod --external @gooi/guard-contracts/plans/guard-plan --external @gooi/projection-contracts/plans/signal-migration-plan && bun build ./src/plans/timeline-history-policy.ts --outfile ./dist/plans/timeline-history-policy.js --external zod && bun build ./src/plans/signal-migration-plan.ts --outfile ./dist/plans/signal-migration-plan.js --external zod && bun build ./src/ports/history-port-contract.ts --outfile ./dist/ports/history-port-contract.js --external zod && bun build ./src/envelopes/projection-result-envelope.ts --outfile ./dist/envelopes/projection-result-envelope.js --external zod --external @gooi/projection-contracts/errors/projection-errors --external @gooi/projection-contracts/plans/projection-plan && bun build ./src/errors/projection-errors.ts --outfile ./dist/errors/projection-errors.js --external zod --external @gooi/projection-contracts/plans/projection-plan",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/guard-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

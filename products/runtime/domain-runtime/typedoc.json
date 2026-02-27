@@ -1,6 +1,6 @@
 {
   "entryPoints": [
-    "./src/engine.ts"
+    "./src/runtime/create-domain-runtime.ts"
   ],
   "tsconfig": "tsconfig.json",
   "plugin": [

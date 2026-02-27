@@ -1,0 +1,50 @@
+{
+	"name": "@gooi/scenario-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/plans/scenario-plan.js",
+	"types": "./src/plans/scenario-plan.ts",
+	"exports": {
+		"./plans/scenario-plan": {
+			"types": "./src/plans/scenario-plan.ts",
+			"bun": "./src/plans/scenario-plan.ts",
+			"import": "./dist/plans/scenario-plan.js",
+			"default": "./dist/plans/scenario-plan.js"
+		},
+		"./envelopes/scenario-envelopes": {
+			"types": "./src/envelopes/scenario-envelopes.ts",
+			"bun": "./src/envelopes/scenario-envelopes.ts",
+			"import": "./dist/envelopes/scenario-envelopes.js",
+			"default": "./dist/envelopes/scenario-envelopes.js"
+		},
+		"./reports/scenario-reports": {
+			"types": "./src/reports/scenario-reports.ts",
+			"bun": "./src/reports/scenario-reports.ts",
+			"import": "./dist/reports/scenario-reports.js",
+			"default": "./dist/reports/scenario-reports.js"
+		},
+		"./errors/scenario-errors": {
+			"types": "./src/errors/scenario-errors.ts",
+			"bun": "./src/errors/scenario-errors.ts",
+			"import": "./dist/errors/scenario-errors.js",
+			"default": "./dist/errors/scenario-errors.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/plans/scenario-plan.ts --outfile ./dist/plans/scenario-plan.js --external zod --external @gooi/guard-contracts/plans/guard-plan && bun build ./src/envelopes/scenario-envelopes.ts --outfile ./dist/envelopes/scenario-envelopes.js --external zod --external @gooi/scenario-contracts/errors/scenario-errors --external @gooi/scenario-contracts/plans/scenario-plan && bun build ./src/reports/scenario-reports.ts --outfile ./dist/reports/scenario-reports.js --external zod --external @gooi/scenario-contracts/envelopes/scenario-envelopes && bun build ./src/errors/scenario-errors.ts --outfile ./dist/errors/scenario-errors.js --external zod --external @gooi/scenario-contracts/plans/scenario-plan",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/guard-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

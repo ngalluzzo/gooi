@@ -89,6 +89,18 @@
 			"import": "./dist/projection-conformance/run-projection-conformance.js",
 			"default": "./dist/projection-conformance/run-projection-conformance.js"
 		},
+		"./guard": {
+			"types": "./src/guard-conformance/run-guard-conformance.ts",
+			"bun": "./src/guard-conformance/run-guard-conformance.ts",
+			"import": "./dist/guard-conformance/run-guard-conformance.js",
+			"default": "./dist/guard-conformance/run-guard-conformance.js"
+		},
+		"./scenario": {
+			"types": "./src/scenario-conformance/run-scenario-conformance.ts",
+			"bun": "./src/scenario-conformance/run-scenario-conformance.ts",
+			"import": "./dist/scenario-conformance/run-scenario-conformance.js",
+			"default": "./dist/scenario-conformance/run-scenario-conformance.js"
+		},
 		"./reachability-parity-contracts": {
 			"types": "./src/reachability-parity/contracts.ts",
 			"bun": "./src/reachability-parity/contracts.ts",
@@ -101,6 +113,18 @@
 			"import": "./dist/projection-conformance/contracts.js",
 			"default": "./dist/projection-conformance/contracts.js"
 		},
+		"./guard-contracts": {
+			"types": "./src/guard-conformance/contracts.ts",
+			"bun": "./src/guard-conformance/contracts.ts",
+			"import": "./dist/guard-conformance/contracts.js",
+			"default": "./dist/guard-conformance/contracts.js"
+		},
+		"./scenario-contracts": {
+			"types": "./src/scenario-conformance/contracts.ts",
+			"bun": "./src/scenario-conformance/contracts.ts",
+			"import": "./dist/scenario-conformance/contracts.js",
+			"default": "./dist/scenario-conformance/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -110,7 +134,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts --outdir ./dist --external zod --external @gooi/host-contracts/delegation --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts ./src/guard-conformance/*.ts ./src/scenario-conformance/*.ts --outdir ./dist --external zod --external @gooi/host-contracts/delegation --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-runtime/evaluate --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-runtime/run --external @gooi/scenario-runtime/suite --external @gooi/scenario-runtime/coverage",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -119,12 +143,17 @@
 		"@gooi/authoring-contracts": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
+		"@gooi/domain-runtime": "workspace:*",
 		"@gooi/entrypoint-runtime": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/provider-runtime": "workspace:*",
 		"@gooi/language-server": "workspace:*",
 		"@gooi/projection-contracts": "workspace:*",
 		"@gooi/projection-runtime": "workspace:*",
+		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/guard-runtime": "workspace:*",
+		"@gooi/scenario-contracts": "workspace:*",
+		"@gooi/scenario-runtime": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",

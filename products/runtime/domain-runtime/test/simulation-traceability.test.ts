@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/engine";
+import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime simulation and traceability", () => {
 	test("runs deterministic simulation paths without live side effects", async () => {

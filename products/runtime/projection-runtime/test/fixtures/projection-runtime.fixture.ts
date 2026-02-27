@@ -207,6 +207,18 @@ export const createTimelinePlanFixture =
 			],
 			"message.rejected": [{ op: "inc", field: "rejection_count", value: 1 }],
 		},
+		signalReplay: {
+			"message.created": {
+				currentVersion: 1,
+				oldestRetainedVersion: 1,
+				steps: [],
+			},
+			"message.rejected": {
+				currentVersion: 1,
+				oldestRetainedVersion: 1,
+				steps: [],
+			},
+		},
 		pagination: {
 			mode: "page",
 			pageArg: "page",

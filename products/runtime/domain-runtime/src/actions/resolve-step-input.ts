@@ -10,6 +10,8 @@ import {
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 	typeof value === "object" && value !== null;
 
+const unsafePathSegments = new Set(["__proto__", "prototype", "constructor"]);
+
 const readInputPath = (
 	input: Readonly<Record<string, unknown>>,
 	path: string,
@@ -23,7 +25,11 @@ const readInputPath = (
 		if (!isRecord(cursor)) {
 			return undefined;
 		}
-		cursor = cursor[segment];
+		if (unsafePathSegments.has(segment) || !Object.hasOwn(cursor, segment)) {
+			return undefined;
+		}
+		const next = cursor[segment];
+		cursor = next;
 	}
 	return cursor;
 };

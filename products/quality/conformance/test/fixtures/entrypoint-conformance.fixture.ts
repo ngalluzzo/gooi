@@ -8,6 +8,22 @@ import { sha256, stableStringify } from "@gooi/stable-json";
 export const createEntrypointConformanceFixture = () => {
 	const compiled = compileEntrypointBundle({
 		spec: {
+			app: {
+				id: "conformance_fixture_app",
+				name: "Conformance Fixture App",
+				tz: "UTC",
+			},
+			domain: {
+				actions: {
+					"guestbook.submit": {},
+				},
+				projections: {
+					latest_messages: {},
+				},
+			},
+			session: {
+				fields: {},
+			},
 			access: {
 				default_policy: "deny",
 				roles: { anonymous: {}, authenticated: {}, admin: {} },
@@ -32,6 +48,9 @@ export const createEntrypointConformanceFixture = () => {
 					},
 				},
 			],
+			routes: [],
+			personas: {},
+			scenarios: {},
 			wiring: {
 				surfaces: {
 					http: {
@@ -43,6 +62,7 @@ export const createEntrypointConformanceFixture = () => {
 				},
 			},
 			views: {
+				nodes: [],
 				screens: [
 					{
 						id: "home",

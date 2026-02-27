@@ -88,6 +88,19 @@ describe("entrypoint-runtime", () => {
 		const compiled = compileEntrypointBundle({
 			compilerVersion: "1.0.0",
 			spec: {
+				app: {
+					id: "execute_entrypoint_fixture_app",
+					name: "Execute Entrypoint Fixture App",
+					tz: "UTC",
+				},
+				domain: {
+					projections: {
+						admin_projection: {},
+					},
+				},
+				session: {
+					fields: {},
+				},
 				access: {
 					default_policy: "deny",
 					roles: {
@@ -107,6 +120,9 @@ describe("entrypoint-runtime", () => {
 					},
 				],
 				mutations: [],
+				routes: [],
+				personas: {},
+				scenarios: {},
 				wiring: {
 					surfaces: {
 						http: {
@@ -117,6 +133,10 @@ describe("entrypoint-runtime", () => {
 							},
 						},
 					},
+				},
+				views: {
+					nodes: [],
+					screens: [],
 				},
 			},
 		});

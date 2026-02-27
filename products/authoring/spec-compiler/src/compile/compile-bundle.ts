@@ -16,9 +16,12 @@ import {
 	compileBindingRequirementsArtifact,
 } from "./compile-binding-requirements-artifact";
 import { compileBindings } from "./compile-bindings";
+import { buildCanonicalSpecModel } from "./compile-canonical-model";
 import { compileEntrypoints } from "./compile-entrypoints";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
+import { sortDiagnostics } from "./sort-diagnostics";
+import { validateCrossLinks } from "./validate-cross-links";
 
 /**
  * Input payload for compiling a deterministic entrypoint bundle.
@@ -131,18 +134,22 @@ export const compileEntrypointBundle = (
 ): CompileEntrypointBundleResult => {
 	const parsed = authoringEntrypointSpecSchema.safeParse(input.spec);
 	if (!parsed.success) {
-		return {
-			ok: false,
-			diagnostics: parsed.error.issues.map((issue) => ({
+		const diagnostics = sortDiagnostics(
+			parsed.error.issues.map((issue) => ({
 				severity: "error",
 				code: "authoring_spec_invalid",
 				path: issue.path.join("."),
 				message: issue.message,
 			})),
+		);
+		return {
+			ok: false,
+			diagnostics,
 		};
 	}
 
 	const spec = parseAuthoringEntrypointSpec(parsed.data);
+	const canonicalModel = buildCanonicalSpecModel(spec);
 	const entrypointOutput = compileEntrypoints(spec);
 	const bindingOutput = compileBindings(spec, entrypointOutput.entrypoints);
 	const reachabilityOutput = compileReachabilityRequirements(spec);
@@ -150,12 +157,13 @@ export const compileEntrypointBundle = (
 		spec,
 		entrypointOutput.entrypoints,
 	);
-	const diagnostics = [
+	const diagnostics = sortDiagnostics([
+		...validateCrossLinks(canonicalModel),
 		...entrypointOutput.diagnostics,
 		...bindingOutput.diagnostics,
 		...reachabilityOutput.diagnostics,
 		...refreshOutput.diagnostics,
-	];
+	]);
 
 	if (hasErrors(diagnostics)) {
 		return { ok: false, diagnostics };
@@ -171,6 +179,7 @@ export const compileEntrypointBundle = (
 		artifactVersion,
 		compilerVersion: input.compilerVersion,
 		sourceSpecHash,
+		sections: canonicalModel.sections,
 		entrypoints: entrypointOutput.entrypoints,
 		bindings: bindingOutput.bindings,
 		reachabilityRequirements: reachabilityOutput.requirements,

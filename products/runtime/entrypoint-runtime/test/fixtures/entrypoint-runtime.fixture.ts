@@ -22,6 +22,22 @@ export interface RuntimeHarness {
 export const createCompiledRuntimeFixture = () => {
 	const compiled = compileEntrypointBundle({
 		spec: {
+			app: {
+				id: "runtime_fixture_app",
+				name: "Runtime Fixture App",
+				tz: "UTC",
+			},
+			domain: {
+				actions: {
+					"guestbook.submit": {},
+				},
+				projections: {
+					latest_messages: {},
+				},
+			},
+			session: {
+				fields: {},
+			},
 			access: {
 				default_policy: "deny",
 				roles: { anonymous: {}, authenticated: {}, admin: {} },
@@ -46,6 +62,9 @@ export const createCompiledRuntimeFixture = () => {
 					},
 				},
 			],
+			routes: [],
+			personas: {},
+			scenarios: {},
 			wiring: {
 				surfaces: {
 					http: {
@@ -61,6 +80,7 @@ export const createCompiledRuntimeFixture = () => {
 				},
 			},
 			views: {
+				nodes: [],
 				screens: [
 					{
 						id: "home",

@@ -2,20 +2,36 @@
  * Returns a valid composable entrypoint authoring spec fixture.
  */
 export const createComposableEntrypointSpecFixture = () => ({
-	capabilities: [
-		{
-			id: "notifications.send",
-			version: "1.0.0",
+	app: {
+		id: "hello_world_demo",
+		name: "Hello World Demo",
+		tz: "UTC",
+	},
+	domain: {
+		collections: {},
+		signals: {
+			"message.created": {},
+			"message.deleted": {},
 		},
-		{
-			id: "ids.generate",
-			version: "1.0.0",
+		capabilities: {
+			"notifications.send": { version: "1.0.0" },
+			"ids.generate": { version: "1.0.0" },
+			"legacy.audit": { version: "1.0.0" },
 		},
-		{
-			id: "legacy.audit",
-			version: "1.0.0",
+		actions: {
+			"guestbook.submit": {},
 		},
-	],
+		flows: {
+			rejection_followup: {},
+		},
+		projections: {
+			latest_messages: {},
+			messages_with_authors: {},
+		},
+	},
+	session: {
+		fields: {},
+	},
 	access: {
 		default_policy: "deny" as const,
 		roles: {
@@ -59,6 +75,38 @@ export const createComposableEntrypointSpecFixture = () => ({
 			},
 		},
 	],
+	routes: [
+		{
+			id: "home_route",
+			access: { roles: ["authenticated"] },
+			renders: "home",
+		},
+	],
+	personas: {
+		frustrated_enterprise_buyer: {
+			description:
+				"Senior ops manager with low patience who expects direct answers.",
+		},
+	},
+	scenarios: {
+		happy_path_message_submission: {
+			context: {
+				persona: "frustrated_enterprise_buyer",
+			},
+			steps: [
+				{
+					trigger: {
+						mutation: "submit_message",
+					},
+					expect: {
+						query: "list_messages",
+						projection: "latest_messages",
+						flow_completed: "rejection_followup",
+					},
+				},
+			],
+		},
+	},
 	wiring: {
 		surfaces: {
 			http: {
@@ -76,6 +124,11 @@ export const createComposableEntrypointSpecFixture = () => ({
 						bind: {
 							message: "body.message",
 						},
+					},
+				},
+				routes: {
+					home_route: {
+						bind: {},
 					},
 				},
 			},
@@ -101,6 +154,12 @@ export const createComposableEntrypointSpecFixture = () => ({
 		},
 	},
 	views: {
+		nodes: [
+			{
+				id: "messages_list",
+				type: "list",
+			},
+		],
 		screens: [
 			{
 				id: "home",

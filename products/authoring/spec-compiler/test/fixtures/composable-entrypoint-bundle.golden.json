@@ -1,7 +1,151 @@
 {
 	"artifactVersion": "1.0.0",
 	"compilerVersion": "1.0.0",
-	"sourceSpecHash": "864f2a8aaf884302d636936e68dee1d11f2066674ed10d26197fbcd246c55047",
+	"sourceSpecHash": "7b574714b9af7f71f3468122cbcde99f2b6bfe134d268beb9ca836a348cf9b44",
+	"sections": {
+		"app": {
+			"id": "hello_world_demo",
+			"name": "Hello World Demo",
+			"tz": "UTC"
+		},
+		"domain": {
+			"collections": {},
+			"signals": {
+				"message.created": {},
+				"message.deleted": {}
+			},
+			"capabilities": {
+				"notifications.send": {
+					"version": "1.0.0"
+				},
+				"ids.generate": {
+					"version": "1.0.0"
+				},
+				"legacy.audit": {
+					"version": "1.0.0"
+				}
+			},
+			"actions": {
+				"guestbook.submit": {}
+			},
+			"flows": {
+				"rejection_followup": {}
+			},
+			"projections": {
+				"latest_messages": {},
+				"messages_with_authors": {}
+			}
+		},
+		"session": {
+			"fields": {}
+		},
+		"views": {
+			"nodes": [
+				{
+					"id": "messages_list",
+					"type": "list"
+				}
+			],
+			"screens": [
+				{
+					"id": "home",
+					"data": {
+						"messages": {
+							"query": "list_messages",
+							"refresh_on_signals": ["message.created", "message.deleted"]
+						}
+					}
+				}
+			]
+		},
+		"routes": [
+			{
+				"id": "home_route",
+				"access": {
+					"roles": ["authenticated"]
+				},
+				"renders": "home"
+			}
+		],
+		"personas": {
+			"frustrated_enterprise_buyer": {
+				"description": "Senior ops manager with low patience who expects direct answers."
+			}
+		},
+		"scenarios": {
+			"happy_path_message_submission": {
+				"context": {
+					"persona": "frustrated_enterprise_buyer"
+				},
+				"steps": [
+					{
+						"trigger": {
+							"mutation": "submit_message"
+						},
+						"expect": {
+							"query": "list_messages",
+							"projection": "latest_messages",
+							"flow_completed": "rejection_followup"
+						}
+					}
+				]
+			}
+		},
+		"wiring": {
+			"surfaces": {
+				"http": {
+					"queries": {
+						"list_messages": {
+							"bind": {
+								"page": "query.page",
+								"page_size": "query.page_size",
+								"q": "query.q"
+							}
+						}
+					},
+					"mutations": {
+						"submit_message": {
+							"bind": {
+								"message": "body.message"
+							}
+						}
+					},
+					"routes": {
+						"home_route": {
+							"bind": {}
+						}
+					}
+				}
+			},
+			"requirements": {
+				"capabilities": [
+					{
+						"portId": "notifications.send",
+						"portVersion": "1.0.0",
+						"mode": "delegated"
+					},
+					{
+						"portId": "ids.generate",
+						"portVersion": "1.0.0",
+						"mode": "local"
+					},
+					{
+						"portId": "legacy.audit",
+						"portVersion": "1.0.0",
+						"mode": "unreachable"
+					}
+				]
+			}
+		},
+		"access": {
+			"default_policy": "deny",
+			"roles": {
+				"anonymous": {},
+				"authenticated": {},
+				"admin": {}
+			}
+		}
+	},
 	"entrypoints": {
 		"query:list_messages": {
 			"id": "list_messages",
@@ -203,5 +347,5 @@
 			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 		}
 	},
-	"artifactHash": "f07f4d1fd27fbf76e7d21bb178ea94d44f690b764488712b626e60b5fe5129b0"
+	"artifactHash": "8f44fae86bb416fbde3246969cb4c0a227616d8d34d0dce84efa7bd10d1d4e8b"
 }

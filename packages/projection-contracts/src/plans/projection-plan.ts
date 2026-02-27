@@ -1,3 +1,4 @@
+import type { CompiledSignalReplayPolicy } from "./signal-migration-plan";
 import type { CompiledTimelineHistoryPolicy } from "./timeline-history-policy";
 
 /**
@@ -168,6 +169,7 @@ export interface CompiledTimelineProjectionPlan {
 	readonly reducers: Readonly<
 		Record<string, readonly TimelineReducerOperation[]>
 	>;
+	readonly signalReplay: CompiledSignalReplayPolicy;
 	readonly pagination: ProjectionPaginationPlan;
 	readonly history: CompiledTimelineHistoryPolicy;
 }

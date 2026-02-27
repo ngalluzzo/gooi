@@ -8,6 +8,11 @@ import type {
 } from "@gooi/projection-contracts/ports/history-port-contract";
 import { createProjectionRuntime } from "@gooi/projection-runtime";
 import type { ProjectionRefreshSubscriptions } from "@gooi/projection-runtime/refresh";
+import {
+	timelineMigrationPlanFixture,
+	timelineMigrationPlanWithGapFixture,
+	versionedHistoryPortFixture,
+} from "./projection-conformance-migration.fixture";
 
 const collections: Readonly<
 	Record<string, readonly Readonly<Record<string, unknown>>[]>
@@ -96,6 +101,18 @@ const historyPortWithoutAsOf: Omit<HistoryPort, "scanAsOf"> = {
 	persist: historyPort.persist,
 };
 
+const historyPortWithoutPersist: Omit<HistoryPort, "persist"> = {
+	append: historyPort.append,
+	scan: historyPort.scan,
+	scanAsOf: async (input) => {
+		if (historyPort.scanAsOf === undefined) {
+			return { records: [], historyComplete: false };
+		}
+		return historyPort.scanAsOf(input);
+	},
+	rebuild: historyPort.rebuild,
+};
+
 const aggregatePlan: CompiledAggregateProjectionPlan = {
 	projectionId: "user_activity",
 	strategy: "aggregate",
@@ -146,6 +163,18 @@ const timelinePlan: CompiledTimelineProjectionPlan = {
 		],
 		"message.rejected": [{ op: "inc", field: "rejection_count", value: 1 }],
 	},
+	signalReplay: {
+		"message.created": {
+			currentVersion: 1,
+			oldestRetainedVersion: 1,
+			steps: [],
+		},
+		"message.rejected": {
+			currentVersion: 1,
+			oldestRetainedVersion: 1,
+			steps: [],
+		},
+	},
 	pagination: {
 		mode: "page",
 		pageArg: "page",
@@ -188,6 +217,8 @@ export const createProjectionConformanceFixture = () => ({
 	runtime: createProjectionRuntime(),
 	aggregatePlan,
 	timelinePlan,
+	timelineMigrationPlan: timelineMigrationPlanFixture,
+	timelineMigrationPlanWithGap: timelineMigrationPlanWithGapFixture,
 	collectionReader: {
 		scanCollection: async ({
 			collectionId,
@@ -197,6 +228,8 @@ export const createProjectionConformanceFixture = () => ({
 	},
 	historyPort,
 	historyPortWithoutAsOf,
+	historyPortWithoutPersist,
+	versionedHistoryPort: versionedHistoryPortFixture,
 	refreshSubscriptions,
 	emittedSignalIds: ["message.created", "message.rejected"],
 	expectedAffectedQueryIds: ["get_user_activity", "list_recent_messages"],

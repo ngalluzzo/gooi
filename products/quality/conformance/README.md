@@ -25,6 +25,8 @@ provider checks, and authoring intelligence checks.
 - Authoring checks (`runAuthoringConformance`)
 - Reachability parity checks (`runReachabilityParitySuite`)
 - Projection/domain parity checks (`runProjectionConformance`)
+- Projection conformance includes history contract gates, rebuild workflow recovery,
+  and signal migration-chain enforcement checks
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks

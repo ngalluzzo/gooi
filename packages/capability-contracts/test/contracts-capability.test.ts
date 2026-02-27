@@ -4,7 +4,10 @@ import {
 	buildSchemaArtifact,
 	defineCapabilityPort,
 } from "../src/capability-port/capability-port";
-import { parseProviderManifest } from "../src/provider-manifest/provider-manifest";
+import {
+	parseProviderManifest,
+	safeParseProviderManifest,
+} from "../src/provider-manifest/provider-manifest";
 
 describe("capability-contracts", () => {
 	test("defines stable capability contract hashes", () => {
@@ -70,5 +73,34 @@ describe("capability-contracts", () => {
 				],
 			}),
 		).toThrow();
+	});
+
+	test("safe-parse returns typed issues for invalid manifests", () => {
+		const parsed = safeParseProviderManifest({
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.2.3",
+			hostApiRange: "^1.0.0",
+			capabilities: [
+				{
+					portId: "ids.generate",
+					portVersion: "1.0.0",
+					contractHash:
+						"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					executionHosts: ["mobile"],
+				},
+			],
+		});
+
+		expect(parsed.success).toBe(false);
+		if (!parsed.success) {
+			expect(parsed.error.issues).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						path: expect.any(Array),
+						message: expect.any(String),
+					}),
+				]),
+			);
+		}
 	});
 });

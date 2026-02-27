@@ -62,4 +62,61 @@ describe("projection contracts", () => {
 		expect(error.sourceRef.path).toContain("join.0");
 		expect(error.details).toEqual({ missingField: "on.leftField" });
 	});
+
+	test("expresses timeline signal replay migration policy contracts", () => {
+		const plan: CompiledProjectionPlan = {
+			projectionId: "user_message_state_timeline",
+			strategy: "timeline",
+			sourceRef: {
+				projectionId: "user_message_state_timeline",
+				path: "domain.projections.user_message_state_timeline",
+				strategy: "timeline",
+			},
+			signals: ["message.created"],
+			groupByField: "payload.user_id",
+			orderBy: { field: "emittedAt", direction: "asc" },
+			start: { message_count: 0 },
+			reducers: {
+				"message.created": [{ op: "inc", field: "message_count", value: 1 }],
+			},
+			signalReplay: {
+				"message.created": {
+					currentVersion: 3,
+					oldestRetainedVersion: 1,
+					steps: [
+						{
+							fromVersion: 1,
+							toVersion: 2,
+							operations: [{ op: "rename", from: "message", to: "text" }],
+						},
+						{
+							fromVersion: 2,
+							toVersion: 3,
+							operations: [{ op: "coerce", field: "priority", to: "number" }],
+						},
+					],
+				},
+			},
+			pagination: {
+				mode: "page",
+				pageArg: "page",
+				pageSizeArg: "page_size",
+				defaultPage: 1,
+				defaultPageSize: 20,
+				maxPageSize: 100,
+			},
+			history: {
+				requiredCapabilities: [
+					"history.scan",
+					"history.rebuild",
+					"history.persist",
+				],
+				window: { defaultLimit: 100, maxLimit: 100 },
+				rebuild: { mode: "full" },
+			},
+		};
+
+		expect(plan.strategy).toBe("timeline");
+		expect(plan.signalReplay["message.created"]?.steps.length).toBe(2);
+	});
 });

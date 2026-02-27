@@ -1,3 +1,5 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
+
 /**
  * Semver regular expression in MAJOR.MINOR.PATCH format.
  */
@@ -34,7 +36,7 @@ export type ProviderManifestParseResult<T> =
 	| { readonly success: true; readonly data: T }
 	| { readonly success: false; readonly error: ProviderManifestParseError };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
+const isRecord = (value: unknown): value is JsonObject =>
 	typeof value === "object" && value !== null;
 
 const isNonEmptyString = (value: unknown): value is string =>

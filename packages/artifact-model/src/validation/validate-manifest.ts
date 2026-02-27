@@ -8,6 +8,7 @@ import {
 	type ManifestSignaturePolicy,
 	validateManifestSignaturesForPolicy,
 } from "@gooi/artifact-model/trust-policy";
+import type { JsonValue } from "@gooi/contract-primitives/json";
 
 const sortDiagnostics = <
 	T extends { readonly path: string; readonly code: string },
@@ -40,8 +41,8 @@ export interface ArtifactManifestValidationDiagnostic {
 	readonly code: ArtifactManifestValidationCode;
 	readonly path: string;
 	readonly message: string;
-	readonly expected?: unknown;
-	readonly actual?: unknown;
+	readonly expected?: JsonValue;
+	readonly actual?: JsonValue;
 }
 
 interface RequiredArtifactExpectation {

@@ -1,4 +1,4 @@
-import type { JsonObject } from "@gooi/contract-primitives/json";
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
 import {
 	normalizeForStableJson,
 	sha256,
@@ -60,7 +60,22 @@ export const hostProviderSchemaProfile = hostProviderSchemaProfileSchema.value;
  */
 export type JsonSchema = JsonObject;
 
-const jsonSchemaSchema = z.record(z.string(), z.unknown());
+type CapabilityBoundarySchema = z.ZodType<JsonValue>;
+
+const jsonSchemaSchema = z.record(z.string(), z.any());
+
+const zodWithToJsonSchema = z as {
+	toJSONSchema: (
+		schemaValue: CapabilityBoundarySchema,
+		options: {
+			target: BoundarySchemaTarget;
+			unrepresentable: "throw";
+			cycles: "ref";
+			reused: "inline";
+			io: "output";
+		},
+	) => JsonObject;
+};
 
 /**
  * Generated JSON Schema artifact and deterministic hash for a boundary schema.
@@ -78,23 +93,10 @@ export interface SchemaArtifact {
  * Converts Zod schema to normalized JSON Schema artifact.
  */
 export const buildSchemaArtifact = (
-	schema: z.ZodType<unknown>,
+	schema: CapabilityBoundarySchema,
 	target: BoundarySchemaTarget,
 ): SchemaArtifact => {
-	const generated = (
-		z as unknown as {
-			toJSONSchema: (
-				schemaValue: z.ZodType<unknown>,
-				options: {
-					target: BoundarySchemaTarget;
-					unrepresentable: "throw";
-					cycles: "ref";
-					reused: "inline";
-					io: "output";
-				},
-			) => unknown;
-		}
-	).toJSONSchema(schema, {
+	const generated = zodWithToJsonSchema.toJSONSchema(schema, {
 		target,
 		unrepresentable: "throw",
 		cycles: "ref",
@@ -144,11 +146,11 @@ export interface CapabilityPortContract {
 	/** Zod boundary schemas used for runtime validation. */
 	readonly schemas: {
 		/** Input Zod schema. */
-		readonly input: z.ZodType<unknown>;
+		readonly input: CapabilityBoundarySchema;
 		/** Output Zod schema. */
-		readonly output: z.ZodType<unknown>;
+		readonly output: CapabilityBoundarySchema;
 		/** Error Zod schema. */
-		readonly error: z.ZodType<unknown>;
+		readonly error: CapabilityBoundarySchema;
 	};
 	/** Generated JSON Schema artifacts used for compatibility and locking. */
 	readonly artifacts: CapabilityArtifacts;
@@ -163,11 +165,11 @@ export interface DefineCapabilityPortInput {
 	/** Semantic version for the capability port. */
 	readonly version: string;
 	/** Input boundary schema authored in Zod. */
-	readonly input: z.ZodType<unknown>;
+	readonly input: CapabilityBoundarySchema;
 	/** Output boundary schema authored in Zod. */
-	readonly output: z.ZodType<unknown>;
+	readonly output: CapabilityBoundarySchema;
 	/** Error boundary schema authored in Zod. */
-	readonly error: z.ZodType<unknown>;
+	readonly error: CapabilityBoundarySchema;
 	/** Declared side effects allowed at runtime. */
 	readonly declaredEffects: readonly EffectKind[];
 }

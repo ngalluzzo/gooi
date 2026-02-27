@@ -3,6 +3,10 @@ import {
 	validateArtifactManifest,
 } from "@gooi/artifact-model/validation";
 import {
+	type JsonObject,
+	parseJsonObject,
+} from "@gooi/contract-primitives/json";
+import {
 	type PackagedBundleDiagnostic,
 	packagedAppBundleSchema,
 	type UnpackPackagedBundleInput,
@@ -73,7 +77,7 @@ export const unpackPackagedBundle = (
 		};
 	}
 
-	const unpackedArtifacts: Record<string, unknown> = {};
+	const unpackedArtifacts: Record<string, JsonObject> = {};
 	for (const [artifactKey, artifactRef] of Object.entries(
 		bundle.manifest.artifacts,
 	)) {
@@ -89,16 +93,12 @@ export const unpackPackagedBundle = (
 		}
 
 		try {
-			const unpacked = decompressPayload(compressed.payload);
+			const unpacked = parseJsonObject(decompressPayload(compressed.payload));
 			unpackedArtifacts[artifactKey] = unpacked;
 
-			const unpackedRecord =
-				typeof unpacked === "object" && unpacked !== null
-					? (unpacked as Record<string, unknown>)
-					: undefined;
 			const unpackedHash =
-				typeof unpackedRecord?.artifactHash === "string"
-					? unpackedRecord.artifactHash
+				typeof unpacked.artifactHash === "string"
+					? unpacked.artifactHash
 					: undefined;
 			if (unpackedHash === undefined) {
 				diagnostics.push({

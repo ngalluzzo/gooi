@@ -44,14 +44,9 @@ export const buildPackagedBundle = (
 			payload: compressPayload(artifact),
 		};
 
-		const record =
-			typeof artifact === "object" && artifact !== null
-				? (artifact as Record<string, unknown>)
-				: undefined;
+		const record = artifact as { readonly artifactHash?: string };
 		const artifactHash =
-			typeof record?.artifactHash === "string"
-				? record.artifactHash
-				: undefined;
+			typeof record.artifactHash === "string" ? record.artifactHash : undefined;
 		if (artifactHash === undefined) {
 			throw new Error(
 				`Cannot package bundle: artifact \`${artifactKey}\` is missing \`artifactHash\` field.`,

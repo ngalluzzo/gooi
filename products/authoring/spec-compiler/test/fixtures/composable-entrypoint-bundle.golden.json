@@ -154,14 +154,14 @@
 	},
 	"schemaArtifacts": {
 		"entrypoint.query.list_messages.input": {
-			"target": "draft-7",
+			"target": "draft-2020-12",
 			"schema": {
 				"~standard": {
 					"jsonSchema": {},
 					"vendor": "zod",
 					"version": 1
 				},
-				"$schema": "http://json-schema.org/draft-07/schema#",
+				"$schema": "https://json-schema.org/draft/2020-12/schema",
 				"additionalProperties": false,
 				"properties": {
 					"page": {
@@ -180,17 +180,17 @@
 				},
 				"type": "object"
 			},
-			"hash": "6b7380fc71516d1a1d952044a093d88072b3a340860c3f752d59f32c0bfe7c85"
+			"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d"
 		},
 		"entrypoint.mutation.submit_message.input": {
-			"target": "draft-7",
+			"target": "draft-2020-12",
 			"schema": {
 				"~standard": {
 					"jsonSchema": {},
 					"vendor": "zod",
 					"version": 1
 				},
-				"$schema": "http://json-schema.org/draft-07/schema#",
+				"$schema": "https://json-schema.org/draft/2020-12/schema",
 				"additionalProperties": false,
 				"properties": {
 					"message": {
@@ -200,8 +200,8 @@
 				"required": ["message"],
 				"type": "object"
 			},
-			"hash": "ef9145b8c323f62f6a73003cbf473ebeb0256c1a0ad524f244e2b65f9be27a8c"
+			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 		}
 	},
-	"artifactHash": "0560bf089f58be741234b289af0e34a0cfffdf5e491e60c9497973903aa1f88d"
+	"artifactHash": "f07f4d1fd27fbf76e7d21bb178ea94d44f690b764488712b626e60b5fe5129b0"
 }

@@ -1,3 +1,4 @@
+import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 
 /**
@@ -272,7 +273,7 @@ export interface CompiledAccessPlan {
  */
 export interface CompiledJsonSchemaArtifact {
 	/** Schema draft target used for generation. */
-	readonly target: "draft-7";
+	readonly target: HostProviderSchemaProfile;
 	/** Deterministically normalized JSON Schema object. */
 	readonly schema: Readonly<Record<string, unknown>>;
 	/** SHA-256 hash of normalized schema JSON. */

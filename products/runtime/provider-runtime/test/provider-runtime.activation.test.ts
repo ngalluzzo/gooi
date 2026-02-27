@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { activateProvider } from "../src/activation/activation";
 import type { ProviderModule } from "../src/engine";
 import {
@@ -12,6 +13,43 @@ import {
 } from "./fixtures/provider-runtime.fixture";
 
 describe("provider-runtime activation", () => {
+	const createHostPorts = () => ({
+		clock: { nowIso: () => "2026-02-27T00:00:00.000Z" },
+		activationPolicy: {
+			assertHostVersionAligned: () => hostOk(undefined),
+		},
+		capabilityDelegation: {
+			invokeDelegated: async () =>
+				hostFail("delegation_not_configured", "Delegation is not configured."),
+		},
+	});
+
+	const createMissingHostPortCase = (
+		path:
+			| "clock.nowIso"
+			| "activationPolicy.assertHostVersionAligned"
+			| "capabilityDelegation.invokeDelegated",
+	) => {
+		const base = createHostPorts();
+		switch (path) {
+			case "clock.nowIso":
+				return {
+					...base,
+					clock: {},
+				};
+			case "activationPolicy.assertHostVersionAligned":
+				return {
+					...base,
+					activationPolicy: {},
+				};
+			case "capabilityDelegation.invokeDelegated":
+				return {
+					...base,
+					capabilityDelegation: {},
+				};
+		}
+	};
+
 	test("fails activation with typed validation_error details for invalid provider manifests", async () => {
 		const contract = createContract();
 		const providerModule: ProviderModule = {
@@ -71,6 +109,43 @@ describe("provider-runtime activation", () => {
 		expect(activated.ok).toBe(false);
 		if (!activated.ok) {
 			expect(activated.error.kind).toBe("compatibility_error");
+		}
+	});
+
+	test("fails activation deterministically when required provider host ports are missing", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+		const missingCases = [
+			"clock.nowIso",
+			"activationPolicy.assertHostVersionAligned",
+			"capabilityDelegation.invokeDelegated",
+		] as const;
+
+		for (const missingPath of missingCases) {
+			const activated = await activateProvider({
+				providerModule,
+				hostApiVersion,
+				contracts: [contract],
+				hostPorts: createMissingHostPortCase(missingPath) as never,
+			});
+
+			expect(activated.ok).toBe(false);
+			if (!activated.ok) {
+				expect(activated.error.kind).toBe("activation_error");
+				expect(activated.error.details).toEqual(
+					expect.objectContaining({
+						code: "host_port_missing",
+						missingHostPortMembers: expect.arrayContaining([
+							expect.objectContaining({
+								path: missingPath,
+								expected: "function",
+							}),
+						]),
+					}),
+				);
+			}
 		}
 	});
 

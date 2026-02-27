@@ -13,8 +13,15 @@ import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-requ
 export type HostConformanceCheckId =
 	| "entrypoint_host_identity_used"
 	| "entrypoint_host_clock_used"
+	| "entrypoint_missing_clock_rejected"
+	| "entrypoint_missing_identity_rejected"
+	| "entrypoint_missing_principal_rejected"
+	| "entrypoint_missing_delegation_rejected"
 	| "provider_host_clock_used"
-	| "provider_activation_policy_used";
+	| "provider_activation_policy_used"
+	| "provider_missing_clock_rejected"
+	| "provider_missing_activation_policy_rejected"
+	| "provider_missing_delegation_rejected";
 
 /**
  * Result for one host conformance check.

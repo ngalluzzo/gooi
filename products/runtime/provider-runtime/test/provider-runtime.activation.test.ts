@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { activateProvider } from "../src/activation/activation";
+import type { ProviderModule } from "../src/engine";
 import {
 	createBindingPlan,
 	createContract,
@@ -11,6 +12,47 @@ import {
 } from "./fixtures/provider-runtime.fixture";
 
 describe("provider-runtime activation", () => {
+	test("fails activation with typed validation_error details for invalid provider manifests", async () => {
+		const contract = createContract();
+		const providerModule: ProviderModule = {
+			manifest: {
+				providerId: "",
+				providerVersion: "invalid",
+				hostApiRange: "^1.0.0",
+				capabilities: [],
+			},
+			activate: async () => ({
+				invoke: async () => ({
+					ok: true,
+					output: { ids: [] },
+					observedEffects: ["compute"],
+				}),
+				deactivate: async () => undefined,
+			}),
+		};
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [contract],
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("validation_error");
+			expect(activated.error.details).toEqual(
+				expect.objectContaining({
+					issues: expect.arrayContaining([
+						expect.objectContaining({
+							path: expect.any(Array),
+							message: expect.any(String),
+						}),
+					]),
+				}),
+			);
+		}
+	});
+
 	test("hard-fails activation for incompatible host API", async () => {
 		const contract = createContract();
 		const providerModule = createProviderModule(

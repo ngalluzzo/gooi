@@ -3,8 +3,10 @@ import { activateProvider } from "../src/activation/activation";
 import { invokeCapability } from "../src/invocation/invocation";
 import {
 	createContract,
+	createHostPorts,
 	createProviderModule,
 	hostApiVersion,
+	providerSpecifier,
 } from "./fixtures/provider-runtime.fixture";
 
 describe("provider-runtime invocation", () => {
@@ -18,9 +20,10 @@ describe("provider-runtime invocation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(true);
@@ -56,9 +59,10 @@ describe("provider-runtime invocation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
+			hostPorts: createHostPorts(providerModule),
 		});
 		expect(activated.ok).toBe(true);
 		if (!activated.ok) {

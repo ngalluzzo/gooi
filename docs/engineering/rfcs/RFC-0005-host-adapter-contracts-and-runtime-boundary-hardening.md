@@ -172,11 +172,6 @@ export interface HostCapabilityDelegationPort {
   }) => Promise<CapabilityResult>;
 }
 
-export interface ProviderRuntimeHostPortExtensions {
-  moduleLoader?: HostModuleLoaderPort;
-  moduleIntegrity?: HostModuleIntegrityPort;
-}
-
 export interface HostPortSet {
   clock: HostClockPort;
   identity: HostIdentityPort;
@@ -184,13 +179,13 @@ export interface HostPortSet {
   idempotency: HostIdempotencyPort;
   activationPolicy: HostActivationPolicyPort;
   capabilityDelegation: HostCapabilityDelegationPort;
-  extensions?: ProviderRuntimeHostPortExtensions;
+  moduleLoader: HostModuleLoaderPort;
+  moduleIntegrity: HostModuleIntegrityPort;
 }
 ```
 
-`extensions` is an additive boundary. Current milestones keep module loading and
-integrity behavior deferred, optional, and non-breaking for existing host-port
-implementations.
+Provider runtime activation must flow through `moduleLoader` and
+`moduleIntegrity`. Missing ports or failed checks are hard activation failures.
 
 ### Deterministic runtime behavior updates
 
@@ -429,6 +424,6 @@ None.
 - `2026-02-26` - Chosen approach: explicit `HostPortSet` contracts + conformance enforcement.
 - `2026-02-26` - Architectural rule adopted: no ambient host globals in runtime orchestration paths.
 - `2026-02-26` - Resolved module loading/integrity contract timing: defer to M6 host-provider implementation track.
-- `2026-02-27` - Codified module loading/integrity as optional additive host-port extensions (`moduleLoader`, `moduleIntegrity`) so current milestones remain backward-compatible.
+- `2026-02-27` - Promoted module loading/integrity host ports (`moduleLoader`, `moduleIntegrity`) to enforced provider activation boundary with fail-hard behavior.
 - `2026-02-26` - Resolved host delegation boundary: cross-host capability calls execute through `HostCapabilityDelegationPort` with routes sourced from deployment artifacts.
 - `2026-02-26` - Resolved principal derivation scope for M5: keep current `derive` primitives only; custom predicates defer to a later RFC.

@@ -16,9 +16,8 @@ Concrete host-port implementations belong in marketplace provider packages.
 - `@gooi/host-contracts/module-integrity`
 - `@gooi/host-contracts/delegation`
 
-`module-loader` and `module-integrity` are additive extension contracts for future
-provider loading and supply-chain verification flows. Current runtime milestones
-keep them optional and backward-compatible.
+`module-loader` and `module-integrity` define the enforced provider-runtime
+module activation boundary.
 
 ## Quick Start
 

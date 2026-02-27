@@ -2,14 +2,19 @@ import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
 import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { ExecutionHost } from "@gooi/binding/reachability/contracts";
 import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { z } from "zod";
-import type { ProviderModule } from "../../src/engine";
+import type {
+	ProviderModule,
+	ProviderRuntimeHostPorts,
+} from "../../src/engine";
 
 export const providerId = "gooi.providers.test";
 export const providerVersion = "1.2.3";
 export const appId = "hello-world-demo-v8";
 export const environment = "dev";
 export const hostApiVersion = "1.0.0";
+export const providerSpecifier = "gooi.providers.test/module";
 
 export const createContract = () =>
 	defineCapabilityPort({
@@ -59,6 +64,32 @@ export const createProviderModule = (
 		},
 		deactivate: async () => undefined,
 	}),
+});
+
+export const createHostPorts = (
+	providerModule: ProviderModule,
+): ProviderRuntimeHostPorts => ({
+	clock: {
+		nowIso: () => "2026-02-27T00:00:00.000Z",
+	},
+	activationPolicy: {
+		assertHostVersionAligned: () => hostOk(undefined),
+	},
+	capabilityDelegation: {
+		invokeDelegated: async () =>
+			hostFail("delegation_not_configured", "Delegation is not configured."),
+	},
+	moduleLoader: {
+		loadModule: async (specifier) => {
+			if (specifier !== providerSpecifier) {
+				throw new Error(`Unknown provider module specifier: ${specifier}`);
+			}
+			return providerModule;
+		},
+	},
+	moduleIntegrity: {
+		assertModuleIntegrity: async () => hostOk(undefined),
+	},
 });
 
 export const createBindingPlan = (

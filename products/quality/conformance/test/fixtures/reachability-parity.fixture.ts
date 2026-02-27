@@ -14,6 +14,7 @@ const environment = "test";
 const providerId = "gooi.providers.reachability";
 const providerVersion = "1.0.0";
 const hostApiVersion = "1.0.0";
+const providerSpecifier = "conformance/reachability-provider";
 
 const contract = defineCapabilityPort({
 	id: "ids.generate",
@@ -140,6 +141,17 @@ const createDelegatedHostPorts = (
 				observedEffects: ["compute"],
 			});
 		},
+	},
+	moduleLoader: {
+		loadModule: async (specifier: string) => {
+			if (specifier !== providerSpecifier) {
+				throw new Error(`Unknown provider module specifier: ${specifier}`);
+			}
+			return providerModule;
+		},
+	},
+	moduleIntegrity: {
+		assertModuleIntegrity: async () => hostOk(undefined),
 	},
 });
 

@@ -1,6 +1,5 @@
 import { isHostApiCompatible } from "../compatibility/compatibility";
 import {
-	createDefaultProviderRuntimeHostPorts,
 	getMissingProviderRuntimeHostPortMembers,
 	type ProviderRuntimeHostPorts,
 } from "../host";
@@ -10,6 +9,7 @@ import type {
 	ActivatedProvider,
 	ActivateProviderInput,
 	ProviderInstance,
+	ProviderModule,
 	RuntimeResult,
 } from "../shared/types";
 import {
@@ -24,8 +24,7 @@ import {
 export const activateProvider = async (
 	input: ActivateProviderInput,
 ): Promise<RuntimeResult<ActivatedProvider>> => {
-	const hostPorts: ProviderRuntimeHostPorts =
-		input.hostPorts ?? createDefaultProviderRuntimeHostPorts();
+	const hostPorts: ProviderRuntimeHostPorts = input.hostPorts;
 	const missingHostPortMembers =
 		getMissingProviderRuntimeHostPortMembers(hostPorts);
 	if (missingHostPortMembers.length > 0) {
@@ -38,8 +37,21 @@ export const activateProvider = async (
 			},
 		);
 	}
+	let providerModule: ProviderModule;
+	try {
+		const loadedModule = await hostPorts.moduleLoader.loadModule(
+			input.providerSpecifier,
+		);
+		providerModule = loadedModule as ProviderModule;
+	} catch (error) {
+		return fail("activation_error", "Provider module loading failed.", {
+			code: "module_load_failed",
+			providerSpecifier: input.providerSpecifier,
+			cause: error instanceof Error ? error.message : String(error),
+		});
+	}
 	const parsedManifestResult = providerManifestSafeParse(
-		input.providerModule.manifest,
+		providerModule.manifest,
 	);
 	if (!parsedManifestResult.ok) {
 		return parsedManifestResult;
@@ -105,12 +117,41 @@ export const activateProvider = async (
 		if (!bindingValidation.ok) {
 			return bindingValidation;
 		}
+		const lockfileEntry = input.lockfile.providers.find(
+			(provider) =>
+				provider.providerId === manifest.providerId &&
+				provider.providerVersion === manifest.providerVersion,
+		);
+		if (lockfileEntry === undefined) {
+			return fail(
+				"activation_error",
+				"Lockfile does not contain integrity metadata for the activated provider.",
+				{
+					code: "provider_integrity_missing",
+					providerId: manifest.providerId,
+					providerVersion: manifest.providerVersion,
+				},
+			);
+		}
+		const integrityResult =
+			await hostPorts.moduleIntegrity.assertModuleIntegrity({
+				providerId: lockfileEntry.providerId,
+				providerVersion: lockfileEntry.providerVersion,
+				integrity: lockfileEntry.integrity,
+			});
+		if (!integrityResult.ok) {
+			return fail(
+				"activation_error",
+				integrityResult.error.message,
+				integrityResult.error.details,
+			);
+		}
 	}
 
 	let instance: ProviderInstance;
 
 	try {
-		instance = await input.providerModule.activate({
+		instance = await providerModule.activate({
 			hostApiVersion: input.hostApiVersion,
 			activatedAt: input.activatedAt ?? hostPorts.clock.nowIso(),
 		});

@@ -5,7 +5,7 @@ import {
 	type HostPortProvider,
 	type HostPortProviderManifest,
 } from "../provider/provider";
-import { type HostPortResult, hostOk } from "../result/result";
+import { type HostPortResult, hostFail, hostOk } from "../result/result";
 
 /**
  * Input payload for module integrity assertions.
@@ -85,4 +85,21 @@ export const createPermissiveModuleIntegrityPort =
 	(): HostModuleIntegrityPort => ({
 		assertModuleIntegrity: async (_input: AssertModuleIntegrityInput) =>
 			hostOk(undefined),
+	});
+
+/**
+ * Creates a module-integrity port that fail-hard rejects integrity assertions.
+ */
+export const createFailingModuleIntegrityPort =
+	(): HostModuleIntegrityPort => ({
+		assertModuleIntegrity: async (input: AssertModuleIntegrityInput) =>
+			hostFail(
+				"module_integrity_not_configured",
+				"Provider module integrity verification is not configured.",
+				{
+					providerId: input.providerId,
+					providerVersion: input.providerVersion,
+					integrity: input.integrity,
+				},
+			),
 	});

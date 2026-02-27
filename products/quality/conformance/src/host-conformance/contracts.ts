@@ -21,7 +21,9 @@ export type HostConformanceCheckId =
 	| "provider_activation_policy_used"
 	| "provider_missing_clock_rejected"
 	| "provider_missing_activation_policy_rejected"
-	| "provider_missing_delegation_rejected";
+	| "provider_missing_delegation_rejected"
+	| "provider_missing_module_loader_rejected"
+	| "provider_missing_module_integrity_rejected";
 
 /**
  * Result for one host conformance check.

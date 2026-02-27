@@ -1,3 +1,4 @@
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { createProviderRuntime } from "@gooi/provider-runtime";
 import {
 	areHostPortConformanceChecksPassing,
@@ -21,14 +22,39 @@ export const runProviderConformance = async (
 	input: RunProviderConformanceInput,
 ): Promise<ProviderConformanceReport> => {
 	const checks: Array<ProviderConformanceReport["checks"][number]> = [];
+	const providerSpecifier = "conformance/provider-module";
+	const hostPorts = {
+		clock: {
+			nowIso: () => "2026-02-27T00:00:00.000Z",
+		},
+		activationPolicy: {
+			assertHostVersionAligned: () => hostOk(undefined),
+		},
+		capabilityDelegation: {
+			invokeDelegated: async () =>
+				hostFail("delegation_not_configured", "Delegation is not configured."),
+		},
+		moduleLoader: {
+			loadModule: async (specifier: string) => {
+				if (specifier !== providerSpecifier) {
+					throw new Error(`Unknown provider module specifier: ${specifier}`);
+				}
+				return input.providerModule;
+			},
+		},
+		moduleIntegrity: {
+			assertModuleIntegrity: async () => hostOk(undefined),
+		},
+	};
 	const runtime = createProviderRuntime({
 		hostApiVersion: input.hostApiVersion,
 		contracts: [input.contract],
+		hostPorts,
 		...(input.bindingPlan ? { bindingPlan: input.bindingPlan } : {}),
 		...(input.lockfile ? { lockfile: input.lockfile } : {}),
 	});
 	const activated = await runtime.activate({
-		providerModule: input.providerModule,
+		providerSpecifier,
 	});
 
 	if (!activated.ok) {

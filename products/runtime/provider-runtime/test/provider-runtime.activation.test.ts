@@ -5,32 +5,26 @@ import type { ProviderModule } from "../src/engine";
 import {
 	createBindingPlan,
 	createContract,
+	createHostPorts,
 	createLocalResolution,
 	createLockfile,
 	createProviderModule,
 	createUnreachableResolution,
 	hostApiVersion,
+	providerSpecifier,
 } from "./fixtures/provider-runtime.fixture";
 
 describe("provider-runtime activation", () => {
-	const createHostPorts = () => ({
-		clock: { nowIso: () => "2026-02-27T00:00:00.000Z" },
-		activationPolicy: {
-			assertHostVersionAligned: () => hostOk(undefined),
-		},
-		capabilityDelegation: {
-			invokeDelegated: async () =>
-				hostFail("delegation_not_configured", "Delegation is not configured."),
-		},
-	});
-
 	const createMissingHostPortCase = (
+		providerModule: ProviderModule,
 		path:
 			| "clock.nowIso"
 			| "activationPolicy.assertHostVersionAligned"
-			| "capabilityDelegation.invokeDelegated",
+			| "capabilityDelegation.invokeDelegated"
+			| "moduleLoader.loadModule"
+			| "moduleIntegrity.assertModuleIntegrity",
 	) => {
-		const base = createHostPorts();
+		const base = createHostPorts(providerModule);
 		switch (path) {
 			case "clock.nowIso":
 				return {
@@ -46,6 +40,16 @@ describe("provider-runtime activation", () => {
 				return {
 					...base,
 					capabilityDelegation: {},
+				};
+			case "moduleLoader.loadModule":
+				return {
+					...base,
+					moduleLoader: {},
+				};
+			case "moduleIntegrity.assertModuleIntegrity":
+				return {
+					...base,
+					moduleIntegrity: {},
 				};
 		}
 	};
@@ -70,9 +74,10 @@ describe("provider-runtime activation", () => {
 		};
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);
@@ -101,9 +106,10 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);
@@ -121,14 +127,19 @@ describe("provider-runtime activation", () => {
 			"clock.nowIso",
 			"activationPolicy.assertHostVersionAligned",
 			"capabilityDelegation.invokeDelegated",
+			"moduleLoader.loadModule",
+			"moduleIntegrity.assertModuleIntegrity",
 		] as const;
 
 		for (const missingPath of missingCases) {
 			const activated = await activateProvider({
-				providerModule,
+				providerSpecifier,
 				hostApiVersion,
 				contracts: [contract],
-				hostPorts: createMissingHostPortCase(missingPath) as never,
+				hostPorts: createMissingHostPortCase(
+					providerModule,
+					missingPath,
+				) as never,
 			});
 
 			expect(activated.ok).toBe(false);
@@ -149,34 +160,69 @@ describe("provider-runtime activation", () => {
 		}
 	});
 
-	test("keeps activation backward-compatible when deferred module extension ports are absent or partial", async () => {
+	test("fails activation when provider module loader cannot resolve the requested specifier", async () => {
 		const contract = createContract();
 		const providerModule = createProviderModule(
 			contract.artifacts.contractHash,
 		);
 
-		const withoutExtensions = await activateProvider({
-			providerModule,
-			hostApiVersion,
-			contracts: [contract],
-			hostPorts: createHostPorts(),
-		});
-		const withPartialExtensions = await activateProvider({
-			providerModule,
+		const activated = await activateProvider({
+			providerSpecifier: "gooi.providers.unknown/module",
 			hostApiVersion,
 			contracts: [contract],
 			hostPorts: {
-				...createHostPorts(),
-				extensions: {
-					moduleLoader: {
-						loadModule: async () => providerModule,
+				...createHostPorts(providerModule),
+				moduleLoader: {
+					loadModule: async () => {
+						throw new Error("Module not found.");
 					},
 				},
 			},
 		});
 
-		expect(withoutExtensions.ok).toBe(true);
-		expect(withPartialExtensions.ok).toBe(true);
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("activation_error");
+			expect(activated.error.details).toEqual(
+				expect.objectContaining({
+					code: "module_load_failed",
+					providerSpecifier: "gooi.providers.unknown/module",
+				}),
+			);
+		}
+	});
+
+	test("fails activation when module integrity verification rejects lockfile metadata", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerSpecifier,
+			hostApiVersion,
+			contracts: [contract],
+			bindingPlan: createBindingPlan(createLocalResolution()),
+			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: {
+				...createHostPorts(providerModule),
+				moduleIntegrity: {
+					assertModuleIntegrity: async () =>
+						hostFail(
+							"module_integrity_failed",
+							"Module integrity verification failed.",
+						),
+				},
+			},
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("activation_error");
+			expect(activated.error.message).toBe(
+				"Module integrity verification failed.",
+			);
+		}
 	});
 
 	test("fails activation with typed compatibility diagnostics for schema profile mismatch", async () => {
@@ -196,9 +242,10 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [mismatchedContract],
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);
@@ -222,11 +269,12 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createLocalResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(true);
@@ -239,11 +287,12 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createUnreachableResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);
@@ -259,13 +308,14 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(
 				createLocalResolution({ provider: "gooi.providers.other" }),
 			),
 			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);
@@ -284,11 +334,28 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion: "2.0.0",
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createLocalResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: {
+				...createHostPorts(providerModule),
+				activationPolicy: {
+					assertHostVersionAligned: ({
+						runtimeHostApiVersion,
+						bindingPlanHostApiVersion,
+						lockfileHostApiVersion,
+					}) =>
+						runtimeHostApiVersion === bindingPlanHostApiVersion &&
+						runtimeHostApiVersion === lockfileHostApiVersion
+							? hostOk(undefined)
+							: hostFail(
+									"artifact_alignment_error",
+									"Runtime host API version is not aligned with deployment artifacts.",
+								),
+				},
+			},
 		});
 
 		expect(activated.ok).toBe(false);
@@ -304,13 +371,14 @@ describe("provider-runtime activation", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createLocalResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash, {
 				integrity: "sha256:abc123",
 			}),
+			hostPorts: createHostPorts(providerModule),
 		});
 
 		expect(activated.ok).toBe(false);

@@ -14,10 +14,11 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 ## Features
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
-- Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`)
-- Deferred additive host extension boundary for module loading/integrity (`hostPorts.extensions`)
+- Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`, `moduleLoader`, `moduleIntegrity`)
 - Deterministic fail-fast activation errors when required host-port members are missing
 - Hard-fail activation when binding/lockfile checks fail
+- Provider module activation always resolves through `hostPorts.moduleLoader`
+- Provider lockfile integrity is enforced through `hostPorts.moduleIntegrity`
 - Deterministic reachability execution semantics (`local` / `delegated` / `capability_unreachable_error`)
 - Delegated invocation path uses explicit `delegateRouteId` from deployment artifacts
 - No implicit local fallback when delegated invocation fails
@@ -44,14 +45,14 @@ const runtime = createProviderRuntime({
     clock,
     activationPolicy,
     capabilityDelegation,
-    extensions: {
-      moduleLoader, // optional future extension point
-      moduleIntegrity, // optional future extension point
-    },
+    moduleLoader,
+    moduleIntegrity,
   },
 });
 
-const activated = await runtime.activate({ providerModule });
+const activated = await runtime.activate({
+  providerSpecifier: "gooi.providers.example/module",
+});
 
 if (!activated.ok) {
   throw new Error(activated.error.message);
@@ -68,19 +69,14 @@ const result = await runtime.invoke(activated.value, {
 await runtime.deactivate(activated.value);
 ```
 
-## Deferred Extension Boundary
+## Module Loading and Integrity Boundary
 
-`hostPorts.extensions` is an additive, optional boundary reserved for future
-module loading and module integrity enforcement tracks:
+Provider activation is host-owned for both module loading and integrity:
 
-- `moduleLoader`: host-managed module loading surface.
-- `moduleIntegrity`: host-managed integrity verification surface.
+- `moduleLoader.loadModule(specifier)` resolves provider modules.
+- `moduleIntegrity.assertModuleIntegrity(input)` validates lockfile integrity metadata.
 
-Current milestone behavior remains unchanged:
-
-- Runtime does not require these extension ports.
-- Runtime does not invoke these extension ports yet.
-- Existing host-port contracts stay backward-compatible.
+Activation fails hard when either port is missing or when either step fails.
 
 ## API Summary
 

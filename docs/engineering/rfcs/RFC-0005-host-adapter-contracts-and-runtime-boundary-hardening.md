@@ -324,7 +324,7 @@ Must-not-cross constraints:
 
 Feature-oriented modules:
 
-1. `packages/host-contracts`
+1. `products/contracts/host-contracts`
 2. `packages/entrypoint-runtime/src/host-ports.ts`
 3. `packages/provider-runtime/src/host-ports.ts`
 4. `packages/conformance/src/host-conformance`

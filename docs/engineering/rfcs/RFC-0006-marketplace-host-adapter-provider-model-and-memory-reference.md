@@ -17,8 +17,8 @@
   - Marketplace architecture: [RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md)
   - Marketplace resolution: [RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md)
   - Marketplace trust: [RFC-0018-marketplace-trust-certification-and-supply-chain-security.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0018-marketplace-trust-certification-and-supply-chain-security.md)
-  - Host contracts package: [package.json](/Users/ngalluzzo/repos/gooi/packages/host-contracts/package.json)
-  - Marketplace memory package: [package.json](/Users/ngalluzzo/repos/gooi/marketplace/memory/package.json)
+  - Host contracts package: [package.json](/Users/ngalluzzo/repos/gooi/products/contracts/host-contracts/package.json)
+  - Marketplace memory package: [package.json](/Users/ngalluzzo/repos/gooi/products/marketplace/memory/package.json)
   - Entrypoint runtime host API: [host.ts](/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/host.ts)
   - Provider runtime host API: [host.ts](/Users/ngalluzzo/repos/gooi/products/runtime/provider-runtime/src/host.ts)
   - Conformance host/replay features: [package.json](/Users/ngalluzzo/repos/gooi/products/quality/conformance/package.json)
@@ -172,7 +172,7 @@ const report = await runReplayStoreConformance({
   - Own external side effects behind capability contracts.
 - Host/platform adapters:
   - `@gooi/host-contracts/*` owns contracts + provider constructors.
-  - `marketplace/*` owns concrete implementations.
+  - `products/marketplace/*` owns concrete implementations.
 
 Must-not-cross constraints:
 
@@ -219,8 +219,8 @@ Must-not-cross constraints:
 ## API and module plan
 
 - Feature-oriented module layout:
-  - `packages/host-contracts/src/<feature>/<feature>.ts`
-  - `marketplace/memory/src/<feature>/<feature>.ts`
+  - `products/contracts/host-contracts/src/<feature>/<feature>.ts`
+  - `products/marketplace/memory/src/<feature>/<feature>.ts`
   - `products/runtime/entrypoint-runtime/src/{engine.ts,host.ts,domain.ts}`
   - `products/runtime/provider-runtime/src/{engine.ts,host.ts}`
   - `products/quality/conformance/src/*-conformance/*`
@@ -238,11 +238,11 @@ Must-not-cross constraints:
 ## Package boundary classification
 
 - Proposed location(s):
-  - `packages/host-contracts`
+  - `products/contracts/host-contracts`
   - `products/runtime/entrypoint-runtime`
   - `products/runtime/provider-runtime`
   - `products/quality/conformance`
-  - `marketplace/memory`
+  - `products/marketplace/memory`
 - Lane (if `products/*`):
   - `runtime` and `quality`.
 - Why this boundary is correct:
@@ -270,7 +270,7 @@ Phase 1: Host contracts feature decomposition and provider constructors
 - Exit criteria:
   - all core host features have contract + provider constructor surfaces.
 - Deliverables:
-  - feature files under `packages/host-contracts/src/*`.
+  - feature files under `products/contracts/host-contracts/src/*`.
 
 Phase 2: Runtime host API cleanup
 
@@ -286,7 +286,7 @@ Phase 3: Marketplace memory reference implementations
 - Entry criteria:
   - Phase 2 merged.
 - Exit criteria:
-  - one reference implementation per core host feature in `marketplace/memory`.
+  - one reference implementation per core host feature in `products/marketplace/memory`.
 - Deliverables:
   - `clock`, `identity`, `principal`, `replay-store`, `activation-policy`,
     `module-loader`, `module-integrity`, `delegation` features.
@@ -336,7 +336,7 @@ Phase 4: Conformance integration
 2. Risk: contributors bypass conformance and ship partial implementations.
    Mitigation: publish checklist requires conformance report.
 3. Risk: runtime teams reintroduce local convenience implementations.
-   Mitigation: boundary rule that concrete adapters live only in `marketplace/*`.
+   Mitigation: boundary rule that concrete adapters live only in `products/marketplace/*`.
 
 ## Alternatives considered
 
@@ -356,7 +356,7 @@ None.
 - `2026-02-26` - Scope broadened from replay-store only to generic host adapter
   provider model.
 - `2026-02-26` - Chosen pattern: feature-local provider constructors in
-  `@gooi/host-contracts/*` with concrete implementations in `marketplace/*`.
+  `@gooi/host-contracts/*` with concrete implementations in `products/marketplace/*`.
 - `2026-02-26` - Chosen clean-break rule: no legacy runtime-local host adapter
   implementations.
 - `2026-02-26` - Scope clarified: RFC-0006 is foundational host/provider architecture; marketplace product control-plane scope is tracked by RFC-0016/RFC-0017/RFC-0018.

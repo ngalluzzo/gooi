@@ -1,0 +1,64 @@
+{
+	"name": "@gooi/authoring-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/lockfile/authoring-lockfile.js",
+	"types": "./src/lockfile/authoring-lockfile.ts",
+	"exports": {
+		".": {
+			"types": "./src/lockfile/authoring-lockfile.ts",
+			"bun": "./src/lockfile/authoring-lockfile.ts",
+			"import": "./dist/lockfile/authoring-lockfile.js",
+			"default": "./dist/lockfile/authoring-lockfile.js"
+		},
+		"./lockfile": {
+			"types": "./src/lockfile/authoring-lockfile.ts",
+			"bun": "./src/lockfile/authoring-lockfile.ts",
+			"import": "./dist/lockfile/authoring-lockfile.js",
+			"default": "./dist/lockfile/authoring-lockfile.js"
+		},
+		"./envelopes/request": {
+			"types": "./src/envelopes/authoring-request-envelope.ts",
+			"bun": "./src/envelopes/authoring-request-envelope.ts",
+			"import": "./dist/envelopes/authoring-request-envelope.js",
+			"default": "./dist/envelopes/authoring-request-envelope.js"
+		},
+		"./envelopes/result": {
+			"types": "./src/envelopes/authoring-result-envelope.ts",
+			"bun": "./src/envelopes/authoring-result-envelope.ts",
+			"import": "./dist/envelopes/authoring-result-envelope.js",
+			"default": "./dist/envelopes/authoring-result-envelope.js"
+		},
+		"./envelopes/error": {
+			"types": "./src/envelopes/authoring-error-envelope.ts",
+			"bun": "./src/envelopes/authoring-error-envelope.ts",
+			"import": "./dist/envelopes/authoring-error-envelope.js",
+			"default": "./dist/envelopes/authoring-error-envelope.js"
+		},
+		"./envelopes/diagnostics": {
+			"types": "./src/envelopes/authoring-diagnostics-envelope.ts",
+			"bun": "./src/envelopes/authoring-diagnostics-envelope.ts",
+			"import": "./dist/envelopes/authoring-diagnostics-envelope.js",
+			"default": "./dist/envelopes/authoring-diagnostics-envelope.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/envelopes/*.ts ./src/lockfile/*.ts --outdir ./dist --external zod --external @gooi/app-spec-contracts/diagnostics --external @gooi/contract-primitives/json --external @gooi/stable-json",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/contract-primitives": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

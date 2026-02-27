@@ -1,0 +1,63 @@
+{
+	"name": "@gooi/projection-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/plans/projection-plan.js",
+	"types": "./src/plans/projection-plan.ts",
+	"exports": {
+		"./plans/projection-plan": {
+			"types": "./src/plans/projection-plan.ts",
+			"bun": "./src/plans/projection-plan.ts",
+			"import": "./dist/plans/projection-plan.js",
+			"default": "./dist/plans/projection-plan.js"
+		},
+		"./plans/timeline-history-policy": {
+			"types": "./src/plans/timeline-history-policy.ts",
+			"bun": "./src/plans/timeline-history-policy.ts",
+			"import": "./dist/plans/timeline-history-policy.js",
+			"default": "./dist/plans/timeline-history-policy.js"
+		},
+		"./plans/signal-migration-plan": {
+			"types": "./src/plans/signal-migration-plan.ts",
+			"bun": "./src/plans/signal-migration-plan.ts",
+			"import": "./dist/plans/signal-migration-plan.js",
+			"default": "./dist/plans/signal-migration-plan.js"
+		},
+		"./ports/history-port-contract": {
+			"types": "./src/ports/history-port-contract.ts",
+			"bun": "./src/ports/history-port-contract.ts",
+			"import": "./dist/ports/history-port-contract.js",
+			"default": "./dist/ports/history-port-contract.js"
+		},
+		"./envelopes/projection-result-envelope": {
+			"types": "./src/envelopes/projection-result-envelope.ts",
+			"bun": "./src/envelopes/projection-result-envelope.ts",
+			"import": "./dist/envelopes/projection-result-envelope.js",
+			"default": "./dist/envelopes/projection-result-envelope.js"
+		},
+		"./errors/projection-errors": {
+			"types": "./src/errors/projection-errors.ts",
+			"bun": "./src/errors/projection-errors.ts",
+			"import": "./dist/errors/projection-errors.js",
+			"default": "./dist/errors/projection-errors.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/plans/projection-plan.ts --outfile ./dist/plans/projection-plan.js --external zod --external @gooi/guard-contracts/plans/guard-plan --external @gooi/projection-contracts/plans/signal-migration-plan && bun build ./src/plans/timeline-history-policy.ts --outfile ./dist/plans/timeline-history-policy.js --external zod && bun build ./src/plans/signal-migration-plan.ts --outfile ./dist/plans/signal-migration-plan.js --external zod && bun build ./src/ports/history-port-contract.ts --outfile ./dist/ports/history-port-contract.js --external zod && bun build ./src/envelopes/projection-result-envelope.ts --outfile ./dist/envelopes/projection-result-envelope.js --external zod --external @gooi/projection-contracts/errors/projection-errors --external @gooi/projection-contracts/plans/projection-plan && bun build ./src/errors/projection-errors.ts --outfile ./dist/errors/projection-errors.js --external zod --external @gooi/projection-contracts/plans/projection-plan",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/contract-primitives": "workspace:*",
+		"@gooi/guard-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

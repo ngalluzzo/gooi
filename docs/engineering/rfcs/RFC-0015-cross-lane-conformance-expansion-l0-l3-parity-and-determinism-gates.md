@@ -250,7 +250,7 @@ Feature-oriented module layout:
    - `src/marketplace-control-plane/*`
    - `src/marketplace-resolution/*`
    - `src/marketplace-trust/*`
-2. `packages/conformance-contracts`
+2. `products/contracts/conformance-contracts`
    - fixture/report/check schemas.
 
 Public APIs via `package.json` exports:
@@ -270,7 +270,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/quality/conformance`
-  - `packages/conformance-contracts`
+  - `products/contracts/conformance-contracts`
 - Lane (if `products/*`):
   - `quality`
 - Why this boundary is correct:

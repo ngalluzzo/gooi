@@ -24,7 +24,7 @@ export interface RunEntrypointInput {
 	/** Domain runtime port implementation for query and mutation execution. */
 	readonly domainRuntime: DomainRuntimePort;
 	/** Optional idempotency key for mutation replay behavior. */
-	readonly idempotencyKey?: string;
+	readonly idempotencyKey?: string | undefined;
 	/** Optional replay store for replay and conflict detection. */
 	readonly replayStore?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
 	/** Optional replay record TTL in seconds for idempotent mutation caching. */
@@ -66,7 +66,7 @@ export interface RunEntrypointCallInput {
 	/** Principal context used for policy gate checks. */
 	readonly principal: PrincipalContext;
 	/** Optional idempotency key for mutation replay behavior. */
-	readonly idempotencyKey?: string;
+	readonly idempotencyKey?: string | undefined;
 	/** Optional invocation id override. */
 	readonly invocationId?: string;
 	/** Optional trace id override. */

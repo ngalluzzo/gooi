@@ -240,7 +240,7 @@ Must-not-cross constraints:
 
 Feature-oriented package plan:
 
-1. `packages/authoring-contracts`
+1. `products/contracts/authoring-contracts`
 2. `packages/capability-index`
 3. `packages/symbol-graph`
 4. `packages/lsp`

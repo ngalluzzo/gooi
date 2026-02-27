@@ -1,0 +1,56 @@
+{
+	"name": "@gooi/guard-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/plans/guard-plan.js",
+	"types": "./src/plans/guard-plan.ts",
+	"exports": {
+		"./plans/guard-plan": {
+			"types": "./src/plans/guard-plan.ts",
+			"bun": "./src/plans/guard-plan.ts",
+			"import": "./dist/plans/guard-plan.js",
+			"default": "./dist/plans/guard-plan.js"
+		},
+		"./envelopes/guard-envelopes": {
+			"types": "./src/envelopes/guard-envelopes.ts",
+			"bun": "./src/envelopes/guard-envelopes.ts",
+			"import": "./dist/envelopes/guard-envelopes.js",
+			"default": "./dist/envelopes/guard-envelopes.js"
+		},
+		"./errors/guard-errors": {
+			"types": "./src/errors/guard-errors.ts",
+			"bun": "./src/errors/guard-errors.ts",
+			"import": "./dist/errors/guard-errors.js",
+			"default": "./dist/errors/guard-errors.js"
+		},
+		"./signals/guard-violation-signal": {
+			"types": "./src/signals/guard-violation-signal.ts",
+			"bun": "./src/signals/guard-violation-signal.ts",
+			"import": "./dist/signals/guard-violation-signal.js",
+			"default": "./dist/signals/guard-violation-signal.js"
+		},
+		"./ports/semantic-judge-port": {
+			"types": "./src/ports/semantic-judge-port.ts",
+			"bun": "./src/ports/semantic-judge-port.ts",
+			"import": "./dist/ports/semantic-judge-port.js",
+			"default": "./dist/ports/semantic-judge-port.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/plans/guard-plan.ts --outfile ./dist/plans/guard-plan.js --external zod && bun build ./src/envelopes/guard-envelopes.ts --outfile ./dist/envelopes/guard-envelopes.js --external zod --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/errors/guard-errors --external @gooi/guard-contracts/signals/guard-violation-signal && bun build ./src/errors/guard-errors.ts --outfile ./dist/errors/guard-errors.js --external zod --external @gooi/guard-contracts/plans/guard-plan && bun build ./src/signals/guard-violation-signal.ts --outfile ./dist/signals/guard-violation-signal.js --external zod --external @gooi/guard-contracts/plans/guard-plan && bun build ./src/ports/semantic-judge-port.ts --outfile ./dist/ports/semantic-judge-port.js --external zod --external @gooi/guard-contracts/plans/guard-plan",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/contract-primitives": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

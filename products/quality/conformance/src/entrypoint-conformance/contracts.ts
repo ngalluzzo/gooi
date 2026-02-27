@@ -1,3 +1,5 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type {
 	DomainRuntimePort,
 	runEntrypoint,
@@ -20,28 +22,16 @@ export type EntrypointConformanceCheckId =
 	| "idempotency_replay_enforced"
 	| "idempotency_conflict_enforced";
 
-/**
- * Result for one entrypoint runtime conformance check.
- */
-export interface EntrypointConformanceCheckResult {
-	/** Stable check identifier. */
-	readonly id: EntrypointConformanceCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
+export type EntrypointConformanceCheckResult =
+	ConformanceCheckResultBase<EntrypointConformanceCheckId>;
 
 /**
  * Conformance report for one compiled entrypoint bundle.
  */
-export interface EntrypointConformanceReport {
+export interface EntrypointConformanceReport
+	extends ConformanceSuiteReportBase<EntrypointConformanceCheckResult> {
 	/** Artifact hash used by all executed checks. */
 	readonly artifactHash: string;
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly EntrypointConformanceCheckResult[];
 	/** Last successful mutation result for debugging. */
 	readonly lastMutationResult?: Awaited<ReturnType<typeof runEntrypoint>>;
 }

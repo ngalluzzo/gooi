@@ -1,0 +1,13 @@
+{
+	"entryPoints": [
+		"./src/checks/checks.ts",
+		"./src/reports/reports.ts",
+		"./src/diagnostics/diagnostics.ts"
+	],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
+}

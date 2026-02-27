@@ -2,6 +2,7 @@ import {
 	type CompiledArtifactManifest,
 	compiledArtifactManifestSchema,
 } from "@gooi/artifact-model/manifest";
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 /**
@@ -61,8 +62,8 @@ export interface PackagedBundleDiagnostic {
 	readonly code: PackagedBundleDiagnosticCode;
 	readonly path: string;
 	readonly message: string;
-	readonly expected?: unknown;
-	readonly actual?: unknown;
+	readonly expected?: JsonValue;
+	readonly actual?: JsonValue;
 }
 
 /**
@@ -70,7 +71,7 @@ export interface PackagedBundleDiagnostic {
  */
 export interface BuildPackagedBundleInput {
 	readonly manifest: CompiledArtifactManifest;
-	readonly artifacts: Readonly<Record<string, unknown>>;
+	readonly artifacts: Readonly<Record<string, JsonObject | Readonly<object>>>;
 }
 
 /**
@@ -87,7 +88,7 @@ export interface UnpackPackagedBundleInput {
  */
 export interface UnpackedPackagedBundle {
 	readonly manifest: CompiledArtifactManifest;
-	readonly artifacts: Readonly<Record<string, unknown>>;
+	readonly artifacts: Readonly<Record<string, JsonObject>>;
 }
 
 /**

@@ -1,4 +1,6 @@
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
@@ -25,27 +27,14 @@ export type HostConformanceCheckId =
 	| "provider_missing_module_loader_rejected"
 	| "provider_missing_module_integrity_rejected";
 
-/**
- * Result for one host conformance check.
- */
-export interface HostConformanceCheckResult {
-	/** Stable check identifier. */
-	readonly id: HostConformanceCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
+export type HostConformanceCheckResult =
+	ConformanceCheckResultBase<HostConformanceCheckId>;
 
 /**
  * Host conformance report for runtime orchestration.
  */
-export interface HostConformanceReport {
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly HostConformanceCheckResult[];
-}
+export interface HostConformanceReport
+	extends ConformanceSuiteReportBase<HostConformanceCheckResult> {}
 
 /**
  * Input payload required for host conformance checks.

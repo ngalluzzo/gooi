@@ -87,6 +87,7 @@
 		"publish:dry-run": "bun run build && bunx @vscode/vsce publish --packagePath *.vsix --pat \"$VSCE_TOKEN\" --dry-run"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/authoring-contracts": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/language-server": "workspace:*",

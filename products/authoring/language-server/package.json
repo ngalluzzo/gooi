@@ -41,6 +41,12 @@
 			"import": "./dist/contracts/navigation-results.js",
 			"default": "./dist/contracts/navigation-results.js"
 		},
+		"./contracts/positions": {
+			"types": "./src/contracts/positions.ts",
+			"bun": "./src/contracts/positions.ts",
+			"import": "./dist/contracts/positions.js",
+			"default": "./dist/contracts/positions.js"
+		},
 		"./contracts/read-context": {
 			"types": "./src/contracts/read-context.ts",
 			"bun": "./src/contracts/read-context.ts",
@@ -158,12 +164,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
+		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/app-spec-contracts/diagnostics --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/authoring-contracts": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",

@@ -1,4 +1,5 @@
 import type { CompiledArtifactManifest } from "@gooi/artifact-model/manifest";
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 /**
@@ -41,8 +42,8 @@ export interface ManifestSignaturePolicyDiagnostic {
 	readonly code: ManifestSignaturePolicyDiagnosticCode;
 	readonly path: string;
 	readonly message: string;
-	readonly expected?: unknown;
-	readonly actual?: unknown;
+	readonly expected?: JsonValue;
+	readonly actual?: JsonValue;
 }
 
 const sortDiagnostics = (

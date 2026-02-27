@@ -20,7 +20,7 @@ interface ExecuteTailInput {
 		readonly invocationId: string;
 		readonly principal: PrincipalContext;
 		readonly input: Readonly<Record<string, unknown>>;
-		readonly meta: { readonly idempotencyKey?: string };
+		readonly meta: { readonly idempotencyKey?: string | undefined };
 	};
 	readonly startedAt: string;
 	readonly artifactHash: string;

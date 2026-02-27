@@ -4,10 +4,13 @@
 		{ "path": "./apps/vscode-extension" },
 		{ "path": "./packages/artifact-model" },
 		{ "path": "./packages/provider-manifest" },
-		{ "path": "./packages/capability-contracts" },
+		{ "path": "./products/contracts/contract-primitives" },
+		{ "path": "./products/contracts/capability-contracts" },
+		{ "path": "./products/contracts/app-spec-contracts" },
 		{ "path": "./packages/binding" },
-		{ "path": "./packages/surface-contracts" },
-		{ "path": "./products/authoring/authoring-contracts" },
+		{ "path": "./products/contracts/conformance-contracts" },
+		{ "path": "./products/contracts/surface-contracts" },
+		{ "path": "./products/contracts/authoring-contracts" },
 		{ "path": "./products/authoring/language-server" },
 		{ "path": "./products/authoring/capability-index" },
 		{ "path": "./products/authoring/symbol-graph" },
@@ -16,6 +19,6 @@
 		{ "path": "./products/authoring/spec-compiler" },
 		{ "path": "./products/runtime/entrypoint-runtime" },
 		{ "path": "./products/runtime/surface-runtime" },
-		{ "path": "./marketplace/memory" }
+		{ "path": "./products/marketplace/memory" }
 	]
 }

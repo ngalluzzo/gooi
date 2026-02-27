@@ -1,3 +1,6 @@
+import { conformanceCheckResultSchema } from "@gooi/conformance-contracts/checks";
+import { conformanceSuiteReportSchema } from "@gooi/conformance-contracts/reports";
+import { authoringPositionSchema } from "@gooi/language-server/contracts/positions";
 import { z } from "zod";
 
 /**
@@ -17,8 +20,8 @@ export const authoringConformanceCheckIdSchema = z.enum([
  */
 export const authoringConformanceCheckSchema = z.object({
 	id: authoringConformanceCheckIdSchema,
-	passed: z.boolean(),
-	message: z.string().min(1),
+	passed: conformanceCheckResultSchema.shape.passed,
+	detail: conformanceCheckResultSchema.shape.detail,
 });
 
 /**
@@ -32,7 +35,7 @@ export type AuthoringConformanceCheck = z.infer<
  * Aggregate authoring conformance report.
  */
 export const authoringConformanceReportSchema = z.object({
-	passed: z.boolean(),
+	passed: conformanceSuiteReportSchema.shape.passed,
 	checks: z.array(authoringConformanceCheckSchema),
 });
 
@@ -51,29 +54,17 @@ export const runAuthoringConformanceInputSchema = z.object({
 		documentUri: z.string().min(1),
 		documentPath: z.string().min(1),
 		documentText: z.string(),
-		compiledEntrypointBundleIdentity: z.unknown(),
-		capabilityIndexSnapshot: z.unknown(),
-		symbolGraphSnapshot: z.unknown(),
-		lockfile: z.unknown(),
+		compiledEntrypointBundleIdentity: z.any(),
+		capabilityIndexSnapshot: z.any(),
+		symbolGraphSnapshot: z.any(),
+		lockfile: z.any(),
 	}),
-	staleLockfile: z.unknown(),
+	staleLockfile: z.any(),
 	positions: z.object({
-		capabilityCompletion: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		signalCompletion: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		expressionReference: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		ambientSymbol: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
+		capabilityCompletion: authoringPositionSchema,
+		signalCompletion: authoringPositionSchema,
+		expressionReference: authoringPositionSchema,
+		ambientSymbol: authoringPositionSchema,
 	}),
 	renameTarget: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),
 	renameCollisionTarget: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),

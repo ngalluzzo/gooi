@@ -208,7 +208,7 @@ Feature-oriented module layout:
    - `src/capture/*`
    - `src/persona/*`
    - `src/reports/*`
-2. `packages/scenario-contracts`
+2. `products/contracts/scenario-contracts`
    - scenario/persona plans, run envelopes, coverage reports.
 
 Public APIs via `package.json` exports:
@@ -230,7 +230,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/quality/scenario-runtime`
-  - `packages/scenario-contracts`
+  - `products/contracts/scenario-contracts`
 - Lane (if `products/*`):
   - `quality`
 - Why this boundary is correct:

@@ -1,3 +1,5 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
+
 /**
  * Semver regular expression in MAJOR.MINOR.PATCH format.
  */
@@ -34,21 +36,34 @@ export type ProviderManifestParseResult<T> =
 	| { readonly success: true; readonly data: T }
 	| { readonly success: false; readonly error: ProviderManifestParseError };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
+const isRecord = (value: unknown): value is JsonObject =>
 	typeof value === "object" && value !== null;
 
 const isNonEmptyString = (value: unknown): value is string =>
 	typeof value === "string" && value.length > 0;
 
-const parseBaseIssues = (
+interface ParsedProviderManifestBaseRecord {
+	readonly providerId: string;
+	readonly providerVersion: string;
+	readonly hostApiRange: string;
+}
+
+const safeParseProviderManifestBaseRecord = (
 	value: unknown,
-): readonly ProviderManifestParseIssue[] => {
+): ProviderManifestParseResult<ParsedProviderManifestBaseRecord> => {
 	if (!isRecord(value)) {
-		return [{ path: [], message: "Expected object." }];
+		return {
+			success: false,
+			error: {
+				issues: [{ path: [], message: "Expected object." }],
+			},
+		};
 	}
 
 	const issues: ProviderManifestParseIssue[] = [];
-	if (!isNonEmptyString(value.providerId)) {
+	const { providerId, providerVersion, hostApiRange } = value;
+
+	if (!isNonEmptyString(providerId)) {
 		issues.push({
 			path: ["providerId"],
 			message: "Expected non-empty string providerId.",
@@ -56,8 +71,8 @@ const parseBaseIssues = (
 	}
 
 	if (
-		typeof value.providerVersion !== "string" ||
-		!semverPattern.test(value.providerVersion)
+		typeof providerVersion !== "string" ||
+		!semverPattern.test(providerVersion)
 	) {
 		issues.push({
 			path: ["providerVersion"],
@@ -65,14 +80,40 @@ const parseBaseIssues = (
 		});
 	}
 
-	if (!isNonEmptyString(value.hostApiRange)) {
+	if (!isNonEmptyString(hostApiRange)) {
 		issues.push({
 			path: ["hostApiRange"],
 			message: "Expected non-empty string hostApiRange.",
 		});
 	}
 
-	return issues;
+	if (issues.length > 0) {
+		return {
+			success: false,
+			error: { issues },
+		};
+	}
+
+	if (
+		!isNonEmptyString(providerId) ||
+		typeof providerVersion !== "string" ||
+		!semverPattern.test(providerVersion) ||
+		!isNonEmptyString(hostApiRange)
+	) {
+		return {
+			success: false,
+			error: { issues },
+		};
+	}
+
+	return {
+		success: true,
+		data: {
+			providerId,
+			providerVersion,
+			hostApiRange,
+		},
+	};
 };
 
 /**
@@ -81,17 +122,16 @@ const parseBaseIssues = (
 export const parseProviderManifestBase = (
 	value: unknown,
 ): ProviderManifestBase => {
-	const issues = parseBaseIssues(value);
-	if (issues.length > 0) {
+	const parsed = safeParseProviderManifestBaseRecord(value);
+	if (!parsed.success) {
 		throw new Error(
-			`Invalid provider manifest base: ${issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
+			`Invalid provider manifest base: ${parsed.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
 		);
 	}
-	const record = value as Record<string, unknown>;
 	return {
-		providerId: record.providerId as string,
-		providerVersion: record.providerVersion as string,
-		hostApiRange: record.hostApiRange as string,
+		providerId: parsed.data.providerId,
+		providerVersion: parsed.data.providerVersion,
+		hostApiRange: parsed.data.hostApiRange,
 	};
 };
 
@@ -101,20 +141,5 @@ export const parseProviderManifestBase = (
 export const safeParseProviderManifestBase = (
 	value: unknown,
 ): ProviderManifestParseResult<ProviderManifestBase> => {
-	const issues = parseBaseIssues(value);
-	if (issues.length > 0) {
-		return {
-			success: false,
-			error: { issues },
-		};
-	}
-	const record = value as Record<string, unknown>;
-	return {
-		success: true,
-		data: {
-			providerId: record.providerId as string,
-			providerVersion: record.providerVersion as string,
-			hostApiRange: record.hostApiRange as string,
-		},
-	};
+	return safeParseProviderManifestBaseRecord(value);
 };

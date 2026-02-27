@@ -291,7 +291,7 @@ export type CompiledArtifactManifest = {
 
 Feature-oriented module layout:
 
-1. `packages/app-spec-contracts`
+1. `products/contracts/app-spec-contracts`
    - `src/spec/spec.ts`
    - `src/compiled/compiled-app-model.ts`
    - `src/diagnostics/diagnostics.ts`
@@ -318,7 +318,7 @@ Single entry per feature:
 ## Package boundary classification
 
 - Proposed location(s):
-  - `packages/app-spec-contracts`
+  - `products/contracts/app-spec-contracts`
   - `products/authoring/spec-compiler`
 - Lane (if `products/*`):
   - `authoring`
@@ -332,7 +332,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - placing compiler logic in `packages/*` would blur product-lane boundaries.
 - Promotion/demotion plan:
-  - additional cross-lane compile contracts can move into `packages/app-spec-contracts` once stable.
+  - additional cross-lane compile contracts can move into `products/contracts/app-spec-contracts` once stable.
 
 ## Delivery plan and rollout
 

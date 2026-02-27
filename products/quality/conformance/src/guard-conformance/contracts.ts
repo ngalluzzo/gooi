@@ -1,3 +1,6 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type {
 	GuardEvaluationEnvelope,
 	InvariantEvaluationEnvelope,
@@ -15,16 +18,11 @@ export type GuardConformanceCheckId =
 	| "semantic_sampling_confidence_ci"
 	| "missing_judge_degrades_per_contract";
 
-export interface GuardConformanceCheckResult {
-	readonly id: GuardConformanceCheckId;
-	readonly passed: boolean;
-	readonly detail: string;
-}
+export type GuardConformanceCheckResult =
+	ConformanceCheckResultBase<GuardConformanceCheckId>;
 
-export interface GuardConformanceReport {
-	readonly passed: boolean;
-	readonly checks: readonly GuardConformanceCheckResult[];
-}
+export interface GuardConformanceReport
+	extends ConformanceSuiteReportBase<GuardConformanceCheckResult> {}
 
 export interface RunGuardConformanceInput {
 	readonly collectionInvariant: CompiledInvariantDefinition;
@@ -47,11 +45,11 @@ export interface RunGuardConformanceInput {
 	}>;
 	readonly evaluateInvariant: (input: {
 		readonly definition: CompiledInvariantDefinition;
-		readonly context: Readonly<Record<string, unknown>>;
+		readonly context: JsonObject;
 	}) => InvariantEvaluationEnvelope;
 	readonly evaluateGuard: (input: {
 		readonly definition: CompiledGuardDefinition;
-		readonly context: Readonly<Record<string, unknown>>;
+		readonly context: JsonObject;
 		readonly environment?: "production" | "simulation" | "ci";
 		readonly semanticJudge?: SemanticJudgePort;
 		readonly samplingSeed?: string;

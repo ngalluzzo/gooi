@@ -268,7 +268,7 @@ Single entry per feature:
 - Proposed location(s):
   - `products/runtime/render-kernel`
   - `packages/render-contracts`
-  - `marketplace/*` renderer adapters
+  - `products/marketplace/*` renderer adapters
 - Lane (if `products/*`):
   - `runtime`
 - Why this boundary is correct:

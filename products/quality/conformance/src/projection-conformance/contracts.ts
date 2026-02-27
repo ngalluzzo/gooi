@@ -1,3 +1,6 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { ProjectionResultEnvelope } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
 import type {
 	CompiledAggregateProjectionPlan,
@@ -13,7 +16,7 @@ import type { ProjectionRefreshSubscriptions } from "@gooi/projection-runtime/re
 export interface ProjectionCollectionReaderPort {
 	readonly scanCollection: (input: {
 		readonly collectionId: string;
-	}) => Promise<readonly Readonly<Record<string, unknown>>[]>;
+	}) => Promise<readonly JsonObject[]>;
 }
 
 /**
@@ -30,21 +33,14 @@ export type ProjectionConformanceCheckId =
 	| "migration_chain_replay_applied"
 	| "migration_chain_gap_blocked";
 
-/**
- * Result for one projection conformance check.
- */
-export interface ProjectionConformanceCheckResult {
-	readonly id: ProjectionConformanceCheckId;
-	readonly passed: boolean;
-	readonly detail: string;
-}
+export type ProjectionConformanceCheckResult =
+	ConformanceCheckResultBase<ProjectionConformanceCheckId>;
 
 /**
  * Projection conformance report payload.
  */
-export interface ProjectionConformanceReport {
-	readonly passed: boolean;
-	readonly checks: readonly ProjectionConformanceCheckResult[];
+export interface ProjectionConformanceReport
+	extends ConformanceSuiteReportBase<ProjectionConformanceCheckResult> {
 	readonly lastTimelineResult?: ProjectionResultEnvelope;
 }
 
@@ -65,5 +61,5 @@ export interface RunProjectionConformanceInput {
 	readonly refreshSubscriptions: ProjectionRefreshSubscriptions;
 	readonly emittedSignalIds: readonly string[];
 	readonly expectedAffectedQueryIds: readonly string[];
-	readonly expectedAggregateRows: readonly Readonly<Record<string, unknown>>[];
+	readonly expectedAggregateRows: readonly JsonObject[];
 }

@@ -1,4 +1,5 @@
 import { effectKindSchema } from "@gooi/capability-contracts/capability-port";
+import { jsonValueSchema } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import { ensureObservedEffectsDeclared } from "../effects/effects";
 import { capabilityKey } from "../shared/capability-key";
@@ -12,8 +13,8 @@ import type {
 
 const capabilityResultSchema = z.object({
 	ok: z.boolean(),
-	output: z.unknown().optional(),
-	error: z.unknown().optional(),
+	output: jsonValueSchema.optional(),
+	error: jsonValueSchema.optional(),
 	observedEffects: z.array(effectKindSchema),
 });
 
@@ -77,6 +78,19 @@ export const invokeCapability = async (
 	let rawResult: unknown;
 
 	if (resolution?.mode === "delegated") {
+		const delegatedInputValidation = jsonValueSchema.safeParse(
+			inputValidation.data,
+		);
+		if (!delegatedInputValidation.success) {
+			return fail(
+				"validation_error",
+				"Capability input cannot be delegated because it is not JSON-encodable.",
+				{
+					issues: delegatedInputValidation.error.issues,
+				},
+			);
+		}
+
 		const delegated =
 			await activated.hostPorts.capabilityDelegation.invokeDelegated({
 				routeId: resolution.delegateRouteId,
@@ -85,7 +99,7 @@ export const invokeCapability = async (
 				capabilityCall: {
 					portId: call.portId,
 					portVersion: call.portVersion,
-					input: inputValidation.data,
+					input: delegatedInputValidation.data,
 					principal: call.principal,
 					ctx: call.ctx,
 				},

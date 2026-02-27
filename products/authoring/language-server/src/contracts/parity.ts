@@ -1,3 +1,4 @@
+import { diagnosticRecordSchema } from "@gooi/app-spec-contracts/diagnostics";
 import { z } from "zod";
 
 const hashSchema = z.string().regex(/^[a-f0-9]{64}$/);
@@ -15,8 +16,7 @@ export const authoringParityIssueCodeSchema = z.enum([
  */
 export const authoringParityIssueSchema = z.object({
 	code: authoringParityIssueCodeSchema,
-	message: z.string().min(1),
-	path: z.string().min(1),
+	...diagnosticRecordSchema.pick({ message: true, path: true }).shape,
 	staleArtifacts: z.literal(true),
 });
 

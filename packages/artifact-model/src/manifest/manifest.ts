@@ -1,3 +1,8 @@
+import {
+	type JsonObject,
+	type JsonValue,
+	jsonObjectSchema,
+} from "@gooi/contract-primitives/json";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import { z } from "zod";
 
@@ -38,7 +43,7 @@ export const laneArtifactReferenceSchema = z
 		artifactVersion: z.string().min(1),
 		artifactHash: z.string().min(1),
 		hashAlgorithm: artifactHashAlgorithmSchema,
-		compatibility: z.record(z.string(), z.unknown()).optional(),
+		compatibility: jsonObjectSchema.optional(),
 	})
 	.strict();
 
@@ -51,7 +56,7 @@ export const compiledLaneArtifactSchema = z
 		artifactVersion: z.string().min(1),
 		lane: laneIdSchema,
 		hashAlgorithm: artifactHashAlgorithmSchema,
-		payload: z.unknown(),
+		payload: z.any(),
 		artifactHash: z.string().min(1),
 	})
 	.strict();
@@ -112,7 +117,7 @@ export const buildLaneArtifact = (input: {
 	readonly artifactId: string;
 	readonly artifactVersion: string;
 	readonly lane: LaneId;
-	readonly payload: unknown;
+	readonly payload: JsonValue | Readonly<object>;
 }): CompiledLaneArtifact => {
 	const partialArtifact: Omit<CompiledLaneArtifact, "artifactHash"> = {
 		artifactId: input.artifactId,
@@ -132,16 +137,24 @@ export const buildLaneArtifact = (input: {
  */
 export const toLaneArtifactReference = (
 	artifact: CompiledLaneArtifact,
-	compatibility?: Readonly<Record<string, unknown>>,
-): LaneArtifactReference => ({
-	refVersion: compiledLaneArtifactVersionSchema.value,
-	lane: artifact.lane,
-	artifactId: artifact.artifactId,
-	artifactVersion: artifact.artifactVersion,
-	artifactHash: artifact.artifactHash,
-	hashAlgorithm: artifact.hashAlgorithm,
-	...(compatibility === undefined ? {} : { compatibility }),
-});
+	compatibility?: JsonObject | Readonly<object>,
+): LaneArtifactReference => {
+	const parsedCompatibility =
+		compatibility === undefined
+			? undefined
+			: jsonObjectSchema.parse(compatibility);
+	return {
+		refVersion: compiledLaneArtifactVersionSchema.value,
+		lane: artifact.lane,
+		artifactId: artifact.artifactId,
+		artifactVersion: artifact.artifactVersion,
+		artifactHash: artifact.artifactHash,
+		hashAlgorithm: artifact.hashAlgorithm,
+		...(parsedCompatibility === undefined
+			? {}
+			: { compatibility: parsedCompatibility }),
+	};
+};
 
 /**
  * Computes manifest aggregate hash from a manifest payload without hash field.
@@ -178,7 +191,7 @@ export const buildArtifactManifest = (input: {
 export const buildArtifactManifestFromArtifacts = (input: {
 	readonly artifacts: Readonly<Record<string, CompiledLaneArtifact>>;
 	readonly compatibilityByArtifactKey?: Readonly<
-		Record<string, Readonly<Record<string, unknown>>>
+		Record<string, JsonObject | Readonly<object>>
 	>;
 	readonly signatures?: Readonly<Record<string, string>>;
 }): CompiledArtifactManifest => {

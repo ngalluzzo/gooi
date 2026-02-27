@@ -1,0 +1,9 @@
+{
+	"entryPoints": ["./src/json/json.ts", "./src/extensions/extensions.ts"],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
+}

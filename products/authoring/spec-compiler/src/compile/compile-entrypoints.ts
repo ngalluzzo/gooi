@@ -1,4 +1,4 @@
-import type { AuthoringEntrypointSpec } from "../authoring-spec/authoring-spec";
+import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 import type {
 	CompileDiagnostic,
 	CompiledEntrypoint,

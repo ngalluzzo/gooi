@@ -9,7 +9,7 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!marketplace/gooi-github/src/sources/github/openapi.json"
+			"!products/marketplace/gooi-github/src/sources/github/openapi.json"
 		]
 	},
 	"formatter": {

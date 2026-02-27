@@ -17,6 +17,11 @@ import { executeFromCollectionProjection } from "../strategies/from-collection";
 import { executeJoinProjection } from "../strategies/join";
 import { executeTimelineProjection } from "../strategies/timeline";
 import type { ExecuteProjectionContext } from "./contracts";
+import {
+	type RebuildTimelineProjectionInput,
+	type RebuildTimelineProjectionResult,
+	rebuildTimelineProjection,
+} from "./rebuild-timeline";
 
 /**
  * Input payload for one projection strategy execution.
@@ -38,6 +43,9 @@ export interface ProjectionRuntime {
 	readonly executeProjection: (
 		input: ExecuteProjectionInput,
 	) => Promise<ProjectionResultEnvelope>;
+	readonly rebuildTimelineProjection: (
+		input: RebuildTimelineProjectionInput,
+	) => Promise<RebuildTimelineProjectionResult>;
 }
 
 const toExecutionContext = (
@@ -171,4 +179,5 @@ export const createProjectionRuntime = (): ProjectionRuntime => ({
 			};
 		}
 	},
+	rebuildTimelineProjection: async (input) => rebuildTimelineProjection(input),
 });

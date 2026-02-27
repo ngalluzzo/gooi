@@ -23,25 +23,25 @@ const issueMessage = (
 ): string =>
 	`${prefix}: ${issues.map((issue) => `${issue.path}: ${issue.message}`).join("; ")}`;
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
 const validateContractDescriptor = (
 	descriptor: unknown,
 ): readonly HostProviderConstructionIssue[] => {
-	if (typeof descriptor !== "object" || descriptor === null) {
+	if (!isRecord(descriptor)) {
 		return [{ path: "contract", message: "Expected object." }];
 	}
 
-	const record = descriptor as Readonly<Record<string, unknown>>;
+	const { id, version } = descriptor;
 	const issues: HostProviderConstructionIssue[] = [];
-	if (typeof record.id !== "string" || record.id.length === 0) {
+	if (typeof id !== "string" || id.length === 0) {
 		issues.push({
 			path: "contract.id",
 			message: "Expected non-empty string.",
 		});
 	}
-	if (
-		typeof record.version !== "string" ||
-		!semverPattern.test(record.version)
-	) {
+	if (typeof version !== "string" || !semverPattern.test(version)) {
 		issues.push({
 			path: "contract.version",
 			message: "Expected semver in MAJOR.MINOR.PATCH format.",

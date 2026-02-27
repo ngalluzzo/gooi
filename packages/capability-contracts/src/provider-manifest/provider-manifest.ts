@@ -80,15 +80,18 @@ const parseCapabilities = (
 	};
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const getCapabilitiesValue = (value: unknown): unknown =>
+	isRecord(value) ? value.capabilities : undefined;
+
 /**
  * Parses and validates a provider manifest.
  */
 export const parseProviderManifest = (value: unknown): ProviderManifest => {
 	const base = parseProviderManifestBase(value);
-	const capabilitiesValue =
-		typeof value === "object" && value !== null
-			? (value as Record<string, unknown>).capabilities
-			: undefined;
+	const capabilitiesValue = getCapabilitiesValue(value);
 	const capabilities = parseCapabilities(capabilitiesValue);
 	if (!capabilities.success) {
 		throw new Error(
@@ -115,10 +118,7 @@ export const safeParseProviderManifest = (
 		return base;
 	}
 
-	const capabilitiesValue =
-		typeof value === "object" && value !== null
-			? (value as Record<string, unknown>).capabilities
-			: undefined;
+	const capabilitiesValue = getCapabilitiesValue(value);
 	const capabilities = parseCapabilities(capabilitiesValue);
 	if (!capabilities.success) {
 		return capabilities as ProviderManifestParseResult<ProviderManifest>;

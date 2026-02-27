@@ -127,7 +127,6 @@ export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 			guard: input.projectionGuard,
 		},
 		args: { page: 1, page_size: 10 },
-		artifactHash: "guard_conformance_projection_artifact",
 		collectionReader: {
 			scanCollection: async () => [{ id: "m1" }],
 		},
@@ -150,7 +149,7 @@ export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 			)?.status === "ok",
 		projectionGuardPassed:
 			projection.ok &&
-			(projection.meta?.guards?.violationCount ?? 0) > 0 &&
-			(projection.meta?.guards?.violations.length ?? 0) > 0,
+			(projection.guards?.violationCount ?? 0) > 0 &&
+			(projection.guards?.violations.length ?? 0) > 0,
 	};
 };

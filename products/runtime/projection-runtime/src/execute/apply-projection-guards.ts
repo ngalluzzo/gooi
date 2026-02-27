@@ -1,5 +1,5 @@
 import { evaluateInvariant } from "@gooi/guard-runtime/evaluate";
-import type { ProjectionGuardMeta } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
+import type { ProjectionSemanticGuardMeta } from "@gooi/kernel-contracts/projection-semantic";
 import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
 import type { CompiledProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
 
@@ -14,7 +14,7 @@ export type ApplyProjectionGuardsResult =
 	| {
 			readonly ok: true;
 			readonly rows: readonly Readonly<Record<string, unknown>>[];
-			readonly guardMeta?: ProjectionGuardMeta;
+			readonly guardMeta?: ProjectionSemanticGuardMeta;
 	  }
 	| {
 			readonly ok: false;
@@ -38,9 +38,9 @@ export const applyProjectionGuards = (
 	let violationCount = 0;
 	let diagnosticCount = 0;
 	let emittedViolationSignalCount = 0;
-	const violations: ProjectionGuardMeta["violations"][number][] = [];
-	const diagnostics: ProjectionGuardMeta["diagnostics"][number][] = [];
-	const emittedViolationSignals: ProjectionGuardMeta["emittedViolationSignals"][number][] =
+	const violations: ProjectionSemanticGuardMeta["violations"][number][] = [];
+	const diagnostics: ProjectionSemanticGuardMeta["diagnostics"][number][] = [];
+	const emittedViolationSignals: ProjectionSemanticGuardMeta["emittedViolationSignals"][number][] =
 		[];
 	for (const [rowIndex, row] of input.rows.entries()) {
 		const evaluation = evaluateInvariant({

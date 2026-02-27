@@ -117,7 +117,6 @@ describe("projection-runtime timeline signal migrations", () => {
 		const result = await runtime.executeProjection({
 			plan: createMigrationPlan(),
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_timeline_migration_1",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: createVersionedHistoryPort(),
 		});
@@ -162,7 +161,6 @@ describe("projection-runtime timeline signal migrations", () => {
 		const result = await runtime.executeProjection({
 			plan: planWithGap,
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_timeline_migration_2",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: createVersionedHistoryPort(),
 		});

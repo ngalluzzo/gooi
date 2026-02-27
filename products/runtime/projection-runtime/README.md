@@ -15,6 +15,7 @@ query semantics.
 - Stable page metadata and timeline lifecycle metadata
 - Projection row-guard enforcement with typed abort/log-and-continue policy outcomes
 - Typed projection diagnostics with source references
+- Semantic projection outputs (envelope shaping is kernel-owned)
 - Refresh impact resolver for signal-to-query invalidation parity
 
 ## API
@@ -23,3 +24,7 @@ query semantics.
 - `ProjectionRuntime.executeProjection(input)`
 - `ProjectionRuntime.rebuildTimelineProjection(input)`
 - `resolveProjectionRefreshImpact(subscriptions, emittedSignalIds)`
+
+Projection result-envelope shaping is owned by kernel:
+
+- `@gooi/execution-kernel/projection` -> `shapeProjectionQueryOutput(input)`

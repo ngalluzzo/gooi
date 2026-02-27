@@ -15,6 +15,7 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
 - Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`)
+- Deferred additive host extension boundary for module loading/integrity (`hostPorts.extensions`)
 - Deterministic fail-fast activation errors when required host-port members are missing
 - Hard-fail activation when binding/lockfile checks fail
 - Deterministic reachability execution semantics (`local` / `delegated` / `capability_unreachable_error`)
@@ -43,6 +44,10 @@ const runtime = createProviderRuntime({
     clock,
     activationPolicy,
     capabilityDelegation,
+    extensions: {
+      moduleLoader, // optional future extension point
+      moduleIntegrity, // optional future extension point
+    },
   },
 });
 
@@ -57,11 +62,25 @@ const result = await runtime.invoke(activated.value, {
   portVersion: capabilityContract.version,
   input: { count: 2 },
   principal: { subject: "user_1", roles: ["authenticated"] },
-  ctx: { id: "inv_1", traceId: "trace_1", now: new Date().toISOString() },
+  ctx: { id: "inv_1", traceId: "trace_1", now: "2026-02-27T00:00:00.000Z" },
 });
 
 await runtime.deactivate(activated.value);
 ```
+
+## Deferred Extension Boundary
+
+`hostPorts.extensions` is an additive, optional boundary reserved for future
+module loading and module integrity enforcement tracks:
+
+- `moduleLoader`: host-managed module loading surface.
+- `moduleIntegrity`: host-managed integrity verification surface.
+
+Current milestone behavior remains unchanged:
+
+- Runtime does not require these extension ports.
+- Runtime does not invoke these extension ports yet.
+- Existing host-port contracts stay backward-compatible.
 
 ## API Summary
 

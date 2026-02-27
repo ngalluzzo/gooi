@@ -140,7 +140,7 @@ export interface ActivateProviderInput {
 	readonly lockfile?: DeploymentLockfile;
 	/** Optional activation timestamp override. */
 	readonly activatedAt?: string;
-	/** Optional host ports for clock and activation policy behavior. */
+	/** Optional host ports for runtime orchestration and deferred extension boundaries. */
 	readonly hostPorts?: ProviderRuntimeHostPorts;
 }
 
@@ -156,7 +156,7 @@ export interface CreateProviderRuntimeInput {
 	readonly bindingPlan?: BindingPlan;
 	/** Optional lockfile artifact for deterministic provider resolution. */
 	readonly lockfile?: DeploymentLockfile;
-	/** Optional host ports for clock and activation policy behavior. */
+	/** Optional host ports for runtime orchestration and deferred extension boundaries. */
 	readonly hostPorts?: ProviderRuntimeHostPorts;
 }
 
@@ -176,7 +176,7 @@ export interface ActivateProviderRuntimeInput {
 	readonly lockfile?: DeploymentLockfile;
 	/** Optional activation timestamp override. */
 	readonly activatedAt?: string;
-	/** Optional host ports for clock and activation policy behavior. */
+	/** Optional host ports for runtime orchestration and deferred extension boundaries. */
 	readonly hostPorts?: ProviderRuntimeHostPorts;
 }
 

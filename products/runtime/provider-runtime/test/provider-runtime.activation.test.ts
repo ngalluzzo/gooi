@@ -149,6 +149,36 @@ describe("provider-runtime activation", () => {
 		}
 	});
 
+	test("keeps activation backward-compatible when deferred module extension ports are absent or partial", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const withoutExtensions = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [contract],
+			hostPorts: createHostPorts(),
+		});
+		const withPartialExtensions = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [contract],
+			hostPorts: {
+				...createHostPorts(),
+				extensions: {
+					moduleLoader: {
+						loadModule: async () => providerModule,
+					},
+				},
+			},
+		});
+
+		expect(withoutExtensions.ok).toBe(true);
+		expect(withPartialExtensions.ok).toBe(true);
+	});
+
 	test("fails activation with typed compatibility diagnostics for schema profile mismatch", async () => {
 		const contract = createContract();
 		const mismatchedContract = {

@@ -1,197 +1,146 @@
-name: Issue Status - In Progress
+name: PR Issue Link Sync
 
 on:
   push:
     branches-ignore:
       - main
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 permissions:
-  issues: write
   contents: read
+  issues: read
+  pull-requests: write
 
 jobs:
-  update-issue-status:
-    name: Mark Referenced Issues as In Progress
+  sync-issue-links:
+    name: Sync Issue Links From Commit Messages
     runs-on: ubuntu-latest
     steps:
-      - name: Update referenced issues
+      - name: Sync PR Issue Link section
         uses: actions/github-script@v7
         with:
-          # Use GH_TOKEN (with project scope) when available, fall back to GITHUB_TOKEN.
-          # Set the GH_TOKEN repo secret with 'project' read/write scope to also update
-          # GitHub Projects v2 status fields.
-          github-token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const commits = context.payload.commits ?? [];
-            const branch = context.ref.replace("refs/heads/", "");
+            const { owner, repo } = context.repo;
 
-            // Match GitHub-style issue references in commit messages.
-            // Captures keyword-prefixed refs (fixes/closes/resolves/ref/re/see/part of)
-            // and bare #N references, while avoiding false matches like hex colours.
-            const REF_RE =
-              /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|ref(?:erences?)?|re|see|part\s+of)\s*:?\s*#(\d+)|(?<![&\w#])#(\d+)/gim;
-
-            const issueNumbers = new Set();
-            for (const { message = "" } of commits) {
-              for (const match of message.matchAll(REF_RE)) {
-                const n = match[1] ?? match[2];
-                if (n) issueNumbers.add(Number(n));
+            const normalizeKeyword = (raw) => {
+              const keyword = raw.toLowerCase().replace(/\s+/g, " ");
+              if (/^(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)$/.test(keyword)) {
+                return "close";
               }
+              return "ref";
+            };
+
+            const mergeAction = (current, next) => {
+              if (current === "close" || next === "close") return "close";
+              return "ref";
+            };
+
+            const KEYWORD_REF_RE = /\b(close[sd]?|fix(?:e[sd])?|resolve[sd]?|ref(?:erences?)?|see|part\s+of)\s*:?\s*#(\d+)\b/gim;
+            const BARE_REF_RE = /(?<![&\w#])#(\d+)\b/g;
+
+            const findOpenPrForBranch = async (branch) => {
+              const { data } = await github.rest.pulls.list({
+                owner,
+                repo,
+                state: "open",
+                head: `${owner}:${branch}`,
+                per_page: 10,
+              });
+              return data[0] ?? null;
+            };
+
+            let pr = null;
+            if (context.eventName === "pull_request") {
+              pr = context.payload.pull_request ?? null;
+            } else {
+              const branch = context.ref.replace("refs/heads/", "");
+              pr = await findOpenPrForBranch(branch);
             }
 
-            if (!issueNumbers.size) {
-              console.log(`No issue references found in push to "${branch}".`);
+            if (!pr) {
+              console.log("No open PR found for this branch/event. Nothing to update.");
               return;
             }
 
-            console.log(`Branch: ${branch}`);
-            console.log(`Referenced issues: #${[...issueNumbers].join(", #")}`);
+            const commits = await github.paginate(github.rest.pulls.listCommits, {
+              owner,
+              repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
 
-            const { owner, repo } = context.repo;
+            if (commits.length === 0) {
+              console.log(`PR #${pr.number} has no commits. Nothing to update.`);
+              return;
+            }
 
-            // ── Label approach (works with the default GITHUB_TOKEN) ──────────────
+            const referenced = new Map();
 
-            const LABEL = "in progress";
+            for (const commit of commits) {
+              const message = commit.commit?.message ?? "";
 
-            // Ensure the label exists in this repo.
-            try {
-              await github.rest.issues.getLabel({ owner, repo, name: LABEL });
-            } catch (err) {
-              if (err.status === 404) {
-                await github.rest.issues.createLabel({
-                  owner,
-                  repo,
-                  name: LABEL,
-                  color: "fbca04",
-                  description: "Work on this issue is currently in progress",
-                });
-                console.log(`Created label "${LABEL}"`);
-              } else {
-                throw err;
+              for (const match of message.matchAll(KEYWORD_REF_RE)) {
+                const keyword = match[1];
+                const issueNumber = Number(match[2]);
+                const action = normalizeKeyword(keyword);
+                referenced.set(issueNumber, mergeAction(referenced.get(issueNumber), action));
+              }
+
+              for (const match of message.matchAll(BARE_REF_RE)) {
+                const issueNumber = Number(match[1]);
+                if (!referenced.has(issueNumber)) {
+                  referenced.set(issueNumber, "ref");
+                }
               }
             }
 
-            for (const num of issueNumbers) {
+            const validIssueLinks = new Map();
+            for (const [issueNumber, action] of referenced.entries()) {
               try {
                 const { data: issue } = await github.rest.issues.get({
                   owner,
                   repo,
-                  issue_number: num,
+                  issue_number: issueNumber,
                 });
-
-                if (issue.pull_request) {
-                  console.log(`Skipping #${num}: is a pull request`);
-                  continue;
+                if (!issue.pull_request) {
+                  validIssueLinks.set(issueNumber, action);
                 }
-                if (issue.state === "closed") {
-                  console.log(`Skipping #${num}: issue is already closed`);
-                  continue;
-                }
-
-                await github.rest.issues.addLabels({
-                  owner,
-                  repo,
-                  issue_number: num,
-                  labels: [LABEL],
-                });
-                console.log(`✓ Labeled issue #${num} as "${LABEL}": ${issue.title}`);
-              } catch (err) {
-                if (err.status === 404) {
-                  console.log(`Skipping #${num}: issue not found`);
-                } else {
-                  core.warning(`Could not update issue #${num}: ${err.message}`);
-                }
+              } catch (error) {
+                console.log(`Skipping #${issueNumber}: not a repo issue (${error.message}).`);
               }
             }
 
-            // ── GitHub Projects v2 approach ───────────────────────────────────────
-            // Requires a GH_TOKEN secret with 'project' read/write scope.
-            // If the token lacks project permissions this block is skipped silently.
+            const sorted = [...validIssueLinks.entries()].sort((a, b) => a[0] - b[0]);
+            const closes = sorted.filter(([, action]) => action === "close").map(([n]) => `Closes #${n}`);
+            const refs = sorted.filter(([, action]) => action !== "close").map(([n]) => `Refs #${n}`);
 
-            for (const num of issueNumbers) {
-              let projectItems;
-              try {
-                const result = await github.graphql(
-                  `query ($owner: String!, $repo: String!, $num: Int!) {
-                    repository(owner: $owner, name: $repo) {
-                      issue(number: $num) {
-                        projectItems(first: 10) {
-                          nodes {
-                            id
-                            project {
-                              id
-                              title
-                              field(name: "Status") {
-                                ... on ProjectV2SingleSelectField {
-                                  id
-                                  options { id name }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }`,
-                  { owner, repo, num },
-                );
-                projectItems =
-                  result?.repository?.issue?.projectItems?.nodes ?? [];
-              } catch (err) {
-                const msg = err.message ?? "";
-                if (msg.includes("not authorized") || msg.includes("403")) {
-                  console.log(
-                    "Skipping Projects v2 update: token lacks project scope. " +
-                      "Add a GH_TOKEN secret with 'project' read/write scope to enable this.",
-                  );
-                  break;
-                }
-                core.warning(
-                  `Projects v2 query failed for issue #${num}: ${msg}`,
-                );
-                continue;
-              }
+            const autoStart = "<!-- issue-link-sync:start -->";
+            const autoEnd = "<!-- issue-link-sync:end -->";
+            const issueLines = [...closes, ...refs];
+            const sectionBody = issueLines.length > 0
+              ? `${autoStart}\n${issueLines.join("\n")}\n${autoEnd}`
+              : `${autoStart}\nNo linked issues detected from commit messages.\n${autoEnd}`;
 
-              for (const item of projectItems) {
-                const field = item.project?.field;
-                if (!field?.options) continue;
+            const nextSection = `## Issue Link\n${sectionBody}\n`;
+            const currentBody = (pr.body ?? "").trimEnd();
+            const issueSectionRe = /##\s*Issue Link\s*\n[\s\S]*?(?=\n##\s+|$)/i;
 
-                const option = field.options.find(
-                  (o) => o.name.toLowerCase() === "in progress",
-                );
-                if (!option) {
-                  console.log(
-                    `Project "${item.project.title}" has no "In Progress" status option – skipping.`,
-                  );
-                  continue;
-                }
+            const nextBody = issueSectionRe.test(currentBody)
+              ? currentBody.replace(issueSectionRe, nextSection.trimEnd())
+              : `${currentBody}\n\n${nextSection}`;
 
-                try {
-                  await github.graphql(
-                    `mutation ($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
-                      updateProjectV2ItemFieldValue(input: {
-                        projectId: $projectId
-                        itemId: $itemId
-                        fieldId: $fieldId
-                        value: { singleSelectOptionId: $optionId }
-                      }) {
-                        projectV2Item { id }
-                      }
-                    }`,
-                    {
-                      projectId: item.project.id,
-                      itemId: item.id,
-                      fieldId: field.id,
-                      optionId: option.id,
-                    },
-                  );
-                  console.log(
-                    `✓ Set project "${item.project.title}" status to "In Progress" for issue #${num}`,
-                  );
-                } catch (err) {
-                  core.warning(
-                    `Could not update project status for issue #${num}: ${err.message}`,
-                  );
-                }
-              }
+            if (nextBody === currentBody) {
+              console.log(`PR #${pr.number} issue links already up to date.`);
+              return;
             }
+
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: pr.number,
+              body: nextBody,
+            });
+
+            console.log(`Updated PR #${pr.number} Issue Link section.`);

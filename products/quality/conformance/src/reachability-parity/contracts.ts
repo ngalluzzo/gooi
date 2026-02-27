@@ -1,6 +1,9 @@
 import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
 import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceDiagnosticRecordBase } from "@gooi/conformance-contracts/diagnostics";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type {
 	PrincipalContext,
 	ProviderModule,
@@ -17,38 +20,20 @@ export type ReachabilityParityCheckId =
 	| "effect_parity"
 	| "reachability_trace_present";
 
-/**
- * Result for one reachability parity check.
- */
-export interface ReachabilityParityCheckResult {
-	/** Stable check identifier. */
-	readonly id: ReachabilityParityCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
+export type ReachabilityParityCheckResult =
+	ConformanceCheckResultBase<ReachabilityParityCheckId>;
 
 /**
  * Typed diagnostics emitted when parity invariants are violated.
  */
-export interface ReachabilityParityDiagnostic {
-	/** Stable diagnostic code. */
-	readonly code: "conformance_reachability_parity_error";
-	/** Human-readable message for failed invariant. */
-	readonly message: string;
-	/** Source path for check-scoped diagnostics. */
-	readonly path: string;
-}
+export interface ReachabilityParityDiagnostic
+	extends ConformanceDiagnosticRecordBase<"conformance_reachability_parity_error"> {}
 
 /**
  * Aggregate report for reachability parity suite.
  */
-export interface ReachabilityParityReport {
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly ReachabilityParityCheckResult[];
+export interface ReachabilityParityReport
+	extends ConformanceSuiteReportBase<ReachabilityParityCheckResult> {
 	/** Typed diagnostics for any parity violations. */
 	readonly diagnostics: readonly ReachabilityParityDiagnostic[];
 }

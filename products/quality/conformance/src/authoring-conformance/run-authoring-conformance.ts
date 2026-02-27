@@ -49,7 +49,7 @@ export const runAuthoringConformance = (
 					(item) => item.label === "message.is_allowed",
 				) &&
 				signalCompletion.items.some((item) => item.label === "message.created"),
-			message: "Completion resolves capability and signal symbols.",
+			detail: "Completion resolves capability and signal symbols.",
 		}),
 	);
 
@@ -66,7 +66,7 @@ export const runAuthoringConformance = (
 				diagnosticsMatched.parity.status === "matched" &&
 				diagnosticsMismatch.parity.status === "mismatch" &&
 				diagnosticsMismatch.diagnostics.length > 0,
-			message:
+			detail:
 				"Diagnostics parity reflects matched and mismatch lockfile states.",
 		}),
 	);
@@ -91,7 +91,7 @@ export const runAuthoringConformance = (
 				) &&
 				resolvedProviderLens?.lens.command?.id ===
 					"gooi.authoring.showProviders",
-			message:
+			detail:
 				"Code lenses include runnable, provider, and signal-aware actions.",
 		}),
 	);
@@ -110,7 +110,7 @@ export const runAuthoringConformance = (
 			passed:
 				definition.location?.symbolId === "step:generated_ids" &&
 				prepareAmbientRename.ok === false,
-			message:
+			detail:
 				"Expression var references resolve to step bindings and ambient symbols are guarded.",
 		}),
 	);
@@ -136,7 +136,7 @@ export const runAuthoringConformance = (
 				prepareRename.ok === true &&
 				rename.ok === true &&
 				renameCollision.ok === false,
-			message:
+			detail:
 				"Rename preflight, edit generation, and conflict rejection are enforced.",
 		}),
 	);
@@ -157,7 +157,7 @@ export const runAuthoringConformance = (
 			passed:
 				Array.isArray(querySymbolIds?.querySymbolIds) &&
 				querySymbolIds.querySymbolIds.includes("entrypoint:home.data.messages"),
-			message:
+			detail:
 				"Signal impact chain resolves emits -> subscription -> affected query derivations.",
 		}),
 	);

@@ -192,6 +192,7 @@
         "@gooi/binding": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
+        "@gooi/conformance-contracts": "workspace:*",
         "@gooi/domain-runtime": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",

@@ -1,3 +1,5 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
 import type {
 	CompiledScenarioPlanSet,
@@ -13,15 +15,11 @@ export type ScenarioConformanceCheckId =
 	| "persona_generation_lockfile_deterministic"
 	| "typed_failure_traceability";
 
-export interface ScenarioConformanceCheckResult {
-	readonly id: ScenarioConformanceCheckId;
-	readonly passed: boolean;
-	readonly detail: string;
-}
+export type ScenarioConformanceCheckResult =
+	ConformanceCheckResultBase<ScenarioConformanceCheckId>;
 
-export interface ScenarioConformanceReport {
-	readonly passed: boolean;
-	readonly checks: readonly ScenarioConformanceCheckResult[];
+export interface ScenarioConformanceReport
+	extends ConformanceSuiteReportBase<ScenarioConformanceCheckResult> {
 	readonly lastRun?: ScenarioRunEnvelope;
 	readonly suite?: ScenarioSuiteReport;
 	readonly coverage?: PersonaCoverageReport;

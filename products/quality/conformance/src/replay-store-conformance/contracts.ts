@@ -1,3 +1,5 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 
 /**
@@ -9,27 +11,14 @@ export type ReplayStoreConformanceCheckId =
 	| "scope_isolation_enforced"
 	| "save_overwrites_existing_scope";
 
-/**
- * Result for one replay-store conformance check.
- */
-export interface ReplayStoreConformanceCheckResult {
-	/** Stable check identifier. */
-	readonly id: ReplayStoreConformanceCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
+export type ReplayStoreConformanceCheckResult =
+	ConformanceCheckResultBase<ReplayStoreConformanceCheckId>;
 
 /**
  * Replay-store conformance report.
  */
-export interface ReplayStoreConformanceReport {
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly ReplayStoreConformanceCheckResult[];
-}
+export interface ReplayStoreConformanceReport
+	extends ConformanceSuiteReportBase<ReplayStoreConformanceCheckResult> {}
 
 /**
  * Input payload required for replay-store conformance checks.

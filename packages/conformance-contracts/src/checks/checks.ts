@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 /**
+ * Shared base shape for one conformance check result.
+ */
+export interface ConformanceCheckResultBase<TCheckId extends string = string> {
+	readonly id: TCheckId;
+	readonly passed: boolean;
+	readonly detail: string;
+}
+
+/**
  * Canonical conformance check result.
  */
 export const conformanceCheckResultSchema = z.object({
@@ -12,9 +21,7 @@ export const conformanceCheckResultSchema = z.object({
 /**
  * Parsed conformance check result.
  */
-export type ConformanceCheckResult = z.infer<
-	typeof conformanceCheckResultSchema
->;
+export type ConformanceCheckResult = ConformanceCheckResultBase;
 
 /**
  * Parses one conformance check result payload.

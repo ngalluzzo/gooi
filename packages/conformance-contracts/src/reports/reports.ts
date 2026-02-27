@@ -1,5 +1,18 @@
 import { z } from "zod";
-import { conformanceCheckResultSchema } from "../checks/checks";
+import {
+	type ConformanceCheckResultBase,
+	conformanceCheckResultSchema,
+} from "../checks/checks";
+
+/**
+ * Shared base shape for one conformance suite report.
+ */
+export interface ConformanceSuiteReportBase<
+	TCheckResult extends ConformanceCheckResultBase = ConformanceCheckResultBase,
+> {
+	readonly passed: boolean;
+	readonly checks: readonly TCheckResult[];
+}
 
 /**
  * Canonical conformance suite report.
@@ -12,9 +25,7 @@ export const conformanceSuiteReportSchema = z.object({
 /**
  * Parsed conformance suite report.
  */
-export type ConformanceSuiteReport = z.infer<
-	typeof conformanceSuiteReportSchema
->;
+export type ConformanceSuiteReport = ConformanceSuiteReportBase;
 
 /**
  * Parses one conformance suite report payload.

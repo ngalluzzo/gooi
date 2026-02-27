@@ -1,3 +1,5 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { ProjectionResultEnvelope } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
 import type {
 	CompiledAggregateProjectionPlan,
@@ -30,21 +32,14 @@ export type ProjectionConformanceCheckId =
 	| "migration_chain_replay_applied"
 	| "migration_chain_gap_blocked";
 
-/**
- * Result for one projection conformance check.
- */
-export interface ProjectionConformanceCheckResult {
-	readonly id: ProjectionConformanceCheckId;
-	readonly passed: boolean;
-	readonly detail: string;
-}
+export type ProjectionConformanceCheckResult =
+	ConformanceCheckResultBase<ProjectionConformanceCheckId>;
 
 /**
  * Projection conformance report payload.
  */
-export interface ProjectionConformanceReport {
-	readonly passed: boolean;
-	readonly checks: readonly ProjectionConformanceCheckResult[];
+export interface ProjectionConformanceReport
+	extends ConformanceSuiteReportBase<ProjectionConformanceCheckResult> {
 	readonly lastTimelineResult?: ProjectionResultEnvelope;
 }
 

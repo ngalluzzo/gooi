@@ -1,3 +1,5 @@
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type {
 	GuardEvaluationEnvelope,
 	InvariantEvaluationEnvelope,
@@ -15,16 +17,11 @@ export type GuardConformanceCheckId =
 	| "semantic_sampling_confidence_ci"
 	| "missing_judge_degrades_per_contract";
 
-export interface GuardConformanceCheckResult {
-	readonly id: GuardConformanceCheckId;
-	readonly passed: boolean;
-	readonly detail: string;
-}
+export type GuardConformanceCheckResult =
+	ConformanceCheckResultBase<GuardConformanceCheckId>;
 
-export interface GuardConformanceReport {
-	readonly passed: boolean;
-	readonly checks: readonly GuardConformanceCheckResult[];
-}
+export interface GuardConformanceReport
+	extends ConformanceSuiteReportBase<GuardConformanceCheckResult> {}
 
 export interface RunGuardConformanceInput {
 	readonly collectionInvariant: CompiledInvariantDefinition;

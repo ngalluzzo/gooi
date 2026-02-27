@@ -1,3 +1,5 @@
+import { conformanceCheckResultSchema } from "@gooi/conformance-contracts/checks";
+import { conformanceSuiteReportSchema } from "@gooi/conformance-contracts/reports";
 import { z } from "zod";
 
 /**
@@ -17,8 +19,8 @@ export const authoringConformanceCheckIdSchema = z.enum([
  */
 export const authoringConformanceCheckSchema = z.object({
 	id: authoringConformanceCheckIdSchema,
-	passed: z.boolean(),
-	message: z.string().min(1),
+	passed: conformanceCheckResultSchema.shape.passed,
+	detail: conformanceCheckResultSchema.shape.detail,
 });
 
 /**
@@ -32,7 +34,7 @@ export type AuthoringConformanceCheck = z.infer<
  * Aggregate authoring conformance report.
  */
 export const authoringConformanceReportSchema = z.object({
-	passed: z.boolean(),
+	passed: conformanceSuiteReportSchema.shape.passed,
 	checks: z.array(authoringConformanceCheckSchema),
 });
 

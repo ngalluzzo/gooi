@@ -1,6 +1,8 @@
 import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
 import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { ProviderModule } from "@gooi/provider-runtime";
 
 /**
@@ -12,30 +14,18 @@ export type ProviderConformanceCheckId =
 	| "valid_input_succeeds"
 	| "declared_effects_enforced";
 
-/**
- * Result for one provider conformance check.
- */
-export interface ProviderConformanceCheckResult {
-	/** Stable check identifier. */
-	readonly id: ProviderConformanceCheckId;
-	/** True when the check passed. */
-	readonly passed: boolean;
-	/** Human-readable check detail. */
-	readonly detail: string;
-}
+export type ProviderConformanceCheckResult =
+	ConformanceCheckResultBase<ProviderConformanceCheckId>;
 
 /**
  * Conformance report for one provider module.
  */
-export interface ProviderConformanceReport {
+export interface ProviderConformanceReport
+	extends ConformanceSuiteReportBase<ProviderConformanceCheckResult> {
 	/** Provider id under test. */
 	readonly providerId: string;
 	/** Host API version used during evaluation. */
 	readonly hostApiVersion: string;
-	/** Aggregate pass status. */
-	readonly passed: boolean;
-	/** Individual check outcomes. */
-	readonly checks: readonly ProviderConformanceCheckResult[];
 }
 
 /**

@@ -1,4 +1,8 @@
-import type { ProviderManifestBase } from "@gooi/provider-manifest/base";
+import {
+	type ProviderManifestBase,
+	safeParseProviderManifestBase,
+	semverPattern,
+} from "@gooi/provider-manifest/base";
 
 /**
  * Stable contract descriptor for one host port feature.
@@ -7,6 +11,77 @@ export interface HostPortContractDescriptor {
 	readonly id: string;
 	readonly version: string;
 }
+
+interface HostProviderConstructionIssue {
+	readonly path: string;
+	readonly message: string;
+}
+
+const issueMessage = (
+	prefix: string,
+	issues: readonly HostProviderConstructionIssue[],
+): string =>
+	`${prefix}: ${issues.map((issue) => `${issue.path}: ${issue.message}`).join("; ")}`;
+
+const validateContractDescriptor = (
+	descriptor: unknown,
+): readonly HostProviderConstructionIssue[] => {
+	if (typeof descriptor !== "object" || descriptor === null) {
+		return [{ path: "contract", message: "Expected object." }];
+	}
+
+	const record = descriptor as Readonly<Record<string, unknown>>;
+	const issues: HostProviderConstructionIssue[] = [];
+	if (typeof record.id !== "string" || record.id.length === 0) {
+		issues.push({
+			path: "contract.id",
+			message: "Expected non-empty string.",
+		});
+	}
+	if (
+		typeof record.version !== "string" ||
+		!semverPattern.test(record.version)
+	) {
+		issues.push({
+			path: "contract.version",
+			message: "Expected semver in MAJOR.MINOR.PATCH format.",
+		});
+	}
+	return issues;
+};
+
+const normalizeHostPortProviderManifest = <
+	TContract extends HostPortContractDescriptor,
+>(
+	manifest: HostPortProviderManifest<TContract>,
+): HostPortProviderManifest<TContract> => {
+	const manifestResult = safeParseProviderManifestBase(manifest);
+	if (!manifestResult.success) {
+		throw new Error(
+			issueMessage(
+				"Invalid host provider manifest",
+				manifestResult.error.issues.map((issue) => ({
+					path: issue.path.join("."),
+					message: issue.message,
+				})),
+			),
+		);
+	}
+
+	const contractIssues = validateContractDescriptor(manifest.contract);
+	if (contractIssues.length > 0) {
+		throw new Error(
+			issueMessage("Invalid host provider contract descriptor", contractIssues),
+		);
+	}
+
+	return {
+		providerId: manifestResult.data.providerId,
+		providerVersion: manifestResult.data.providerVersion,
+		hostApiRange: manifestResult.data.hostApiRange,
+		contract: manifest.contract,
+	};
+};
 
 /**
  * Shared host provider manifest type.
@@ -34,12 +109,13 @@ export const createHostPortProviderManifest = <
 	TContract extends HostPortContractDescriptor,
 >(
 	input: CreateHostPortProviderManifestInput<TContract>,
-): HostPortProviderManifest<TContract> => ({
-	providerId: input.manifest.providerId,
-	providerVersion: input.manifest.providerVersion,
-	hostApiRange: input.manifest.hostApiRange,
-	contract: input.contract,
-});
+): HostPortProviderManifest<TContract> =>
+	normalizeHostPortProviderManifest({
+		providerId: input.manifest.providerId,
+		providerVersion: input.manifest.providerVersion,
+		hostApiRange: input.manifest.hostApiRange,
+		contract: input.contract,
+	});
 
 /**
  * Shared provider definition shape for host port implementations.
@@ -71,7 +147,14 @@ export const createHostPortProvider = <
 	TContract extends HostPortContractDescriptor = HostPortContractDescriptor,
 >(
 	input: CreateHostPortProviderInput<TCreatePort, TContract>,
-): HostPortProvider<TCreatePort, TContract> => ({
-	manifest: input.manifest,
-	createPort: input.createPort,
-});
+): HostPortProvider<TCreatePort, TContract> => {
+	if (typeof input.createPort !== "function") {
+		throw new Error(
+			"Invalid host provider createPort: expected function createPort factory.",
+		);
+	}
+	return {
+		manifest: normalizeHostPortProviderManifest(input.manifest),
+		createPort: input.createPort,
+	};
+};

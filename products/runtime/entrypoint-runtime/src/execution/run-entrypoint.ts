@@ -2,21 +2,12 @@ import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
 import { errorEnvelope, errorResult } from "../errors/errors";
-import { createDefaultHostPorts, getMissingHostPortSetMembers } from "../host";
+import { createDefaultHostPorts } from "../host";
 import {
 	buildInvocationEnvelope,
 	resolveEntrypoint,
 } from "../pipeline/entrypoint-resolution";
-import {
-	buildInvalidReplayTtlResult,
-	buildMissingHostPortsResult,
-} from "../pipeline/fallback-errors";
 import type { RunEntrypointInput as SharedRunEntrypointInput } from "../types/types";
-import {
-	buildInvocationMeta,
-	defaultReplayTtlSeconds,
-	isValidReplayTtlSeconds,
-} from "./run-entrypoint-helpers";
 
 /**
  * Input payload for deterministic entrypoint runtime execution.
@@ -30,24 +21,6 @@ export const runEntrypoint = async (
 	input: RunEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
 	const hostPorts = input.hostPorts ?? createDefaultHostPorts();
-	const replayTtlSeconds = input.replayTtlSeconds ?? defaultReplayTtlSeconds;
-	if (!isValidReplayTtlSeconds(replayTtlSeconds)) {
-		return buildInvalidReplayTtlResult({
-			invocation: buildInvocationMeta(input),
-			artifactHash: input.bundle.artifactHash,
-			replayTtlSeconds,
-		});
-	}
-
-	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
-	if (missingHostPortMembers.length > 0) {
-		return buildMissingHostPortsResult({
-			invocation: buildInvocationMeta(input),
-			artifactHash: input.bundle.artifactHash,
-			missingHostPortMembers,
-		});
-	}
-
 	const entrypoint = resolveEntrypoint(
 		input.binding.entrypointKind,
 		input.binding.entrypointId,

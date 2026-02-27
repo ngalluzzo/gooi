@@ -81,6 +81,6 @@
 	},
 	"dependencies": {
 		"@gooi/contract-primitives": "workspace:*",
-		"@gooi/provider-manifest": "workspace:*"
+		"@gooi/marketplace-contracts": "workspace:*"
 	}
 }

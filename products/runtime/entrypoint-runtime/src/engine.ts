@@ -26,6 +26,7 @@ import {
 	buildRefreshTriggers,
 	resolveAffectedQueryIds,
 } from "./refresh/refresh";
+import { calculateIsoDurationMs } from "./timing/duration";
 import type {
 	CreateEntrypointRuntimeInput as SharedCreateEntrypointRuntimeInput,
 	EntrypointRuntime as SharedEntrypointRuntime,
@@ -122,10 +123,7 @@ const executeEntrypointTail = async (
 			timings: {
 				startedAt: input.startedAt,
 				completedAt,
-				durationMs: Math.max(
-					0,
-					Date.parse(completedAt) - Date.parse(input.startedAt),
-				),
+				durationMs: calculateIsoDurationMs(input.startedAt, completedAt),
 			},
 			meta: {
 				replayed: false,
@@ -154,10 +152,7 @@ const executeEntrypointTail = async (
 			timings: {
 				startedAt: input.startedAt,
 				completedAt,
-				durationMs: Math.max(
-					0,
-					Date.parse(completedAt) - Date.parse(input.startedAt),
-				),
+				durationMs: calculateIsoDurationMs(input.startedAt, completedAt),
 			},
 			meta: {
 				replayed: false,
@@ -186,10 +181,7 @@ const executeEntrypointTail = async (
 		timings: {
 			startedAt: input.startedAt,
 			completedAt,
-			durationMs: Math.max(
-				0,
-				Date.parse(completedAt) - Date.parse(input.startedAt),
-			),
+			durationMs: calculateIsoDurationMs(input.startedAt, completedAt),
 		},
 		meta: {
 			replayed: false,

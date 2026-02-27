@@ -17,6 +17,12 @@ import { createEntrypointRuntime } from "@gooi/entrypoint-runtime";
 const runtime = createEntrypointRuntime({
   bundle,
   domainRuntime,
+  hostPorts: {
+    clock,
+    identity,
+    principal,
+    capabilityDelegation,
+  },
 });
 
 const result = await runtime.run({

@@ -1,7 +1,5 @@
-import type {
-	BindingPlan,
-	DeploymentLockfile,
-} from "@gooi/binding/binding-plan";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import {
 	createDefaultHostPorts,
 	createEntrypointRuntime,
@@ -63,7 +61,8 @@ const buildLockfile = (
 		{
 			providerId,
 			providerVersion,
-			integrity: "sha256:host-conformance",
+			integrity:
+				"sha256:d1faebed8f7fd8f3f1c8f4a3bfe44ad6f656f4e4ec4df13db0adfbb6e2d70289",
 			capabilities: [
 				{
 					portId: contract.id,

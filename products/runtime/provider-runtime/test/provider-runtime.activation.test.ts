@@ -155,4 +155,29 @@ describe("provider-runtime activation", () => {
 			expect(activated.error.kind).toBe("activation_error");
 		}
 	});
+
+	test("fails activation when lockfile integrity is not a valid sha256 checksum", async () => {
+		const contract = createContract();
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [contract],
+			bindingPlan: createBindingPlan(createLocalResolution()),
+			lockfile: createLockfile(contract.artifacts.contractHash, {
+				integrity: "sha256:abc123",
+			}),
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("activation_error");
+			expect(activated.error.message).toBe(
+				"Lockfile provider integrity is invalid; expected sha256 checksum format.",
+			);
+		}
+	});
 });

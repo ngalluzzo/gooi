@@ -56,6 +56,9 @@ Acceptance criteria:
 1. Query and mutation flows traverse kernel orchestration before semantic engine execution.
 2. Access policy, replay checks, and envelope emission no longer run in lane-local duplicate paths.
 3. End-to-end conformance fixtures are green against canonical kernel behavior.
+Artifacts:
+1. [/Users/ngalluzzo/repos/gooi/products/kernel/execution-kernel/src/entrypoint-spine.ts](/Users/ngalluzzo/repos/gooi/products/kernel/execution-kernel/src/entrypoint-spine.ts)
+2. [/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/execution/run-entrypoint.ts](/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/execution/run-entrypoint.ts)
 
 #### Story 6.3: Extract domain runtime into semantic-engine-only ownership
 Acceptance criteria:

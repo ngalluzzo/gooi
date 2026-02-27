@@ -1,12 +1,12 @@
-import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
-import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
-import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
-import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
+import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
 /**
@@ -49,7 +49,7 @@ export interface RunHostConformanceInput {
 	/** Principal expected to pass query access checks. */
 	readonly principal: PrincipalContext;
 	/** Domain runtime used for query execution checks. */
-	readonly domainRuntime: DomainRuntimePort;
+	readonly domainRuntime: KernelSemanticRuntimePort;
 	/** Capability contract used for provider activation checks. */
 	readonly providerContract: CapabilityPortContract;
 	/** Host API version used for provider activation checks. */

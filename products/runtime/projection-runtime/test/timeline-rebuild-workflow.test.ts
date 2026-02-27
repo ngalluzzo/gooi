@@ -16,7 +16,6 @@ describe("projection-runtime timeline rebuild workflow", () => {
 		const stale = await runtime.executeProjection({
 			plan,
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_timeline_rebuild_1",
 			collectionReader,
 			historyPort,
 			timelineState: {
@@ -59,7 +58,6 @@ describe("projection-runtime timeline rebuild workflow", () => {
 		const recovered = await runtime.executeProjection({
 			plan,
 			args: { page: 1, page_size: 10, limit: 100 },
-			artifactHash: "artifact_timeline_rebuild_1",
 			collectionReader,
 			historyPort,
 			timelineState: rebuild.timelineState,
@@ -69,7 +67,7 @@ describe("projection-runtime timeline rebuild workflow", () => {
 		if (!recovered.ok) {
 			return;
 		}
-		expect(recovered.meta?.timeline?.rebuildStatus).toBe("complete");
+		expect(recovered.timeline?.rebuildStatus).toBe("complete");
 		expect(recovered.rows).toEqual([
 			{
 				message_count: 2,

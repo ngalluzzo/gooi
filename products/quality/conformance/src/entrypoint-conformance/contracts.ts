@@ -1,15 +1,13 @@
-import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
-import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
-import type {
-	DomainRuntimePort,
-	runEntrypoint,
-} from "@gooi/entrypoint-runtime";
-import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
+import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
+import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
+import type { runEntrypoint } from "./run-entrypoint-through-kernel";
 
 /**
  * Named conformance checks for entrypoint runtime behavior.
@@ -47,7 +45,7 @@ export interface RunEntrypointConformanceInput {
 	/** Mutation binding used in conformance checks. */
 	readonly mutationBinding: CompiledSurfaceBinding;
 	/** Domain runtime port implementation under test. */
-	readonly domainRuntime: DomainRuntimePort;
+	readonly domainRuntime: KernelSemanticRuntimePort;
 	/** Principal expected to pass access checks. */
 	readonly authorizedPrincipal: PrincipalContext;
 	/** Principal expected to fail access checks. */

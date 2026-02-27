@@ -18,9 +18,10 @@ Each product track has its own document with epics, stories, and acceptance crit
 
 A track is complete only when all story acceptance criteria in that track are met.
 
-Additional gate:
+Additional prerequisites:
 1. Track 04 execution must not begin until [RFC-0022-kernel-runtime-core-and-standalone-adoption.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0022-kernel-runtime-core-and-standalone-adoption.md) preconditions are met.
 2. Track 04 implementation must route query/mutation through the RFC-0023 execution spine before Track 04 stories are considered unblocked.
+3. Track 04 starts only after the quality-owned readiness checklist is reviewed and documented in architecture notes.
 
 ## Reconciliation Rule
 
@@ -38,8 +39,8 @@ Current re-baseline focus:
 2. Host delegation boundary (`HostCapabilityDelegationPort`) and artifact-sourced routes.
 3. Compiler/deployment binding requirements for reachability.
 4. Resolver reachability metadata and delegated-route descriptors.
-5. Conformance parity gate for local vs delegated execution paths.
-6. Kernel product-lane frontload and standalone parity from RFC-0022.
+5. Conformance coverage for local vs delegated execution paths.
+6. Kernel runtime-core ownership and canonical runtime consumption from RFC-0022.
 7. Runtime package reset and orchestration centralization from RFC-0023.
 
 ## Ownership Map

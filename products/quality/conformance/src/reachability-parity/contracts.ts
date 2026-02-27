@@ -1,10 +1,10 @@
-import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceDiagnosticRecordBase } from "@gooi/conformance-contracts/diagnostics";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { JsonValue } from "@gooi/contract-primitives/json";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
 import type {
 	PrincipalContext,
 	ProviderModule,

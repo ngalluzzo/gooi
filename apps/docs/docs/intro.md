@@ -33,7 +33,7 @@ Internal engineering documentation:
 | `@gooi/host-contracts` | Interfaces for host-side capability provision |
 | `@gooi/capability-contracts` | Capability port and provider manifest definitions |
 | `@gooi/surface-contracts` | Invocation and signal envelope protocol |
-| `@gooi/binding` | Capability binding resolution and lockfile |
+| `@gooi/marketplace-contracts` | Provider manifest base plus binding-plan/lockfile/reachability contracts |
 | `@gooi/provider-runtime` | Execution engine for providers |
 | `@gooi/language-server` | LSP implementation for authoring IDE support |
 | `@gooi/conformance` | Conformance test suites |

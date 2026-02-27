@@ -1,7 +1,7 @@
-import {
-	type ProjectionResultEnvelope,
-	projectionResultEnvelopeVersion,
-} from "@gooi/projection-contracts/envelopes/projection-result-envelope";
+import type {
+	ProjectionSemanticExecutionResult,
+	ProjectionSemanticGuardMeta,
+} from "@gooi/kernel-contracts/projection-semantic";
 import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
 import type {
 	CompiledProjectionPlan,
@@ -31,7 +31,6 @@ export interface ExecuteProjectionInput {
 	readonly plan: CompiledProjectionPlan;
 	readonly args: Readonly<Record<string, unknown>>;
 	readonly asOf?: string | null;
-	readonly artifactHash: string;
 	readonly collectionReader: ProjectionCollectionReaderPort;
 	readonly historyPort?: HistoryPort;
 	readonly timelineState?: TimelineAccumulationState;
@@ -43,7 +42,7 @@ export interface ExecuteProjectionInput {
 export interface ProjectionRuntime {
 	readonly executeProjection: (
 		input: ExecuteProjectionInput,
-	) => Promise<ProjectionResultEnvelope>;
+	) => Promise<ProjectionSemanticExecutionResult>;
 	readonly rebuildTimelineProjection: (
 		input: RebuildTimelineProjectionInput,
 	) => Promise<RebuildTimelineProjectionResult>;
@@ -55,7 +54,6 @@ const toExecutionContext = (
 	args: input.args,
 	asOf: input.asOf ?? null,
 	collectionReader: input.collectionReader,
-	artifactHash: input.artifactHash,
 	...(input.historyPort === undefined
 		? {}
 		: { historyPort: input.historyPort }),
@@ -67,7 +65,7 @@ const toExecutionContext = (
 const ensureTimelineAsOfUsage = (
 	plan: CompiledProjectionPlan,
 	asOf: string | null,
-): ProjectionResultEnvelope | null => {
+): ProjectionSemanticExecutionResult | null => {
 	if (asOf === null) {
 		return null;
 	}
@@ -75,7 +73,6 @@ const ensureTimelineAsOfUsage = (
 		return null;
 	}
 	return {
-		envelopeVersion: projectionResultEnvelopeVersion,
 		ok: false,
 		error: createProjectionError(
 			"projection_as_of_error",
@@ -86,9 +83,7 @@ const ensureTimelineAsOfUsage = (
 	};
 };
 
-const toEnvelope = (
-	plan: CompiledProjectionPlan,
-	artifactHash: string,
+const toSemanticResult = (
 	result: Awaited<
 		ReturnType<
 			| typeof executeFromCollectionProjection
@@ -97,29 +92,19 @@ const toEnvelope = (
 			| typeof executeTimelineProjection
 		>
 	>,
-	guardMeta?: NonNullable<ProjectionResultEnvelope["meta"]>["guards"],
-): ProjectionResultEnvelope => {
+	guardMeta?: ProjectionSemanticGuardMeta,
+): ProjectionSemanticExecutionResult => {
 	if (!result.ok) {
-		return {
-			envelopeVersion: projectionResultEnvelopeVersion,
-			ok: false,
-			error: result.error,
-		};
+		return { ok: false, error: result.error };
 	}
 	return {
-		envelopeVersion: projectionResultEnvelopeVersion,
 		ok: true,
 		rows: result.value.rows,
-		meta: {
-			projectionId: plan.projectionId,
-			strategy: plan.strategy,
-			artifactHash,
-			pagination: result.value.pagination,
-			...(guardMeta === undefined ? {} : { guards: guardMeta }),
-			...(result.value.timeline === undefined
-				? {}
-				: { timeline: result.value.timeline }),
-		},
+		pagination: result.value.pagination,
+		...(guardMeta === undefined ? {} : { guards: guardMeta }),
+		...(result.value.timeline === undefined
+			? {}
+			: { timeline: result.value.timeline }),
 	};
 };
 
@@ -165,7 +150,7 @@ export const createProjectionRuntime = (): ProjectionRuntime => ({
 				context,
 			);
 			if (!strategyResult.ok) {
-				return toEnvelope(input.plan, input.artifactHash, strategyResult);
+				return toSemanticResult(strategyResult);
 			}
 			const guardedRows = applyProjectionGuards({
 				plan: input.plan,
@@ -174,15 +159,9 @@ export const createProjectionRuntime = (): ProjectionRuntime => ({
 				asOf: context.asOf,
 			});
 			if (!guardedRows.ok) {
-				return {
-					envelopeVersion: projectionResultEnvelopeVersion,
-					ok: false,
-					error: guardedRows.error,
-				};
+				return { ok: false, error: guardedRows.error };
 			}
-			return toEnvelope(
-				input.plan,
-				input.artifactHash,
+			return toSemanticResult(
 				{
 					ok: true,
 					value: {
@@ -194,7 +173,6 @@ export const createProjectionRuntime = (): ProjectionRuntime => ({
 			);
 		} catch (error) {
 			return {
-				envelopeVersion: projectionResultEnvelopeVersion,
 				ok: false,
 				error: createProviderError(
 					"Projection strategy execution failed due to provider/runtime exception.",

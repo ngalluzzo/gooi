@@ -1,4 +1,4 @@
-import type { ProjectionPageMeta } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
+import type { ProjectionSemanticPageMeta } from "@gooi/kernel-contracts/projection-semantic";
 import type { ProjectionTypedError } from "@gooi/projection-contracts/errors/projection-errors";
 import type {
 	ProjectionPaginationPlan,
@@ -15,7 +15,7 @@ interface PaginationInput {
 
 export interface PaginationResult {
 	readonly rows: readonly Readonly<Record<string, unknown>>[];
-	readonly meta: ProjectionPageMeta;
+	readonly meta: ProjectionSemanticPageMeta;
 }
 
 const toPositiveInteger = (value: unknown): number | null => {

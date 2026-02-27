@@ -85,9 +85,6 @@ Activation fails hard when either port is missing or when either step fails.
 - `runtime.invoke(activated, call)`
 - `runtime.deactivate(activated)`
 - `runtime.run(input)`
-- `activateProvider(input)`
-- `invokeCapability(activated, call)`
-- `deactivateProvider(activated)`
 
 ## Development
 

@@ -32,12 +32,17 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/spec/spec.ts --outfile ./dist/spec/spec.js --external zod && bun build ./src/compiled/compiled.ts --outfile ./dist/compiled/compiled.js --external zod && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod",
+		"build": "bun build ./src/spec/spec.ts --outfile ./dist/spec/spec.js --external zod --external @gooi/surface-contracts/binding --external @gooi/marketplace-contracts/reachability/contracts && bun build ./src/compiled/compiled.ts --outfile ./dist/compiled/compiled.js --external zod --external @gooi/artifact-model/manifest --external @gooi/capability-contracts/capability-port --external @gooi/contract-primitives/json && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/artifact-model": "workspace:*",
+		"@gooi/capability-contracts": "workspace:*",
+		"@gooi/contract-primitives": "workspace:*",
+		"@gooi/marketplace-contracts": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

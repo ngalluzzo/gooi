@@ -1,3 +1,4 @@
+import { shapeProjectionQueryOutput } from "@gooi/execution-kernel/projection";
 import { resolveProjectionRefreshImpact } from "@gooi/projection-runtime/refresh";
 import type {
 	ProjectionConformanceReport,
@@ -13,6 +14,8 @@ const buildCheck = (
 const allPassed = (
 	checks: readonly ProjectionConformanceReport["checks"][number][],
 ): boolean => checks.every((check) => check.passed);
+
+const projectionArtifactHash = "projection_conformance_artifact";
 
 /**
  * Runs projection-runtime conformance checks for deterministic projection/domain parity.
@@ -36,12 +39,16 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const aggregate = await input.runtime.executeProjection({
+	const aggregateSemantic = await input.runtime.executeProjection({
 		plan: input.aggregatePlan,
 		args: { page: 1, page_size: 20 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.historyPort,
+	});
+	const aggregate = shapeProjectionQueryOutput({
+		plan: input.aggregatePlan,
+		artifactHash: projectionArtifactHash,
+		result: aggregateSemantic,
 	});
 	checks.push(
 		buildCheck(
@@ -55,13 +62,17 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const staleRead = await input.runtime.executeProjection({
+	const staleReadSemantic = await input.runtime.executeProjection({
 		plan: input.timelinePlan,
 		args: { page: 1, page_size: 20 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort:
 			input.historyPortWithoutPersist as unknown as typeof input.historyPort,
+	});
+	const staleRead = shapeProjectionQueryOutput({
+		plan: input.timelinePlan,
+		artifactHash: projectionArtifactHash,
+		result: staleReadSemantic,
 	});
 	checks.push(
 		buildCheck(
@@ -75,10 +86,9 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const staleReadWithDrift = await input.runtime.executeProjection({
+	const staleReadWithDriftSemantic = await input.runtime.executeProjection({
 		plan: input.timelinePlan,
 		args: { page: 1, page_size: 20 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.historyPort,
 		timelineState: {
@@ -89,6 +99,11 @@ export const runProjectionConformance = async (
 			rebuildStartedAt: null,
 			historyComplete: true,
 		},
+	});
+	const staleReadWithDrift = shapeProjectionQueryOutput({
+		plan: input.timelinePlan,
+		artifactHash: projectionArtifactHash,
+		result: staleReadWithDriftSemantic,
 	});
 	checks.push(
 		buildCheck(
@@ -109,13 +124,16 @@ export const runProjectionConformance = async (
 		rebuildStartedAt: "2026-02-27T01:00:00.000Z",
 	});
 	const postRebuildRead = rebuild.ok
-		? await input.runtime.executeProjection({
+		? shapeProjectionQueryOutput({
 				plan: input.timelinePlan,
-				args: { page: 1, page_size: 20, limit: 100 },
-				artifactHash: "projection_conformance_artifact",
-				collectionReader: input.collectionReader,
-				historyPort: input.historyPort,
-				timelineState: rebuild.timelineState,
+				artifactHash: projectionArtifactHash,
+				result: await input.runtime.executeProjection({
+					plan: input.timelinePlan,
+					args: { page: 1, page_size: 20, limit: 100 },
+					collectionReader: input.collectionReader,
+					historyPort: input.historyPort,
+					timelineState: rebuild.timelineState,
+				}),
 			})
 		: null;
 	checks.push(
@@ -128,13 +146,17 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const asOfGate = await input.runtime.executeProjection({
+	const asOfGateSemantic = await input.runtime.executeProjection({
 		plan: input.timelinePlan,
 		args: { page: 1, page_size: 20 },
 		asOf: "2026-02-27T00:00:01.000Z",
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.historyPortWithoutAsOf,
+	});
+	const asOfGate = shapeProjectionQueryOutput({
+		plan: input.timelinePlan,
+		artifactHash: projectionArtifactHash,
+		result: asOfGateSemantic,
 	});
 	checks.push(
 		buildCheck(
@@ -148,10 +170,9 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const timeline = await input.runtime.executeProjection({
+	const timelineSemantic = await input.runtime.executeProjection({
 		plan: input.timelinePlan,
 		args: { page: 1, page_size: 20, limit: 100 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.historyPort,
 		timelineState: {
@@ -162,6 +183,11 @@ export const runProjectionConformance = async (
 			rebuildStartedAt: null,
 			historyComplete: true,
 		},
+	});
+	const timeline = shapeProjectionQueryOutput({
+		plan: input.timelinePlan,
+		artifactHash: projectionArtifactHash,
+		result: timelineSemantic,
 	});
 	const dedupePassed =
 		timeline.ok &&
@@ -177,12 +203,16 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const migrated = await input.runtime.executeProjection({
+	const migratedSemantic = await input.runtime.executeProjection({
 		plan: input.timelineMigrationPlan,
 		args: { page: 1, page_size: 20 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.versionedHistoryPort,
+	});
+	const migrated = shapeProjectionQueryOutput({
+		plan: input.timelineMigrationPlan,
+		artifactHash: projectionArtifactHash,
+		result: migratedSemantic,
 	});
 	const migratedRow = migrated.ok ? migrated.rows?.[0] : undefined;
 	checks.push(
@@ -199,12 +229,16 @@ export const runProjectionConformance = async (
 		),
 	);
 
-	const migrationGap = await input.runtime.executeProjection({
+	const migrationGapSemantic = await input.runtime.executeProjection({
 		plan: input.timelineMigrationPlanWithGap,
 		args: { page: 1, page_size: 20 },
-		artifactHash: "projection_conformance_artifact",
 		collectionReader: input.collectionReader,
 		historyPort: input.versionedHistoryPort,
+	});
+	const migrationGap = shapeProjectionQueryOutput({
+		plan: input.timelineMigrationPlanWithGap,
+		artifactHash: projectionArtifactHash,
+		result: migrationGapSemantic,
 	});
 	checks.push(
 		buildCheck(

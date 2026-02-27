@@ -2,7 +2,7 @@ import {
 	type ProviderManifestBase,
 	safeParseProviderManifestBase,
 	semverPattern,
-} from "@gooi/provider-manifest/base";
+} from "@gooi/marketplace-contracts/provider-manifest/base";
 
 /**
  * Stable contract descriptor for one host port feature.

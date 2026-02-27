@@ -57,7 +57,6 @@ describe("host-contracts providers", () => {
 							claims: {},
 							tags: ["authenticated"],
 						}),
-					deriveRoles: () => hostOk(["authenticated"]),
 				}),
 		});
 		const clockProvider = createHostClockProvider({

@@ -26,7 +26,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/execute/execute-projection.ts --outfile ./dist/execute/execute-projection.js --external @gooi/guard-runtime/evaluate --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/plans/timeline-history-policy --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/errors/projection-errors --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/stable-json && bun build ./src/execute/refresh-impact.ts --outfile ./dist/execute/refresh-impact.js",
+		"build": "bun build ./src/execute/execute-projection.ts --outfile ./dist/execute/execute-projection.js --external @gooi/guard-runtime/evaluate --external @gooi/kernel-contracts/projection-semantic --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/plans/timeline-history-policy --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/errors/projection-errors --external @gooi/stable-json && bun build ./src/execute/refresh-impact.ts --outfile ./dist/execute/refresh-impact.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -34,6 +34,7 @@
 	"dependencies": {
 		"@gooi/guard-contracts": "workspace:*",
 		"@gooi/guard-runtime": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
 		"@gooi/projection-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*"
 	}

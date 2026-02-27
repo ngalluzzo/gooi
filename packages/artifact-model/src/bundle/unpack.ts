@@ -1,11 +1,11 @@
 import {
-	type ArtifactManifestValidationDiagnostic,
-	validateArtifactManifest,
-} from "@gooi/artifact-model/validation";
-import {
 	type JsonObject,
 	parseJsonObject,
 } from "@gooi/contract-primitives/json";
+import {
+	type ArtifactManifestValidationDiagnostic,
+	validateArtifactManifest,
+} from "../validation/validate-manifest";
 import {
 	type PackagedBundleDiagnostic,
 	packagedAppBundleSchema,

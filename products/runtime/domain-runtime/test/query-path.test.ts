@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime query path", () => {
 	test("returns typed query-not-found failure envelope", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {},
 			actions: {},
 			capabilities: {},
@@ -28,7 +28,7 @@ describe("domain-runtime query path", () => {
 	});
 
 	test("uses canonical failure envelope for typed query invocation failures", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {},
 			actions: {},
 			capabilities: {},

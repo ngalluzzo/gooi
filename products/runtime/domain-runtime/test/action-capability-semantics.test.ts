@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime action/capability semantics", () => {
 	test("applies deterministic defaults and preserves explicit nulls", async () => {
 		const calls: Array<Readonly<Record<string, unknown>>> = [];
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},
@@ -89,7 +89,7 @@ describe("domain-runtime action/capability semantics", () => {
 
 	test("validates capability contract before invocation side effects", async () => {
 		let invokeCalls = 0;
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},
@@ -151,7 +151,7 @@ describe("domain-runtime action/capability semantics", () => {
 	});
 
 	test("returns stable typed runtime error taxonomy codes", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},

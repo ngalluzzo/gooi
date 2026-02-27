@@ -45,7 +45,7 @@ describe("marketplace-memory host ports", () => {
 		expect(identity.newInvocationId()).toBe("inv_1");
 	});
 
-	test("creates principal port with validation and role derivation", () => {
+	test("creates principal port with validation", () => {
 		const principal = createMemoryPrincipalPort();
 		const validated = principal.validatePrincipal({
 			subject: "user_1",
@@ -54,18 +54,6 @@ describe("marketplace-memory host ports", () => {
 		});
 
 		expect(validated.ok).toBe(true);
-		if (!validated.ok) {
-			return;
-		}
-		const roles = principal.deriveRoles({
-			principal: validated.value,
-			accessPlan: {},
-		});
-		expect(roles.ok).toBe(true);
-		if (!roles.ok) {
-			return;
-		}
-		expect(roles.value).toEqual(["admin", "authenticated"]);
 	});
 
 	test("creates activation policy and module loader ports", async () => {

@@ -29,17 +29,17 @@ Acceptance criteria:
 2. Invalid host-portset inputs fail with typed deterministic errors.
 3. Standalone kernel consumers can invoke baseline fixtures using only compiled artifacts + portset.
 
-#### Story 5.3: Add kernel parity fixture harness
+#### Story 5.3: Enforce kernel as canonical execution core
 Acceptance criteria:
-1. Shared fixtures execute against standalone kernel and existing full-runtime paths.
-2. Result/error/trace envelopes are parity-checked with deterministic comparisons.
-3. Parity failures are release-blocking for kernel integration branches.
+1. Query/mutation orchestration paths execute through kernel-owned entrypoints only.
+2. Runtime and surface packages do not retain lane-local orchestration fallbacks.
+3. Lint-enforced boundary rules and ownership docs make non-kernel orchestration reintroduction explicit and review-blocking.
 
-#### Story 5.4: Wire Track 04 entry gate to kernel readiness signals
+#### Story 5.4: Document Track 04 readiness under quality ownership
 Acceptance criteria:
 1. Track 04 readiness checklist references concrete kernel completion artifacts.
-2. CI/check scripts can assert kernel gate readiness with machine-readable output.
-3. Track 04 implementation issues remain blocked until kernel gate checks pass.
+2. Track 04 readiness is captured in docs with a concrete checklist and artifact pointers.
+3. Readiness is reviewed in architecture sync and recorded before Track 04 implementation begins.
 
 ### Epic 6: Runtime Recomposition and Package Reset (RFC-0023)
 
@@ -48,24 +48,29 @@ Acceptance criteria:
 1. One execution-spine contract defines orchestration order across query and mutation paths.
 2. Runtime package dependency map distinguishes orchestration ownership from semantic engine ownership.
 3. Legacy orchestration paths are inventory-listed with explicit deletion owners.
+Artifacts:
+1. [/Users/ngalluzzo/repos/gooi/docs/engineering/runtime/execution-spine-contract-and-dependency-map.md](/Users/ngalluzzo/repos/gooi/docs/engineering/runtime/execution-spine-contract-and-dependency-map.md)
 
 #### Story 6.2: Route query/mutation execution through kernel spine
 Acceptance criteria:
 1. Query and mutation flows traverse kernel orchestration before semantic engine execution.
 2. Access policy, replay checks, and envelope emission no longer run in lane-local duplicate paths.
-3. End-to-end parity fixtures are green against pre-cutover baseline behavior.
+3. End-to-end conformance fixtures are green against canonical kernel behavior.
+Artifacts:
+1. [/Users/ngalluzzo/repos/gooi/products/kernel/execution-kernel/src/entrypoint/run-entrypoint.ts](/Users/ngalluzzo/repos/gooi/products/kernel/execution-kernel/src/entrypoint/run-entrypoint.ts)
+2. [/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/execution/run-entrypoint.ts](/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/execution/run-entrypoint.ts)
 
 #### Story 6.3: Extract domain runtime into semantic-engine-only ownership
 Acceptance criteria:
 1. Domain runtime keeps action/flow/session semantics but no orchestration policy sequencing.
 2. Domain runtime exports consumed by kernel are explicit and minimal.
-3. Domain runtime tests prove semantic parity after orchestration extraction.
+3. Domain runtime tests prove semantic conformance after orchestration extraction.
 
 #### Story 6.4: Extract projection runtime into semantic-engine-only ownership
 Acceptance criteria:
 1. Projection runtime keeps join/aggregate/timeline semantics but no orchestration policy sequencing.
 2. Projection runtime query outputs are produced through kernel-owned envelope shaping.
-3. Projection parity and determinism fixtures are green post-extraction.
+3. Projection conformance and determinism fixtures are green post-extraction.
 
 #### Story 6.5: Extract guard runtime into semantic-engine-only ownership
 Acceptance criteria:
@@ -73,18 +78,18 @@ Acceptance criteria:
 2. Guard diagnostics/signals are emitted through canonical kernel execution paths.
 3. Guard conformance fixtures are green post-extraction.
 
-#### Story 6.6: Delete legacy runtime orchestration paths and enforce boundary gates
+#### Story 6.6: Delete legacy runtime orchestration paths and harden boundaries
 Acceptance criteria:
 1. Legacy runtime orchestration modules are deleted (not retained as long-lived compatibility aliases).
-2. CI boundary checks fail when orchestration logic is reintroduced outside kernel ownership.
+2. Lint boundary rules and import-layer constraints flag orchestration logic introduced outside kernel ownership.
 3. Runtime ownership docs and package exports reflect final post-reset architecture.
 
 ## Issue Mapping (RFC-0022/RFC-0023 Slice)
 
 1. Story 5.1: [#162](https://github.com/ngalluzzo/gooi/issues/162)
 2. Story 5.2: [#163](https://github.com/ngalluzzo/gooi/issues/163)
-3. Story 5.3: [#164](https://github.com/ngalluzzo/gooi/issues/164)
-4. Story 5.4: [#165](https://github.com/ngalluzzo/gooi/issues/165)
+3. Story 5.3: issue pending (kernel boundary enforcement)
+4. Story 5.4: issue pending (quality-owned Track 04 readiness checklist)
 5. Story 6.1: [#166](https://github.com/ngalluzzo/gooi/issues/166)
 6. Story 6.2: [#167](https://github.com/ngalluzzo/gooi/issues/167)
 7. Story 6.3: [#168](https://github.com/ngalluzzo/gooi/issues/168)
@@ -158,7 +163,7 @@ Acceptance criteria:
 2. History windows and pagination semantics are stable.
 3. Timeline artifacts remain compatible with query and view consumers.
 
-### Story 3.3: Projection-domain parity checks
+### Story 3.3: Projection-domain conformance checks
 Acceptance criteria:
 1. Projection refresh behavior matches emitted domain invalidation contracts.
 2. Projection outputs are conformance-tested against domain mutation fixtures.
@@ -194,7 +199,7 @@ Acceptance criteria:
 Acceptance criteria:
 1. Semantic judge invocation follows confidence and sampling policies by environment.
 2. Missing semantic judge bindings degrade per contract rules without affecting structural guard enforcement.
-3. CI behavior for semantic guard confidence tiers is fixture-tested and deterministic.
+3. Semantic guard confidence-tier behavior is fixture-tested and deterministic.
 
 ### Story 4.3: Execute scenarios/personas against canonical runtime
 Acceptance criteria:

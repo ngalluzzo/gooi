@@ -1,4 +1,4 @@
-import type { CompileDiagnostic } from "../compile.contracts";
+import type { CompileDiagnostic } from "@gooi/app-spec-contracts/compiled";
 
 export const asRecord = (
 	value: unknown,

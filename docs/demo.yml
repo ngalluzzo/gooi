@@ -11,6 +11,20 @@
 #   domain.actions      →  mutations  (write implementation → write interface)
 #   views.screens       →  routes     (render implementation → navigation interface)
 #
+# Runtime execution map:
+#   surface adapters    →  entrypoint runtime adapters  →  execution kernel  →  semantic engines
+#   (transport only)       (binding only)                  (policy/order)       (domain/projection/guard logic)
+#
+# Binding ownership map:
+#   surface input binding      — runtime lane (surface/entrypoint adapters)
+#   capability binding resolve — marketplace lane (resolution -> plan/lockfile)
+#   capability binding enforce — kernel lane (activation + invoke hard gates)
+#   binding schema authority   — contracts lane
+#   binding conformance        — quality lane
+#
+# Kernel is the runtime core product line. Other runtime packages consume kernel
+# orchestration and do not implement independent policy/order/envelope paths.
+#
 # Concept owners:
 #   domain   — owned by the business
 #   session  — owned by the user
@@ -1425,6 +1439,9 @@ scenarios:
 # to avoid ambiguous shared-prefix template parsing.
 # Adding a new surface (websocket, gRPC, SMS) requires no changes above
 # this section.
+#
+# Surface `bind:` maps in this section are runtime-lane input binding contracts:
+# they map transport buckets to typed entrypoint input fields only.
 #
 # Provider and adapter bindings are NOT authored here.
 # They are resolved from marketplace listings into deployment artifacts

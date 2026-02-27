@@ -8,7 +8,7 @@ import {
 	type GuardTypedError,
 } from "@gooi/guard-contracts/errors/guard-errors";
 import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
-import { applyInvariantPolicy } from "../policies/apply-guard-policy";
+import { applyInvariantPolicy } from "./apply-guard-policy";
 import { evaluateStructuralRule } from "./structural";
 
 const invariantPrimitiveAllowed = new Set(["collection", "projection"]);

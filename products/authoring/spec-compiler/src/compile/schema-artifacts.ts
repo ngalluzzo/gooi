@@ -1,3 +1,8 @@
+import type {
+	CompiledInputField,
+	CompiledJsonSchemaArtifact,
+	CompiledScalarType,
+} from "@gooi/app-spec-contracts/compiled";
 import {
 	buildSchemaArtifact,
 	hostProviderSchemaProfile,
@@ -5,11 +10,6 @@ import {
 	type SchemaArtifact,
 } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
-import type {
-	CompiledInputField,
-	CompiledJsonSchemaArtifact,
-	CompiledScalarType,
-} from "./compile.contracts";
 
 /**
  * Parsed scalar type annotation for one input field.

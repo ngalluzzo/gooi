@@ -1,4 +1,8 @@
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
+import type {
+	KernelSemanticExecutionInput,
+	KernelSemanticExecutionResult,
+	KernelSemanticRuntimePort,
+} from "@gooi/kernel-contracts/semantic-engine";
 import {
 	areDomainMutationEnvelopesComparable,
 	type DomainMutationEnvelope,
@@ -19,16 +23,13 @@ import {
 	runQueryPath,
 } from "../query-path/run-query-path";
 
-type MutationPortInput = Parameters<DomainRuntimePort["executeMutation"]>[0];
-type QueryPortInput = Parameters<DomainRuntimePort["executeQuery"]>[0];
-type DomainPortResult = Awaited<
-	ReturnType<DomainRuntimePort["executeMutation"]>
->;
+type SemanticInput = KernelSemanticExecutionInput;
+type DomainSemanticResult = KernelSemanticExecutionResult;
 
 interface RuntimeExecutionInput {
 	readonly entrypointId: string;
 	readonly input: Readonly<Record<string, unknown>>;
-	readonly principal: MutationPortInput["principal"];
+	readonly principal: SemanticInput["principal"];
 	readonly ctx: {
 		readonly invocationId: string;
 		readonly traceId: string;
@@ -45,8 +46,8 @@ export interface CreateDomainRuntimeInput {
 	readonly queries?: Readonly<Record<string, DomainQueryHandler>>;
 }
 
-export interface DomainRuntime {
-	readonly port: DomainRuntimePort;
+export interface DomainRuntimeConformanceHarness {
+	readonly semanticRuntime: KernelSemanticRuntimePort;
 	readonly executeMutationEnvelope: (
 		input: RuntimeExecutionInput,
 	) => Promise<DomainMutationEnvelope>;
@@ -63,9 +64,23 @@ const resolveMode = (input: {
 	readonly ctx: { readonly mode?: DomainRuntimeMode };
 }): DomainRuntimeMode => input.ctx.mode ?? "live";
 
+const toRuntimeExecutionInput = (
+	input: SemanticInput,
+): RuntimeExecutionInput => ({
+	entrypointId: input.entrypoint.id,
+	input: input.input,
+	principal: input.principal,
+	ctx: {
+		invocationId: input.ctx.invocationId,
+		traceId: input.ctx.traceId,
+		now: input.ctx.now,
+		mode: resolveMode(input),
+	},
+});
+
 const mapMutationEnvelopeToDomainResult = (
 	envelope: DomainMutationEnvelope,
-): DomainPortResult => ({
+): DomainSemanticResult => ({
 	ok: envelope.ok,
 	...(envelope.output === undefined ? {} : { output: envelope.output }),
 	...(envelope.error === undefined ? {} : { error: envelope.error }),
@@ -75,7 +90,7 @@ const mapMutationEnvelopeToDomainResult = (
 
 const mapQueryEnvelopeToDomainResult = (
 	envelope: DomainQueryEnvelope,
-): DomainPortResult => ({
+): DomainSemanticResult => ({
 	ok: envelope.ok,
 	...(envelope.output === undefined ? {} : { output: envelope.output }),
 	...(envelope.error === undefined ? {} : { error: envelope.error }),
@@ -122,11 +137,11 @@ const toQueryExecution = (
 });
 
 /**
- * Composes canonical mutation and query execution paths behind DomainRuntimePort.
+ * Creates the domain semantic engine with envelope-level diagnostics hooks.
  */
-export const createDomainRuntime = (
+export const createDomainRuntimeConformanceHarness = (
 	input: CreateDomainRuntimeInput,
-): DomainRuntime => {
+): DomainRuntimeConformanceHarness => {
 	const executeMutationEnvelope = async (
 		execution: RuntimeExecutionInput,
 	): Promise<DomainMutationEnvelope> => {
@@ -168,41 +183,35 @@ export const createDomainRuntime = (
 			...(input.queries === undefined ? {} : { queries: input.queries }),
 		});
 
-	const port: DomainRuntimePort = {
-		executeQuery: async (queryInput: QueryPortInput) => {
-			const envelope = await executeQueryEnvelope({
-				entrypointId: queryInput.entrypoint.id,
-				input: queryInput.input,
-				principal: queryInput.principal,
-				ctx: {
-					invocationId: queryInput.ctx.invocationId,
-					traceId: queryInput.ctx.traceId,
-					now: queryInput.ctx.now,
-					mode: resolveMode(queryInput),
-				},
-			});
+	const semanticRuntime: KernelSemanticRuntimePort = {
+		executeQuery: async (queryInput) => {
+			const envelope = await executeQueryEnvelope(
+				toRuntimeExecutionInput(queryInput),
+			);
 			return mapQueryEnvelopeToDomainResult(envelope);
 		},
-		executeMutation: async (mutationInput: MutationPortInput) => {
-			const envelope = await executeMutationEnvelope({
-				entrypointId: mutationInput.entrypoint.id,
-				input: mutationInput.input,
-				principal: mutationInput.principal,
-				ctx: {
-					invocationId: mutationInput.ctx.invocationId,
-					traceId: mutationInput.ctx.traceId,
-					now: mutationInput.ctx.now,
-					mode: resolveMode(mutationInput),
-				},
-			});
+		executeMutation: async (mutationInput) => {
+			const envelope = await executeMutationEnvelope(
+				toRuntimeExecutionInput(mutationInput),
+			);
 			return mapMutationEnvelopeToDomainResult(envelope);
 		},
 	};
 
 	return {
-		port,
+		semanticRuntime,
 		executeMutationEnvelope,
 		executeQueryEnvelope,
 		areComparable: areDomainMutationEnvelopesComparable,
 	};
 };
+
+export type DomainRuntime = KernelSemanticRuntimePort;
+
+/**
+ * Creates the minimal domain semantic runtime consumed by kernel.
+ */
+export const createDomainRuntime = (
+	input: CreateDomainRuntimeInput,
+): DomainRuntime =>
+	createDomainRuntimeConformanceHarness(input).semanticRuntime;

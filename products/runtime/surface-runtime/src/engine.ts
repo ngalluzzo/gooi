@@ -1,8 +1,9 @@
-import type { CompiledInputField } from "@gooi/spec-compiler/contracts";
 import type {
-	BindingResult,
-	BindSurfaceInputInput,
-} from "@gooi/surface-contracts/binding";
+	CompiledEntrypoint,
+	CompiledInputField,
+	CompiledSurfaceBinding,
+} from "@gooi/app-spec-contracts/compiled";
+import type { BindingResult } from "@gooi/surface-contracts/binding";
 import {
 	parseSurfaceRequestPayload,
 	type SurfaceRequestPayload,
@@ -129,6 +130,12 @@ const resolveFieldValue = (
 
 	return { ok: true, value: undefined };
 };
+
+export interface BindSurfaceInputInput {
+	readonly request: SurfaceRequestPayload;
+	readonly entrypoint: CompiledEntrypoint;
+	readonly binding: CompiledSurfaceBinding;
+}
 
 /**
  * Binds a surface payload into deterministic entrypoint input values.

@@ -1,6 +1,6 @@
-import type { CompiledArtifactManifest } from "@gooi/artifact-model/manifest";
 import type { JsonValue } from "@gooi/contract-primitives/json";
 import { z } from "zod";
+import type { CompiledArtifactManifest } from "../manifest/manifest";
 
 /**
  * Trust profile used to evaluate manifest signature enforcement.

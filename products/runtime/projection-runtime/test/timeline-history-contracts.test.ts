@@ -21,7 +21,6 @@ describe("projection-runtime timeline history contracts", () => {
 		const result = await runtime.executeProjection({
 			plan: createTimelinePlanFixture(),
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_timeline_contract_1",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: missingPersist,
 		});
@@ -50,7 +49,6 @@ describe("projection-runtime timeline history contracts", () => {
 			plan: createTimelinePlanFixture(),
 			args: { page: 1, page_size: 10 },
 			asOf: "2026-02-27T00:00:01.000Z",
-			artifactHash: "artifact_timeline_contract_2",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: withoutAsOf,
 		});

@@ -1,11 +1,11 @@
-import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
-import type { CapabilityBindingResolution } from "@gooi/binding/reachability/contracts";
 import type {
 	CapabilityPortContract,
 	EffectKind,
 } from "@gooi/capability-contracts/capability-port";
 import type { ProviderManifest } from "@gooi/capability-contracts/provider-manifest";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
+import type { CapabilityBindingResolution } from "@gooi/marketplace-contracts/reachability/contracts";
 import type { ProviderRuntimeHostPorts } from "../host";
 
 /**

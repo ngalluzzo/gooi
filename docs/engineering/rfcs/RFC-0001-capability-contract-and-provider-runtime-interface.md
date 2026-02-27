@@ -212,7 +212,7 @@ Initial package targets:
 
 1. `products/contracts/capability-contracts`: capability and manifest contracts.
 2. `products/runtime/provider-runtime`: activation, compatibility, invocation boundary.
-3. `packages/binding`: binding plan and lockfile model plus validation.
+3. `products/contracts/marketplace-contracts`: provider-manifest base, binding plan, lockfile, and reachability contracts plus validation helpers.
 4. `products/quality/conformance`: shared tests for provider compliance.
 
 Public APIs:

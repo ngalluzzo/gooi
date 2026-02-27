@@ -9,9 +9,10 @@
 
 ## Entry Gate (Pre-Track)
 
-Track 04 implementation is blocked until:
+Track 04 implementation starts after:
 1. RFC-0022 kernel preconditions are accepted and kernel boundary/API scaffolding is in place.
 2. RFC-0023 execution-spine contract and kernel-routed query/mutation cutover (Phase 2 equivalent) are complete.
+3. Quality-owned Track 04 readiness checklist is reviewed and documented with kernel-boundary completion artifacts.
 
 ## Epic 1: Route and Surface Dispatch Contracts
 
@@ -21,11 +22,11 @@ Acceptance criteria:
 2. Dispatch resolves to canonical entrypoint references with typed payload binding.
 3. Dispatch mismatch errors use stable, typed diagnostics.
 
-### Story 1.2: Multi-surface transport parity
+### Story 1.2: Multi-surface transport consistency
 Acceptance criteria:
 1. Web, HTTP, CLI, and webhook surfaces map to shared dispatch contracts.
 2. Transport-specific adapters do not mutate semantic intent.
-3. Conformance fixtures prove parity for equivalent invocations across surfaces.
+3. Conformance fixtures prove consistent outcomes for equivalent invocations across surfaces.
 
 ### Story 1.3: Surface policy and auth boundary enforcement
 Acceptance criteria:
@@ -57,7 +58,7 @@ Acceptance criteria:
 Acceptance criteria:
 1. Render refresh semantics consume canonical invalidation signals.
 2. Refresh ordering is deterministic under concurrent invalidations.
-3. UI artifacts preserve parity with runtime and projection outputs.
+3. UI artifacts preserve consistency with runtime and projection outputs.
 
 ## Epic 3: End-to-End Surface-to-Render Semantics
 

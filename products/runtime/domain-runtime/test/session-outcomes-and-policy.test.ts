@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime session outcomes and policy ordering", () => {
 	test("applies typed success/failure session outcome envelopes deterministically", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 				fail_message: "guestbook.fail",

@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../../src/runtime/create-domain-runtime";
 import { createActionGuard } from "./guard-boundaries.fixture";
 
 describe("domain-runtime guard boundaries", () => {
 	test("skips semantic action-guard evaluation when structural tier fails", async () => {
 		let semanticCalls = 0;
 		let invokeCalls = 0;
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},

@@ -34,7 +34,6 @@ describe("projection-runtime projection guard enforcement", () => {
 				guard: createProjectionGuard("log_and_continue"),
 			},
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_projection_guard_1",
 			collectionReader: createCollectionReaderFixture(),
 		});
 
@@ -42,15 +41,15 @@ describe("projection-runtime projection guard enforcement", () => {
 		if (!result.ok) {
 			return;
 		}
-		expect(result.meta?.guards).toMatchObject({
+		expect(result.guards).toMatchObject({
 			evaluatedRows: 3,
 			violationCount: 3,
 			diagnosticCount: 0,
 			emittedViolationSignalCount: 0,
 		});
-		expect(result.meta?.guards?.violations.length).toBe(3);
-		expect(result.meta?.guards?.diagnostics.length).toBe(0);
-		expect(result.meta?.guards?.emittedViolationSignals.length).toBe(0);
+		expect(result.guards?.violations.length).toBe(3);
+		expect(result.guards?.diagnostics.length).toBe(0);
+		expect(result.guards?.emittedViolationSignals.length).toBe(0);
 	});
 
 	test("fails with typed projection guard error when policy is abort", async () => {
@@ -61,7 +60,6 @@ describe("projection-runtime projection guard enforcement", () => {
 				guard: createProjectionGuard("abort"),
 			},
 			args: { page: 1, page_size: 10 },
-			artifactHash: "artifact_projection_guard_2",
 			collectionReader: createCollectionReaderFixture(),
 		});
 

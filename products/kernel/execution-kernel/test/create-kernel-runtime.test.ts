@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createKernelRuntime } from "../src/create-kernel-runtime";
-import type { KernelInvokeInput } from "../src/invoke";
+import type { KernelInvokeInput } from "@gooi/kernel-contracts/invocation";
+import { createKernelRuntime } from "../src/runtime/create-kernel-runtime";
 
 describe("execution-kernel scaffold", () => {
 	test("creates a runtime with invoke and trace surfaces", async () => {
@@ -28,7 +28,6 @@ describe("execution-kernel scaffold", () => {
 				},
 				principal: {
 					validatePrincipal: () => ({ ok: true, value: null }),
-					deriveRoles: () => ({ ok: true, value: [] }),
 				},
 				capabilityDelegation: {
 					invokeDelegated: async () => ({
@@ -54,7 +53,7 @@ describe("execution-kernel scaffold", () => {
 		const trace = runtime.trace({
 			entrypointId: "q.latest",
 			kind: "query",
-			stage: "bound",
+			stage: "surface_input.bind",
 			traceId: "trace-1",
 			invocationId: "inv-1",
 		});
@@ -63,7 +62,7 @@ describe("execution-kernel scaffold", () => {
 			invocationId: "inv-1",
 			entrypointId: "q.latest",
 			kind: "query",
-			stage: "bound",
+			stage: "surface_input.bind",
 			timestamp: "2026-02-27T00:00:00.000Z",
 		});
 	});

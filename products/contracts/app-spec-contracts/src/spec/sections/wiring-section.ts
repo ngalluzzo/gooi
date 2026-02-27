@@ -1,13 +1,11 @@
+import { capabilityReachabilityModeSchema } from "@gooi/marketplace-contracts/reachability/contracts";
+import { surfaceBindMapSchema } from "@gooi/surface-contracts/binding";
 import { z } from "zod";
 import { strictObjectWithExtensions } from "../schema-utils";
 
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
 	message: "Expected semver in MAJOR.MINOR.PATCH format.",
 });
-
-// Map of surface input keys to entrypoint input field names, used to wire adapter
-// inputs to compiled entrypoint contracts.
-const bindMapSchema = z.record(z.string(), z.string().min(1));
 
 /**
  * `wiring.requirements.capabilities` item schema.
@@ -18,12 +16,12 @@ export const reachabilityRequirementSchema = strictObjectWithExtensions({
 	/** Semver version constraint for the capability port. Must follow `MAJOR.MINOR.PATCH` format. */
 	portVersion: semverSchema,
 	/** Execution locality requirement for this capability. `local` means the capability must execute in-process; `delegated` routes execution to a remote provider; `unreachable` explicitly marks this capability as unavailable in this deployment. */
-	mode: z.enum(["local", "delegated", "unreachable"]),
+	mode: capabilityReachabilityModeSchema,
 });
 
 const wiringBindingSchema = strictObjectWithExtensions({
 	/** Map of surface input keys to entrypoint input field names. Wires adapter-layer inputs to the compiled entrypoint contract at dispatch time. */
-	bind: bindMapSchema,
+	bind: surfaceBindMapSchema,
 });
 
 const surfaceSchema = strictObjectWithExtensions({

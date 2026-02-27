@@ -1,7 +1,7 @@
 import type {
 	CanonicalSpecModel,
 	CompileDiagnostic,
-} from "../compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
 
 const duplicateIdDiagnostics = (
 	ids: readonly string[],

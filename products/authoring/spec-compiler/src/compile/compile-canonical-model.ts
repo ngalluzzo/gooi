@@ -1,5 +1,5 @@
+import type { CanonicalSpecModel } from "@gooi/app-spec-contracts/compiled";
 import type { GooiAppSpec } from "@gooi/app-spec-contracts/spec";
-import type { CanonicalSpecModel } from "./compile.contracts";
 
 const sortLexical = (values: readonly string[]): readonly string[] =>
 	[...values].sort((left, right) => left.localeCompare(right));

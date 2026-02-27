@@ -4,12 +4,12 @@ import {
 	jsonObjectSchema,
 	jsonValueSchema,
 } from "@gooi/contract-primitives/json";
-import type {
-	CompiledEntrypoint,
-	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
 import { z } from "zod";
-import type { SurfaceRequestPayload } from "../surface-request/surface-request";
+
+/**
+ * Canonical surface bind-map shape used by authoring and runtime binders.
+ */
+export const surfaceBindMapSchema = z.record(z.string(), z.string().min(1));
 
 /**
  * Runtime schema for structured surface binding errors.
@@ -56,15 +56,3 @@ export const parseBindingResult = (value: unknown): BindingResult<JsonValue> =>
  */
 export const parseBindingError = (value: unknown): BindingError =>
 	bindingErrorSchema.parse(value);
-
-/**
- * Input payload for deterministic surface binding execution.
- */
-export interface BindSurfaceInputInput {
-	/** Native request payload buckets from surface adapter. */
-	readonly request: SurfaceRequestPayload;
-	/** Compiled entrypoint contract for target invocation. */
-	readonly entrypoint: CompiledEntrypoint;
-	/** Compiled surface binding mapping to apply. */
-	readonly binding: CompiledSurfaceBinding;
-}

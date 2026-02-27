@@ -1,9 +1,9 @@
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
+import { z } from "zod";
 import {
 	type CompiledArtifactManifest,
 	compiledArtifactManifestSchema,
-} from "@gooi/artifact-model/manifest";
-import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
-import { z } from "zod";
+} from "../manifest/manifest";
 
 /**
  * Packaged bundle contract version.

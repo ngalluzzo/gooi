@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import { createDomainRuntime } from "../../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../../src/runtime/create-domain-runtime";
 import {
 	collectionInvariant,
 	createActionGuard,
@@ -9,7 +9,7 @@ import {
 describe("domain-runtime guard boundaries", () => {
 	test("enforces collection/action/signal/flow boundaries in deterministic order", async () => {
 		let invokeCalls = 0;
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},

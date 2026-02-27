@@ -1,7 +1,7 @@
 {
 	"entryPoints": [
 		"./src/evaluate/evaluate-guard.ts",
-		"./src/policies/apply-guard-policy.ts"
+		"./src/evaluate/apply-guard-policy.ts"
 	],
 	"out": "docs"
 }

@@ -37,6 +37,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # TypeDoc generated output
 typedoc/
+apps/docs/docs/api/
 
 # Claude Code local settings (machine-specific)
 .claude/

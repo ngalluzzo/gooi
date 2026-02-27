@@ -1,4 +1,12 @@
 import {
+	artifactVersionSchema,
+	type CompileDiagnostic,
+	type CompiledEntrypointBundle,
+	type CompiledRoleDefinition,
+	type CompiledRoleDeriveRule,
+	type CompileEntrypointBundleResult,
+} from "@gooi/app-spec-contracts/compiled";
+import {
 	authoringEntrypointSpecSchema,
 	parseAuthoringEntrypointSpec,
 } from "@gooi/app-spec-contracts/spec";
@@ -7,14 +15,6 @@ import {
 	type PackagedAppBundle,
 } from "@gooi/artifact-model/bundle";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import {
-	artifactVersionSchema,
-	type CompileDiagnostic,
-	type CompiledEntrypointBundle,
-	type CompiledRoleDefinition,
-	type CompiledRoleDeriveRule,
-	type CompileEntrypointBundleResult,
-} from "./compile.contracts";
 import { compileBindingRequirementsArtifact } from "./compile-binding-requirements-artifact";
 import { compileBindings } from "./compile-bindings";
 import { buildCanonicalSpecModel } from "./compile-canonical-model";

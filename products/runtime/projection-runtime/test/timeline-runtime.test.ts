@@ -12,7 +12,6 @@ describe("projection-runtime timeline and history semantics", () => {
 		const baseInput = {
 			plan: createTimelinePlanFixture(),
 			args: { page: 1, page_size: 10, limit: 100 },
-			artifactHash: "artifact_timeline_1",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: createHistoryPortFixture(),
 		};
@@ -40,7 +39,6 @@ describe("projection-runtime timeline and history semantics", () => {
 		const result = await runtime.executeProjection({
 			plan: createTimelinePlanFixture(),
 			args: { page: 1, page_size: 1, limit: 1 },
-			artifactHash: "artifact_timeline_2",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: createHistoryPortFixture(),
 		});
@@ -49,7 +47,7 @@ describe("projection-runtime timeline and history semantics", () => {
 		if (!result.ok) {
 			return;
 		}
-		expect(result.meta?.pagination).toEqual({
+		expect(result.pagination).toEqual({
 			mode: "page",
 			page: 1,
 			pageSize: 1,
@@ -64,7 +62,6 @@ describe("projection-runtime timeline and history semantics", () => {
 			plan: createTimelinePlanFixture(),
 			args: { page: 1, page_size: 10 },
 			asOf: "2026-02-27T00:00:01.000Z",
-			artifactHash: "artifact_timeline_3",
 			collectionReader: createCollectionReaderFixture(),
 			historyPort: createHistoryPortFixture(),
 			timelineState: {
@@ -81,7 +78,7 @@ describe("projection-runtime timeline and history semantics", () => {
 		if (!result.ok) {
 			return;
 		}
-		expect(result.meta?.timeline).toEqual({
+		expect(result.timeline).toEqual({
 			rebuildStatus: "complete",
 			rebuildProgress: null,
 			rebuildStartedAt: null,

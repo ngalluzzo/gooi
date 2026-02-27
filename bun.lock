@@ -71,6 +71,14 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/authoring-contracts": {
+      "name": "@gooi/authoring-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/binding": {
       "name": "@gooi/binding",
       "version": "0.1.0",
@@ -128,14 +136,6 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "products/authoring/authoring-contracts": {
-      "name": "@gooi/authoring-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -785,7 +785,7 @@
 
     "@gooi/artifact-model": ["@gooi/artifact-model@workspace:packages/artifact-model"],
 
-    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:products/authoring/authoring-contracts"],
+    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:packages/authoring-contracts"],
 
     "@gooi/binding": ["@gooi/binding@workspace:packages/binding"],
 

@@ -7,7 +7,7 @@
 		{ "path": "./packages/capability-contracts" },
 		{ "path": "./packages/binding" },
 		{ "path": "./packages/surface-contracts" },
-		{ "path": "./products/authoring/authoring-contracts" },
+		{ "path": "./packages/authoring-contracts" },
 		{ "path": "./products/authoring/language-server" },
 		{ "path": "./products/authoring/capability-index" },
 		{ "path": "./products/authoring/symbol-graph" },

@@ -324,7 +324,6 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
-        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
       },
     },

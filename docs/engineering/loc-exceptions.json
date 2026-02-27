@@ -1,1 +1,15 @@
-{}
+{
+	"generatedAt": "2026-02-27",
+	"exceptions": [
+		{
+			"path": "docs/demo.yml",
+			"maxLoc": 1289,
+			"reason": "Pre-existing large demo fixture. Cap set at current size; shrink to remove exception."
+		},
+		{
+			"path": "products/authoring/spec-compiler/test/fixtures/composable-entrypoint-bundle.golden.json",
+			"maxLoc": 892,
+			"reason": "Pre-existing generated golden fixture. Cap set at current size; shrink to remove exception."
+		}
+	]
+}

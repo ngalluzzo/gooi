@@ -7,5 +7,16 @@
 		"./src/envelopes/projection-result-envelope.ts",
 		"./src/errors/projection-errors.ts"
 	],
-	"out": "docs"
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table",
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
 }

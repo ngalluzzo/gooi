@@ -12,5 +12,11 @@
 	"readme": "none",
 	"hideGenerator": true,
 	"excludePrivate": true,
-	"excludeInternal": true
+	"excludeInternal": true,
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table"
 }

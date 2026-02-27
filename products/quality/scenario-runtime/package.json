@@ -1,0 +1,46 @@
+{
+	"name": "@gooi/scenario-runtime",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/run/run-scenario.js",
+	"types": "./src/run/run-scenario.ts",
+	"exports": {
+		"./run": {
+			"types": "./src/run/run-scenario.ts",
+			"bun": "./src/run/run-scenario.ts",
+			"import": "./dist/run/run-scenario.js",
+			"default": "./dist/run/run-scenario.js"
+		},
+		"./suite": {
+			"types": "./src/suite/run-scenario-suite.ts",
+			"bun": "./src/suite/run-scenario-suite.ts",
+			"import": "./dist/suite/run-scenario-suite.js",
+			"default": "./dist/suite/run-scenario-suite.js"
+		},
+		"./coverage": {
+			"types": "./src/coverage/report-persona-coverage.ts",
+			"bun": "./src/coverage/report-persona-coverage.ts",
+			"import": "./dist/coverage/report-persona-coverage.js",
+			"default": "./dist/coverage/report-persona-coverage.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/run/run-scenario.ts --outfile ./dist/run/run-scenario.js --external @gooi/guard-contracts/plans/guard-plan --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/errors/scenario-errors --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/guard-runtime/evaluate --external @gooi/stable-json && bun build ./src/suite/run-scenario-suite.ts --outfile ./dist/suite/run-scenario-suite.js --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-runtime/run && bun build ./src/coverage/report-persona-coverage.ts --outfile ./dist/coverage/report-persona-coverage.js --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/guard-runtime": "workspace:*",
+		"@gooi/scenario-contracts": "workspace:*",
+		"@gooi/stable-json": "workspace:*"
+	}
+}

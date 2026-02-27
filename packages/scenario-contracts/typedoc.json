@@ -1,0 +1,9 @@
+{
+	"entryPoints": [
+		"./src/plans/scenario-plan.ts",
+		"./src/envelopes/scenario-envelopes.ts",
+		"./src/reports/scenario-reports.ts",
+		"./src/errors/scenario-errors.ts"
+	],
+	"out": "docs"
+}

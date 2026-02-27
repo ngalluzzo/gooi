@@ -10,6 +10,8 @@ Reference marketplace provider implementations backed by in-memory state.
 - `@gooi-marketplace/memory/replay-store`
 - `@gooi-marketplace/memory/activation-policy`
 - `@gooi-marketplace/memory/module-loader`
+- `@gooi-marketplace/memory/module-integrity`
+- `@gooi-marketplace/memory/delegation`
 
 ## Quick Start
 

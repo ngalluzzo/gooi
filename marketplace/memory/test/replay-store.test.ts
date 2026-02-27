@@ -3,7 +3,7 @@ import { runReplayStoreConformance } from "@gooi/conformance/replay-store";
 import {
 	createMemoryReplayStorePort,
 	memoryReplayStoreProvider,
-} from "../src/replay-store/replay-store";
+} from "@gooi-marketplace/memory/replay-store";
 
 describe("marketplace-memory replay-store", () => {
 	test("passes replay-store conformance", async () => {

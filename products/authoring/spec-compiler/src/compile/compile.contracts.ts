@@ -1,3 +1,7 @@
+import type {
+	CompiledArtifactManifest as ArtifactModelCompiledArtifactManifest,
+	CompiledLaneArtifact,
+} from "@gooi/artifact-model/manifest";
 import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 
@@ -160,32 +164,16 @@ export interface CompiledBindingRequirements {
 }
 
 /**
- * Manifest reference for compiled binding requirements artifacts.
- */
-export interface CompiledBindingRequirementsArtifactReference {
-	/** Artifact identity. */
-	readonly artifactId: CompiledBindingRequirements["artifactId"];
-	/** Artifact version. */
-	readonly artifactVersion: CompiledBindingRequirements["artifactVersion"];
-	/** Artifact hash for integrity checks. */
-	readonly artifactHash: string;
-	/** Compatibility metadata used by consuming lanes. */
-	readonly compatibility: CompiledBindingRequirementsCompatibility;
-}
-
-/**
  * Deterministic manifest of lane artifact references.
  */
-export interface CompiledArtifactManifest {
-	/** Manifest schema version. */
-	readonly artifactVersion: CompiledArtifactManifestVersion;
-	/** Referenced lane artifacts keyed by canonical artifact role id. */
-	readonly artifacts: Readonly<{
-		readonly bindingRequirements: CompiledBindingRequirementsArtifactReference;
-	}>;
-	/** SHA-256 hash of normalized manifest JSON excluding this field. */
-	readonly aggregateHash: string;
-}
+export type CompiledArtifactManifest = ArtifactModelCompiledArtifactManifest;
+
+/**
+ * Deterministic lane artifacts keyed by canonical artifact role id.
+ */
+export type CompiledLaneArtifacts = Readonly<
+	Record<string, CompiledLaneArtifact>
+>;
 
 /**
  * Compiled query or mutation entrypoint contract.
@@ -372,6 +360,8 @@ export interface CompiledEntrypointBundle {
 	readonly bindingRequirementsArtifact: CompiledBindingRequirements;
 	/** Manifest references for emitted lane artifacts. */
 	readonly artifactManifest: CompiledArtifactManifest;
+	/** Canonical lane artifacts directly consumable without bundle unpacking. */
+	readonly laneArtifacts: CompiledLaneArtifacts;
 	/** Refresh subscriptions keyed by query id. */
 	readonly refreshSubscriptions: Readonly<
 		Record<string, CompiledRefreshSubscription>

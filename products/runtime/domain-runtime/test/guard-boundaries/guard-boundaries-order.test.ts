@@ -1,44 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import type {
-	CompiledGuardDefinition,
-	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
-
-const createActionGuard = (input: {
-	guardId: string;
-	description: string;
-	onFail: CompiledGuardDefinition["onFail"];
-	path: string;
-	semantic?: string;
-}): CompiledGuardDefinition => ({
-	sourceRef: {
-		primitiveKind: "action",
-		primitiveId: "guestbook.submit",
-		path: input.path,
-	},
-	onFail: input.onFail,
-	structural: [
-		{
-			guardId: input.guardId,
-			description: input.description,
-			operator: "exists",
-			left: { kind: "path", path: "input.message" },
-		},
-	],
-	...(input.semantic === undefined
-		? {}
-		: {
-				semantic: [
-					{
-						guardId: `${input.guardId}.semantic`,
-						description: "semantic message validity",
-						rule: input.semantic,
-					},
-				],
-			}),
-});
+import { createDomainRuntime } from "../../src/runtime/create-domain-runtime";
+import {
+	collectionInvariant,
+	createActionGuard,
+} from "./guard-boundaries.fixture";
 
 describe("domain-runtime guard boundaries", () => {
 	test("enforces collection/action/signal/flow boundaries in deterministic order", async () => {
@@ -83,24 +49,7 @@ describe("domain-runtime guard boundaries", () => {
 									message: { kind: "input", path: "message" },
 								},
 							},
-							invariants: [
-								{
-									sourceRef: {
-										primitiveKind: "collection",
-										primitiveId: "hello_messages",
-										path: "domain.collections.hello_messages.invariants",
-									},
-									onFail: "abort",
-									structural: [
-										{
-											guardId: "collection.message.exists",
-											description: "message exists on write",
-											operator: "exists",
-											left: { kind: "path", path: "message" },
-										},
-									],
-								} satisfies CompiledInvariantDefinition,
-							],
+							invariants: [collectionInvariant],
 						},
 					],
 					signalGuards: [
@@ -220,86 +169,5 @@ describe("domain-runtime guard boundaries", () => {
 			"flow.rejection_followup",
 			"session.outcome",
 		]);
-	});
-
-	test("skips semantic action-guard evaluation when structural tier fails", async () => {
-		let semanticCalls = 0;
-		let invokeCalls = 0;
-		const runtime = createDomainRuntime({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					guards: {
-						pre: createActionGuard({
-							guardId: "action.pre.exists",
-							description: "message exists pre-step",
-							onFail: "abort",
-							path: "domain.actions.guestbook.submit.guards.pre",
-							semantic: "message is a real user message",
-						}),
-					},
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.write",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
-							},
-						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
-					},
-				},
-			},
-			capabilities: {
-				"collections.write": {
-					capabilityId: "collections.write",
-					contract: {
-						requiredKeys: ["message"],
-					},
-					invoke: async () => {
-						invokeCalls += 1;
-						return {
-							ok: true,
-							output: { id: "m1" },
-							observedEffects: ["write"],
-						};
-					},
-				},
-			},
-			guards: {
-				semanticJudge: {
-					evaluate: async () => {
-						semanticCalls += 1;
-						return { pass: true };
-					},
-				},
-			},
-		});
-
-		const result = await runtime.executeMutationEnvelope({
-			entrypointId: "submit_message",
-			input: {},
-			principal: { subject: "user_1", claims: {}, tags: ["authenticated"] },
-			ctx: {
-				invocationId: "inv_guard_boundary_2",
-				traceId: "trace_guard_boundary_2",
-				now: "2026-02-27T00:00:00.000Z",
-				mode: "live",
-			},
-		});
-
-		expect(result.ok).toBe(false);
-		expect(result.error?.code).toBe("action_guard_error");
-		expect(result.error?.details?.guardOutcome).toBeDefined();
-		expect(semanticCalls).toBe(0);
-		expect(invokeCalls).toBe(0);
 	});
 });

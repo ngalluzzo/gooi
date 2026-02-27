@@ -33,16 +33,27 @@ export const gooiAppSpecCompatibilityPolicy = Object.freeze({
  * Full authoring app spec contract accepted by the canonical compiler.
  */
 export const gooiAppSpecSchema = strictObjectWithExtensions({
+	/** App identity and global configuration (id, display name, timezone, history policy). */
 	app: appSectionSchema,
+	/** Business model declaration: collections, signals, capabilities, actions, flows, and projections. */
 	domain: domainSectionSchema,
+	/** User session schema and default values shared across all entrypoints. */
 	session: sessionSectionSchema,
+	/** View tree and screen definitions rendered by surface adapters. */
 	views: viewsSectionSchema,
+	/** Read entrypoint declarations. Each query surfaces a domain projection with typed input and access control. */
 	queries: z.array(querySchema),
+	/** Write entrypoint declarations. Each mutation delegates to a domain action with typed input and access control. */
 	mutations: z.array(mutationSchema),
+	/** Navigation entrypoint declarations. Each route maps a surface path to a view screen with optional typed parameters. */
 	routes: z.array(routeSchema),
+	/** Named customer archetypes used to seed scenario context and drive generated trigger synthesis. */
 	personas: personasSectionSchema,
+	/** Named behavioral test contracts composed of ordered trigger, expect, and capture steps. */
 	scenarios: scenariosSectionSchema,
+	/** Surface adapter bind maps and capability reachability requirements consumed by the deployment binding resolver. */
 	wiring: wiringSectionSchema,
+	/** Role model and default access policy governing entrypoint authorization. */
 	access: accessSectionSchema,
 });
 

@@ -3,11 +3,10 @@
 	"references": [
 		{ "path": "./apps/vscode-extension" },
 		{ "path": "./packages/artifact-model" },
-		{ "path": "./packages/provider-manifest" },
 		{ "path": "./products/contracts/contract-primitives" },
+		{ "path": "./products/contracts/marketplace-contracts" },
 		{ "path": "./products/contracts/capability-contracts" },
 		{ "path": "./products/contracts/app-spec-contracts" },
-		{ "path": "./packages/binding" },
 		{ "path": "./products/contracts/conformance-contracts" },
 		{ "path": "./products/contracts/surface-contracts" },
 		{ "path": "./products/contracts/authoring-contracts" },

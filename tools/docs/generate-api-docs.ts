@@ -33,13 +33,11 @@ async function loadPackageMetadata(
 ): Promise<PackageMetadata | null> {
 	const typedocConfigPath = join(packageDir, "typedoc.json");
 	const packageJsonPath = join(packageDir, "package.json");
-	const entryPointPath = join(packageDir, "src", "index.ts");
 
 	const hasConfig = await pathExists(typedocConfigPath);
 	const hasPackage = await pathExists(packageJsonPath);
-	const hasEntryPoint = await pathExists(entryPointPath);
 
-	if (!hasConfig || !hasPackage || !hasEntryPoint) {
+	if (!hasConfig || !hasPackage) {
 		return null;
 	}
 

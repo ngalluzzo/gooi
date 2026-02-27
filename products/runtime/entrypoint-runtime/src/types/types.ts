@@ -27,6 +27,8 @@ export interface RunEntrypointInput {
 	readonly idempotencyKey?: string;
 	/** Optional replay store for replay and conflict detection. */
 	readonly replayStore?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
+	/** Optional replay record TTL in seconds for idempotent mutation caching. */
+	readonly replayTtlSeconds?: number;
 	/** Optional invocation id override. */
 	readonly invocationId?: string;
 	/** Optional trace id override. */
@@ -47,6 +49,8 @@ export interface CreateEntrypointRuntimeInput {
 	readonly domainRuntime: DomainRuntimePort;
 	/** Optional replay store for replay and conflict detection. */
 	readonly replayStore?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
+	/** Optional replay record TTL in seconds for idempotent mutation caching. */
+	readonly replayTtlSeconds?: number;
 	/** Optional host ports for orchestration infrastructure behavior. */
 	readonly hostPorts?: HostPortSet;
 }

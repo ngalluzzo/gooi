@@ -359,4 +359,111 @@ describe("entrypoint-runtime", () => {
 			);
 		}
 	});
+
+	test("fails fast when replay TTL is invalid", async () => {
+		const compiled = compileEntrypointBundle({
+			compilerVersion: "1.0.0",
+			spec: {
+				app: {
+					id: "invalid_replay_ttl_fixture_app",
+					name: "Invalid Replay TTL Fixture App",
+					tz: "UTC",
+				},
+				domain: {
+					actions: {
+						"guestbook.submit": {},
+					},
+				},
+				session: {
+					fields: {},
+				},
+				access: {
+					default_policy: "deny",
+					roles: { authenticated: {} },
+				},
+				queries: [],
+				mutations: [
+					{
+						id: "submit_message",
+						access: { roles: ["authenticated"] },
+						in: { message: "text!" },
+						run: {
+							actionId: "guestbook.submit",
+							input: {
+								message: {
+									$expr: {
+										var: "input.message",
+									},
+								},
+							},
+						},
+					},
+				],
+				routes: [],
+				personas: {},
+				scenarios: {},
+				wiring: {
+					surfaces: {
+						http: {
+							mutations: {
+								submit_message: {
+									bind: { message: "body.message" },
+								},
+							},
+						},
+					},
+				},
+				views: {
+					nodes: [],
+					screens: [],
+				},
+			},
+		});
+		expect(compiled.ok).toBe(true);
+		if (!compiled.ok) {
+			return;
+		}
+
+		const binding = compiled.bundle.bindings["http:mutation:submit_message"];
+		expect(binding).toBeDefined();
+		if (binding === undefined) {
+			return;
+		}
+
+		const result = await runEntrypoint({
+			bundle: compiled.bundle,
+			binding,
+			request: { body: { message: "hello" } },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			replayTtlSeconds: 0,
+			domainRuntime: {
+				executeQuery: async () => ({
+					ok: false,
+					error: { message: "not used" },
+					observedEffects: [],
+				}),
+				executeMutation: async () => ({
+					ok: true,
+					output: { ok: true },
+					observedEffects: ["write", "emit"],
+					emittedSignals: [],
+				}),
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error?.code).toBe("validation_error");
+			expect(result.error?.details).toEqual(
+				expect.objectContaining({
+					code: "replay_ttl_invalid",
+					replayTtlSeconds: 0,
+				}),
+			);
+		}
+	});
 });

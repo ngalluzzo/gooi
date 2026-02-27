@@ -9,12 +9,21 @@ import type {
  */
 export const buildRefreshTriggers = (
 	signals: readonly SignalEnvelope[],
-): readonly RefreshTrigger[] =>
-	signals.map((signal) => ({
-		signalId: signal.signalId,
-		signalVersion: signal.signalVersion,
-		payloadHash: signal.payloadHash,
-	}));
+): readonly RefreshTrigger[] => {
+	const deduped = new Map<string, RefreshTrigger>();
+	for (const signal of signals) {
+		const trigger: RefreshTrigger = {
+			signalId: signal.signalId,
+			signalVersion: signal.signalVersion,
+			payloadHash: signal.payloadHash,
+		};
+		const dedupeKey = `${trigger.signalId}:${trigger.signalVersion}:${trigger.payloadHash}`;
+		if (!deduped.has(dedupeKey)) {
+			deduped.set(dedupeKey, trigger);
+		}
+	}
+	return [...deduped.values()];
+};
 
 /**
  * Matches refresh triggers against compiled refresh subscriptions.

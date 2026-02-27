@@ -1,29 +1,31 @@
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
-import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
-import { isAccessAllowed } from "./access-policy/access-policy";
 import { buildRuntimeActivationReport } from "./artifact-manifest/runtime-activation-report";
 import { validateRuntimeArtifactManifest } from "./artifact-manifest/validate-artifact-manifest";
 import type { DomainRuntimePort } from "./domain";
 import {
-	entrypointKey,
 	errorEnvelope,
 	errorResult,
 	idempotencyScopeKey,
 } from "./errors/errors";
-import {
-	createDefaultHostPorts,
-	getMissingHostPortSetMembers,
-	type HostPortSet,
-} from "./host";
+import { createDefaultHostPorts, getMissingHostPortSetMembers } from "./host";
 import { validateEntrypointInput } from "./input-validation/input-validation";
+import {
+	buildInvocationEnvelope,
+	resolveEntrypoint,
+} from "./pipeline/entrypoint-resolution";
+import {
+	buildInvalidReplayTtlResult,
+	buildMissingHostPortsResult,
+} from "./pipeline/fallback-errors";
+import { resolvePolicyGate } from "./pipeline/policy-gate";
+import { validateSchemaProfile } from "./pipeline/schema-profile";
 import {
 	buildRefreshTriggers,
 	resolveAffectedQueryIds,
@@ -40,9 +42,7 @@ export type { DomainRuntimePort };
 export { createDefaultHostPorts };
 
 const envelopeVersion = surfaceEnvelopeVersion;
-const hostPortValidationFallbackNow = "1970-01-01T00:00:00.000Z";
-const hostPortValidationFallbackTraceId = "trace_host_port_missing";
-const hostPortValidationFallbackInvocationId = "invocation_host_port_missing";
+const defaultReplayTtlSeconds = 300;
 
 interface ExecuteTailInput {
 	readonly entrypoint: CompiledEntrypoint;
@@ -74,6 +74,9 @@ const hasDisallowedQueryEffects = (effects: readonly EffectKind[]): boolean =>
 	effects.some(
 		(effect) => effect === "write" || effect === "session" || effect === "emit",
 	);
+
+const isValidReplayTtlSeconds = (value: number): boolean =>
+	Number.isInteger(value) && value > 0;
 
 const executeEntrypointTail = async (
 	input: ExecuteTailInput,
@@ -131,6 +134,7 @@ const executeEntrypointTail = async (
 				replayed: false,
 				artifactHash: input.artifactHash,
 				affectedQueryIds: [],
+				refreshTriggers: [],
 			},
 		};
 	}
@@ -160,6 +164,7 @@ const executeEntrypointTail = async (
 				replayed: false,
 				artifactHash: input.artifactHash,
 				affectedQueryIds: [],
+				refreshTriggers: [],
 			},
 		};
 	}
@@ -189,36 +194,10 @@ const executeEntrypointTail = async (
 			replayed: false,
 			artifactHash: input.artifactHash,
 			affectedQueryIds,
+			refreshTriggers,
 		},
 	};
 };
-
-const buildInvocationEnvelope = (
-	input: RunEntrypointInput,
-	startedAt: string,
-	hostPorts: HostPortSet,
-): InvocationEnvelope<Readonly<Record<string, unknown>>> => ({
-	envelopeVersion,
-	traceId: input.traceId ?? hostPorts.identity.newTraceId(),
-	invocationId: input.invocationId ?? hostPorts.identity.newInvocationId(),
-	entrypointId: input.binding.entrypointId,
-	entrypointKind: input.binding.entrypointKind,
-	principal: input.principal,
-	input: {},
-	meta: {
-		...(input.idempotencyKey === undefined
-			? {}
-			: { idempotencyKey: input.idempotencyKey }),
-		requestReceivedAt: startedAt,
-	},
-});
-
-const resolveEntrypoint = (
-	bindingKind: string,
-	bindingEntrypointId: string,
-	entrypoints: Readonly<Record<string, CompiledEntrypoint>>,
-): CompiledEntrypoint | undefined =>
-	entrypoints[`${bindingKind}:${bindingEntrypointId}`];
 
 /**
  * Input payload for deterministic entrypoint runtime execution.
@@ -256,6 +235,9 @@ export const createEntrypointRuntime = (
 			...(input.replayStore === undefined
 				? {}
 				: { replayStore: input.replayStore }),
+			...(input.replayTtlSeconds === undefined
+				? {}
+				: { replayTtlSeconds: input.replayTtlSeconds }),
 			...(input.hostPorts === undefined ? {} : { hostPorts: input.hostPorts }),
 			...(runInput.idempotencyKey === undefined
 				? {}
@@ -277,42 +259,44 @@ export const runEntrypoint = async (
 	input: RunEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
 	const hostPorts = input.hostPorts ?? createDefaultHostPorts();
-	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
-	if (missingHostPortMembers.length > 0) {
-		const fallbackNow = input.now ?? hostPortValidationFallbackNow;
-		const baseInvocation: InvocationEnvelope<
-			Readonly<Record<string, unknown>>
-		> = {
-			envelopeVersion,
-			traceId: input.traceId ?? hostPortValidationFallbackTraceId,
-			invocationId:
-				input.invocationId ?? hostPortValidationFallbackInvocationId,
-			entrypointId: input.binding.entrypointId,
-			entrypointKind: input.binding.entrypointKind,
-			principal: input.principal,
-			input: {},
-			meta: {
+	const replayTtlSeconds = input.replayTtlSeconds ?? defaultReplayTtlSeconds;
+	if (!isValidReplayTtlSeconds(replayTtlSeconds)) {
+		return buildInvalidReplayTtlResult({
+			invocation: {
+				binding: input.binding,
+				principal: input.principal,
 				...(input.idempotencyKey === undefined
 					? {}
 					: { idempotencyKey: input.idempotencyKey }),
-				requestReceivedAt: fallbackNow,
+				...(input.traceId === undefined ? {} : { traceId: input.traceId }),
+				...(input.invocationId === undefined
+					? {}
+					: { invocationId: input.invocationId }),
+				...(input.now === undefined ? {} : { now: input.now }),
 			},
-		};
-		return errorResult(
-			baseInvocation,
-			input.bundle.artifactHash,
-			fallbackNow,
-			() => fallbackNow,
-			errorEnvelope(
-				"validation_error",
-				"Host port set is missing required members.",
-				false,
-				{
-					code: "host_port_missing",
-					missingHostPortMembers,
-				},
-			),
-		);
+			artifactHash: input.bundle.artifactHash,
+			replayTtlSeconds,
+		});
+	}
+
+	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
+	if (missingHostPortMembers.length > 0) {
+		return buildMissingHostPortsResult({
+			invocation: {
+				binding: input.binding,
+				principal: input.principal,
+				...(input.idempotencyKey === undefined
+					? {}
+					: { idempotencyKey: input.idempotencyKey }),
+				...(input.traceId === undefined ? {} : { traceId: input.traceId }),
+				...(input.invocationId === undefined
+					? {}
+					: { invocationId: input.invocationId }),
+				...(input.now === undefined ? {} : { now: input.now }),
+			},
+			artifactHash: input.bundle.artifactHash,
+			missingHostPortMembers,
+		});
 	}
 
 	const startedAt = input.now ?? hostPorts.clock.nowIso();
@@ -361,26 +345,6 @@ export const runEntrypoint = async (
 		);
 	}
 
-	if (
-		!isAccessAllowed(
-			input.bundle.accessPlan,
-			entrypointKey(entrypoint),
-			input.principal,
-		)
-	) {
-		return errorResult(
-			baseInvocation,
-			input.bundle.artifactHash,
-			startedAt,
-			hostPorts.clock.nowIso,
-			errorEnvelope(
-				"access_denied_error",
-				"Access denied for entrypoint.",
-				false,
-			),
-		);
-	}
-
 	const bound = bindSurfaceInput({
 		request: input.request,
 		entrypoint,
@@ -408,47 +372,15 @@ export const runEntrypoint = async (
 		input: bound.value,
 	};
 
-	const schemaArtifact =
-		input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey];
-	if (schemaArtifact === undefined) {
-		return errorResult(
-			resolvedInvocation,
-			input.bundle.artifactHash,
-			startedAt,
-			hostPorts.clock.nowIso,
-			errorEnvelope(
-				"validation_error",
-				"Compiled entrypoint schema artifact is missing.",
-				false,
-				{
-					entrypointId: entrypoint.id,
-					entrypointKind: entrypoint.kind,
-					schemaArtifactKey: entrypoint.schemaArtifactKey,
-				},
-			),
-		);
-	}
-
-	if (schemaArtifact.target !== hostProviderSchemaProfile) {
-		return errorResult(
-			resolvedInvocation,
-			input.bundle.artifactHash,
-			startedAt,
-			hostPorts.clock.nowIso,
-			errorEnvelope(
-				"validation_error",
-				"Compiled entrypoint schema profile does not match the pinned host/provider profile.",
-				false,
-				{
-					code: "schema_profile_mismatch",
-					expectedSchemaProfile: hostProviderSchemaProfile,
-					actualSchemaProfile: schemaArtifact.target,
-					entrypointId: entrypoint.id,
-					entrypointKind: entrypoint.kind,
-					schemaArtifactKey: entrypoint.schemaArtifactKey,
-				},
-			),
-		);
+	const schemaValidation = validateSchemaProfile({
+		bundle: input.bundle,
+		entrypoint,
+		invocation: resolvedInvocation,
+		startedAt,
+		nowIso: hostPorts.clock.nowIso,
+	});
+	if (!schemaValidation.ok) {
+		return schemaValidation.result;
 	}
 
 	const validatedInput = validateEntrypointInput(entrypoint, bound.value);
@@ -467,8 +399,22 @@ export const runEntrypoint = async (
 		);
 	}
 
+	const policyGate = resolvePolicyGate({
+		bundle: input.bundle,
+		entrypoint,
+		invocation: resolvedInvocation,
+		hostPorts,
+		principalInput: input.principal,
+		startedAt,
+		nowIso: hostPorts.clock.nowIso,
+	});
+	if (!policyGate.ok) {
+		return policyGate.result;
+	}
+
 	const validatedInvocation = {
 		...resolvedInvocation,
+		principal: policyGate.principal,
 		input: validatedInput.value,
 	};
 
@@ -482,7 +428,7 @@ export const runEntrypoint = async (
 		inputHash = sha256(stableStringify(validatedInvocation.input));
 		scope = idempotencyScopeKey(
 			entrypoint,
-			input.principal,
+			validatedInvocation.principal,
 			input.idempotencyKey,
 		);
 		const existing = await input.replayStore.load(scope);
@@ -526,7 +472,7 @@ export const runEntrypoint = async (
 		await input.replayStore.save({
 			scopeKey: scope,
 			record: { inputHash, result },
-			ttlSeconds: 300,
+			ttlSeconds: replayTtlSeconds,
 		});
 	}
 

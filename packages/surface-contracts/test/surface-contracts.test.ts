@@ -58,6 +58,13 @@ describe("surface-contracts", () => {
 				replayed: false,
 				artifactHash: "artifact_hash",
 				affectedQueryIds: ["list_messages"],
+				refreshTriggers: [
+					{
+						signalId: "messages.updated",
+						signalVersion: 1,
+						payloadHash: "hash_1",
+					},
+				],
 			},
 		});
 

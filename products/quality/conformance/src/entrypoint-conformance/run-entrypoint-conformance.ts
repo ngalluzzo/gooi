@@ -99,11 +99,12 @@ export const runEntrypointConformance = async (
 		buildHostPortConformanceCheck(
 			"refresh_subscription_matched",
 			mutation.ok &&
+				mutation.meta.refreshTriggers.length > 0 &&
 				mutation.meta.affectedQueryIds.includes(
 					input.queryBinding.entrypointId,
 				),
 			mutation.ok
-				? "Mutation refresh affected query ids were resolved."
+				? "Mutation refresh triggers and affected query ids were resolved."
 				: "Mutation failed before refresh check.",
 		),
 	);

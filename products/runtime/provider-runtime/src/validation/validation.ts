@@ -1,15 +1,15 @@
-import { areBindingArtifactsAligned } from "@gooi/binding/artifact-alignment/policy";
-import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
-import { getCapabilityBinding } from "@gooi/binding/binding-plan/lookup";
-import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
-import { isLockedProviderIntegrity } from "@gooi/binding/lockfile/integrity";
-import { getLockedProvider } from "@gooi/binding/lockfile/lookup";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import {
 	type ProviderManifest,
 	safeParseProviderManifest,
 } from "@gooi/capability-contracts/provider-manifest";
+import { areBindingArtifactsAligned } from "@gooi/marketplace-contracts/artifact-alignment/policy";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
+import { getCapabilityBinding } from "@gooi/marketplace-contracts/binding-plan/lookup";
+import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
+import { isLockedProviderIntegrity } from "@gooi/marketplace-contracts/lockfile/integrity";
+import { getLockedProvider } from "@gooi/marketplace-contracts/lockfile/lookup";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
 

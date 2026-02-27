@@ -15,6 +15,7 @@ Deterministic compiler for Gooi composable entrypoint specs.
 - Zod-validated authoring spec subset for entrypoint execution
 - Deterministic compiled artifact hashing
 - Compiled entrypoint contracts with generated input schema artifacts
+- Pinned host/provider schema profile emission (`draft-2020-12`) for generated artifacts
 - Compiled surface bindings and access plan artifacts
 - Compiled binding requirements artifact for deployment resolver inputs
 - Artifact manifest references with compatibility metadata for emitted artifacts

@@ -38,6 +38,23 @@ export const boundarySchemaTargetSchema = z.enum([
 export type BoundarySchemaTarget = z.infer<typeof boundarySchemaTargetSchema>;
 
 /**
+ * Pinned host/provider boundary schema profile from RFC-0001.
+ */
+export const hostProviderSchemaProfileSchema = z.literal("draft-2020-12");
+
+/**
+ * Pinned host/provider boundary schema profile value.
+ */
+export type HostProviderSchemaProfile = z.infer<
+	typeof hostProviderSchemaProfileSchema
+>;
+
+/**
+ * Canonical host/provider schema profile used by contract tooling.
+ */
+export const hostProviderSchemaProfile = hostProviderSchemaProfileSchema.value;
+
+/**
  * Generic JSON object used for generated JSON Schema artifacts.
  */
 export type JsonSchema = Readonly<Record<string, unknown>>;
@@ -152,8 +169,6 @@ export interface DefineCapabilityPortInput {
 	readonly error: z.ZodType<unknown>;
 	/** Declared side effects allowed at runtime. */
 	readonly declaredEffects: readonly EffectKind[];
-	/** Optional JSON Schema draft target for generated artifacts. */
-	readonly target?: BoundarySchemaTarget;
 }
 
 /**
@@ -164,7 +179,7 @@ export const defineCapabilityPort = (
 ): CapabilityPortContract => {
 	const id = z.string().min(1).parse(input.id);
 	const version = semverSchema.parse(input.version);
-	const target = boundarySchemaTargetSchema.parse(input.target ?? "draft-7");
+	const target = hostProviderSchemaProfile;
 
 	const declaredEffects = z
 		.array(effectKindSchema)

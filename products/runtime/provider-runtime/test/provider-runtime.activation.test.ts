@@ -74,6 +74,42 @@ describe("provider-runtime activation", () => {
 		}
 	});
 
+	test("fails activation with typed compatibility diagnostics for schema profile mismatch", async () => {
+		const contract = createContract();
+		const mismatchedContract = {
+			...contract,
+			artifacts: {
+				...contract.artifacts,
+				input: {
+					...contract.artifacts.input,
+					target: "draft-7" as const,
+				},
+			},
+		};
+		const providerModule = createProviderModule(
+			contract.artifacts.contractHash,
+		);
+
+		const activated = await activateProvider({
+			providerModule,
+			hostApiVersion,
+			contracts: [mismatchedContract],
+		});
+
+		expect(activated.ok).toBe(false);
+		if (!activated.ok) {
+			expect(activated.error.kind).toBe("compatibility_error");
+			expect(activated.error.details).toEqual(
+				expect.objectContaining({
+					code: "schema_profile_mismatch",
+					expectedSchemaProfile: "draft-2020-12",
+					actualSchemaProfile: "draft-7",
+					boundary: "input",
+				}),
+			);
+		}
+	});
+
 	test("enforces binding plan and lockfile capability hashes", async () => {
 		const contract = createContract();
 		const providerModule = createProviderModule(

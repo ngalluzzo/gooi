@@ -5,7 +5,9 @@
 		"./src/principal/principal.ts",
 		"./src/replay-store/replay-store.ts",
 		"./src/activation-policy/activation-policy.ts",
-		"./src/module-loader/module-loader.ts"
+		"./src/module-loader/module-loader.ts",
+		"./src/module-integrity/module-integrity.ts",
+		"./src/delegation/delegation.ts"
 	],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],

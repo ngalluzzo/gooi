@@ -148,14 +148,10 @@ export const runReachabilityParitySuite = async (
 		);
 	}
 
-	const localValue =
-		localInvocation !== null && localInvocation.ok
-			? localInvocation.value
-			: null;
-	const delegatedValue =
-		delegatedInvocation !== null && delegatedInvocation.ok
-			? delegatedInvocation.value
-			: null;
+	const localValue = localInvocation?.ok ? localInvocation.value : null;
+	const delegatedValue = delegatedInvocation?.ok
+		? delegatedInvocation.value
+		: null;
 
 	const outputParity =
 		localValue !== null &&

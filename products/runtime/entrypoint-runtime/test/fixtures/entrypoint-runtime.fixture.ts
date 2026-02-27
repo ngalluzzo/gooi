@@ -1,5 +1,5 @@
+import type { CompiledSurfaceBinding } from "@gooi/app-spec-contracts/compiled";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
-import type { CompiledSurfaceBinding } from "@gooi/spec-compiler/contracts";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 import type { DomainRuntimePort } from "../../src/domain";

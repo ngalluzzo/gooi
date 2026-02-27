@@ -1,4 +1,4 @@
-import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
+import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
 import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { HostPortSet } from "../host";

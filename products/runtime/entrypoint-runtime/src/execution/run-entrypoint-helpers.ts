@@ -1,5 +1,5 @@
+import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
 import { idempotencyScopeKey } from "../errors/errors";
 import type { RunEntrypointInput as SharedRunEntrypointInput } from "../types/types";
 

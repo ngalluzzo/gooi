@@ -1,9 +1,9 @@
-import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import type {
 	CompiledEntrypointBundle,
 	CompiledJsonSchemaArtifact,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import { compileEntrypointBundle } from "@gooi/spec-compiler";
 
 interface EntrypointValidationFixture {
 	readonly bundle: CompiledEntrypointBundle;

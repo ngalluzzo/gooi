@@ -1,9 +1,9 @@
-import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type {
 	CompiledEntrypointBundle,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
+import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 import type { DomainRuntimePort } from "../domain";

@@ -1,5 +1,5 @@
+import type { CompiledEntrypointBundle } from "@gooi/app-spec-contracts/compiled";
 import { validateArtifactManifest } from "@gooi/artifact-model/validation";
-import type { CompiledEntrypointBundle } from "@gooi/spec-compiler/contracts";
 
 /**
  * Validates compiled manifest integrity and required runtime activation references.

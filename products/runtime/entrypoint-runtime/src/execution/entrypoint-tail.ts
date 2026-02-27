@@ -1,6 +1,6 @@
+import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
 import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";

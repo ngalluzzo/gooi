@@ -2,7 +2,7 @@ import type {
 	CompiledEntrypoint,
 	CompiledInputField,
 	CompiledScalarType,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
 import { z } from "zod";
 
 /**

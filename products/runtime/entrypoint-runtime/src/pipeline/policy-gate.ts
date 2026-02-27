@@ -1,8 +1,8 @@
-import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type {
 	CompiledEntrypoint,
 	CompiledEntrypointBundle,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import {

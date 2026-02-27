@@ -1,5 +1,5 @@
+import type { CompiledAccessPlan } from "@gooi/app-spec-contracts/compiled";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { CompiledAccessPlan } from "@gooi/spec-compiler/contracts";
 
 const canDeriveRole = (
 	accessPlan: CompiledAccessPlan,

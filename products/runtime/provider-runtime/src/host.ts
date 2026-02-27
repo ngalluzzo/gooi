@@ -2,6 +2,10 @@ import type { HostActivationPolicyPort } from "@gooi/host-contracts/activation-p
 import { createStrictActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
 import type { HostClockPort } from "@gooi/host-contracts/clock";
 import { createSystemClockPort } from "@gooi/host-contracts/clock";
+import {
+	createFailingCapabilityDelegationPort,
+	type HostCapabilityDelegationPort,
+} from "@gooi/host-contracts/delegation";
 
 /**
  * Host port set consumed by provider activation and lifecycle orchestration.
@@ -11,6 +15,8 @@ export interface ProviderRuntimeHostPorts {
 	readonly clock: HostClockPort;
 	/** Activation policy port used for host-version alignment checks. */
 	readonly activationPolicy: HostActivationPolicyPort;
+	/** Delegation port used for cross-host capability invocation. */
+	readonly capabilityDelegation: HostCapabilityDelegationPort;
 }
 
 /**
@@ -22,4 +28,5 @@ export const createDefaultProviderRuntimeHostPorts =
 	(): ProviderRuntimeHostPorts => ({
 		clock: createSystemClockPort(),
 		activationPolicy: createStrictActivationPolicyPort(),
+		capabilityDelegation: createFailingCapabilityDelegationPort(),
 	});

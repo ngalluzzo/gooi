@@ -1,5 +1,6 @@
 import type {
 	BindingPlan,
+	CapabilityBindingResolution,
 	DeploymentLockfile,
 } from "@gooi/binding/binding-plan";
 import type {
@@ -221,4 +222,11 @@ export interface ActivatedProvider {
 	readonly instance: ProviderInstance;
 	/** Capability contracts indexed by `portId@portVersion`. */
 	readonly contracts: ReadonlyMap<string, CapabilityPortContract>;
+	/** Optional binding resolution map keyed by `portId@portVersion`. */
+	readonly bindingResolutions?: ReadonlyMap<
+		string,
+		CapabilityBindingResolution
+	>;
+	/** Host ports used for invocation-time policy and delegation decisions. */
+	readonly hostPorts: ProviderRuntimeHostPorts;
 }

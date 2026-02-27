@@ -15,7 +15,9 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
 - Hard-fail activation when binding/lockfile checks fail
-- Fail-hard capability reachability enforcement (`capability_unreachable_error`)
+- Deterministic reachability execution semantics (`local` / `delegated` / `capability_unreachable_error`)
+- Delegated invocation path uses explicit `delegateRouteId` from deployment artifacts
+- No implicit local fallback when delegated invocation fails
 - Typed invocation envelope (`principal`, `ctx`, `input`)
 - Input/output/error payload validation via contract Zod schemas
 - Observed-effect enforcement against declared capability effects

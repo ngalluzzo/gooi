@@ -32,12 +32,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/compile/compile-bundle.ts --outfile ./dist/compile/compile-bundle.js --external zod --external @gooi/artifact-model/bundle --external @gooi/artifact-model/manifest --external @gooi/capability-contracts/capability-port --external @gooi/stable-json && bun build ./src/compile/compile.contracts.ts --outfile ./dist/compile/compile.contracts.js --external zod --external @gooi/capability-contracts/capability-port && bun build ./src/authoring-spec/authoring-spec.ts --outfile ./dist/authoring-spec/authoring-spec.js --external zod",
+		"build": "bun build ./src/compile/compile-bundle.ts --outfile ./dist/compile/compile-bundle.js --external zod --external @gooi/app-spec-contracts/spec --external @gooi/artifact-model/bundle --external @gooi/artifact-model/manifest --external @gooi/capability-contracts/capability-port --external @gooi/stable-json && bun build ./src/compile/compile.contracts.ts --outfile ./dist/compile/compile.contracts.js --external zod --external @gooi/capability-contracts/capability-port && bun build ./src/authoring-spec/authoring-spec.ts --outfile ./dist/authoring-spec/authoring-spec.js --external zod --external @gooi/app-spec-contracts/spec",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/artifact-model": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",

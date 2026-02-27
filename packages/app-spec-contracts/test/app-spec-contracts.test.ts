@@ -5,7 +5,19 @@ import { parseGooiAppSpec } from "../src/spec/spec";
 
 describe("app-spec-contracts scaffold", () => {
 	test("parses app spec", () => {
-		const parsed = parseGooiAppSpec({ app: { id: "demo" } });
+		const parsed = parseGooiAppSpec({
+			app: { id: "demo", name: "Demo", tz: "UTC" },
+			domain: {},
+			session: { fields: {} },
+			views: { nodes: [], screens: [] },
+			queries: [],
+			mutations: [],
+			routes: [],
+			personas: {},
+			scenarios: {},
+			wiring: { surfaces: {} },
+			access: { default_policy: "deny", roles: {} },
+		});
 		expect(parsed.app.id).toBe("demo");
 	});
 

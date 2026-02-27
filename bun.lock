@@ -56,6 +56,13 @@
         "@gooi/conformance": "workspace:*",
       },
     },
+    "packages/app-spec-contracts": {
+      "name": "@gooi/app-spec-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
     "packages/artifact-model": {
       "name": "@gooi/artifact-model",
       "version": "0.1.0",
@@ -155,6 +162,7 @@
       "name": "@gooi/spec-compiler",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
@@ -772,6 +780,8 @@
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
 
     "@gooi-marketplace/memory": ["@gooi-marketplace/memory@workspace:marketplace/memory"],
+
+    "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:packages/app-spec-contracts"],
 
     "@gooi/artifact-model": ["@gooi/artifact-model@workspace:packages/artifact-model"],
 

@@ -1,7 +1,6 @@
 import { getMissingHostPortSetMembers } from "@gooi/host-contracts/portset";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import { bindSurfaceInput } from "@gooi/surface-runtime";
 import { buildRuntimeActivationReport } from "../activation/runtime-activation-report";
 import { validateSchemaProfile } from "../activation/schema-profile";
 import { validateRuntimeArtifactManifest } from "../activation/validate-artifact-manifest";
@@ -96,31 +95,11 @@ export const runEntrypointThroughKernel = async (
 		);
 	}
 
-	const bound = bindSurfaceInput({
-		request: input.request,
-		entrypoint,
-		binding: input.binding,
-	});
-	if (!bound.ok) {
-		return errorResult(
-			baseInvocation,
-			input.bundle.artifactHash,
-			startedAt,
-			hostPorts.clock.nowIso,
-			errorEnvelope(
-				"binding_error",
-				bound.error.message,
-				false,
-				bound.error.details,
-			),
-		);
-	}
-
 	const resolvedInvocation = {
 		...baseInvocation,
 		entrypointId: entrypoint.id,
 		entrypointKind: entrypoint.kind,
-		input: bound.value,
+		input: input.payload,
 	};
 
 	const schemaValidation = validateSchemaProfile({
@@ -134,7 +113,7 @@ export const runEntrypointThroughKernel = async (
 		return schemaValidation.result;
 	}
 
-	const validatedInput = validateEntrypointInput(entrypoint, bound.value);
+	const validatedInput = validateEntrypointInput(entrypoint, input.payload);
 	if (!validatedInput.ok) {
 		return errorResult(
 			resolvedInvocation,

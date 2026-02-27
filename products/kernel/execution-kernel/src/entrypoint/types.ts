@@ -1,16 +1,15 @@
 import type {
+	CompiledEntrypointBundle,
+	CompiledSurfaceBinding,
+} from "@gooi/app-spec-contracts/compiled";
+import type {
 	HostPortContractIssue,
 	HostPortSet as SharedHostPortSet,
 } from "@gooi/host-contracts/portset";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
-import type {
-	CompiledEntrypointBundle,
-	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
 export type KernelEntrypointHostPortSet = SharedHostPortSet<
 	PrincipalContext,
@@ -20,7 +19,7 @@ export type KernelEntrypointHostPortSet = SharedHostPortSet<
 export interface RunEntrypointThroughKernelInput {
 	readonly bundle: CompiledEntrypointBundle;
 	readonly binding: CompiledSurfaceBinding;
-	readonly request: SurfaceRequestPayload;
+	readonly payload: Readonly<Record<string, unknown>>;
 	readonly principal: PrincipalContext;
 	readonly domainRuntime: KernelSemanticRuntimePort;
 	readonly hostPorts: KernelEntrypointHostPortSet;

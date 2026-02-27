@@ -47,6 +47,12 @@
 			"import": "./dist/module-loader/module-loader.js",
 			"default": "./dist/module-loader/module-loader.js"
 		},
+		"./module-integrity": {
+			"types": "./src/module-integrity/module-integrity.ts",
+			"bun": "./src/module-integrity/module-integrity.ts",
+			"import": "./dist/module-integrity/module-integrity.js",
+			"default": "./dist/module-integrity/module-integrity.js"
+		},
 		"./delegation": {
 			"types": "./src/delegation/delegation.ts",
 			"bun": "./src/delegation/delegation.ts",
@@ -62,7 +68,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/result/result.ts --outfile ./dist/result/result.js && bun build ./src/clock/clock.ts --outfile ./dist/clock/clock.js && bun build ./src/identity/identity.ts --outfile ./dist/identity/identity.js && bun build ./src/principal/principal.ts --outfile ./dist/principal/principal.js && bun build ./src/replay/replay.ts --outfile ./dist/replay/replay.js && bun build ./src/activation-policy/activation-policy.ts --outfile ./dist/activation-policy/activation-policy.js && bun build ./src/module-loader/module-loader.ts --outfile ./dist/module-loader/module-loader.js && bun build ./src/delegation/delegation.ts --outfile ./dist/delegation/delegation.js",
+		"build": "bun build ./src/result/result.ts --outfile ./dist/result/result.js && bun build ./src/clock/clock.ts --outfile ./dist/clock/clock.js && bun build ./src/identity/identity.ts --outfile ./dist/identity/identity.js && bun build ./src/principal/principal.ts --outfile ./dist/principal/principal.js && bun build ./src/replay/replay.ts --outfile ./dist/replay/replay.js && bun build ./src/activation-policy/activation-policy.ts --outfile ./dist/activation-policy/activation-policy.js && bun build ./src/module-loader/module-loader.ts --outfile ./dist/module-loader/module-loader.js && bun build ./src/module-integrity/module-integrity.ts --outfile ./dist/module-integrity/module-integrity.js && bun build ./src/delegation/delegation.ts --outfile ./dist/delegation/delegation.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

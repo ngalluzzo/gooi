@@ -238,6 +238,7 @@ export const runHostConformance = async (
 
 	const providerId = "gooi.providers.host.conformance";
 	const providerVersion = "1.0.0";
+	const providerSpecifier = "conformance/host-provider";
 	let capturedActivatedAt = "";
 	const providerModule: ProviderModule = {
 		manifest: {
@@ -272,6 +273,17 @@ export const runHostConformance = async (
 			assertHostVersionAligned: () => hostOk(undefined),
 		},
 		capabilityDelegation: createFailingCapabilityDelegationPort(),
+		moduleLoader: {
+			loadModule: async (specifier: string) => {
+				if (specifier !== providerSpecifier) {
+					throw new Error(`Unknown provider module specifier: ${specifier}`);
+				}
+				return providerModule;
+			},
+		},
+		moduleIntegrity: {
+			assertModuleIntegrity: async () => hostOk(undefined),
+		},
 	};
 	const providerRuntime = createProviderRuntime({
 		hostApiVersion: input.providerHostApiVersion,
@@ -280,7 +292,7 @@ export const runHostConformance = async (
 	});
 
 	const providerActivation = await providerRuntime.activate({
-		providerModule,
+		providerSpecifier,
 	});
 
 	checks.push(
@@ -316,7 +328,7 @@ export const runHostConformance = async (
 	);
 
 	const rejectingPolicyActivation = await providerRuntime.activate({
-		providerModule,
+		providerSpecifier,
 		bindingPlan: alignedPlan,
 		lockfile: alignedLockfile,
 		hostPorts: {
@@ -329,6 +341,8 @@ export const runHostConformance = async (
 					),
 			},
 			capabilityDelegation: providerHostPorts.capabilityDelegation,
+			moduleLoader: providerHostPorts.moduleLoader,
+			moduleIntegrity: providerHostPorts.moduleIntegrity,
 		},
 	});
 
@@ -352,8 +366,9 @@ export const runHostConformance = async (
 		createProviderRuntime({
 			hostApiVersion: input.providerHostApiVersion,
 			contracts: [input.providerContract],
+			hostPorts: providerHostPorts,
 		}).activate({
-			providerModule,
+			providerSpecifier,
 			hostPorts: hostPorts as never,
 		});
 
@@ -380,6 +395,22 @@ export const runHostConformance = async (
 			hostPorts: {
 				...providerHostPorts,
 				capabilityDelegation: {},
+			},
+		},
+		{
+			id: "provider_missing_module_loader_rejected",
+			path: "moduleLoader.loadModule",
+			hostPorts: {
+				...providerHostPorts,
+				moduleLoader: {},
+			},
+		},
+		{
+			id: "provider_missing_module_integrity_rejected",
+			path: "moduleIntegrity.assertModuleIntegrity",
+			hostPorts: {
+				...providerHostPorts,
+				moduleIntegrity: {},
 			},
 		},
 	] as const;

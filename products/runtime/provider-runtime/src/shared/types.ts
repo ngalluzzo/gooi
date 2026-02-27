@@ -128,8 +128,8 @@ export interface ProviderModule {
  * Activation arguments for provider runtime.
  */
 export interface ActivateProviderInput {
-	/** Untrusted provider module loaded from runtime. */
-	readonly providerModule: ProviderModule;
+	/** Host-resolved module specifier for provider loading. */
+	readonly providerSpecifier: string;
 	/** Host API version for compatibility checks. */
 	readonly hostApiVersion: string;
 	/** Capability contracts expected to be fulfilled by this activation. */
@@ -140,8 +140,8 @@ export interface ActivateProviderInput {
 	readonly lockfile?: DeploymentLockfile;
 	/** Optional activation timestamp override. */
 	readonly activatedAt?: string;
-	/** Optional host ports for clock and activation policy behavior. */
-	readonly hostPorts?: ProviderRuntimeHostPorts;
+	/** Host ports for runtime orchestration and provider module integrity. */
+	readonly hostPorts: ProviderRuntimeHostPorts;
 }
 
 /**
@@ -156,16 +156,16 @@ export interface CreateProviderRuntimeInput {
 	readonly bindingPlan?: BindingPlan;
 	/** Optional lockfile artifact for deterministic provider resolution. */
 	readonly lockfile?: DeploymentLockfile;
-	/** Optional host ports for clock and activation policy behavior. */
-	readonly hostPorts?: ProviderRuntimeHostPorts;
+	/** Host ports for runtime orchestration and provider module integrity. */
+	readonly hostPorts: ProviderRuntimeHostPorts;
 }
 
 /**
  * Activation input for one provider module under runtime defaults.
  */
 export interface ActivateProviderRuntimeInput {
-	/** Untrusted provider module loaded from runtime. */
-	readonly providerModule: ProviderModule;
+	/** Host-resolved module specifier for provider loading. */
+	readonly providerSpecifier: string;
 	/** Optional host API version override. */
 	readonly hostApiVersion?: string;
 	/** Optional capability contract override. */
@@ -176,7 +176,7 @@ export interface ActivateProviderRuntimeInput {
 	readonly lockfile?: DeploymentLockfile;
 	/** Optional activation timestamp override. */
 	readonly activatedAt?: string;
-	/** Optional host ports for clock and activation policy behavior. */
+	/** Optional host ports override for runtime orchestration and provider module integrity. */
 	readonly hostPorts?: ProviderRuntimeHostPorts;
 }
 

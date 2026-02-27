@@ -18,7 +18,7 @@ const buildActivate = (
 		const resolvedHostPorts = activateInput.hostPorts ?? input.hostPorts;
 
 		return activateProviderFeature({
-			providerModule: activateInput.providerModule,
+			providerSpecifier: activateInput.providerSpecifier,
 			hostApiVersion: activateInput.hostApiVersion ?? input.hostApiVersion,
 			contracts: activateInput.contracts ?? input.contracts,
 			...(resolvedBindingPlan === undefined
@@ -28,9 +28,7 @@ const buildActivate = (
 			...(activateInput.activatedAt === undefined
 				? {}
 				: { activatedAt: activateInput.activatedAt }),
-			...(resolvedHostPorts === undefined
-				? {}
-				: { hostPorts: resolvedHostPorts }),
+			hostPorts: resolvedHostPorts,
 		});
 	};
 };
@@ -55,7 +53,7 @@ const buildRun = (
 ): ProviderRuntime["run"] => {
 	return async (runInput) => {
 		const activated = await activate({
-			providerModule: runInput.providerModule,
+			providerSpecifier: runInput.providerSpecifier,
 			...(runInput.hostApiVersion === undefined
 				? {}
 				: { hostApiVersion: runInput.hostApiVersion }),

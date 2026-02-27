@@ -80,6 +80,13 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/guard-contracts": {
+      "name": "@gooi/guard-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
     "packages/host-contracts": {
       "name": "@gooi/host-contracts",
       "version": "0.1.0",
@@ -97,6 +104,14 @@
     "packages/provider-manifest": {
       "name": "@gooi/provider-manifest",
       "version": "0.1.0",
+    },
+    "packages/scenario-contracts": {
+      "name": "@gooi/scenario-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/guard-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
     },
     "packages/surface-contracts": {
       "name": "@gooi/surface-contracts",
@@ -162,16 +177,30 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/guard-runtime": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "@gooi/language-server": "workspace:*",
         "@gooi/projection-contracts": "workspace:*",
         "@gooi/projection-runtime": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
+        "@gooi/scenario-contracts": "workspace:*",
+        "@gooi/scenario-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "@gooi/symbol-graph": "workspace:*",
         "zod": "^4.3.6",
+      },
+    },
+    "products/quality/scenario-runtime": {
+      "name": "@gooi/scenario-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/guard-runtime": "workspace:*",
+        "@gooi/scenario-contracts": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
       },
     },
     "products/runtime/domain-runtime": {
@@ -197,6 +226,14 @@
         "@gooi/surface-contracts": "workspace:*",
         "@gooi/surface-runtime": "workspace:*",
         "zod": "^4.3.6",
+      },
+    },
+    "products/runtime/guard-runtime": {
+      "name": "@gooi/guard-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
       },
     },
     "products/runtime/projection-runtime": {
@@ -747,6 +784,10 @@
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 
+    "@gooi/guard-contracts": ["@gooi/guard-contracts@workspace:packages/guard-contracts"],
+
+    "@gooi/guard-runtime": ["@gooi/guard-runtime@workspace:products/runtime/guard-runtime"],
+
     "@gooi/host-contracts": ["@gooi/host-contracts@workspace:packages/host-contracts"],
 
     "@gooi/language-server": ["@gooi/language-server@workspace:products/authoring/language-server"],
@@ -758,6 +799,10 @@
     "@gooi/provider-manifest": ["@gooi/provider-manifest@workspace:packages/provider-manifest"],
 
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:products/runtime/provider-runtime"],
+
+    "@gooi/scenario-contracts": ["@gooi/scenario-contracts@workspace:packages/scenario-contracts"],
+
+    "@gooi/scenario-runtime": ["@gooi/scenario-runtime@workspace:products/quality/scenario-runtime"],
 
     "@gooi/spec-compiler": ["@gooi/spec-compiler@workspace:products/authoring/spec-compiler"],
 

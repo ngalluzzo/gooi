@@ -281,6 +281,72 @@ export interface CompiledJsonSchemaArtifact {
 }
 
 /**
+ * Canonical compiled section snapshots for full app-spec coverage.
+ */
+export interface CompiledCanonicalSections {
+	/** Compiled `app` section. */
+	readonly app: Readonly<Record<string, unknown>>;
+	/** Compiled `domain` section. */
+	readonly domain: Readonly<Record<string, unknown>>;
+	/** Compiled `session` section. */
+	readonly session: Readonly<Record<string, unknown>>;
+	/** Compiled `views` section. */
+	readonly views: Readonly<Record<string, unknown>>;
+	/** Compiled `routes` section. */
+	readonly routes: readonly Readonly<Record<string, unknown>>[];
+	/** Compiled `personas` section. */
+	readonly personas: Readonly<Record<string, unknown>>;
+	/** Compiled `scenarios` section. */
+	readonly scenarios: Readonly<Record<string, unknown>>;
+	/** Compiled `wiring` section. */
+	readonly wiring: Readonly<Record<string, unknown>>;
+	/** Compiled `access` section. */
+	readonly access: Readonly<Record<string, unknown>>;
+}
+
+/**
+ * Deterministic cross-section reference index emitted by canonical normalization.
+ */
+export interface CanonicalSpecModelReferenceIndex {
+	/** Query ids from `queries`. */
+	readonly queryIds: readonly string[];
+	/** Mutation ids from `mutations`. */
+	readonly mutationIds: readonly string[];
+	/** Route ids from `routes`. */
+	readonly routeIds: readonly string[];
+	/** View screen ids from `views.screens`. */
+	readonly screenIds: readonly string[];
+	/** Domain action ids from `domain.actions`. */
+	readonly actionIds: readonly string[];
+	/** Domain projection ids from `domain.projections`. */
+	readonly projectionIds: readonly string[];
+	/** Capability references keyed by `<id>@<version>`. */
+	readonly capabilityRefs: readonly string[];
+	/** Persona ids from `personas`. */
+	readonly personaIds: readonly string[];
+	/** Scenario ids from `scenarios`. */
+	readonly scenarioIds: readonly string[];
+}
+
+/**
+ * Canonical in-memory model produced before lane compilation.
+ */
+export interface CanonicalSpecModel {
+	/** Normalized full-spec sections. */
+	readonly sections: CompiledCanonicalSections;
+	/** Deterministic reference index for semantic validation. */
+	readonly references: CanonicalSpecModelReferenceIndex;
+	/** Parsed query entrypoint declarations in author order. */
+	readonly queries: readonly Readonly<Record<string, unknown>>[];
+	/** Parsed mutation entrypoint declarations in author order. */
+	readonly mutations: readonly Readonly<Record<string, unknown>>[];
+	/** Parsed wiring section. */
+	readonly wiring: Readonly<Record<string, unknown>>;
+	/** Parsed views section. */
+	readonly views: Readonly<Record<string, unknown>>;
+}
+
+/**
  * Canonical compiled artifact consumed by entrypoint runtime.
  */
 export interface CompiledEntrypointBundle {
@@ -292,6 +358,8 @@ export interface CompiledEntrypointBundle {
 	readonly sourceSpecHash: string;
 	/** SHA-256 hash of normalized compiled bundle JSON excluding this field. */
 	readonly artifactHash: string;
+	/** Canonical compiled full-spec section snapshots. */
+	readonly sections: CompiledCanonicalSections;
 	/** Entrypoint contracts keyed by `<kind>:<id>`. */
 	readonly entrypoints: Readonly<Record<string, CompiledEntrypoint>>;
 	/** Surface bindings keyed by `<surface>:<kind>:<id>`. */

@@ -7,6 +7,19 @@ describe("entrypoint-runtime", () => {
 		const compiled = compileEntrypointBundle({
 			compilerVersion: "1.0.0",
 			spec: {
+				app: {
+					id: "validation_fixture_app",
+					name: "Validation Fixture App",
+					tz: "UTC",
+				},
+				domain: {
+					projections: {
+						latest_messages: {},
+					},
+				},
+				session: {
+					fields: {},
+				},
 				access: {
 					default_policy: "deny",
 					roles: { authenticated: {} },
@@ -20,6 +33,9 @@ describe("entrypoint-runtime", () => {
 					},
 				],
 				mutations: [],
+				routes: [],
+				personas: {},
+				scenarios: {},
 				wiring: {
 					surfaces: {
 						http: {
@@ -30,6 +46,10 @@ describe("entrypoint-runtime", () => {
 							},
 						},
 					},
+				},
+				views: {
+					nodes: [],
+					screens: [],
 				},
 			},
 		});
@@ -82,6 +102,19 @@ describe("entrypoint-runtime", () => {
 		const compiled = compileEntrypointBundle({
 			compilerVersion: "1.0.0",
 			spec: {
+				app: {
+					id: "schema_profile_fixture_app",
+					name: "Schema Profile Fixture App",
+					tz: "UTC",
+				},
+				domain: {
+					projections: {
+						latest_messages: {},
+					},
+				},
+				session: {
+					fields: {},
+				},
 				access: {
 					default_policy: "deny",
 					roles: { authenticated: {} },
@@ -95,6 +128,9 @@ describe("entrypoint-runtime", () => {
 					},
 				],
 				mutations: [],
+				routes: [],
+				personas: {},
+				scenarios: {},
 				wiring: {
 					surfaces: {
 						http: {
@@ -105,6 +141,10 @@ describe("entrypoint-runtime", () => {
 							},
 						},
 					},
+				},
+				views: {
+					nodes: [],
+					screens: [],
 				},
 			},
 		});

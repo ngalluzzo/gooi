@@ -62,6 +62,19 @@ describe("entrypoint-runtime host port set", () => {
 		const compiled = compileEntrypointBundle({
 			compilerVersion: "1.0.0",
 			spec: {
+				app: {
+					id: "host_ports_fixture_app",
+					name: "Host Ports Fixture App",
+					tz: "UTC",
+				},
+				domain: {
+					projections: {
+						latest_messages: {},
+					},
+				},
+				session: {
+					fields: {},
+				},
 				access: {
 					default_policy: "deny",
 					roles: { authenticated: {} },
@@ -75,6 +88,9 @@ describe("entrypoint-runtime host port set", () => {
 					},
 				],
 				mutations: [],
+				routes: [],
+				personas: {},
+				scenarios: {},
 				wiring: {
 					surfaces: {
 						http: {
@@ -85,6 +101,10 @@ describe("entrypoint-runtime host port set", () => {
 							},
 						},
 					},
+				},
+				views: {
+					nodes: [],
+					screens: [],
 				},
 			},
 		});

@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/spec-compiler",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"main": "./dist/compile/compile-bundle.js",
 	"types": "./src/compile/compile-bundle.ts",

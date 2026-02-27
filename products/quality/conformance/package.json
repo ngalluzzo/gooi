@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/conformance",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"main": "./dist/provider-conformance/run-provider-conformance.js",
 	"types": "./src/provider-conformance/run-provider-conformance.ts",

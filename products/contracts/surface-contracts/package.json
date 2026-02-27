@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/surface-contracts",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"main": "./dist/surface-request/surface-request.js",
 	"types": "./src/surface-request/surface-request.ts",

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [04cf668]
+- Updated dependencies [04cf668]
+- Updated dependencies [04cf668]
+- Updated dependencies [b6b2b2c]
+  - @gooi/language-server@0.2.0
+  - @gooi/capability-index@0.1.1
+
 ## 0.1.0
 
 - Added first-party VS Code extension app scaffold for Gooi authoring intelligence.

@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/capability-index",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"main": "./dist/build-capability-index-snapshot/build-capability-index-snapshot.js",
 	"types": "./src/build-capability-index-snapshot/build-capability-index-snapshot.ts",

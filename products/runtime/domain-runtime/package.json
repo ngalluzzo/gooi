@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/domain-runtime",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"main": "./dist/runtime/create-domain-runtime.js",
 	"types": "./src/runtime/create-domain-runtime.ts",

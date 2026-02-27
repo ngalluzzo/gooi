@@ -3,7 +3,7 @@
 	"displayName": "Gooi",
 	"description": "First-party VS Code extension for Gooi authoring intelligence.",
 	"publisher": "ngalluzzo",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"private": true,
 	"type": "module",
 	"main": "./dist/extension.js",

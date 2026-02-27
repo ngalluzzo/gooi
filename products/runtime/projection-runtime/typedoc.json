@@ -1,0 +1,7 @@
+{
+	"entryPoints": [
+		"./src/execute/execute-projection.ts",
+		"./src/execute/refresh-impact.ts"
+	],
+	"out": "docs"
+}

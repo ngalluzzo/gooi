@@ -1,0 +1,38 @@
+{
+	"name": "@gooi/projection-runtime",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/execute/execute-projection.js",
+	"types": "./src/execute/execute-projection.ts",
+	"exports": {
+		".": {
+			"types": "./src/execute/execute-projection.ts",
+			"bun": "./src/execute/execute-projection.ts",
+			"import": "./dist/execute/execute-projection.js",
+			"default": "./dist/execute/execute-projection.js"
+		},
+		"./refresh": {
+			"types": "./src/execute/refresh-impact.ts",
+			"bun": "./src/execute/refresh-impact.ts",
+			"import": "./dist/execute/refresh-impact.js",
+			"default": "./dist/execute/refresh-impact.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/execute/execute-projection.ts --outfile ./dist/execute/execute-projection.js --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/plans/timeline-history-policy --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/errors/projection-errors --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/stable-json && bun build ./src/execute/refresh-impact.ts --outfile ./dist/execute/refresh-impact.js",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/projection-contracts": "workspace:*",
+		"@gooi/stable-json": "workspace:*"
+	}
+}

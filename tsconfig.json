@@ -4,6 +4,7 @@
 		{ "path": "./apps/vscode-extension" },
 		{ "path": "./packages/artifact-model" },
 		{ "path": "./packages/provider-manifest" },
+		{ "path": "./packages/contract-primitives" },
 		{ "path": "./packages/capability-contracts" },
 		{ "path": "./packages/app-spec-contracts" },
 		{ "path": "./packages/binding" },

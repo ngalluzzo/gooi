@@ -1,0 +1,37 @@
+{
+	"name": "@gooi/contract-primitives",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/json/json.js",
+	"types": "./src/json/json.ts",
+	"exports": {
+		"./json": {
+			"types": "./src/json/json.ts",
+			"bun": "./src/json/json.ts",
+			"import": "./dist/json/json.js",
+			"default": "./dist/json/json.js"
+		},
+		"./extensions": {
+			"types": "./src/extensions/extensions.ts",
+			"bun": "./src/extensions/extensions.ts",
+			"import": "./dist/extensions/extensions.js",
+			"default": "./dist/extensions/extensions.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/json/json.ts --outfile ./dist/json/json.js --external zod && bun build ./src/extensions/extensions.ts --outfile ./dist/extensions/extensions.js --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	}
+}

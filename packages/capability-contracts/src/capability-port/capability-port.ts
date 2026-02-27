@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import {
 	normalizeForStableJson,
 	sha256,
@@ -57,7 +58,7 @@ export const hostProviderSchemaProfile = hostProviderSchemaProfileSchema.value;
 /**
  * Generic JSON object used for generated JSON Schema artifacts.
  */
-export type JsonSchema = Readonly<Record<string, unknown>>;
+export type JsonSchema = JsonObject;
 
 const jsonSchemaSchema = z.record(z.string(), z.unknown());
 

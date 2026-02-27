@@ -92,6 +92,7 @@
       "name": "@gooi/capability-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/provider-manifest": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
@@ -102,6 +103,13 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "packages/contract-primitives": {
+      "name": "@gooi/contract-primitives",
+      "version": "0.1.0",
+      "dependencies": {
         "zod": "^4.3.6",
       },
     },
@@ -808,6 +816,8 @@
     "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
 
     "@gooi/conformance-contracts": ["@gooi/conformance-contracts@workspace:packages/conformance-contracts"],
+
+    "@gooi/contract-primitives": ["@gooi/contract-primitives@workspace:packages/contract-primitives"],
 
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 

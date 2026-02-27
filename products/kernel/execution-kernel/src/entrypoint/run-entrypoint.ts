@@ -231,14 +231,4 @@ export const runEntrypointThroughKernel = async (
 	return result;
 };
 
-export type {
-	DomainRuntimePort,
-	HostPortContractIssue,
-	HostPortSet,
-	KernelEntrypointHostPortSet,
-	KernelSemanticExecutionInput,
-	KernelSemanticExecutionResult,
-	KernelSemanticRuntimePort,
-	RunEntrypointInput,
-	RunEntrypointThroughKernelInput,
-} from "./types";
+export type { RunEntrypointThroughKernelInput } from "./types";

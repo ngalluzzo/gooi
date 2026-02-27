@@ -13,5 +13,5 @@
 	"excludeInternal": true,
 	"readme": "none",
 	"plugin": ["typedoc-plugin-markdown"],
-	"out": "../../apps/docs/docs/api/authoring-contracts"
+	"out": "../../../apps/docs/docs/api/authoring-contracts"
 }

@@ -17,7 +17,7 @@
   - Marketplace architecture: [RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md)
   - Marketplace resolution: [RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md)
   - Marketplace trust: [RFC-0018-marketplace-trust-certification-and-supply-chain-security.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0018-marketplace-trust-certification-and-supply-chain-security.md)
-  - Host contracts package: [package.json](/Users/ngalluzzo/repos/gooi/packages/host-contracts/package.json)
+  - Host contracts package: [package.json](/Users/ngalluzzo/repos/gooi/products/contracts/host-contracts/package.json)
   - Marketplace memory package: [package.json](/Users/ngalluzzo/repos/gooi/marketplace/memory/package.json)
   - Entrypoint runtime host API: [host.ts](/Users/ngalluzzo/repos/gooi/products/runtime/entrypoint-runtime/src/host.ts)
   - Provider runtime host API: [host.ts](/Users/ngalluzzo/repos/gooi/products/runtime/provider-runtime/src/host.ts)
@@ -219,7 +219,7 @@ Must-not-cross constraints:
 ## API and module plan
 
 - Feature-oriented module layout:
-  - `packages/host-contracts/src/<feature>/<feature>.ts`
+  - `products/contracts/host-contracts/src/<feature>/<feature>.ts`
   - `marketplace/memory/src/<feature>/<feature>.ts`
   - `products/runtime/entrypoint-runtime/src/{engine.ts,host.ts,domain.ts}`
   - `products/runtime/provider-runtime/src/{engine.ts,host.ts}`
@@ -238,7 +238,7 @@ Must-not-cross constraints:
 ## Package boundary classification
 
 - Proposed location(s):
-  - `packages/host-contracts`
+  - `products/contracts/host-contracts`
   - `products/runtime/entrypoint-runtime`
   - `products/runtime/provider-runtime`
   - `products/quality/conformance`
@@ -270,7 +270,7 @@ Phase 1: Host contracts feature decomposition and provider constructors
 - Exit criteria:
   - all core host features have contract + provider constructor surfaces.
 - Deliverables:
-  - feature files under `packages/host-contracts/src/*`.
+  - feature files under `products/contracts/host-contracts/src/*`.
 
 Phase 2: Runtime host API cleanup
 

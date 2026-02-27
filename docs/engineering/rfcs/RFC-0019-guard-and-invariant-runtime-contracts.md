@@ -247,7 +247,7 @@ Feature-oriented module layout:
    - `src/flow-guards/*`
    - `src/projection-guards/*`
    - `src/policies/*`
-2. `packages/guard-contracts`
+2. `products/contracts/guard-contracts`
    - guard/invariant schemas, envelopes, and error contracts.
 
 Public APIs via `package.json` exports:
@@ -268,7 +268,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/runtime/guard-runtime`
-  - `packages/guard-contracts`
+  - `products/contracts/guard-contracts`
 - Lane (if `products/*`):
   - `runtime`
 - Why this boundary is correct:

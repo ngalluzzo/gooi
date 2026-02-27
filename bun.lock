@@ -57,27 +57,10 @@
         "@gooi/conformance": "workspace:*",
       },
     },
-    "packages/app-spec-contracts": {
-      "name": "@gooi/app-spec-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "zod": "^4.3.6",
-      },
-    },
     "packages/artifact-model": {
       "name": "@gooi/artifact-model",
       "version": "0.1.0",
       "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/stable-json": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/authoring-contracts": {
-      "name": "@gooi/authoring-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
@@ -90,81 +73,11 @@
         "zod": "^4.3.6",
       },
     },
-    "packages/capability-contracts": {
-      "name": "@gooi/capability-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/provider-manifest": "workspace:*",
-        "@gooi/stable-json": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/conformance-contracts": {
-      "name": "@gooi/conformance-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/app-spec-contracts": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/contract-primitives": {
-      "name": "@gooi/contract-primitives",
-      "version": "0.1.0",
-      "dependencies": {
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/guard-contracts": {
-      "name": "@gooi/guard-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/host-contracts": {
-      "name": "@gooi/host-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/provider-manifest": "workspace:*",
-      },
-    },
-    "packages/projection-contracts": {
-      "name": "@gooi/projection-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/guard-contracts": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
     "packages/provider-manifest": {
       "name": "@gooi/provider-manifest",
       "version": "0.1.0",
       "dependencies": {
         "@gooi/contract-primitives": "workspace:*",
-      },
-    },
-    "packages/scenario-contracts": {
-      "name": "@gooi/scenario-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/guard-contracts": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "packages/surface-contracts": {
-      "name": "@gooi/surface-contracts",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/capability-contracts": "workspace:*",
-        "@gooi/contract-primitives": "workspace:*",
-        "@gooi/host-contracts": "workspace:*",
-        "@gooi/spec-compiler": "workspace:*",
-        "zod": "^4.3.6",
       },
     },
     "products/authoring/capability-index": {
@@ -205,6 +118,93 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/app-spec-contracts": {
+      "name": "@gooi/app-spec-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/authoring-contracts": {
+      "name": "@gooi/authoring-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/capability-contracts": {
+      "name": "@gooi/capability-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/provider-manifest": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/conformance-contracts": {
+      "name": "@gooi/conformance-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/contract-primitives": {
+      "name": "@gooi/contract-primitives",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/guard-contracts": {
+      "name": "@gooi/guard-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/host-contracts": {
+      "name": "@gooi/host-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/provider-manifest": "workspace:*",
+      },
+    },
+    "products/contracts/projection-contracts": {
+      "name": "@gooi/projection-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/guard-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/scenario-contracts": {
+      "name": "@gooi/scenario-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/guard-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/surface-contracts": {
+      "name": "@gooi/surface-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/capability-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/spec-compiler": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -815,23 +815,23 @@
 
     "@gooi-marketplace/memory": ["@gooi-marketplace/memory@workspace:marketplace/memory"],
 
-    "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:packages/app-spec-contracts"],
+    "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:products/contracts/app-spec-contracts"],
 
     "@gooi/artifact-model": ["@gooi/artifact-model@workspace:packages/artifact-model"],
 
-    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:packages/authoring-contracts"],
+    "@gooi/authoring-contracts": ["@gooi/authoring-contracts@workspace:products/contracts/authoring-contracts"],
 
     "@gooi/binding": ["@gooi/binding@workspace:packages/binding"],
 
-    "@gooi/capability-contracts": ["@gooi/capability-contracts@workspace:packages/capability-contracts"],
+    "@gooi/capability-contracts": ["@gooi/capability-contracts@workspace:products/contracts/capability-contracts"],
 
     "@gooi/capability-index": ["@gooi/capability-index@workspace:products/authoring/capability-index"],
 
     "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
 
-    "@gooi/conformance-contracts": ["@gooi/conformance-contracts@workspace:packages/conformance-contracts"],
+    "@gooi/conformance-contracts": ["@gooi/conformance-contracts@workspace:products/contracts/conformance-contracts"],
 
-    "@gooi/contract-primitives": ["@gooi/contract-primitives@workspace:packages/contract-primitives"],
+    "@gooi/contract-primitives": ["@gooi/contract-primitives@workspace:products/contracts/contract-primitives"],
 
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 
@@ -839,15 +839,15 @@
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 
-    "@gooi/guard-contracts": ["@gooi/guard-contracts@workspace:packages/guard-contracts"],
+    "@gooi/guard-contracts": ["@gooi/guard-contracts@workspace:products/contracts/guard-contracts"],
 
     "@gooi/guard-runtime": ["@gooi/guard-runtime@workspace:products/runtime/guard-runtime"],
 
-    "@gooi/host-contracts": ["@gooi/host-contracts@workspace:packages/host-contracts"],
+    "@gooi/host-contracts": ["@gooi/host-contracts@workspace:products/contracts/host-contracts"],
 
     "@gooi/language-server": ["@gooi/language-server@workspace:products/authoring/language-server"],
 
-    "@gooi/projection-contracts": ["@gooi/projection-contracts@workspace:packages/projection-contracts"],
+    "@gooi/projection-contracts": ["@gooi/projection-contracts@workspace:products/contracts/projection-contracts"],
 
     "@gooi/projection-runtime": ["@gooi/projection-runtime@workspace:products/runtime/projection-runtime"],
 
@@ -855,7 +855,7 @@
 
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:products/runtime/provider-runtime"],
 
-    "@gooi/scenario-contracts": ["@gooi/scenario-contracts@workspace:packages/scenario-contracts"],
+    "@gooi/scenario-contracts": ["@gooi/scenario-contracts@workspace:products/contracts/scenario-contracts"],
 
     "@gooi/scenario-runtime": ["@gooi/scenario-runtime@workspace:products/quality/scenario-runtime"],
 
@@ -863,7 +863,7 @@
 
     "@gooi/stable-json": ["@gooi/stable-json@workspace:tools/stable-json"],
 
-    "@gooi/surface-contracts": ["@gooi/surface-contracts@workspace:packages/surface-contracts"],
+    "@gooi/surface-contracts": ["@gooi/surface-contracts@workspace:products/contracts/surface-contracts"],
 
     "@gooi/surface-runtime": ["@gooi/surface-runtime@workspace:products/runtime/surface-runtime"],
 

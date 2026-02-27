@@ -417,7 +417,7 @@ Feature-oriented module layout:
    - `src/history/history-completeness.ts`
    - `src/history/signal-migrations.ts`
    - `src/meta/projection-meta.ts`
-2. `packages/projection-contracts`
+2. `products/contracts/projection-contracts`
    - `src/plans/projection-plan.ts`
    - `src/plans/timeline-history-policy.ts`
    - `src/plans/signal-migration-plan.ts`
@@ -442,7 +442,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/runtime/projection-runtime`
-  - `packages/projection-contracts`
+  - `products/contracts/projection-contracts`
 - Lane (if `products/*`):
   - `runtime`
 - Why this boundary is correct:

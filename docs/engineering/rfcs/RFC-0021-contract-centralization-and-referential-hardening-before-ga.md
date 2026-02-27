@@ -84,11 +84,11 @@ Canonical boundary rule:
 
 Mandatory package moves and creations:
 
-1. Create `packages/app-spec-contracts`.
+1. Create `products/contracts/app-spec-contracts`.
 2. Move `GooiAppSpec` schema family from `@gooi/spec-compiler/authoring-spec` to `@gooi/app-spec-contracts/spec`.
 3. Move canonical compiled section contracts from `@gooi/spec-compiler/contracts` into `@gooi/app-spec-contracts/compiled` where stable and cross-lane.
-4. Move `products/authoring/authoring-contracts` to `packages/authoring-contracts` while keeping package name `@gooi/authoring-contracts`.
-5. Create `packages/conformance-contracts` for reusable conformance primitives:
+4. Move `products/authoring/authoring-contracts` to `products/contracts/authoring-contracts` while keeping package name `@gooi/authoring-contracts`.
+5. Create `products/contracts/conformance-contracts` for reusable conformance primitives:
    - `CheckResult`
    - `SuiteReport`
    - `DiagnosticRecord`
@@ -187,13 +187,13 @@ Must-not-cross constraints:
 
 Feature-oriented module layout:
 
-1. `packages/app-spec-contracts`
+1. `products/contracts/app-spec-contracts`
    - `src/spec/*`
    - `src/compiled/*`
    - `src/diagnostics/*`
-2. `packages/authoring-contracts`
+2. `products/contracts/authoring-contracts`
    - existing authoring lockfile and envelope contracts migrated from `products/authoring/authoring-contracts`.
-3. `packages/conformance-contracts`
+3. `products/contracts/conformance-contracts`
    - `src/checks/*`
    - `src/reports/*`
    - `src/diagnostics/*`
@@ -215,9 +215,9 @@ Single entry per feature:
 ## Package boundary classification
 
 - Proposed location(s):
-  - `packages/app-spec-contracts`
-  - `packages/authoring-contracts`
-  - `packages/conformance-contracts`
+  - `products/contracts/app-spec-contracts`
+  - `products/contracts/authoring-contracts`
+  - `products/contracts/conformance-contracts`
   - `products/authoring/spec-compiler`
   - `products/quality/conformance`
 - Lane (if `products/*`):
@@ -247,9 +247,9 @@ Phase 1: Contract package creation and path wiring
   - new contract packages exist with passing typecheck/tests.
   - spec-compiler and authoring imports compile against new packages.
 - Deliverables:
-  - `packages/app-spec-contracts`.
-  - `packages/conformance-contracts`.
-  - `packages/authoring-contracts` path migration.
+  - `products/contracts/app-spec-contracts`.
+  - `products/contracts/conformance-contracts`.
+  - `products/contracts/authoring-contracts` path migration.
 
 Phase 2: Referential migration and duplication removal
 

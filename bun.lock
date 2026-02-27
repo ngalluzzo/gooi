@@ -246,11 +246,11 @@
         "@gooi/conformance-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
         "@gooi/domain-runtime": "workspace:*",
-        "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/execution-kernel": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
         "@gooi/guard-runtime": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/language-server": "workspace:*",
         "@gooi/marketplace-contracts": "workspace:*",
         "@gooi/projection-contracts": "workspace:*",
@@ -286,23 +286,6 @@
         "@gooi/kernel-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
-        "zod": "^4.3.6",
-      },
-    },
-    "products/runtime/entrypoint-runtime": {
-      "name": "@gooi/entrypoint-runtime",
-      "version": "0.1.0",
-      "dependencies": {
-        "@gooi/app-spec-contracts": "workspace:*",
-        "@gooi/artifact-model": "workspace:*",
-        "@gooi/capability-contracts": "workspace:*",
-        "@gooi/execution-kernel": "workspace:*",
-        "@gooi/host-contracts": "workspace:*",
-        "@gooi/kernel-contracts": "workspace:*",
-        "@gooi/spec-compiler": "workspace:*",
-        "@gooi/stable-json": "workspace:*",
-        "@gooi/surface-contracts": "workspace:*",
-        "@gooi/surface-runtime": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -878,8 +861,6 @@
     "@gooi/docs": ["@gooi/docs@workspace:apps/docs"],
 
     "@gooi/domain-runtime": ["@gooi/domain-runtime@workspace:products/runtime/domain-runtime"],
-
-    "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 
     "@gooi/execution-kernel": ["@gooi/execution-kernel@workspace:products/kernel/execution-kernel"],
 

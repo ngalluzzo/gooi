@@ -1,4 +1,3 @@
-import { runEntrypoint } from "@gooi/entrypoint-runtime";
 import { createHostReplayStorePort } from "@gooi/host-contracts/replay";
 import {
 	areHostPortConformanceChecksPassing,
@@ -8,6 +7,7 @@ import type {
 	EntrypointConformanceReport,
 	RunEntrypointConformanceInput,
 } from "./contracts";
+import { runEntrypoint } from "./run-entrypoint-through-kernel";
 
 /**
  * Runs the RFC-0002 entrypoint runtime conformance suite.

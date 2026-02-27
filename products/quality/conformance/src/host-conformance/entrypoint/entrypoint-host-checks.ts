@@ -1,8 +1,8 @@
-import {
-	createDefaultHostPorts,
-	createEntrypointRuntime,
-} from "@gooi/entrypoint-runtime";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import {
+	createDefaultConformanceHostPorts,
+	runEntrypoint,
+} from "../../entrypoint-conformance/run-entrypoint-through-kernel";
 import { buildHostPortConformanceCheck } from "../../host-port-conformance/host-port-conformance";
 import type {
 	HostConformanceCheckId,
@@ -52,7 +52,7 @@ export const runEntrypointHostChecks = async (
 	];
 	let entrypointClockIndex = 0;
 	const entrypointHostPorts = {
-		...createDefaultHostPorts(),
+		...createDefaultConformanceHostPorts(),
 		clock: {
 			nowIso: () => {
 				const value =
@@ -67,13 +67,10 @@ export const runEntrypointHostChecks = async (
 			newInvocationId: () => "inv_host_conformance",
 		},
 	};
-	const entrypointRuntime = createEntrypointRuntime({
+	const queryResult = await runEntrypoint({
 		bundle: input.bundle,
 		domainRuntime: input.domainRuntime,
 		hostPorts: entrypointHostPorts,
-	});
-
-	const queryResult = await entrypointRuntime.run({
 		binding: input.queryBinding,
 		request: input.queryRequest,
 		principal: input.principal,
@@ -81,11 +78,10 @@ export const runEntrypointHostChecks = async (
 	checks.push(...buildEntrypointBindingChecks(queryResult));
 
 	const runEntrypointWithHostPorts = (hostPorts: unknown) =>
-		createEntrypointRuntime({
+		runEntrypoint({
 			bundle: input.bundle,
 			domainRuntime: input.domainRuntime,
-			hostPorts: hostPorts as never,
-		}).run({
+			hostPorts,
 			binding: input.queryBinding,
 			request: input.queryRequest,
 			principal: input.principal,
@@ -96,7 +92,7 @@ export const runEntrypointHostChecks = async (
 			id: "entrypoint_missing_clock_rejected",
 			path: "clock.nowIso",
 			hostPorts: {
-				...createDefaultHostPorts(),
+				...createDefaultConformanceHostPorts(),
 				clock: {},
 			},
 		},
@@ -104,7 +100,7 @@ export const runEntrypointHostChecks = async (
 			id: "entrypoint_missing_identity_rejected",
 			path: "identity.newTraceId",
 			hostPorts: {
-				...createDefaultHostPorts(),
+				...createDefaultConformanceHostPorts(),
 				identity: {
 					newInvocationId: () => "inv_missing_identity",
 				},
@@ -114,7 +110,7 @@ export const runEntrypointHostChecks = async (
 			id: "entrypoint_missing_principal_rejected",
 			path: "principal.validatePrincipal",
 			hostPorts: {
-				...createDefaultHostPorts(),
+				...createDefaultConformanceHostPorts(),
 				principal: {},
 			},
 		},
@@ -122,7 +118,7 @@ export const runEntrypointHostChecks = async (
 			id: "entrypoint_missing_delegation_rejected",
 			path: "capabilityDelegation.invokeDelegated",
 			hostPorts: {
-				...createDefaultHostPorts(),
+				...createDefaultConformanceHostPorts(),
 				capabilityDelegation: {},
 			},
 		},

@@ -1,4 +1,4 @@
-import type { DomainRuntimePort } from "@gooi/entrypoint-runtime";
+import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
@@ -91,7 +91,7 @@ export const createEntrypointConformanceFixture = () => {
 			"Fixture bindings are missing compiled query or mutation entries.",
 		);
 	}
-	const runtime: DomainRuntimePort = {
+	const runtime: KernelSemanticRuntimePort = {
 		executeQuery: async (input) => ({
 			ok: true,
 			output: { rows: [{ input: input.input }] },

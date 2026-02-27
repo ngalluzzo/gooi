@@ -22,9 +22,13 @@ export interface ProjectionCollectionReaderPort {
 export type ProjectionConformanceCheckId =
 	| "refresh_invalidation_parity"
 	| "projection_output_matches_mutation_fixture"
+	| "history_contract_gate_enforced"
 	| "stale_read_blocked"
+	| "rebuild_workflow_restores_queryability"
 	| "as_of_capability_gate_enforced"
-	| "duplicate_event_key_deduped";
+	| "duplicate_event_key_deduped"
+	| "migration_chain_replay_applied"
+	| "migration_chain_gap_blocked";
 
 /**
  * Result for one projection conformance check.
@@ -51,9 +55,13 @@ export interface RunProjectionConformanceInput {
 	readonly runtime: ProjectionRuntime;
 	readonly aggregatePlan: CompiledAggregateProjectionPlan;
 	readonly timelinePlan: CompiledTimelineProjectionPlan;
+	readonly timelineMigrationPlan: CompiledTimelineProjectionPlan;
+	readonly timelineMigrationPlanWithGap: CompiledTimelineProjectionPlan;
 	readonly collectionReader: ProjectionCollectionReaderPort;
 	readonly historyPort: HistoryPort;
 	readonly historyPortWithoutAsOf: Omit<HistoryPort, "scanAsOf">;
+	readonly historyPortWithoutPersist: Omit<HistoryPort, "persist">;
+	readonly versionedHistoryPort: HistoryPort;
 	readonly refreshSubscriptions: ProjectionRefreshSubscriptions;
 	readonly emittedSignalIds: readonly string[];
 	readonly expectedAffectedQueryIds: readonly string[];

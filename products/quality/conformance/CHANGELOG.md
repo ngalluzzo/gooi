@@ -14,3 +14,5 @@ The format is based on Changesets.
 - Projection conformance suite for RFC-0010 checks:
   refresh parity, mutation fixture projection outputs, stale-read gating,
   as_of capability enforcement, and duplicate event-key dedupe behavior.
+- Expanded projection conformance with history operation contract gating,
+  explicit rebuild recovery, and migration-chain replay/gap enforcement checks.

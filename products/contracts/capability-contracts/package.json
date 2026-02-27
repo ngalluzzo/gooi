@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/capability-contracts",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"main": "./dist/capability-port/capability-port.js",
 	"types": "./src/capability-port/capability-port.ts",

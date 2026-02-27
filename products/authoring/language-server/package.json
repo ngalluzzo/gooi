@@ -1,6 +1,6 @@
 {
 	"name": "@gooi/language-server",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"main": "./dist/features/completion/list-authoring-completion-items.js",
 	"types": "./src/features/completion/list-authoring-completion-items.ts",

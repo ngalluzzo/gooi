@@ -1,7 +1,7 @@
 import type {
 	CompiledEntrypoint,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
 
 /**
  * Compiled query entrypoint fixture used for binding tests.

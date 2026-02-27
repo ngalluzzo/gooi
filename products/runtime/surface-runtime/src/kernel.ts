@@ -1,9 +1,9 @@
-import type { KernelInvokeResult } from "@gooi/kernel-contracts/invocation";
-import type { KernelRuntime } from "@gooi/kernel-contracts/runtime";
 import type {
 	CompiledEntrypoint,
 	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { KernelInvokeResult } from "@gooi/kernel-contracts/invocation";
+import type { KernelRuntime } from "@gooi/kernel-contracts/runtime";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 import { bindSurfaceInput } from "./engine";
 

@@ -241,10 +241,10 @@ Must-not-cross constraints:
 Feature-oriented package plan:
 
 1. `products/contracts/authoring-contracts`
-2. `packages/capability-index`
-3. `packages/symbol-graph`
-4. `packages/lsp`
-5. `packages/conformance` (`src/authoring-conformance` feature modules)
+2. `products/authoring/capability-index`
+3. `products/authoring/symbol-graph`
+4. `products/authoring/language-server`
+5. `products/quality/conformance` (`src/authoring-conformance` feature modules)
 
 Public APIs via `package.json` exports:
 

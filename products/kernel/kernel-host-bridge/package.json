@@ -1,0 +1,34 @@
+{
+	"name": "@gooi/kernel-host-bridge",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/host-portset.js",
+	"types": "./src/host-portset.ts",
+	"exports": {
+		".": {
+			"types": "./src/host-portset.ts",
+			"bun": "./src/host-portset.ts",
+			"import": "./dist/host-portset.js",
+			"default": "./dist/host-portset.js"
+		},
+		"./host-portset": {
+			"types": "./src/host-portset.ts",
+			"bun": "./src/host-portset.ts",
+			"import": "./dist/host-portset.js",
+			"default": "./dist/host-portset.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/host-portset.ts --outfile ./dist/host-portset.js",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	}
+}

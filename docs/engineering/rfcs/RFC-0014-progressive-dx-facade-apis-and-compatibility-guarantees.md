@@ -92,7 +92,7 @@ Facade APIs compose existing packages and must remain thin.
 ```mermaid
 flowchart LR
   Dev["Developer"] --> Facade["@gooi/app facade"]
-  Facade --> Contracts["packages/* contracts"]
+  Facade --> Contracts["products/contracts/* contracts"]
   Facade --> Compiler["spec-compiler"]
   Dev --> RuntimeFacade["@gooi/app-runtime (optional)"]
   RuntimeFacade --> Runtime["runtime lane packages"]

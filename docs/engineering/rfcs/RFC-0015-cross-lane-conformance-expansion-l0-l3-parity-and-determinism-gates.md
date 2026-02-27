@@ -282,7 +282,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - embedding in runtime or authoring would compromise neutral gate ownership.
 - Promotion/demotion plan:
-  - shared report contracts stay in `packages/*`; harness logic remains in `products/quality/*`.
+  - shared report contracts stay in `products/contracts/*`; harness logic remains in `products/quality/*`.
 
 ## Delivery plan and rollout
 

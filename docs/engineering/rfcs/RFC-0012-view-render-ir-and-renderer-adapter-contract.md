@@ -243,7 +243,7 @@ Feature-oriented module layout:
    - `src/evaluate/evaluate-node.ts`
    - `src/interaction/handle-interaction.ts`
    - `src/contracts/render-kernel-contracts.ts`
-2. `packages/render-contracts`
+2. `products/contracts/render-contracts`
    - render IR types, node contracts, interaction envelopes.
 3. `marketplace/ui-*`:
    - concrete renderer adapters and node implementations.
@@ -267,7 +267,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/runtime/render-kernel`
-  - `packages/render-contracts`
+  - `products/contracts/render-contracts`
   - `products/marketplace/*` renderer adapters
 - Lane (if `products/*`):
   - `runtime`
@@ -281,7 +281,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - collapsing into surface adapters would fragment semantics.
 - Promotion/demotion plan:
-  - mature common node contracts can be promoted within `packages/render-contracts`.
+  - mature common node contracts can be promoted within `products/contracts/render-contracts`.
 
 ## Delivery plan and rollout
 
@@ -372,3 +372,4 @@ None.
 - `2026-02-26` - Established compiled render IR and renderer adapter contracts as canonical cross-surface UI boundary.
 - `2026-02-26` - Resolved evaluation granularity for `1.0.0`: render kernel uses full-screen evaluation only; partial subtree re-evaluation is deferred.
 - `2026-02-26` - Resolved node versioning model: node contract versions are per-node-type, not global.
+- `2026-02-27` - Resolved contract packaging model for this RFC: shared render contracts live under `products/contracts/render-contracts` (package name remains `@gooi/render-contracts`).

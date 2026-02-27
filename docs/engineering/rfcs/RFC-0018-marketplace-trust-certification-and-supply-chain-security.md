@@ -254,7 +254,7 @@ Feature-oriented module layout:
    - `src/audit/*`
 2. `products/marketplace/certification`
    - trust-integrated certification state workflows.
-3. `packages/marketplace-trust-contracts`
+3. `products/contracts/marketplace-trust-contracts`
    - trust subject, policy, report, and event contracts.
 
 Public APIs via `package.json` exports:
@@ -275,7 +275,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/marketplace/trust-plane`
-  - `packages/marketplace-trust-contracts`
+  - `products/contracts/marketplace-trust-contracts`
 - Lane (if `products/*`):
   - `marketplace`
 - Why this boundary is correct:
@@ -287,7 +287,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - embedding trust logic in runtime/resolver would fragment security ownership.
 - Promotion/demotion plan:
-  - stable trust contract primitives remain in `packages/*`; operations workflows remain product-private.
+  - stable trust contract primitives remain in `products/contracts/*`; operations workflows remain product-private.
 
 ## Delivery plan and rollout
 

@@ -152,8 +152,8 @@ Feature-oriented layout:
 3. `apps/gooi-vscode-extension/src/commands/register-authoring-commands.ts`
 4. `apps/gooi-vscode-extension/src/settings/parse-extension-settings.ts`
 5. `apps/gooi-vscode-extension/src/telemetry/emit-extension-event.ts`
-6. `packages/lsp` remains core authoring API.
-7. `packages/conformance/src/authoring-conformance` remains acceptance authority.
+6. `products/authoring/language-server` remains core authoring API.
+7. `products/quality/conformance/src/authoring-conformance` remains acceptance authority.
 
 Bundling and build:
 

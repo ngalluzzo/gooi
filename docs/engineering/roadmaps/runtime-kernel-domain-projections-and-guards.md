@@ -7,6 +7,90 @@
 - [RFC-0010](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0010-projection-runtime-semantics-join-aggregate-timeline-and-history.md)
 - [RFC-0019](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0019-guard-and-invariant-runtime-contracts.md)
 - [RFC-0020](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0020-scenario-runtime-and-persona-simulation-contracts.md)
+- [RFC-0022](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0022-kernel-runtime-core-and-standalone-adoption.md)
+- [RFC-0023](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0023-runtime-semantics-recomposition-and-runtime-package-reset.md)
+
+## Rebaseline: RFC-0022 and RFC-0023
+
+This track is re-baselined to frontload kernel ownership and runtime recomposition
+before Track 04 is considered fully unblocked.
+
+### Epic 5: Kernel Product Lane Foundation (RFC-0022)
+
+#### Story 5.1: Scaffold kernel product lane and canonical API surface
+Acceptance criteria:
+1. `products/kernel/*` package scaffolds exist with explicit ownership and `exports`.
+2. Kernel entrypoint contracts expose one factory path and typed invoke/trace surfaces.
+3. Runtime and surface packages compile against kernel API skeletons without direct orchestration imports.
+
+#### Story 5.2: Implement kernel host-bridge and portset validation
+Acceptance criteria:
+1. Host-port normalization and validation is centralized in kernel host bridge modules.
+2. Invalid host-portset inputs fail with typed deterministic errors.
+3. Standalone kernel consumers can invoke baseline fixtures using only compiled artifacts + portset.
+
+#### Story 5.3: Add kernel parity fixture harness
+Acceptance criteria:
+1. Shared fixtures execute against standalone kernel and existing full-runtime paths.
+2. Result/error/trace envelopes are parity-checked with deterministic comparisons.
+3. Parity failures are release-blocking for kernel integration branches.
+
+#### Story 5.4: Wire Track 04 entry gate to kernel readiness signals
+Acceptance criteria:
+1. Track 04 readiness checklist references concrete kernel completion artifacts.
+2. CI/check scripts can assert kernel gate readiness with machine-readable output.
+3. Track 04 implementation issues remain blocked until kernel gate checks pass.
+
+### Epic 6: Runtime Recomposition and Package Reset (RFC-0023)
+
+#### Story 6.1: Define canonical execution spine contract and runtime dependency map
+Acceptance criteria:
+1. One execution-spine contract defines orchestration order across query and mutation paths.
+2. Runtime package dependency map distinguishes orchestration ownership from semantic engine ownership.
+3. Legacy orchestration paths are inventory-listed with explicit deletion owners.
+
+#### Story 6.2: Route query/mutation execution through kernel spine
+Acceptance criteria:
+1. Query and mutation flows traverse kernel orchestration before semantic engine execution.
+2. Access policy, replay checks, and envelope emission no longer run in lane-local duplicate paths.
+3. End-to-end parity fixtures are green against pre-cutover baseline behavior.
+
+#### Story 6.3: Extract domain runtime into semantic-engine-only ownership
+Acceptance criteria:
+1. Domain runtime keeps action/flow/session semantics but no orchestration policy sequencing.
+2. Domain runtime exports consumed by kernel are explicit and minimal.
+3. Domain runtime tests prove semantic parity after orchestration extraction.
+
+#### Story 6.4: Extract projection runtime into semantic-engine-only ownership
+Acceptance criteria:
+1. Projection runtime keeps join/aggregate/timeline semantics but no orchestration policy sequencing.
+2. Projection runtime query outputs are produced through kernel-owned envelope shaping.
+3. Projection parity and determinism fixtures are green post-extraction.
+
+#### Story 6.5: Extract guard runtime into semantic-engine-only ownership
+Acceptance criteria:
+1. Guard runtime keeps invariant/guard evaluation semantics but no orchestration policy sequencing.
+2. Guard diagnostics/signals are emitted through canonical kernel execution paths.
+3. Guard conformance fixtures are green post-extraction.
+
+#### Story 6.6: Delete legacy runtime orchestration paths and enforce boundary gates
+Acceptance criteria:
+1. Legacy runtime orchestration modules are deleted (not retained as long-lived compatibility aliases).
+2. CI boundary checks fail when orchestration logic is reintroduced outside kernel ownership.
+3. Runtime ownership docs and package exports reflect final post-reset architecture.
+
+## Issue Mapping (RFC-0022/RFC-0023 Slice)
+
+1. Story 5.1: [#162](https://github.com/ngalluzzo/gooi/issues/162)
+2. Story 5.2: [#163](https://github.com/ngalluzzo/gooi/issues/163)
+3. Story 5.3: [#164](https://github.com/ngalluzzo/gooi/issues/164)
+4. Story 5.4: [#165](https://github.com/ngalluzzo/gooi/issues/165)
+5. Story 6.1: [#166](https://github.com/ngalluzzo/gooi/issues/166)
+6. Story 6.2: [#167](https://github.com/ngalluzzo/gooi/issues/167)
+7. Story 6.3: [#168](https://github.com/ngalluzzo/gooi/issues/168)
+8. Story 6.4: [#169](https://github.com/ngalluzzo/gooi/issues/169)
+9. Story 6.5: [#170](https://github.com/ngalluzzo/gooi/issues/170)
+10. Story 6.6: [#171](https://github.com/ngalluzzo/gooi/issues/171)
 
 ## Epic 1: Entrypoint Runtime Core Semantics
 

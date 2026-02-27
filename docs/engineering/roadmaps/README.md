@@ -18,6 +18,10 @@ Each product track has its own document with epics, stories, and acceptance crit
 
 A track is complete only when all story acceptance criteria in that track are met.
 
+Additional gate:
+1. Track 04 execution must not begin until [RFC-0022-kernel-runtime-core-and-standalone-adoption.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0022-kernel-runtime-core-and-standalone-adoption.md) preconditions are met.
+2. Track 04 implementation must route query/mutation through the RFC-0023 execution spine before Track 04 stories are considered unblocked.
+
 ## Reconciliation Rule
 
 When RFC contracts change, roadmap tracks must be re-baselined before further execution.
@@ -35,6 +39,8 @@ Current re-baseline focus:
 3. Compiler/deployment binding requirements for reachability.
 4. Resolver reachability metadata and delegated-route descriptors.
 5. Conformance parity gate for local vs delegated execution paths.
+6. Kernel product-lane frontload and standalone parity from RFC-0022.
+7. Runtime package reset and orchestration centralization from RFC-0023.
 
 ## Ownership Map
 

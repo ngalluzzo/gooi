@@ -31,5 +31,11 @@
 	"excludeInternal": true,
 	"readme": "none",
 	"plugin": ["typedoc-plugin-markdown"],
-	"out": "../../apps/docs/docs/api/lsp"
+	"out": "../../apps/docs/docs/api/lsp",
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table"
 }

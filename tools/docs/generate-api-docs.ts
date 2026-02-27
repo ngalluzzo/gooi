@@ -10,20 +10,60 @@ import {
 } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 
+interface Group {
+	readonly id: string;
+	readonly label: string;
+	readonly path: string;
+	readonly depth: number;
+	readonly position: number;
+}
+
 interface PackageMetadata {
 	readonly directory: string;
 	readonly packageName: string;
+	readonly group: Group;
 }
 
 const repoRoot = resolve(import.meta.dir, "..", "..");
 const apiDocsRoot = join(repoRoot, "apps", "docs", "docs", "api");
 
-// Roots to scan: { path, depth } where depth=1 means direct children,
-// depth=2 means grandchildren (e.g. products/authoring/authoring-contracts)
-const scanRoots = [
-	{ path: join(repoRoot, "packages"), depth: 1 },
-	{ path: join(repoRoot, "products"), depth: 2 },
-	{ path: join(repoRoot, "marketplace"), depth: 1 },
+// Each group maps to a subdirectory under api/ with its own _category_.json
+const groups: readonly Group[] = [
+	{
+		id: "core",
+		label: "Core Contracts",
+		path: join(repoRoot, "packages"),
+		depth: 1,
+		position: 1,
+	},
+	{
+		id: "authoring",
+		label: "Authoring",
+		path: join(repoRoot, "products", "authoring"),
+		depth: 1,
+		position: 2,
+	},
+	{
+		id: "runtime",
+		label: "Runtime",
+		path: join(repoRoot, "products", "runtime"),
+		depth: 1,
+		position: 3,
+	},
+	{
+		id: "quality",
+		label: "Quality",
+		path: join(repoRoot, "products", "quality"),
+		depth: 1,
+		position: 4,
+	},
+	{
+		id: "marketplace",
+		label: "Marketplace",
+		path: join(repoRoot, "marketplace"),
+		depth: 1,
+		position: 5,
+	},
 ];
 
 async function pathExists(path: string): Promise<boolean> {
@@ -37,6 +77,7 @@ async function pathExists(path: string): Promise<boolean> {
 
 async function loadPackageMetadata(
 	packageDir: string,
+	group: Group,
 ): Promise<PackageMetadata | null> {
 	const typedocConfigPath = join(packageDir, "typedoc.json");
 	const packageJsonPath = join(packageDir, "package.json");
@@ -54,6 +95,7 @@ async function loadPackageMetadata(
 	return {
 		directory: packageDir,
 		packageName: parsed.name ?? basename(packageDir),
+		group,
 	};
 }
 
@@ -81,21 +123,20 @@ async function collectDirectories(
 }
 
 async function resolvePackages(): Promise<readonly PackageMetadata[]> {
-	const allDirectories: string[] = [];
-
-	for (const { path, depth } of scanRoots) {
-		const dirs = await collectDirectories(path, depth);
-		allDirectories.push(...dirs);
-	}
-
-	allDirectories.sort((left, right) => left.localeCompare(right));
-
 	const packages: PackageMetadata[] = [];
 
-	for (const directory of allDirectories) {
-		const metadata = await loadPackageMetadata(directory);
-		if (metadata !== null) {
-			packages.push(metadata);
+	for (const group of groups) {
+		const groupExists = await pathExists(group.path);
+		if (!groupExists) continue;
+
+		const dirs = await collectDirectories(group.path, group.depth);
+		dirs.sort((a, b) => a.localeCompare(b));
+
+		for (const directory of dirs) {
+			const metadata = await loadPackageMetadata(directory, group);
+			if (metadata !== null) {
+				packages.push(metadata);
+			}
 		}
 	}
 
@@ -117,29 +158,54 @@ function runTypedoc(packageDir: string, outDir: string): void {
 	}
 }
 
+async function writeCategoryJson(
+	groupDir: string,
+	group: Group,
+): Promise<void> {
+	const category = {
+		label: group.label,
+		position: group.position,
+		collapsible: true,
+		collapsed: false,
+	};
+	await writeFile(
+		join(groupDir, "_category_.json"),
+		JSON.stringify(category, null, "\t"),
+	);
+}
+
 async function writeApiLanding(
 	packages: readonly PackageMetadata[],
 ): Promise<void> {
+	const byGroup = new Map<string, PackageMetadata[]>();
+	for (const pkg of packages) {
+		const list = byGroup.get(pkg.group.id) ?? [];
+		list.push(pkg);
+		byGroup.set(pkg.group.id, list);
+	}
+
 	const lines = [
 		"---",
 		"id: index",
 		"title: API Reference",
 		"---",
 		"",
-		"API documentation is generated from package-level Typedoc.",
-		"",
-		...packages.map((pkg) => {
-			const slug = basename(pkg.directory);
-			return `- [${pkg.packageName}](./${slug})`;
-		}),
-		"",
-		"Run from repo root:",
-		"",
-		"```bash",
-		"bun run docs:api",
-		"```",
+		"API documentation is generated from package-level TypeDoc.",
+		"Run `bun run docs:api` from the repo root to regenerate.",
 		"",
 	];
+
+	for (const group of groups) {
+		const pkgs = byGroup.get(group.id);
+		if (!pkgs || pkgs.length === 0) continue;
+
+		lines.push(`## ${group.label}`, "");
+		for (const pkg of pkgs) {
+			const slug = basename(pkg.directory);
+			lines.push(`- [${pkg.packageName}](./${group.id}/${slug})`);
+		}
+		lines.push("");
+	}
 
 	await writeFile(join(apiDocsRoot, "index.md"), lines.join("\n"));
 }
@@ -150,9 +216,19 @@ async function generate(): Promise<void> {
 	await rm(apiDocsRoot, { recursive: true, force: true });
 	await mkdir(apiDocsRoot, { recursive: true });
 
+	// Create group subdirectories with _category_.json
+	const usedGroups = new Set(packages.map((p) => p.group.id));
+	for (const group of groups) {
+		if (!usedGroups.has(group.id)) continue;
+		const groupDir = join(apiDocsRoot, group.id);
+		await mkdir(groupDir, { recursive: true });
+		await writeCategoryJson(groupDir, group);
+	}
+
+	// Generate TypeDoc output into group subdirectories
 	for (const pkg of packages) {
 		const slug = basename(pkg.directory);
-		const outDir = join(apiDocsRoot, slug);
+		const outDir = join(apiDocsRoot, pkg.group.id, slug);
 		await mkdir(outDir, { recursive: true });
 		runTypedoc(pkg.directory, outDir);
 	}

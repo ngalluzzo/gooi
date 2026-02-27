@@ -20,6 +20,7 @@ provider checks, and authoring intelligence checks.
 - Host runtime checks (`runHostConformance`)
 - Host runtime checks include success and fail-fast missing-host-port coverage
 - Replay-store host provider checks (`runReplayStoreConformance`)
+- Default test runner baseline includes host + replay-store conformance suites
 - Authoring checks (`runAuthoringConformance`)
 - Reachability parity checks (`runReachabilityParitySuite`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)

@@ -50,12 +50,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/envelopes/*.ts ./src/lockfile/*.ts --outdir ./dist --external zod --external @gooi/stable-json",
+		"build": "bun build ./src/envelopes/*.ts ./src/lockfile/*.ts --outdir ./dist --external zod --external @gooi/app-spec-contracts/diagnostics --external @gooi/stable-json",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}

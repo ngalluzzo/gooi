@@ -1,3 +1,8 @@
+import {
+	type DiagnosticSeverity,
+	diagnosticRecordSchema,
+	diagnosticSeveritySchema,
+} from "@gooi/app-spec-contracts/diagnostics";
 import { z } from "zod";
 
 import {
@@ -18,20 +23,19 @@ const rangeSchema = z.object({
 /**
  * Diagnostic severity values used by authoring diagnostics.
  */
-export const authoringDiagnosticSeveritySchema = z.enum([
-	"error",
-	"warning",
-	"info",
-]);
+export const authoringDiagnosticSeveritySchema = diagnosticSeveritySchema;
+
+/**
+ * Parsed authoring diagnostic severity value.
+ */
+export type AuthoringDiagnosticSeverity = DiagnosticSeverity;
 
 /**
  * One diagnostic emitted by authoring analysis.
  */
 export const authoringDiagnosticSchema = z.object({
-	code: z.string().min(1),
+	...diagnosticRecordSchema.shape,
 	severity: authoringDiagnosticSeveritySchema,
-	message: z.string().min(1),
-	path: z.string().min(1),
 	range: rangeSchema,
 	staleArtifacts: z.boolean().optional(),
 });

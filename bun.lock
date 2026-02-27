@@ -39,6 +39,7 @@
       "name": "@gooi/vscode-extension",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/authoring-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
         "@gooi/language-server": "workspace:*",
@@ -75,6 +76,7 @@
       "name": "@gooi/authoring-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -99,6 +101,7 @@
       "name": "@gooi/conformance-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -159,6 +162,7 @@
       "name": "@gooi/language-server",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/authoring-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
         "@gooi/symbol-graph": "workspace:*",

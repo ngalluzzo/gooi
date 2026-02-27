@@ -1,3 +1,8 @@
+import {
+	type DiagnosticRecord as SharedDiagnosticRecord,
+	type DiagnosticSeverity as SharedDiagnosticSeverity,
+	diagnosticSeveritySchema as sharedDiagnosticSeveritySchema,
+} from "@gooi/app-spec-contracts/diagnostics";
 import type {
 	CompiledArtifactManifest as ArtifactModelCompiledArtifactManifest,
 	CompiledLaneArtifact,
@@ -18,25 +23,19 @@ export type ArtifactVersion = z.infer<typeof artifactVersionSchema>;
 /**
  * Diagnostic severities emitted during compilation.
  */
-export const diagnosticSeveritySchema = z.enum(["error", "warning", "info"]);
+export const diagnosticSeveritySchema = sharedDiagnosticSeveritySchema;
 
 /**
  * Supported diagnostic severity values.
  */
-export type DiagnosticSeverity = z.infer<typeof diagnosticSeveritySchema>;
+export type DiagnosticSeverity = SharedDiagnosticSeverity;
 
 /**
  * A structured diagnostic emitted by the compiler.
  */
-export interface CompileDiagnostic {
+export interface CompileDiagnostic extends SharedDiagnosticRecord {
 	/** Severity category used by CI gates and CLI output. */
 	readonly severity: DiagnosticSeverity;
-	/** Stable machine-readable diagnostic code. */
-	readonly code: string;
-	/** JSON-like path for the failing spec location. */
-	readonly path: string;
-	/** Human-readable explanation for the diagnostic. */
-	readonly message: string;
 	/** Optional remediation hint for developers. */
 	readonly hint?: string;
 }

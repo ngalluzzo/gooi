@@ -1,3 +1,4 @@
+import type { DiagnosticSeverity } from "@gooi/app-spec-contracts/diagnostics";
 import type {
 	AuthoringPosition,
 	AuthoringRange,
@@ -44,7 +45,7 @@ export interface EditorDiagnostic {
 	/** Human-readable diagnostic message. */
 	message: string;
 	/** Diagnostic severity. */
-	severity: "error" | "warning" | "info";
+	severity: DiagnosticSeverity;
 	/** Diagnostic source range. */
 	range: EditorRange;
 }

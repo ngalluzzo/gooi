@@ -32,12 +32,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/checks/checks.ts --outfile ./dist/checks/checks.js --external zod && bun build ./src/reports/reports.ts --outfile ./dist/reports/reports.js --external zod && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod",
+		"build": "bun build ./src/checks/checks.ts --outfile ./dist/checks/checks.js --external zod && bun build ./src/reports/reports.ts --outfile ./dist/reports/reports.js --external zod && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod --external @gooi/app-spec-contracts/diagnostics",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

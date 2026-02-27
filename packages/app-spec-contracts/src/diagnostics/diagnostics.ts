@@ -1,22 +1,35 @@
 import { z } from "zod";
 
 /**
- * Supported spec diagnostic severities.
+ * Supported diagnostic severities used across spec and authoring diagnostics.
  */
-export const specDiagnosticSeveritySchema = z.enum([
-	"error",
-	"warning",
-	"info",
-]);
+export const diagnosticSeveritySchema = z.enum(["error", "warning", "info"]);
+
+/**
+ * Parsed diagnostic severity.
+ */
+export type DiagnosticSeverity = z.infer<typeof diagnosticSeveritySchema>;
+
+/**
+ * Canonical diagnostic record shape shared across lanes.
+ */
+export const diagnosticRecordSchema = z.object({
+	code: z.string().min(1),
+	message: z.string().min(1),
+	path: z.string().min(1),
+});
+
+/**
+ * Parsed canonical diagnostic record.
+ */
+export type DiagnosticRecord = z.infer<typeof diagnosticRecordSchema>;
 
 /**
  * Canonical app-spec diagnostic contract.
  */
 export const specDiagnosticSchema = z.object({
-	severity: specDiagnosticSeveritySchema,
-	code: z.string().min(1),
-	path: z.string().min(1),
-	message: z.string().min(1),
+	severity: diagnosticSeveritySchema,
+	...diagnosticRecordSchema.shape,
 	hint: z.string().min(1).optional(),
 });
 

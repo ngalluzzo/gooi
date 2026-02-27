@@ -1,24 +1,20 @@
-import { z } from "zod";
+import {
+	type DiagnosticRecord as SharedDiagnosticRecord,
+	diagnosticRecordSchema as sharedDiagnosticRecordSchema,
+} from "@gooi/app-spec-contracts/diagnostics";
 
 /**
  * Shared base shape for one conformance diagnostic record.
  */
-export interface ConformanceDiagnosticRecordBase<
-	TCode extends string = string,
-> {
+export interface ConformanceDiagnosticRecordBase<TCode extends string = string>
+	extends Omit<SharedDiagnosticRecord, "code"> {
 	readonly code: TCode;
-	readonly message: string;
-	readonly path: string;
 }
 
 /**
  * Canonical conformance diagnostic record.
  */
-export const conformanceDiagnosticRecordSchema = z.object({
-	code: z.string().min(1),
-	message: z.string().min(1),
-	path: z.string().min(1),
-});
+export const conformanceDiagnosticRecordSchema = sharedDiagnosticRecordSchema;
 
 /**
  * Parsed conformance diagnostic record.

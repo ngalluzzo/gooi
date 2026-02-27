@@ -87,6 +87,13 @@
         "@gooi/provider-manifest": "workspace:*",
       },
     },
+    "packages/projection-contracts": {
+      "name": "@gooi/projection-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+    },
     "packages/provider-manifest": {
       "name": "@gooi/provider-manifest",
       "version": "0.1.0",
@@ -157,6 +164,8 @@
         "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "@gooi/language-server": "workspace:*",
+        "@gooi/projection-contracts": "workspace:*",
+        "@gooi/projection-runtime": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
@@ -188,6 +197,14 @@
         "@gooi/surface-contracts": "workspace:*",
         "@gooi/surface-runtime": "workspace:*",
         "zod": "^4.3.6",
+      },
+    },
+    "products/runtime/projection-runtime": {
+      "name": "@gooi/projection-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/projection-contracts": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
       },
     },
     "products/runtime/provider-runtime": {
@@ -733,6 +750,10 @@
     "@gooi/host-contracts": ["@gooi/host-contracts@workspace:packages/host-contracts"],
 
     "@gooi/language-server": ["@gooi/language-server@workspace:products/authoring/language-server"],
+
+    "@gooi/projection-contracts": ["@gooi/projection-contracts@workspace:packages/projection-contracts"],
+
+    "@gooi/projection-runtime": ["@gooi/projection-runtime@workspace:products/runtime/projection-runtime"],
 
     "@gooi/provider-manifest": ["@gooi/provider-manifest@workspace:packages/provider-manifest"],
 

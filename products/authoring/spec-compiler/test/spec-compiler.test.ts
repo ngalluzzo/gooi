@@ -120,42 +120,26 @@ describe("spec-compiler", () => {
 	});
 
 	test("fails compilation when duplicate entrypoint ids are declared", () => {
+		const fixture = createComposableEntrypointSpecFixture();
+		fixture.queries = [
+			{
+				id: "list_messages",
+				access: { roles: ["authenticated"] },
+				in: { page: "int", page_size: "int", q: "text" },
+				defaults: { page: 1, page_size: 10 },
+				returns: { projection: "latest_messages" },
+			},
+			{
+				id: "list_messages",
+				access: { roles: ["authenticated"] },
+				in: { page: "int", page_size: "int", q: "text" },
+				defaults: { page: 1, page_size: 10 },
+				returns: { projection: "messages_with_authors" },
+			},
+		];
 		const result = compileEntrypointBundle({
 			compilerVersion: "1.0.0",
-			spec: {
-				access: {
-					default_policy: "deny",
-					roles: {
-						authenticated: {},
-					},
-				},
-				queries: [
-					{
-						id: "list_messages",
-						access: { roles: ["authenticated"] },
-						in: { page: "int" },
-						returns: { projection: "latest_messages" },
-					},
-					{
-						id: "list_messages",
-						access: { roles: ["authenticated"] },
-						in: { q: "text" },
-						returns: { projection: "messages_with_authors" },
-					},
-				],
-				mutations: [],
-				wiring: {
-					surfaces: {
-						http: {
-							queries: {
-								list_messages: {
-									bind: { q: "query.q" },
-								},
-							},
-						},
-					},
-				},
-			},
+			spec: fixture,
 		});
 
 		expect(result.ok).toBe(false);
@@ -163,6 +147,55 @@ describe("spec-compiler", () => {
 			expect(result.diagnostics.map((item) => item.code)).toContain(
 				"duplicate_entrypoint_id",
 			);
+		}
+	});
+
+	test("fails compilation with deterministic ordering for invalid cross-section links", () => {
+		const fixture = createComposableEntrypointSpecFixture() as Record<
+			string,
+			unknown
+		>;
+		const queries = fixture.queries as Array<Record<string, unknown>>;
+		const mutations = fixture.mutations as Array<Record<string, unknown>>;
+		const routes = fixture.routes as Array<Record<string, unknown>>;
+		const scenarios = fixture.scenarios as Record<
+			string,
+			Record<string, unknown>
+		>;
+
+		const firstQuery = queries[0];
+		if (firstQuery !== undefined) {
+			firstQuery.returns = { projection: "projection_missing" };
+		}
+		const firstMutation = mutations[0];
+		if (firstMutation !== undefined) {
+			firstMutation.run = { actionId: "action_missing", input: {} };
+		}
+		const firstRoute = routes[0];
+		if (firstRoute !== undefined) {
+			firstRoute.renders = "screen_missing";
+		}
+		const firstScenario = scenarios.happy_path_message_submission;
+		if (firstScenario !== undefined) {
+			firstScenario.context = { persona: "persona_missing" };
+		}
+
+		const result = compileEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.diagnostics.every((item) => item.code.length > 0)).toBe(
+				true,
+			);
+			expect(result.diagnostics.map((item) => item.path)).toEqual([
+				"mutations.0.run.actionId",
+				"queries.0.returns.projection",
+				"routes.0.renders",
+				"scenarios.happy_path_message_submission.context.persona",
+			]);
 		}
 	});
 
@@ -207,7 +240,7 @@ describe("spec-compiler", () => {
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
 			expect(result.diagnostics[0]?.code).toBe(
-				"reachability_requirement_capability_id_not_found",
+				"spec_reference_not_found_error",
 			);
 			expect(result.diagnostics[0]?.path).toBe(
 				"wiring.requirements.capabilities.0.portId",
@@ -225,7 +258,7 @@ describe("spec-compiler", () => {
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
 			expect(result.diagnostics[0]?.code).toBe(
-				"reachability_requirement_capability_version_not_found",
+				"spec_reference_not_found_error",
 			);
 			expect(result.diagnostics[0]?.path).toBe(
 				"wiring.requirements.capabilities.0.portVersion",

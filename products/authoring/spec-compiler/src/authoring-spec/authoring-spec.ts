@@ -1,112 +1,81 @@
 import { z } from "zod";
+import { strictObjectWithExtensions } from "./schema-utils";
+import { accessSectionSchema } from "./sections/access-section";
+import { appSectionSchema } from "./sections/app-section";
+import { domainSectionSchema } from "./sections/domain-section";
+import {
+	mutationSchema,
+	querySchema,
+	routeSchema,
+} from "./sections/entrypoints-section";
+import {
+	personasSectionSchema,
+	scenariosSectionSchema,
+} from "./sections/persona-scenario-section";
+import { sessionSectionSchema } from "./sections/session-section";
+import { viewsSectionSchema } from "./sections/views-section";
+import { wiringSectionSchema } from "./sections/wiring-section";
 
-const typedFieldSchema = z.string().regex(/^[a-z_]+!?$/);
-const defaultsSchema = z.record(z.string(), z.unknown());
-const bindMapSchema = z.record(z.string(), z.string().min(1));
-const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
-	message: "Expected semver in MAJOR.MINOR.PATCH format.",
-});
+/**
+ * Canonical full app spec contract version.
+ */
+export const gooiAppSpecVersionSchema = z.literal("1.0.0");
 
-const accessSchema = z.object({
-	roles: z.array(z.string().min(1)).min(1),
-});
-
-const querySchema = z.object({
-	id: z.string().min(1),
-	access: accessSchema,
-	in: z.record(z.string(), typedFieldSchema),
-	defaults: defaultsSchema.optional(),
-	returns: z.record(z.string(), z.unknown()),
-});
-
-const mutationSchema = z.object({
-	id: z.string().min(1),
-	access: accessSchema,
-	in: z.record(z.string(), typedFieldSchema),
-	run: z.object({
-		actionId: z.string().min(1),
-		input: z.record(z.string(), z.unknown()),
-	}),
-});
-
-const wiredQuerySchema = z.object({
-	bind: bindMapSchema,
-});
-
-const wiredMutationSchema = z.object({
-	bind: bindMapSchema,
-});
-
-const reachabilityRequirementSchema = z.object({
-	portId: z.string().min(1),
-	portVersion: semverSchema,
-	mode: z.enum(["local", "delegated", "unreachable"]),
-});
-
-const capabilityDeclarationSchema = z.object({
-	id: z.string().min(1),
-	version: semverSchema,
-});
-
-const surfaceSchema = z
-	.object({
-		queries: z.record(z.string(), wiredQuerySchema).optional(),
-		mutations: z.record(z.string(), wiredMutationSchema).optional(),
-	})
-	.catchall(z.unknown());
-
-const screenDataQuerySchema = z.object({
-	query: z.string().min(1),
-	refresh_on_signals: z.array(z.string().min(1)).optional(),
-});
-
-const screenSchema = z.object({
-	id: z.string().min(1),
-	data: z.record(z.string(), screenDataQuerySchema).optional(),
+/**
+ * Canonical full app spec contract compatibility policy.
+ */
+export const gooiAppSpecCompatibilityPolicy = Object.freeze({
+	additive: "non_breaking_optional_fields",
+	breaking: "major_version_bump_required",
 });
 
 /**
- * Authoring spec subset accepted by RFC-0002 phase 1 compiler.
+ * Full authoring app spec contract accepted by the canonical compiler.
  */
-export const authoringEntrypointSpecSchema = z.object({
-	capabilities: z.array(capabilityDeclarationSchema).optional(),
-	access: z.object({
-		default_policy: z.enum(["allow", "deny"]),
-		roles: z.record(z.string(), z.unknown()),
-	}),
+export const gooiAppSpecSchema = strictObjectWithExtensions({
+	app: appSectionSchema,
+	domain: domainSectionSchema,
+	session: sessionSectionSchema,
+	views: viewsSectionSchema,
 	queries: z.array(querySchema),
 	mutations: z.array(mutationSchema),
-	wiring: z.object({
-		surfaces: z.record(z.string(), surfaceSchema),
-		requirements: z
-			.object({
-				capabilities: z.array(reachabilityRequirementSchema).optional(),
-			})
-			.optional(),
-	}),
-	views: z
-		.object({
-			screens: z.array(screenSchema),
-		})
-		.optional(),
+	routes: z.array(routeSchema),
+	personas: personasSectionSchema,
+	scenarios: scenariosSectionSchema,
+	wiring: wiringSectionSchema,
+	access: accessSectionSchema,
 });
 
 /**
- * Parsed authoring spec type used by compilation helpers.
+ * Parsed full app spec type used by compilation helpers.
  */
-export type AuthoringEntrypointSpec = z.infer<
-	typeof authoringEntrypointSpecSchema
->;
+export type GooiAppSpec = z.infer<typeof gooiAppSpecSchema>;
+
+/**
+ * Backward-compatible alias retained for existing compile pipeline imports.
+ */
+export const authoringEntrypointSpecSchema = gooiAppSpecSchema;
+
+/**
+ * Backward-compatible alias retained for existing compile pipeline imports.
+ */
+export type AuthoringEntrypointSpec = GooiAppSpec;
+
+/**
+ * Parses and validates full app spec input.
+ *
+ * @param value - Untrusted authoring spec input.
+ * @returns Parsed app spec.
+ */
+export const parseGooiAppSpec = (value: unknown): GooiAppSpec =>
+	gooiAppSpecSchema.parse(value);
 
 /**
  * Parses and validates authoring spec input.
  *
  * @param value - Untrusted authoring spec input.
- * @returns Parsed authoring spec subset.
- *
- * @example
- * const parsed = parseAuthoringEntrypointSpec(rawSpec);
+ * @returns Parsed app spec.
  */
 export const parseAuthoringEntrypointSpec = (
 	value: unknown,
-): AuthoringEntrypointSpec => authoringEntrypointSpecSchema.parse(value);
+): AuthoringEntrypointSpec => parseGooiAppSpec(value);

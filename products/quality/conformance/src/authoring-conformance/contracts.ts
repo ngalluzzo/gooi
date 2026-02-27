@@ -1,5 +1,6 @@
 import { conformanceCheckResultSchema } from "@gooi/conformance-contracts/checks";
 import { conformanceSuiteReportSchema } from "@gooi/conformance-contracts/reports";
+import { authoringPositionSchema } from "@gooi/language-server/contracts/positions";
 import { z } from "zod";
 
 /**
@@ -60,22 +61,10 @@ export const runAuthoringConformanceInputSchema = z.object({
 	}),
 	staleLockfile: z.unknown(),
 	positions: z.object({
-		capabilityCompletion: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		signalCompletion: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		expressionReference: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
-		ambientSymbol: z.object({
-			line: z.number().int().nonnegative(),
-			character: z.number().int().nonnegative(),
-		}),
+		capabilityCompletion: authoringPositionSchema,
+		signalCompletion: authoringPositionSchema,
+		expressionReference: authoringPositionSchema,
+		ambientSymbol: authoringPositionSchema,
 	}),
 	renameTarget: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),
 	renameCollisionTarget: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),

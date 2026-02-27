@@ -41,6 +41,12 @@
 			"import": "./dist/contracts/navigation-results.js",
 			"default": "./dist/contracts/navigation-results.js"
 		},
+		"./contracts/positions": {
+			"types": "./src/contracts/positions.ts",
+			"bun": "./src/contracts/positions.ts",
+			"import": "./dist/contracts/positions.js",
+			"default": "./dist/contracts/positions.js"
+		},
 		"./contracts/read-context": {
 			"types": "./src/contracts/read-context.ts",
 			"bun": "./src/contracts/read-context.ts",

@@ -1,3 +1,8 @@
+import type {
+	AuthoringPosition,
+	AuthoringRange,
+} from "@gooi/language-server/contracts/positions";
+
 /**
  * Zero-cost disposable returned by host registrations.
  */
@@ -9,22 +14,12 @@ export interface HostDisposable {
 /**
  * Cursor position in a text document.
  */
-export interface EditorPosition {
-	/** Zero-based line index. */
-	line: number;
-	/** Zero-based character index. */
-	character: number;
-}
+export type EditorPosition = AuthoringPosition;
 
 /**
  * Selection range in a text document.
  */
-export interface EditorRange {
-	/** Range start position. */
-	start: EditorPosition;
-	/** Range end position. */
-	end: EditorPosition;
-}
+export type EditorRange = AuthoringRange;
 
 /**
  * Text document projection used by the extension service.

@@ -24,6 +24,18 @@ It defines capability IO using Zod schemas, generates normalized JSON Schema art
 - Typed provider manifest schema parsing with execution-host reachability metadata
 - Explicit effect declaration model
 
+## Compatibility Policy
+
+- Additive changes:
+  - Adding optional input/output fields is non-breaking when existing required fields and types remain stable.
+  - Widening supported execution hosts is additive.
+- Breaking changes:
+  - Renaming or removing fields, changing requiredness, or changing field types is breaking and requires a major version bump.
+  - Narrowing supported execution hosts is breaking.
+- Enforcement model:
+  - Contract compatibility is enforced through semver + deterministic `contractHash`.
+  - Provider activation must match declared `portId`, `portVersion`, and `contractHash` in manifest + lock/binding artifacts.
+
 ## Installation
 
 ```bash
@@ -58,6 +70,8 @@ console.log(idsGeneratePort.artifacts.contractHash);
   - Converts a Zod schema to normalized JSON Schema plus hash.
 - `parseProviderManifest(value)`
   - Validates provider manifest payloads.
+- `safeParseProviderManifest(value)`
+  - Returns structured parse issues without throwing.
 - `executionHostSchema`
   - Canonical provider capability execution-host contract (`browser|node|edge|worker`).
 

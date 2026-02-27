@@ -8,7 +8,7 @@ import {
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import {
 	type ProviderManifest,
-	parseProviderManifest,
+	safeParseProviderManifest,
 } from "@gooi/capability-contracts/provider-manifest";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
@@ -135,11 +135,11 @@ export const validateBindingRequirements = (
 export const providerManifestSafeParse = (
 	manifest: unknown,
 ): RuntimeResult<ProviderManifest> => {
-	try {
-		return ok(parseProviderManifest(manifest));
-	} catch (error) {
+	const parsed = safeParseProviderManifest(manifest);
+	if (!parsed.success) {
 		return fail("validation_error", "Invalid provider manifest.", {
-			cause: error instanceof Error ? error.message : String(error),
+			issues: parsed.error.issues,
 		});
 	}
+	return ok(parsed.data);
 };

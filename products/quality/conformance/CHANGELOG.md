@@ -11,3 +11,6 @@ The format is based on Changesets.
 - Authoring conformance suite for RFC-0003 checks:
   completion correctness, diagnostics parity, lens behavior, rename safety,
   expression symbol resolution, and signal impact chain.
+- Projection conformance suite for RFC-0010 checks:
+  refresh parity, mutation fixture projection outputs, stale-read gating,
+  as_of capability enforcement, and duplicate event-key dedupe behavior.

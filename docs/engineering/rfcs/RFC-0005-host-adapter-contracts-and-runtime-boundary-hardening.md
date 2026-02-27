@@ -325,10 +325,10 @@ Must-not-cross constraints:
 Feature-oriented modules:
 
 1. `products/contracts/host-contracts`
-2. `packages/entrypoint-runtime/src/host-ports.ts`
-3. `packages/provider-runtime/src/host-ports.ts`
-4. `packages/conformance/src/host-conformance`
-5. `packages/provider-runtime/src/capability-reachability.ts`
+2. `products/runtime/entrypoint-runtime/src/host-ports.ts`
+3. `products/runtime/provider-runtime/src/host-ports.ts`
+4. `products/quality/conformance/src/host-conformance`
+5. `products/runtime/provider-runtime/src/capability-reachability.ts`
 
 Public APIs via `package.json` exports:
 

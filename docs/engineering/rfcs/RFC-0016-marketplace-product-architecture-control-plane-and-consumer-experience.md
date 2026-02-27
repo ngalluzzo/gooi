@@ -263,7 +263,7 @@ Feature-oriented module layout:
    - conformance ingestion, certification decisioning, report APIs.
 4. `products/marketplace/resolution-engine`
    - resolver candidate APIs, explainability, and snapshot exports.
-5. `packages/marketplace-contracts`
+5. `products/contracts/marketplace-contracts`
    - listing/certification/catalog/resolver typed contracts.
 
 Public APIs via `package.json` exports:
@@ -284,7 +284,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/marketplace/*`
-  - `packages/marketplace-contracts`
+  - `products/contracts/marketplace-contracts`
 - Lane (if `products/*`):
   - `marketplace` (new first-class lane).
 - Why this boundary is correct:
@@ -297,7 +297,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - placing marketplace in runtime lane would collapse product boundaries and ownership.
 - Promotion/demotion plan:
-  - stable shared types promoted to `packages/marketplace-contracts`; service logic remains in `products/marketplace`.
+  - stable shared types promoted to `products/contracts/marketplace-contracts`; service logic remains in `products/marketplace`.
 
 ## Delivery plan and rollout
 

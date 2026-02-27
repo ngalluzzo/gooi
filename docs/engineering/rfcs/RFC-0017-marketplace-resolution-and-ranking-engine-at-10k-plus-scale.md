@@ -273,7 +273,7 @@ Feature-oriented module layout:
    - `src/rank/deterministic-ranker.ts`
    - `src/report/decision-report.ts`
    - `src/contracts/resolution-contracts.ts`
-2. `packages/marketplace-resolution-contracts`
+2. `products/contracts/marketplace-resolution-contracts`
    - request/result/report/profile schemas.
 
 Public APIs via `package.json` exports:
@@ -294,7 +294,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/marketplace/resolution-engine`
-  - `packages/marketplace-resolution-contracts`
+  - `products/contracts/marketplace-resolution-contracts`
 - Lane (if `products/*`):
   - `marketplace`
 - Why this boundary is correct:
@@ -307,7 +307,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - embedding ranking into runtime/deployment services causes drift and weak governance.
 - Promotion/demotion plan:
-  - stable contracts remain in `packages/*`, engine behavior remains in `products/marketplace/*`.
+  - stable contracts remain in `products/contracts/*`, engine behavior remains in `products/marketplace/*`.
 
 ## Delivery plan and rollout
 

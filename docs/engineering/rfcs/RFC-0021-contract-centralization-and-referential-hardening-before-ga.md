@@ -21,7 +21,7 @@
 
 Gooi has not shipped a public version yet, but contract boundaries are already drifting:
 
-1. Cross-lane contracts are split across `packages/*` and `products/*/*`.
+1. Cross-lane contracts were split across `packages/*` and `products/*/*` before centralization.
 2. The canonical app spec contract currently lives inside `@gooi/spec-compiler` instead of a shared contracts package.
 3. Shared concepts are repeated with lane-local copies instead of strong referential contracts.
 4. Publicly exported contract surfaces still carry broad `unknown` shapes in places where typed contracts should exist.
@@ -37,7 +37,7 @@ This is pre-GA, so we can and should break architecture now instead of carrying 
 
 ## Goals
 
-1. Establish one enforceable rule for cross-lane contracts: they live in `packages/*`.
+1. Establish one enforceable rule for cross-lane contracts: they live in `products/contracts/*`.
 2. Move the app spec contract into a dedicated shared package and make all lanes import it by reference.
 3. Remove weakly typed shared contract surfaces and replace them with named canonical types.
 4. Eliminate concept duplication for core envelopes, diagnostics, identity, and conformance result shapes.
@@ -61,8 +61,8 @@ Outcomes:
 Metrics:
 
 - Product metric(s):
-  - `100%` of cross-lane contract exports resolve from `packages/*`.
-  - `0` cross-lane contract modules exported from `products/*/*` except temporary deprecation shims explicitly listed in this RFC.
+  - `100%` of cross-lane contract exports resolve from `products/contracts/*`.
+  - `0` cross-lane contract modules exported outside `products/contracts/*` except temporary deprecation shims explicitly listed in this RFC.
 - Reliability metric(s):
   - `100%` contract determinism tests pass after migration.
   - `0` CI passes when forbidden boundary imports are present.
@@ -79,7 +79,7 @@ Perform a pre-GA architecture break that centralizes shared contracts and harden
 
 Canonical boundary rule:
 
-1. If a contract is consumed by more than one lane (`authoring`, `runtime`, `quality`, `marketplace`, `apps`), it must be defined in `packages/*`.
+1. If a contract is consumed by more than one lane (`authoring`, `runtime`, `quality`, `marketplace`, `apps`), it must be defined in `products/contracts/*`.
 2. `products/*/*` may define private contracts only when they are consumed exclusively inside that package.
 
 Mandatory package moves and creations:
@@ -142,10 +142,10 @@ Deterministic behavior rules:
 
 Must-not-cross constraints:
 
-1. `products/*/*` must not export cross-lane canonical contracts after migration completion.
+1. packages outside `products/contracts/*` must not export cross-lane canonical contracts after migration completion.
 2. Shared contract packages must not depend on runtime/authoring product behavior packages.
 3. Conformance package must not own canonical reusable contract primitives.
-4. Apps must not define contract copies for concepts already available from `packages/*`.
+4. Apps must not define contract copies for concepts already available from `products/contracts/*`.
 
 ## Contracts and typing
 
@@ -224,7 +224,7 @@ Single entry per feature:
   - `authoring`
   - `quality`
 - Why this boundary is correct:
-  - shared reusable primitives belong in `packages/*`; lane behavior remains in `products/*/*`.
+  - shared reusable contracts belong in `products/contracts/*`; non-contract shared primitives remain in `packages/*`; lane behavior remains in `products/*/*`.
 - Primary consumers (internal/external):
   - internal: authoring, runtime, quality, apps, marketplace adapters.
   - external: SDK users consuming typed contracts.
@@ -345,3 +345,4 @@ Definition of done:
 ## Decision log
 
 - `2026-02-27` - Draft created to mandate pre-GA contract centralization and referential hardening.
+- `2026-02-27` - Updated canonical contract location rule: cross-lane contracts live under `products/contracts/*`, while `packages/*` is reserved for non-contract shared primitives/facades.

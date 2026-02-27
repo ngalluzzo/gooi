@@ -265,7 +265,7 @@ Feature-oriented module layout:
    - `src/flows/flow-state.ts`
    - `src/session/apply-session-outcome.ts`
    - `src/contracts/domain-runtime-contracts.ts`
-2. `packages/domain-runtime-contracts`
+2. `products/contracts/domain-runtime-contracts`
    - typed envelopes, plans, and error code schemas.
 
 Public APIs via `package.json` exports:
@@ -286,7 +286,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/runtime/domain-runtime`
-  - `packages/domain-runtime-contracts`
+  - `products/contracts/domain-runtime-contracts`
 - Lane (if `products/*`):
   - `runtime`
 - Why this boundary is correct:
@@ -299,7 +299,7 @@ Single entry per feature:
 - Why this is not a better fit in another boundary:
   - embedding execution semantics in entrypoint runtime would recreate a monolith.
 - Promotion/demotion plan:
-  - stable domain execution contracts can be promoted from `products/*` to `packages/*` once adoption stabilizes.
+  - stable domain execution contracts can be promoted within `products/contracts/*` once adoption stabilizes.
 
 ## Delivery plan and rollout
 

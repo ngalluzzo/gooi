@@ -251,13 +251,13 @@ Feature-oriented module layout:
    - `src/match/webhook-match.ts`
    - `src/dispatch/dispatch.ts`
    - `src/trace/dispatch-trace.ts`
-2. `packages/surface-dispatch-contracts`
-   - plans, matchers, traces, errors.
+2. `products/contracts/surface-contracts`
+   - add dispatch feature modules for plans, matchers, traces, and errors.
 
 Public APIs via `package.json` exports:
 
 1. `@gooi/surface-dispatch-runtime`
-2. `@gooi/surface-dispatch-contracts/{plans,traces,errors}`
+2. `@gooi/surface-contracts/{dispatch-plans,dispatch-traces,dispatch-errors}`
 
 No barrel files:
 
@@ -271,7 +271,7 @@ Single entry per feature:
 
 - Proposed location(s):
   - `products/runtime/surface-dispatch-runtime`
-  - `packages/surface-dispatch-contracts`
+  - `products/contracts/surface-contracts` (dispatch feature)
 - Lane (if `products/*`):
   - `runtime`
 - Why this boundary is correct:
@@ -376,3 +376,4 @@ None.
 - `2026-02-26` - Resolved webhook replay policy: dispatch contracts must declare explicit replay-window behavior in `1.0.0` (host defaults may seed values but do not replace explicit policy).
 - `2026-02-26` - Resolved CLI alias handling: localized aliases are adapter-time concerns, not compile-time contract concerns.
 - `2026-02-26` - Resolved dispatch/runtime boundary for host portability: dispatch emits surface/host context but does not select capability providers or delegation routes.
+- `2026-02-27` - Resolved contract packaging model for this RFC: dispatch contracts are a feature within `@gooi/surface-contracts` under `products/contracts/surface-contracts`; do not introduce `@gooi/surface-dispatch-contracts`.

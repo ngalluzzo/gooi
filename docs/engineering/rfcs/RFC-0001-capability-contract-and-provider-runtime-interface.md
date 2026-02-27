@@ -211,9 +211,9 @@ Modules are organized by product feature, not technical layer names.
 Initial package targets:
 
 1. `products/contracts/capability-contracts`: capability and manifest contracts.
-2. `packages/provider-runtime`: activation, compatibility, invocation boundary.
-3. `packages/binding-plan`: binding plan and lockfile model plus validation.
-4. `packages/conformance`: shared tests for provider compliance.
+2. `products/runtime/provider-runtime`: activation, compatibility, invocation boundary.
+3. `packages/binding`: binding plan and lockfile model plus validation.
+4. `products/quality/conformance`: shared tests for provider compliance.
 
 Public APIs:
 

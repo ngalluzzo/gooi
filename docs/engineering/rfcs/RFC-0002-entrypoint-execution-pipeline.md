@@ -373,10 +373,10 @@ Interfaces locked by this RFC:
 
 Feature-oriented package additions:
 
-1. `packages/entrypoint-runtime`: query/mutation invocation orchestration.
-2. `packages/surface-bindings`: wired surface input-to-contract normalization.
-3. `packages/entrypoint-conformance`: reusable fixtures and execution assertions.
-4. `packages/spec-compiler`: spec-to-compiled-artifact pipeline for entrypoint runtime.
+1. `products/runtime/entrypoint-runtime`: query/mutation invocation orchestration.
+2. `products/runtime/surface-runtime`: wired surface input-to-contract normalization.
+3. `products/quality/conformance`: reusable fixtures and execution assertions.
+4. `products/authoring/spec-compiler`: spec-to-compiled-artifact pipeline for entrypoint runtime.
 
 Public API rules:
 
@@ -391,7 +391,7 @@ Public API rules:
 sequenceDiagram
   participant C as Caller
   participant S as Surface Adapter
-  participant B as surface-bindings
+  participant B as surface-runtime
   participant R as entrypoint-runtime
   participant A as Access Gate
   participant D as Domain Runtime

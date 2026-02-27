@@ -258,21 +258,26 @@ Must-not-cross constraints:
 
 ### End-state package model
 
-`packages/*` (public primitives):
+`packages/*` (public non-contract primitives and facades):
+
+1. `@gooi/provider-manifest`
+2. `@gooi/binding`
+3. `@gooi/app` (future facade)
+4. `@gooi/app-runtime` (future facade)
+5. `@gooi/app-testing` (future facade)
+6. `@gooi/app-marketplace` (future facade)
+
+`products/contracts/*` (shared contract packages):
 
 1. `@gooi/capability-contracts`
-2. `@gooi/provider-manifest`
-3. `@gooi/host-contracts`
-4. `@gooi/surface-contracts`
-5. `@gooi/binding`
-6. `@gooi/binding-resolution-contracts`
-7. `@gooi/app` (future facade)
-8. `@gooi/app-runtime` (future facade)
-9. `@gooi/app-testing` (future facade)
-10. `@gooi/app-marketplace` (future facade)
-11. `@gooi/marketplace-contracts`
-12. `@gooi/marketplace-resolution-contracts`
-13. `@gooi/marketplace-trust-contracts`
+2. `@gooi/host-contracts`
+3. `@gooi/surface-contracts`
+4. `@gooi/authoring-contracts`
+5. `@gooi/app-spec-contracts`
+6. `@gooi/conformance-contracts`
+7. `@gooi/marketplace-contracts`
+8. `@gooi/marketplace-resolution-contracts`
+9. `@gooi/marketplace-trust-contracts`
 
 Provider-manifest layering:
 
@@ -285,17 +290,24 @@ Provider-manifest layering:
 2. `@gooi/capability-index`
 3. `@gooi/symbol-graph`
 4. `@gooi/language-server`
-5. `@gooi/authoring-contracts`
 
 `products/runtime/*`:
 
 1. `@gooi/surface-runtime`
 2. `@gooi/entrypoint-runtime`
 3. `@gooi/provider-runtime`
+4. `@gooi/domain-runtime`
+5. `@gooi/projection-runtime`
+6. `@gooi/guard-runtime`
+
+`products/kernel/*`:
+
+1. `@gooi/execution-kernel`
 
 `products/quality/*`:
 
 1. `@gooi/conformance`
+2. `@gooi/scenario-runtime`
 
 `products/marketplace/*`:
 
@@ -328,11 +340,11 @@ Provider-manifest layering:
 ## Package boundary classification
 
 - Proposed location(s):
-  - Keep reusable primitives in `packages/*`.
-  - Keep lane-specific product behavior in `products/<lane>/*`.
+  - Keep reusable non-contract primitives and facades in `packages/*`.
+  - Keep shared contracts in `products/contracts/*` and lane-specific product behavior in `products/<lane>/*`.
   - Keep concrete providers in `products/marketplace/*`.
 - Lane (if `products/*`):
-  - `authoring`, `runtime`, `quality`, `marketplace`.
+  - `contracts`, `authoring`, `runtime`, `kernel`, `quality`, `marketplace`.
 - Why this boundary is correct:
   - It maps ownership and upgrade cadence to real product concerns.
 - Primary consumers (internal/external):
@@ -345,7 +357,7 @@ Provider-manifest layering:
 - Why this is not a better fit in another boundary:
   - a monolithic SDK would erase progressive adoption and boundary clarity.
 - Promotion/demotion plan:
-  - future shared features are promoted to `packages/*` only when proven product-agnostic.
+  - future shared contracts are promoted into `products/contracts/*`; non-contract shared primitives stay in `packages/*` when proven product-agnostic.
 
 ## Delivery plan and rollout
 
@@ -419,3 +431,5 @@ None.
 - `2026-02-26` - Resolved facade package family in north-star package map: include `@gooi/app-runtime`, `@gooi/app-testing`, and `@gooi/app-marketplace` as first-class progressive DX surfaces.
 - `2026-02-26` - Resolved provider-manifest layering: `@gooi/provider-manifest` remains base primitives while contract-first imports use `@gooi/capability-contracts/provider-manifest`.
 - `2026-02-26` - Resolved portability contract: mixed-host deployments are first-class; capability execution may be `local` or `delegated` without domain logic rewrites.
+- `2026-02-27` - Updated north-star package model: shared contracts are centralized under `products/contracts/*`; `packages/*` is reserved for non-contract primitives and facades.
+- `2026-02-27` - Added `kernel` as a dedicated product lane in the north-star architecture map.

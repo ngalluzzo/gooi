@@ -4,6 +4,14 @@
 
 - [RFC-0011](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0011-route-and-surface-dispatch-contracts-web-http-cli-and-webhook.md)
 - [RFC-0012](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0012-view-render-ir-and-renderer-adapter-contract.md)
+- [RFC-0022](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0022-kernel-runtime-core-and-standalone-adoption.md)
+- [RFC-0023](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0023-runtime-semantics-recomposition-and-runtime-package-reset.md)
+
+## Entry Gate (Pre-Track)
+
+Track 04 implementation is blocked until:
+1. RFC-0022 kernel preconditions are accepted and kernel boundary/API scaffolding is in place.
+2. RFC-0023 execution-spine contract and kernel-routed query/mutation cutover (Phase 2 equivalent) are complete.
 
 ## Epic 1: Route and Surface Dispatch Contracts
 

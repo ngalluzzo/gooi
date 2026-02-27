@@ -11,7 +11,7 @@
 	"excludePrivate": true,
 	"excludeProtected": true,
 	"excludeInternal": true,
-	"readme": "./README.md",
+	"readme": "none",
 	"plugin": ["typedoc-plugin-markdown"],
 	"out": "../../apps/docs/docs/api/authoring-contracts"
 }

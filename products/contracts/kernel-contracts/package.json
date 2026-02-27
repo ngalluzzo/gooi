@@ -50,15 +50,15 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/runtime/runtime.ts --outfile ./dist/runtime/runtime.js --external @gooi/kernel-contracts/invocation --external @gooi/kernel-contracts/trace --external @gooi/host-contracts/portset && bun build ./src/invocation/invocation.ts --outfile ./dist/invocation/invocation.js --external @gooi/host-contracts/portset && bun build ./src/trace/trace.ts --outfile ./dist/trace/trace.js --external @gooi/kernel-contracts/orchestration && bun build ./src/orchestration/orchestration.ts --outfile ./dist/orchestration/orchestration.js --external @gooi/kernel-contracts/invocation && bun build ./src/semantic-engine/semantic-engine.ts --outfile ./dist/semantic-engine/semantic-engine.js --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/principal --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/signal-envelope && bun build ./src/entrypoint-runtime/entrypoint-runtime.ts --outfile ./dist/entrypoint-runtime/entrypoint-runtime.js --external @gooi/host-contracts/portset --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/kernel-contracts/semantic-engine --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/surface-request",
+		"build": "bun build ./src/runtime/runtime.ts --outfile ./dist/runtime/runtime.js --external @gooi/kernel-contracts/invocation --external @gooi/kernel-contracts/trace --external @gooi/host-contracts/portset && bun build ./src/invocation/invocation.ts --outfile ./dist/invocation/invocation.js --external @gooi/host-contracts/portset && bun build ./src/trace/trace.ts --outfile ./dist/trace/trace.js --external @gooi/kernel-contracts/orchestration && bun build ./src/orchestration/orchestration.ts --outfile ./dist/orchestration/orchestration.js --external @gooi/kernel-contracts/invocation && bun build ./src/semantic-engine/semantic-engine.ts --outfile ./dist/semantic-engine/semantic-engine.js --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/principal --external @gooi/app-spec-contracts/compiled --external @gooi/surface-contracts/signal-envelope && bun build ./src/entrypoint-runtime/entrypoint-runtime.ts --outfile ./dist/entrypoint-runtime/entrypoint-runtime.js --external @gooi/host-contracts/portset --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/kernel-contracts/semantic-engine --external @gooi/app-spec-contracts/compiled --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/surface-request",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
-		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*"
 	}
 }

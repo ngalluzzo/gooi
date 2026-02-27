@@ -113,4 +113,42 @@ describe("artifact-model manifest", () => {
 
 		expect(first.aggregateHash).toBe(second.aggregateHash);
 	});
+
+	test("keeps signatures optional and deterministic when provided", () => {
+		const withoutSignatures = buildArtifactManifest({
+			artifacts: {
+				"runtime.entrypoints": {
+					refVersion: "1.0.0",
+					lane: "runtime",
+					artifactId: "CompiledRuntimeEntrypoints",
+					artifactVersion: "1.0.0",
+					artifactHash: "hash_a",
+					hashAlgorithm: "sha256",
+				},
+			},
+		});
+		expect(withoutSignatures.signatures).toBeUndefined();
+
+		const firstWithSignatures = buildArtifactManifest({
+			artifacts: withoutSignatures.artifacts,
+			signatures: {
+				sigstore: "sig_2",
+				cosign: "sig_1",
+			},
+		});
+		const secondWithSignatures = buildArtifactManifest({
+			artifacts: withoutSignatures.artifacts,
+			signatures: {
+				cosign: "sig_1",
+				sigstore: "sig_2",
+			},
+		});
+		expect(firstWithSignatures.aggregateHash).toBe(
+			secondWithSignatures.aggregateHash,
+		);
+		expect(Object.keys(firstWithSignatures.signatures ?? {})).toEqual([
+			"cosign",
+			"sigstore",
+		]);
+	});
 });

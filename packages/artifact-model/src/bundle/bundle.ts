@@ -57,7 +57,9 @@ export type PackagedBundleDiagnosticCode =
 	| "artifact_missing_error"
 	| "artifact_mismatch_error"
 	| "manifest_schema_error"
-	| "manifest_compatibility_error";
+	| "manifest_compatibility_error"
+	| "manifest_signature_missing_error"
+	| "manifest_signature_policy_error";
 
 /**
  * One deterministic packaged-bundle diagnostic.

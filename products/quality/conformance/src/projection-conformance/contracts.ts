@@ -1,5 +1,6 @@
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { ProjectionResultEnvelope } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
 import type {
 	CompiledAggregateProjectionPlan,
@@ -15,7 +16,7 @@ import type { ProjectionRefreshSubscriptions } from "@gooi/projection-runtime/re
 export interface ProjectionCollectionReaderPort {
 	readonly scanCollection: (input: {
 		readonly collectionId: string;
-	}) => Promise<readonly Readonly<Record<string, unknown>>[]>;
+	}) => Promise<readonly JsonObject[]>;
 }
 
 /**
@@ -60,5 +61,5 @@ export interface RunProjectionConformanceInput {
 	readonly refreshSubscriptions: ProjectionRefreshSubscriptions;
 	readonly emittedSignalIds: readonly string[];
 	readonly expectedAffectedQueryIds: readonly string[];
-	readonly expectedAggregateRows: readonly Readonly<Record<string, unknown>>[];
+	readonly expectedAggregateRows: readonly JsonObject[];
 }

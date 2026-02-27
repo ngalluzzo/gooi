@@ -8,6 +8,7 @@ import type {
 	CompiledLaneArtifact,
 } from "@gooi/artifact-model/manifest";
 import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 /**
@@ -185,7 +186,7 @@ export interface CompiledEntrypoint {
 	/** Field contracts used by binders and runtime validation. */
 	readonly inputFields: Readonly<Record<string, CompiledInputField>>;
 	/** Default input values applied after explicit bindings. */
-	readonly defaultInput: Readonly<Record<string, unknown>>;
+	readonly defaultInput: JsonObject;
 	/** Role names allowed to invoke this entrypoint. */
 	readonly accessRoles: readonly string[];
 	/** Key referencing generated input schema artifact. */
@@ -226,7 +227,7 @@ export type CompiledRoleDeriveRule =
 	| {
 			readonly kind: "auth_claim_equals";
 			readonly claim: string;
-			readonly expected: unknown;
+			readonly expected: JsonValue;
 	  };
 
 /**
@@ -262,7 +263,7 @@ export interface CompiledJsonSchemaArtifact {
 	/** Schema draft target used for generation. */
 	readonly target: HostProviderSchemaProfile;
 	/** Deterministically normalized JSON Schema object. */
-	readonly schema: Readonly<Record<string, unknown>>;
+	readonly schema: JsonObject;
 	/** SHA-256 hash of normalized schema JSON. */
 	readonly hash: string;
 }
@@ -272,23 +273,23 @@ export interface CompiledJsonSchemaArtifact {
  */
 export interface CompiledCanonicalSections {
 	/** Compiled `app` section. */
-	readonly app: Readonly<Record<string, unknown>>;
+	readonly app: JsonObject;
 	/** Compiled `domain` section. */
-	readonly domain: Readonly<Record<string, unknown>>;
+	readonly domain: JsonObject;
 	/** Compiled `session` section. */
-	readonly session: Readonly<Record<string, unknown>>;
+	readonly session: JsonObject;
 	/** Compiled `views` section. */
-	readonly views: Readonly<Record<string, unknown>>;
+	readonly views: JsonObject;
 	/** Compiled `routes` section. */
-	readonly routes: readonly Readonly<Record<string, unknown>>[];
+	readonly routes: readonly JsonObject[];
 	/** Compiled `personas` section. */
-	readonly personas: Readonly<Record<string, unknown>>;
+	readonly personas: JsonObject;
 	/** Compiled `scenarios` section. */
-	readonly scenarios: Readonly<Record<string, unknown>>;
+	readonly scenarios: JsonObject;
 	/** Compiled `wiring` section. */
-	readonly wiring: Readonly<Record<string, unknown>>;
+	readonly wiring: JsonObject;
 	/** Compiled `access` section. */
-	readonly access: Readonly<Record<string, unknown>>;
+	readonly access: JsonObject;
 }
 
 /**
@@ -324,13 +325,13 @@ export interface CanonicalSpecModel {
 	/** Deterministic reference index for semantic validation. */
 	readonly references: CanonicalSpecModelReferenceIndex;
 	/** Parsed query entrypoint declarations in author order. */
-	readonly queries: readonly Readonly<Record<string, unknown>>[];
+	readonly queries: readonly JsonObject[];
 	/** Parsed mutation entrypoint declarations in author order. */
-	readonly mutations: readonly Readonly<Record<string, unknown>>[];
+	readonly mutations: readonly JsonObject[];
 	/** Parsed wiring section. */
-	readonly wiring: Readonly<Record<string, unknown>>;
+	readonly wiring: JsonObject;
 	/** Parsed views section. */
-	readonly views: Readonly<Record<string, unknown>>;
+	readonly views: JsonObject;
 }
 
 /**

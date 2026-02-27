@@ -4,6 +4,7 @@ import type { CapabilityPortContract } from "@gooi/capability-contracts/capabili
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceDiagnosticRecordBase } from "@gooi/conformance-contracts/diagnostics";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import type {
 	PrincipalContext,
 	ProviderModule,
@@ -49,7 +50,7 @@ export interface RunReachabilityParitySuiteInput {
 	/** Capability contract exercised by parity checks. */
 	readonly contract: CapabilityPortContract;
 	/** Capability invocation input shared by local and delegated runs. */
-	readonly input: unknown;
+	readonly input: JsonValue;
 	/** Binding plan used for local execution path. */
 	readonly localBindingPlan: BindingPlan;
 	/** Lockfile used for local execution path. */

@@ -1,5 +1,6 @@
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type {
 	GuardEvaluationEnvelope,
 	InvariantEvaluationEnvelope,
@@ -44,11 +45,11 @@ export interface RunGuardConformanceInput {
 	}>;
 	readonly evaluateInvariant: (input: {
 		readonly definition: CompiledInvariantDefinition;
-		readonly context: Readonly<Record<string, unknown>>;
+		readonly context: JsonObject;
 	}) => InvariantEvaluationEnvelope;
 	readonly evaluateGuard: (input: {
 		readonly definition: CompiledGuardDefinition;
-		readonly context: Readonly<Record<string, unknown>>;
+		readonly context: JsonObject;
 		readonly environment?: "production" | "simulation" | "ci";
 		readonly semanticJudge?: SemanticJudgePort;
 		readonly samplingSeed?: string;

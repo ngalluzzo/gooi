@@ -1,4 +1,5 @@
 import { effectKindSchema } from "@gooi/capability-contracts/capability-port";
+import { jsonValueSchema } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 /**
@@ -34,9 +35,9 @@ const capabilityIoSchemaRefsSchema = z.object({
 });
 
 const capabilityExamplePayloadsSchema = z.object({
-	input: z.unknown().optional(),
-	output: z.unknown().optional(),
-	error: z.unknown().optional(),
+	input: jsonValueSchema.optional(),
+	output: jsonValueSchema.optional(),
+	error: jsonValueSchema.optional(),
 });
 
 /**

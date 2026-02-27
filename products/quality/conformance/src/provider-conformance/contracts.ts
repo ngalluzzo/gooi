@@ -3,6 +3,7 @@ import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import type { ProviderModule } from "@gooi/provider-runtime";
 
 /**
@@ -39,9 +40,9 @@ export interface RunProviderConformanceInput {
 	/** Capability contract exercised by conformance test. */
 	readonly contract: CapabilityPortContract;
 	/** Valid input expected to pass contract validation. */
-	readonly validInput: unknown;
+	readonly validInput: JsonValue;
 	/** Invalid input expected to fail contract validation. */
-	readonly invalidInput: unknown;
+	readonly invalidInput: JsonValue;
 	/** Optional plan artifact for activation enforcement. */
 	readonly bindingPlan?: BindingPlan;
 	/** Optional lockfile artifact for activation enforcement. */

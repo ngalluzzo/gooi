@@ -172,6 +172,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/capability-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -194,6 +195,7 @@
         "@gooi/app-spec-contracts": "workspace:*",
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -215,6 +217,7 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/capability-index": "workspace:*",
         "@gooi/conformance-contracts": "workspace:*",
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/domain-runtime": "workspace:*",
         "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",

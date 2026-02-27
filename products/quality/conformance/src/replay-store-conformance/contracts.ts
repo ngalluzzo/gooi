@@ -1,5 +1,6 @@
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 
 /**
@@ -25,5 +26,5 @@ export interface ReplayStoreConformanceReport
  */
 export interface RunReplayStoreConformanceInput {
 	/** Factory for creating a replay-store port under test. */
-	readonly createPort: <TResult = unknown>() => HostReplayStorePort<TResult>;
+	readonly createPort: <TResult = JsonValue>() => HostReplayStorePort<TResult>;
 }

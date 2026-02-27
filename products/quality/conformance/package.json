@@ -144,6 +144,7 @@
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/conformance-contracts": "workspace:*",
+		"@gooi/contract-primitives": "workspace:*",
 		"@gooi/domain-runtime": "workspace:*",
 		"@gooi/entrypoint-runtime": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",

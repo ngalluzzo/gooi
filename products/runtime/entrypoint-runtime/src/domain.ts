@@ -26,6 +26,8 @@ export interface DomainExecutionInput {
 		readonly traceId: string;
 		/** Runtime clock timestamp. */
 		readonly now: string;
+		/** Optional domain execution mode for simulation pathways. */
+		readonly mode?: "live" | "simulation";
 	};
 }
 

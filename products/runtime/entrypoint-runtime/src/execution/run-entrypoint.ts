@@ -48,14 +48,14 @@ export const runEntrypoint = async (
 		});
 	}
 
-	const startedAt = input.now ?? hostPorts.clock.nowIso();
-	const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
 	const entrypoint = resolveEntrypoint(
 		input.binding.entrypointKind,
 		input.binding.entrypointId,
 		input.bundle.entrypoints,
 	);
 	if (entrypoint === undefined) {
+		const startedAt = input.now ?? hostPorts.clock.nowIso();
+		const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
 		return errorResult(
 			baseInvocation,
 			input.bundle.artifactHash,
@@ -75,6 +75,8 @@ export const runEntrypoint = async (
 		binding: input.binding,
 	});
 	if (!bound.ok) {
+		const startedAt = input.now ?? hostPorts.clock.nowIso();
+		const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
 		return errorResult(
 			baseInvocation,
 			input.bundle.artifactHash,

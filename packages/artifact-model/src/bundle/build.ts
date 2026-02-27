@@ -1,5 +1,5 @@
-import { compiledArtifactManifestVersionSchema } from "@gooi/artifact-model/manifest";
-import { validateArtifactManifest } from "@gooi/artifact-model/validation";
+import { compiledArtifactManifestVersionSchema } from "../manifest/manifest";
+import { validateArtifactManifest } from "../validation/validate-manifest";
 import {
 	type BuildPackagedBundleInput,
 	type PackagedAppBundle,

@@ -1,14 +1,14 @@
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import {
 	type CompiledArtifactManifest,
 	calculateManifestAggregateHash,
 	type LaneId,
 	safeParseCompiledArtifactManifest,
-} from "@gooi/artifact-model/manifest";
+} from "../manifest/manifest";
 import {
 	type ManifestSignaturePolicy,
 	validateManifestSignaturesForPolicy,
-} from "@gooi/artifact-model/trust-policy";
-import type { JsonValue } from "@gooi/contract-primitives/json";
+} from "../trust-policy/manifest-signature-policy";
 
 const sortDiagnostics = <
 	T extends { readonly path: string; readonly code: string },

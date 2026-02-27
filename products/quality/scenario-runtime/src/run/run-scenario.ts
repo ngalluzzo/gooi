@@ -10,6 +10,7 @@ import {
 	type RunScenarioInput,
 	type RuntimeState,
 } from "./contracts";
+import { validateScenarioProfile } from "./policies/validate-scenario-profile";
 import { executeCaptureStep } from "./steps/execute-capture-step";
 import { executeExpectStep } from "./steps/execute-expect-step";
 import { executeTriggerStep } from "./steps/execute-trigger-step";
@@ -32,6 +33,21 @@ export const runScenario = async (
 ): Promise<ScenarioRunEnvelope> => {
 	const persona = resolvePersona(input);
 	const lockBase = input.lockSnapshot ?? emptyLockSnapshot;
+	const policy = validateScenarioProfile({
+		scenario: input.scenario,
+		...(input.profile === undefined ? {} : { profile: input.profile }),
+	});
+	if (!policy.ok) {
+		return {
+			envelopeVersion: scenarioRunEnvelopeVersion,
+			scenarioId: input.scenario.scenarioId,
+			ok: false,
+			stepResults: [],
+			captures: {},
+			lockSnapshot: lockBase,
+			error: policy.error,
+		};
+	}
 	const lockDraft = {
 		generated: {
 			...lockBase.generated,

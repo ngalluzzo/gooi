@@ -89,6 +89,7 @@ describe("scenario-runtime", () => {
 		const suite = await runScenarioSuite({
 			planSet: scenarioPlanSetFixture,
 			tags: ["smoke"],
+			profile: "simulation",
 			runInput: {
 				traceId: "trace_suite",
 				invocationId: "invocation_suite",
@@ -106,5 +107,42 @@ describe("scenario-runtime", () => {
 		});
 		expect(coverage.rows[0]?.personaId).toBe("guest");
 		expect(coverage.rows[0]?.totalScenarios).toBe(2);
+	});
+
+	test("blocks generated triggers in default_ci profile suites", async () => {
+		const invoker = createScenarioInvokerFixture();
+		const suite = await runScenarioSuite({
+			planSet: scenarioPlanSetFixture,
+			tags: ["happy"],
+			runInput: {
+				traceId: "trace_ci_suite",
+				invocationId: "invocation_ci_suite",
+				...invoker,
+			},
+		});
+
+		expect(suite.ok).toBe(false);
+		expect(suite.runs[0]?.error?.code).toBe("scenario_policy_error");
+	});
+
+	test("blocks provider overrides in default_ci profile runs", async () => {
+		const invoker = createScenarioInvokerFixture();
+		const run = await runScenario({
+			scenario: {
+				...getScenario("rejection_path"),
+				context: {
+					...getScenario("rejection_path").context,
+					providerOverrides: { "collections.write": "memory" },
+				},
+			},
+			personas: scenarioPlanSetFixture.personas,
+			profile: "default_ci",
+			traceId: "trace_ci_provider_override",
+			invocationId: "invocation_ci_provider_override",
+			...invoker,
+		});
+
+		expect(run.ok).toBe(false);
+		expect(run.error?.code).toBe("scenario_policy_error");
 	});
 });

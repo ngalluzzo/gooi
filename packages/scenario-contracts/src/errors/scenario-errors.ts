@@ -7,6 +7,7 @@ export const scenarioErrorCodeSchema = z.enum([
 	"scenario_capture_error",
 	"scenario_generation_error",
 	"scenario_lockfile_error",
+	"scenario_policy_error",
 ]);
 
 export type ScenarioErrorCode = z.infer<typeof scenarioErrorCodeSchema>;

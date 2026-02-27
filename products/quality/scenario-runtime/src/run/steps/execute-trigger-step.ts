@@ -75,6 +75,9 @@ export const executeTriggerStep = async (input: {
 				? {}
 				: { session: input.scenario.context.session }),
 			...(input.persona === undefined ? {} : { persona: input.persona }),
+			...(input.scenario.context.providerOverrides === undefined
+				? {}
+				: { providerOverrides: input.scenario.context.providerOverrides }),
 		},
 	});
 	input.state.lastTrigger = result;

@@ -9,6 +9,12 @@ import type {
 } from "@gooi/scenario-contracts/plans/scenario-plan";
 import type { generateTriggerInput } from "../persona/generate-trigger-input";
 
+export type ScenarioExecutionProfile =
+	| "simulation"
+	| "pre_merge"
+	| "default_ci"
+	| "production_smoke";
+
 export interface TriggerInvocationResult {
 	readonly ok: boolean;
 	readonly output?: unknown;
@@ -25,6 +31,7 @@ export interface RunScenarioInput {
 	readonly personas: Readonly<Record<string, CompiledPersonaDefinition>>;
 	readonly lockSnapshot?: ScenarioGeneratedInputLockSnapshot;
 	readonly refreshGenerated?: boolean;
+	readonly profile?: ScenarioExecutionProfile;
 	readonly environment?: GuardRuntimeEnvironment;
 	readonly traceId: string;
 	readonly invocationId: string;
@@ -37,6 +44,7 @@ export interface RunScenarioInput {
 			readonly principal?: Readonly<Record<string, unknown>>;
 			readonly session?: Readonly<Record<string, unknown>>;
 			readonly persona?: CompiledPersonaDefinition;
+			readonly providerOverrides?: Readonly<Record<string, unknown>>;
 		};
 	}) => Promise<TriggerInvocationResult>;
 	readonly resolveFlowCompletion?: (input: {

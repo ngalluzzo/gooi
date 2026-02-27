@@ -1,5 +1,6 @@
 import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
 import type {
+	CompiledPersonaDefinition,
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
 } from "@gooi/scenario-contracts/plans/scenario-plan";
@@ -118,6 +119,12 @@ export const createScenarioInvokerFixture = () => ({
 		readonly entrypointKind: "mutation" | "query";
 		readonly entrypointId: string;
 		readonly input: Readonly<Record<string, unknown>>;
+		readonly context: {
+			readonly principal?: Readonly<Record<string, unknown>>;
+			readonly session?: Readonly<Record<string, unknown>>;
+			readonly persona?: CompiledPersonaDefinition;
+			readonly providerOverrides?: Readonly<Record<string, unknown>>;
+		};
 	}) => {
 		if (input.entrypointKind === "mutation") {
 			const message = String(input.input.message ?? "");

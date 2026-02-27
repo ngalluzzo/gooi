@@ -6,7 +6,10 @@ import {
 	type ScenarioSuiteReport,
 	scenarioSuiteReportVersion,
 } from "@gooi/scenario-contracts/reports/scenario-reports";
-import type { RunScenarioInput } from "../run/contracts";
+import type {
+	RunScenarioInput,
+	ScenarioExecutionProfile,
+} from "../run/contracts";
 import { runScenario } from "../run/run-scenario";
 
 const emptyLockSnapshot: ScenarioGeneratedInputLockSnapshot = {
@@ -40,13 +43,15 @@ export const runScenarioSuite = async (input: {
 	readonly planSet: CompiledScenarioPlanSet;
 	readonly tags?: readonly string[];
 	readonly lockSnapshot?: ScenarioGeneratedInputLockSnapshot;
+	readonly profile?: ScenarioExecutionProfile;
 	readonly runInput: Omit<
 		RunScenarioInput,
-		"scenario" | "personas" | "lockSnapshot"
+		"scenario" | "personas" | "lockSnapshot" | "profile"
 	>;
 }): Promise<ScenarioSuiteReport> => {
 	const selectedScenarioIds = selectScenarioIds(input.planSet, input.tags);
 	const runs: Array<ScenarioSuiteReport["runs"][number]> = [];
+	const profile = input.profile ?? "default_ci";
 	let lockSnapshot = input.lockSnapshot ?? emptyLockSnapshot;
 	for (const scenarioId of selectedScenarioIds) {
 		const scenario = input.planSet.scenarios[scenarioId];
@@ -57,6 +62,7 @@ export const runScenarioSuite = async (input: {
 			scenario,
 			personas: input.planSet.personas,
 			lockSnapshot,
+			profile,
 			...input.runInput,
 		});
 		runs.push(run);

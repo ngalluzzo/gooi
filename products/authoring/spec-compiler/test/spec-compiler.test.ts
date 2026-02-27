@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { compileEntrypointBundle } from "../src/compile/compile-bundle";
+import { unpackPackagedBundle } from "@gooi/artifact-model/bundle";
+import {
+	compileEntrypointBundle,
+	compilePackagedEntrypointBundle,
+} from "../src/compile/compile-bundle";
 import {
 	createAmbiguousReachabilityRequirementsFixture,
 	createBindingFieldMismatchFixture,
@@ -61,16 +65,39 @@ describe("spec-compiler", () => {
 		expect(
 			first.bundle.bindingRequirementsArtifact.compatibility.supportedModes,
 		).toEqual(["local", "delegated", "unreachable"]);
-		expect(
-			first.bundle.artifactManifest.artifacts.bindingRequirements.artifactId,
-		).toBe("CompiledBindingRequirements");
-		expect(
-			first.bundle.artifactManifest.artifacts.bindingRequirements.artifactHash,
-		).toBe(first.bundle.bindingRequirementsArtifact.artifactHash);
-		expect(
-			first.bundle.artifactManifest.artifacts.bindingRequirements.compatibility
-				.resolverInputContract,
-		).toBe("CapabilityReachabilityRequirement@1.0.0");
+		expect(Object.keys(first.bundle.laneArtifacts)).toEqual([
+			"authoringCanonicalModel",
+			"bindingRequirements",
+			"qualityConformanceSeed",
+			"runtimeEntrypointContracts",
+		]);
+		expect(Object.keys(first.bundle.artifactManifest.artifacts)).toEqual([
+			"authoringCanonicalModel",
+			"bindingRequirements",
+			"qualityConformanceSeed",
+			"runtimeEntrypointContracts",
+		]);
+		const bindingRequirementsRef =
+			first.bundle.artifactManifest.artifacts.bindingRequirements;
+		expect(bindingRequirementsRef).toBeDefined();
+		if (bindingRequirementsRef !== undefined) {
+			const bindingRequirementsArtifact =
+				first.bundle.laneArtifacts.bindingRequirements;
+			expect(bindingRequirementsArtifact).toBeDefined();
+			expect(bindingRequirementsRef.artifactId).toBe(
+				"CompiledBindingRequirements",
+			);
+			if (bindingRequirementsArtifact !== undefined) {
+				expect(bindingRequirementsRef.artifactHash).toBe(
+					bindingRequirementsArtifact.artifactHash,
+				);
+			}
+			expect(bindingRequirementsRef.compatibility).toEqual(
+				expect.objectContaining({
+					resolverInputContract: "CapabilityReachabilityRequirement@1.0.0",
+				}),
+			);
+		}
 		const subscription = first.bundle.refreshSubscriptions.list_messages;
 		expect(subscription).toBeDefined();
 		if (subscription !== undefined) {
@@ -262,6 +289,32 @@ describe("spec-compiler", () => {
 			);
 			expect(result.diagnostics[0]?.path).toBe(
 				"wiring.requirements.capabilities.0.portVersion",
+			);
+		}
+	});
+
+	test("builds optional packaged bundle that unpacks to canonical lane artifacts", () => {
+		const fixture = createComposableEntrypointSpecFixture();
+		const result = compilePackagedEntrypointBundle({
+			spec: fixture,
+			compilerVersion: "1.0.0",
+		});
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+
+		const unpacked = unpackPackagedBundle({
+			bundle: result.packagedBundle,
+		});
+		expect(unpacked.ok).toBe(true);
+		if (unpacked.ok) {
+			expect(unpacked.value.manifest.aggregateHash).toBe(
+				result.bundle.artifactManifest.aggregateHash,
+			);
+			expect(Object.keys(unpacked.value.artifacts)).toEqual(
+				Object.keys(result.bundle.laneArtifacts),
 			);
 		}
 	});

@@ -1,9 +1,7 @@
 import { sha256, stableStringify } from "@gooi/stable-json";
 import {
-	type CompiledArtifactManifest,
 	type CompiledBindingRequirements,
 	type CompiledReachabilityRequirement,
-	compiledArtifactManifestVersionSchema,
 	compiledBindingRequirementsArtifactVersionSchema,
 	compiledReachabilityModeSchema,
 } from "./compile.contracts";
@@ -11,10 +9,6 @@ import {
 const bindingRequirementsArtifactHashInput = (
 	artifact: Omit<CompiledBindingRequirements, "artifactHash">,
 ): string => sha256(stableStringify(artifact));
-
-const artifactManifestHashInput = (
-	manifest: Omit<CompiledArtifactManifest, "aggregateHash">,
-): string => sha256(stableStringify(manifest));
 
 const normalizeRequirements = (
 	requirements: Readonly<Record<string, CompiledReachabilityRequirement>>,
@@ -48,32 +42,5 @@ export const compileBindingRequirementsArtifact = (
 	return {
 		...partialArtifact,
 		artifactHash: bindingRequirementsArtifactHashInput(partialArtifact),
-	};
-};
-
-/**
- * Compiles deterministic manifest references for emitted lane artifacts.
- *
- * @param bindingRequirements - Compiled binding requirements artifact.
- * @returns Compiled artifact manifest containing binding requirements identity.
- */
-export const compileArtifactManifest = (
-	bindingRequirements: CompiledBindingRequirements,
-): CompiledArtifactManifest => {
-	const partialManifest: Omit<CompiledArtifactManifest, "aggregateHash"> = {
-		artifactVersion: compiledArtifactManifestVersionSchema.value,
-		artifacts: {
-			bindingRequirements: {
-				artifactId: bindingRequirements.artifactId,
-				artifactVersion: bindingRequirements.artifactVersion,
-				artifactHash: bindingRequirements.artifactHash,
-				compatibility: bindingRequirements.compatibility,
-			},
-		},
-	};
-
-	return {
-		...partialManifest,
-		aggregateHash: artifactManifestHashInput(partialManifest),
 	};
 };

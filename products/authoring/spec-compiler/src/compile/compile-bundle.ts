@@ -1,3 +1,7 @@
+import {
+	buildPackagedBundle,
+	type PackagedAppBundle,
+} from "@gooi/artifact-model/bundle";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	authoringEntrypointSpecSchema,
@@ -11,13 +15,11 @@ import {
 	type CompiledRoleDeriveRule,
 	type CompileEntrypointBundleResult,
 } from "./compile.contracts";
-import {
-	compileArtifactManifest,
-	compileBindingRequirementsArtifact,
-} from "./compile-binding-requirements-artifact";
+import { compileBindingRequirementsArtifact } from "./compile-binding-requirements-artifact";
 import { compileBindings } from "./compile-bindings";
 import { buildCanonicalSpecModel } from "./compile-canonical-model";
 import { compileEntrypoints } from "./compile-entrypoints";
+import { compileLaneArtifacts } from "./compile-lane-artifacts";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 import { sortDiagnostics } from "./sort-diagnostics";
@@ -32,6 +34,31 @@ export interface CompileEntrypointBundleInput {
 	/** Compiler version persisted in the output artifact. */
 	readonly compilerVersion: string;
 }
+
+/**
+ * Successful compile result that also includes optional packaged transport artifact.
+ */
+export interface CompilePackagedEntrypointBundleSuccess {
+	readonly ok: true;
+	readonly diagnostics: readonly CompileDiagnostic[];
+	readonly bundle: CompiledEntrypointBundle;
+	readonly packagedBundle: PackagedAppBundle;
+}
+
+/**
+ * Failed compile result for packaged bundle generation.
+ */
+export interface CompilePackagedEntrypointBundleFailure {
+	readonly ok: false;
+	readonly diagnostics: readonly CompileDiagnostic[];
+}
+
+/**
+ * Result union for optional packaged bundle compilation.
+ */
+export type CompilePackagedEntrypointBundleResult =
+	| CompilePackagedEntrypointBundleSuccess
+	| CompilePackagedEntrypointBundleFailure;
 
 const hasErrors = (diagnostics: readonly CompileDiagnostic[]): boolean =>
 	diagnostics.some((diagnostic) => diagnostic.severity === "error");
@@ -171,10 +198,20 @@ export const compileEntrypointBundle = (
 
 	const artifactVersion = artifactVersionSchema.value;
 	const sourceSpecHash = sha256(stableStringify(spec));
+	const accessPlan = compileAccessPlan(spec);
 	const bindingRequirementsArtifact = compileBindingRequirementsArtifact(
 		reachabilityOutput.requirements,
 	);
-	const artifactManifest = compileArtifactManifest(bindingRequirementsArtifact);
+	const laneArtifactOutput = compileLaneArtifacts({
+		canonicalModel,
+		entrypoints: entrypointOutput.entrypoints,
+		bindings: bindingOutput.bindings,
+		refreshSubscriptions: refreshOutput.subscriptions,
+		accessPlan,
+		schemaArtifacts: entrypointOutput.schemaArtifacts,
+		bindingRequirementsArtifact,
+	});
+	const artifactManifest = laneArtifactOutput.artifactManifest;
 	const partialBundle: Omit<CompiledEntrypointBundle, "artifactHash"> = {
 		artifactVersion,
 		compilerVersion: input.compilerVersion,
@@ -185,8 +222,9 @@ export const compileEntrypointBundle = (
 		reachabilityRequirements: reachabilityOutput.requirements,
 		bindingRequirementsArtifact,
 		artifactManifest,
+		laneArtifacts: laneArtifactOutput.laneArtifacts,
 		refreshSubscriptions: refreshOutput.subscriptions,
-		accessPlan: compileAccessPlan(spec),
+		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,
 	};
 
@@ -212,3 +250,29 @@ export const compileEntrypointBundle = (
 export const parseCompiledEntrypointBundle = (
 	value: CompiledEntrypointBundle,
 ): CompiledEntrypointBundle => value;
+
+/**
+ * Compiles source spec and emits optional packaged transport bundle.
+ */
+export const compilePackagedEntrypointBundle = (
+	input: CompileEntrypointBundleInput,
+): CompilePackagedEntrypointBundleResult => {
+	const compiled = compileEntrypointBundle(input);
+	if (!compiled.ok) {
+		return {
+			ok: false,
+			diagnostics: compiled.diagnostics,
+		};
+	}
+
+	const packagedBundle = buildPackagedBundle({
+		manifest: compiled.bundle.artifactManifest,
+		artifacts: compiled.bundle.laneArtifacts,
+	});
+	return {
+		ok: true,
+		diagnostics: compiled.diagnostics,
+		bundle: compiled.bundle,
+		packagedBundle,
+	};
+};

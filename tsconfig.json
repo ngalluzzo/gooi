@@ -2,6 +2,7 @@
 	"files": [],
 	"references": [
 		{ "path": "./apps/vscode-extension" },
+		{ "path": "./packages/artifact-model" },
 		{ "path": "./packages/provider-manifest" },
 		{ "path": "./packages/capability-contracts" },
 		{ "path": "./packages/binding" },

@@ -199,6 +199,17 @@
         "zod": "^4.3.6",
       },
     },
+    "products/kernel/execution-kernel": {
+      "name": "@gooi/execution-kernel",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/kernel-host-bridge": "workspace:*",
+      },
+    },
+    "products/kernel/kernel-host-bridge": {
+      "name": "@gooi/kernel-host-bridge",
+      "version": "0.1.0",
+    },
     "products/marketplace/memory": {
       "name": "@gooi-marketplace/memory",
       "version": "0.1.0",
@@ -267,6 +278,7 @@
       "dependencies": {
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
+        "@gooi/execution-kernel": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
@@ -308,6 +320,7 @@
       "name": "@gooi/surface-runtime",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/execution-kernel": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
       },
@@ -850,11 +863,15 @@
 
     "@gooi/entrypoint-runtime": ["@gooi/entrypoint-runtime@workspace:products/runtime/entrypoint-runtime"],
 
+    "@gooi/execution-kernel": ["@gooi/execution-kernel@workspace:products/kernel/execution-kernel"],
+
     "@gooi/guard-contracts": ["@gooi/guard-contracts@workspace:products/contracts/guard-contracts"],
 
     "@gooi/guard-runtime": ["@gooi/guard-runtime@workspace:products/runtime/guard-runtime"],
 
     "@gooi/host-contracts": ["@gooi/host-contracts@workspace:products/contracts/host-contracts"],
+
+    "@gooi/kernel-host-bridge": ["@gooi/kernel-host-bridge@workspace:products/kernel/kernel-host-bridge"],
 
     "@gooi/language-server": ["@gooi/language-server@workspace:products/authoring/language-server"],
 

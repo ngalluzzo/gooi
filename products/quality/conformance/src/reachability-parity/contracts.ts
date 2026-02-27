@@ -1,7 +1,5 @@
-import type {
-	BindingPlan,
-	DeploymentLockfile,
-} from "@gooi/binding/binding-plan";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import type {
 	PrincipalContext,

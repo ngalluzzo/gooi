@@ -23,6 +23,7 @@ It defines capability IO using Zod schemas, generates normalized JSON Schema art
 - Deterministic stable JSON hashing for compatibility and lockfiles
 - Typed provider manifest schema parsing with execution-host reachability metadata
 - Explicit effect declaration model
+- Deterministic provider-manifest parse behavior for identical inputs
 
 ## Compatibility Policy
 
@@ -35,6 +36,9 @@ It defines capability IO using Zod schemas, generates normalized JSON Schema art
 - Enforcement model:
   - Contract compatibility is enforced through semver + deterministic `contractHash`.
   - Provider activation must match declared `portId`, `portVersion`, and `contractHash` in manifest + lock/binding artifacts.
+- Manifest versioning:
+  - `providerVersion` and each capability `portVersion` must be `MAJOR.MINOR.PATCH` semver strings.
+  - Breaking capability contract changes require a new major `portVersion`; provider releases should publish a corresponding `providerVersion`.
 
 ## Installation
 

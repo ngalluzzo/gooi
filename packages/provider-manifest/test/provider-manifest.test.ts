@@ -24,4 +24,18 @@ describe("provider-manifest", () => {
 
 		expect(parsed.success).toBe(false);
 	});
+
+	test("parses provider manifest base deterministically for identical input", () => {
+		const input = {
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.0.0",
+			hostApiRange: "^1.0.0",
+		};
+
+		const first = parseProviderManifestBase(input);
+		const second = parseProviderManifestBase(input);
+
+		expect(first).toStrictEqual(second);
+		expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+	});
 });

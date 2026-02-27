@@ -1,7 +1,5 @@
-import type {
-	BindingPlan,
-	DeploymentLockfile,
-} from "@gooi/binding/binding-plan";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import { hostOk } from "@gooi/host-contracts/result";
 import type {
@@ -67,7 +65,8 @@ const buildLockfile = (): DeploymentLockfile => ({
 		{
 			providerId,
 			providerVersion,
-			integrity: "sha256:reachability",
+			integrity:
+				"sha256:fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
 			capabilities: [
 				{
 					portId: contract.id,

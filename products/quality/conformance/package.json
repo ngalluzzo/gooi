@@ -141,6 +141,7 @@
 	},
 	"dependencies": {
 		"@gooi/authoring-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/capability-index": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/conformance-contracts": "workspace:*",
@@ -159,7 +160,7 @@
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
-		"@gooi/binding": "workspace:*",
+		"@gooi/marketplace-contracts": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",
 		"zod": "^4.3.6"
 	}

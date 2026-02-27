@@ -1,5 +1,5 @@
-import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
 
 export const buildBindingPlan = (
 	hostApiVersion: string,

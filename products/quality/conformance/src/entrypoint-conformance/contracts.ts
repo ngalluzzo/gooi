@@ -1,3 +1,7 @@
+import type {
+	CompiledEntrypointBundle,
+	CompiledSurfaceBinding,
+} from "@gooi/app-spec-contracts/compiled";
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type {
@@ -5,10 +9,6 @@ import type {
 	runEntrypoint,
 } from "@gooi/entrypoint-runtime";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type {
-	CompiledEntrypointBundle,
-	CompiledSurfaceBinding,
-} from "@gooi/spec-compiler/contracts";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
 /**

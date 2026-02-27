@@ -14,9 +14,11 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 ## Features
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
-- Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`)
+- Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`, `moduleLoader`, `moduleIntegrity`)
 - Deterministic fail-fast activation errors when required host-port members are missing
 - Hard-fail activation when binding/lockfile checks fail
+- Provider module activation always resolves through `hostPorts.moduleLoader`
+- Provider lockfile integrity is enforced through `hostPorts.moduleIntegrity`
 - Deterministic reachability execution semantics (`local` / `delegated` / `capability_unreachable_error`)
 - Delegated invocation path uses explicit `delegateRouteId` from deployment artifacts
 - No implicit local fallback when delegated invocation fails
@@ -43,10 +45,14 @@ const runtime = createProviderRuntime({
     clock,
     activationPolicy,
     capabilityDelegation,
+    moduleLoader,
+    moduleIntegrity,
   },
 });
 
-const activated = await runtime.activate({ providerModule });
+const activated = await runtime.activate({
+  providerSpecifier: "gooi.providers.example/module",
+});
 
 if (!activated.ok) {
   throw new Error(activated.error.message);
@@ -57,11 +63,20 @@ const result = await runtime.invoke(activated.value, {
   portVersion: capabilityContract.version,
   input: { count: 2 },
   principal: { subject: "user_1", roles: ["authenticated"] },
-  ctx: { id: "inv_1", traceId: "trace_1", now: new Date().toISOString() },
+  ctx: { id: "inv_1", traceId: "trace_1", now: "2026-02-27T00:00:00.000Z" },
 });
 
 await runtime.deactivate(activated.value);
 ```
+
+## Module Loading and Integrity Boundary
+
+Provider activation is host-owned for both module loading and integrity:
+
+- `moduleLoader.loadModule(specifier)` resolves provider modules.
+- `moduleIntegrity.assertModuleIntegrity(input)` validates lockfile integrity metadata.
+
+Activation fails hard when either port is missing or when either step fails.
 
 ## API Summary
 

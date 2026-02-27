@@ -179,8 +179,13 @@ export interface HostPortSet {
   idempotency: HostIdempotencyPort;
   activationPolicy: HostActivationPolicyPort;
   capabilityDelegation: HostCapabilityDelegationPort;
+  moduleLoader: HostModuleLoaderPort;
+  moduleIntegrity: HostModuleIntegrityPort;
 }
 ```
+
+Provider runtime activation must flow through `moduleLoader` and
+`moduleIntegrity`. Missing ports or failed checks are hard activation failures.
 
 ### Deterministic runtime behavior updates
 
@@ -419,5 +424,6 @@ None.
 - `2026-02-26` - Chosen approach: explicit `HostPortSet` contracts + conformance enforcement.
 - `2026-02-26` - Architectural rule adopted: no ambient host globals in runtime orchestration paths.
 - `2026-02-26` - Resolved module loading/integrity contract timing: defer to M6 host-provider implementation track.
+- `2026-02-27` - Promoted module loading/integrity host ports (`moduleLoader`, `moduleIntegrity`) to enforced provider activation boundary with fail-hard behavior.
 - `2026-02-26` - Resolved host delegation boundary: cross-host capability calls execute through `HostCapabilityDelegationPort` with routes sourced from deployment artifacts.
 - `2026-02-26` - Resolved principal derivation scope for M5: keep current `derive` primitives only; custom predicates defer to a later RFC.

@@ -6,10 +6,12 @@ import {
 	createBindingPlan,
 	createContract,
 	createDelegatedResolution,
+	createHostPorts,
 	createLocalResolution,
 	createLockfile,
 	createProviderModule,
 	hostApiVersion,
+	providerSpecifier,
 } from "./fixtures/provider-runtime.fixture";
 
 describe("provider-runtime reachability", () => {
@@ -24,12 +26,13 @@ describe("provider-runtime reachability", () => {
 		const delegatedCalls: string[] = [];
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createDelegatedResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash),
 			hostPorts: {
+				...createHostPorts(providerModule),
 				clock: { nowIso: () => "2026-02-27T00:00:00.000Z" },
 				activationPolicy: {
 					assertHostVersionAligned: () => hostOk(undefined),
@@ -84,11 +87,12 @@ describe("provider-runtime reachability", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(createLocalResolution()),
 			lockfile: createLockfile(contract.artifacts.contractHash),
+			hostPorts: createHostPorts(providerModule),
 		});
 		expect(activated.ok).toBe(true);
 		if (!activated.ok) {
@@ -127,7 +131,7 @@ describe("provider-runtime reachability", () => {
 		);
 
 		const activated = await activateProvider({
-			providerModule,
+			providerSpecifier,
 			hostApiVersion,
 			contracts: [contract],
 			bindingPlan: createBindingPlan(
@@ -135,6 +139,7 @@ describe("provider-runtime reachability", () => {
 			),
 			lockfile: createLockfile(contract.artifacts.contractHash),
 			hostPorts: {
+				...createHostPorts(providerModule),
 				clock: { nowIso: () => "2026-02-27T00:00:00.000Z" },
 				activationPolicy: {
 					assertHostVersionAligned: () => hostOk(undefined),

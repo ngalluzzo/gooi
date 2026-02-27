@@ -13,7 +13,11 @@ Concrete host-port implementations belong in marketplace provider packages.
 - `@gooi/host-contracts/replay`
 - `@gooi/host-contracts/activation-policy`
 - `@gooi/host-contracts/module-loader`
+- `@gooi/host-contracts/module-integrity`
 - `@gooi/host-contracts/delegation`
+
+`module-loader` and `module-integrity` define the enforced provider-runtime
+module activation boundary.
 
 ## Quick Start
 

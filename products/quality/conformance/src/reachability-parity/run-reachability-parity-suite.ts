@@ -1,3 +1,4 @@
+import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { createProviderRuntime } from "@gooi/provider-runtime";
 import { stableStringify } from "@gooi/stable-json";
 import {
@@ -38,17 +39,40 @@ export const runReachabilityParitySuite = async (
 ): Promise<ReachabilityParityReport> => {
 	const diagnostics: ReachabilityParityDiagnostic[] = [];
 	const checks: Array<ReachabilityParityReport["checks"][number]> = [];
+	const providerSpecifier = "conformance/reachability-provider";
+	const baseHostPorts = {
+		clock: { nowIso: () => "2026-02-27T00:00:00.000Z" },
+		activationPolicy: {
+			assertHostVersionAligned: () => hostOk(undefined),
+		},
+		capabilityDelegation: {
+			invokeDelegated: async () =>
+				hostFail("delegation_not_configured", "Delegation is not configured."),
+		},
+		moduleLoader: {
+			loadModule: async (specifier: string) => {
+				if (specifier !== providerSpecifier) {
+					throw new Error(`Unknown provider module specifier: ${specifier}`);
+				}
+				return input.providerModule;
+			},
+		},
+		moduleIntegrity: {
+			assertModuleIntegrity: async () => hostOk(undefined),
+		},
+	};
 	const now = input.now ?? "2026-02-27T00:00:00.000Z";
 	const principal = input.principal ?? defaultPrincipal;
 
 	const localRuntime = createProviderRuntime({
 		hostApiVersion: input.hostApiVersion,
 		contracts: [input.contract],
+		hostPorts: baseHostPorts,
 		bindingPlan: input.localBindingPlan,
 		lockfile: input.localLockfile,
 	});
 	const localActivation = await localRuntime.activate({
-		providerModule: input.providerModule,
+		providerSpecifier,
 	});
 	const localInvocation = localActivation.ok
 		? await localRuntime.invoke(localActivation.value, {
@@ -94,12 +118,15 @@ export const runReachabilityParitySuite = async (
 	const delegatedRuntime = createProviderRuntime({
 		hostApiVersion: input.hostApiVersion,
 		contracts: [input.contract],
+		hostPorts: {
+			...baseHostPorts,
+			...input.delegatedHostPorts,
+		},
 		bindingPlan: input.delegatedBindingPlan,
 		lockfile: input.delegatedLockfile,
-		hostPorts: input.delegatedHostPorts,
 	});
 	const delegatedActivation = await delegatedRuntime.activate({
-		providerModule: input.providerModule,
+		providerSpecifier,
 	});
 	const delegatedInvocation = delegatedActivation.ok
 		? await delegatedRuntime.invoke(delegatedActivation.value, {

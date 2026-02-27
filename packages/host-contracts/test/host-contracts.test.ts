@@ -16,6 +16,10 @@ import {
 	createSystemIdentityPort,
 } from "../src/identity/identity";
 import {
+	createHostModuleIntegrityProvider,
+	createPermissiveModuleIntegrityPort,
+} from "../src/module-integrity/module-integrity";
+import {
 	createDynamicImportModuleLoaderPort,
 	createHostModuleLoaderProvider,
 } from "../src/module-loader/module-loader";
@@ -135,6 +139,18 @@ describe("host-contracts", () => {
 		}
 	});
 
+	test("creates permissive module-integrity extension port", async () => {
+		const integrity = createPermissiveModuleIntegrityPort();
+		const result = await integrity.assertModuleIntegrity({
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.0.0",
+			integrity:
+				"sha256:d1faebed8f7fd8f3f1c8f4a3bfe44ad6f656f4e4ec4df13db0adfbb6e2d70289",
+		});
+
+		expect(result.ok).toBe(true);
+	});
+
 	test("creates replay-store provider definitions", () => {
 		const provider = createHostReplayStoreProvider({
 			manifest: {
@@ -203,6 +219,14 @@ describe("host-contracts", () => {
 			},
 			createPort: createDynamicImportModuleLoaderPort,
 		});
+		const moduleIntegrityProvider = createHostModuleIntegrityProvider({
+			manifest: {
+				providerId: "gooi.providers.memory",
+				providerVersion: "1.0.0",
+				hostApiRange: "^1.0.0",
+			},
+			createPort: createPermissiveModuleIntegrityPort,
+		});
 		const delegationProvider = createHostCapabilityDelegationProvider({
 			manifest: {
 				providerId: "gooi.providers.memory",
@@ -220,6 +244,9 @@ describe("host-contracts", () => {
 		);
 		expect(moduleLoaderProvider.manifest.contract.id).toBe(
 			"gooi.host.module-loader",
+		);
+		expect(moduleIntegrityProvider.manifest.contract.id).toBe(
+			"gooi.host.module-integrity",
 		);
 		expect(delegationProvider.manifest.contract.id).toBe(
 			"gooi.host.capability-delegation",

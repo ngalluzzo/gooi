@@ -71,3 +71,16 @@ export const createDynamicImportModuleLoaderPort = <
 >(): HostModuleLoaderPort<TModule> => ({
 	loadModule: async (specifier: string) => (await import(specifier)) as TModule,
 });
+
+/**
+ * Creates a module loader that fail-hard rejects module loading attempts.
+ */
+export const createFailingModuleLoaderPort = <
+	TModule = unknown,
+>(): HostModuleLoaderPort<TModule> => ({
+	loadModule: async (specifier: string) => {
+		throw new Error(
+			`Provider module loader is not configured for specifier "${specifier}".`,
+		);
+	},
+});

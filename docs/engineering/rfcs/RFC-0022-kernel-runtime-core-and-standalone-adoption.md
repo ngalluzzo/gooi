@@ -1,9 +1,9 @@
-# RFC-0022: Kernel Runtime Core and Standalone Adoption
+# RFC-0022: Kernel Runtime Core Product Line and Canonical Consumption
 
 ## Metadata
 
 - RFC: `RFC-0022`
-- Title: `Kernel Runtime Core and Standalone Adoption`
+- Title: `Kernel Runtime Core Product Line and Canonical Consumption`
 - Status: `Draft`
 - Owners: `Runtime Platform`, `Product Platform`
 - Reviewers: `Developer Experience`, `Quality`, `Marketplace`
@@ -37,7 +37,7 @@ Current gap:
 
 1. Define `kernel` as a first-class product line under `products/kernel/*`.
 2. Define a standalone kernel consumption model for teams with custom surfaces/adapters.
-3. Preserve deterministic behavior and typed envelope semantics across kernel and full runtime adoption.
+3. Make kernel the only runtime orchestration authority and require other runtime packages to consume it.
 4. Establish preconditions that must be met before Track 04 implementation starts.
 5. Keep shared contracts in `products/contracts/*` and avoid reintroducing contract sprawl.
 
@@ -56,8 +56,7 @@ Outcomes:
    without adopting full platform lanes.
 2. Surface dispatch and render work integrate with kernel contracts instead of
    introducing parallel orchestration behavior.
-3. Full platform and standalone kernel modes produce equivalent typed execution
-   behavior for matching inputs and artifacts.
+3. Runtime packages remain deterministic while consuming kernel-owned orchestration.
 
 Metrics:
 
@@ -65,7 +64,7 @@ Metrics:
   - `>= 80%` of Track 04 feature code references kernel APIs/contracts instead of direct lane-internal orchestration internals.
   - `>= 2` reference consumers run with standalone kernel mode (no full platform facade required).
 - Reliability metric(s):
-  - `0` behavior divergence for kernel-vs-full runtime fixtures under equivalent compiled artifacts.
+  - `0` runtime orchestration paths outside kernel ownership.
   - `100%` kernel invocations enforce typed boundary validation before execution.
 - Developer experience metric(s):
   - Time to first standalone kernel execution from compiled artifact: `<= 30 minutes`.
@@ -104,7 +103,7 @@ Kernel is defined as:
 2. `Standalone kernel mode`: consuming kernel APIs directly with compiled artifacts and host ports.
 3. `Kernel portset`: required host/runtime dependency contract set passed into kernel APIs.
 4. `Kernel invocation envelope`: canonical typed invoke/result/error envelope set for kernel entrypoints.
-5. `Kernel parity`: equivalence between standalone kernel and full-platform runtime behavior.
+5. `Kernel consumption contract`: requirement that runtime/surface entrypoints call kernel orchestration APIs instead of reimplementing policy/order/envelope behavior.
 
 ## Boundaries and ownership
 
@@ -169,13 +168,11 @@ Feature-oriented module layout:
    - core orchestration runtime API.
 2. `products/kernel/kernel-host-bridge`
    - host-portset normalization/validation helpers for standalone consumers.
-3. `products/kernel/kernel-parity-fixtures`
-   - parity fixture execution against standalone kernel and full runtime paths.
 
 Public APIs via `package.json` exports:
 
 1. `@gooi/execution-kernel`
-2. `@gooi/execution-kernel/host-bridge`
+2. `@gooi/kernel-host-bridge`
 3. no barrel exports; explicit feature paths only.
 
 No barrel files:
@@ -195,16 +192,16 @@ Single entry per feature:
 - Lane (if `products/*`):
   - `kernel`
 - Why this boundary is correct:
-  - kernel behavior is product runtime behavior but deserves explicit boundary and adoption surface independent from feature runtimes.
+  - kernel is the runtime core product line; runtime packages consume kernel for orchestration while keeping feature-semantic ownership.
 - Primary consumers (internal/external):
   - internal runtime/surface teams and external teams embedding Gooi semantics into existing stacks.
 - Coupling expectations:
   - depends on `products/contracts/*` and existing runtime contracts.
   - must not depend on marketplace service internals or authoring UX modules.
 - Why this is not a better fit in another boundary:
-  - keeping kernel implicit in `products/runtime/*` hides ownership and slows standalone adoption.
+  - keeping kernel implicit in `products/runtime/*` hides ownership and encourages orchestration drift.
 - Promotion/demotion plan:
-  - if kernel APIs remain thin wrappers with no independent demand, they can be collapsed back into runtime lane in a future RFC.
+  - no demotion planned; kernel remains runtime-core ownership boundary.
 
 ## Delivery plan and rollout
 
@@ -217,19 +214,19 @@ Phase 1: Kernel boundary definition and package scaffolding
 - Deliverables:
   - `products/kernel/*` scaffolds and contract references.
 
-Phase 2: Runtime extraction and parity lock
+Phase 2: Runtime extraction and canonical kernel cutover
 
 - Entry criteria:
   - Phase 1 complete.
 - Exit criteria:
-  - kernel invocation path produces equivalent behavior to current runtime path for baseline fixtures.
+  - query/mutation runtime execution enters kernel-owned orchestration with no lane-local fallback path.
 - Deliverables:
-  - parity fixtures and deterministic envelope/trace guarantees.
+  - kernel-routed runtime execution and deterministic envelope/trace guarantees.
 
 Phase 3: Track 04 enablement gate
 
 - Entry criteria:
-  - Phase 2 parity guarantees accepted.
+  - Phase 2 canonical kernel cutover accepted.
 - Exit criteria:
   - Track 04 work is wired to kernel APIs/contracts instead of direct lane-internal orchestration coupling.
 - Deliverables:
@@ -242,15 +239,15 @@ Phase 3: Track 04 enablement gate
 2. Integration:
    - standalone kernel invocation using compiled artifacts and host portset.
 3. Conformance:
-   - parity runs between standalone kernel and full runtime lane APIs.
+   - runtime packages prove kernel consumption and zero reintroduced orchestration logic.
 4. Determinism/golden:
    - stable kernel result/error/trace envelopes for equivalent inputs.
 
 Definition of done:
 
 1. standalone kernel API is callable without full platform facade package.
-2. kernel parity fixtures pass.
-3. Track 04 entry gate checklist is satisfied.
+2. runtime/surface execution paths do not bypass kernel orchestration.
+3. Track 04 readiness checklist is satisfied.
 
 ## Operational readiness
 
@@ -268,7 +265,7 @@ Definition of done:
 ## Risks and mitigations
 
 1. Risk: introducing a kernel lane duplicates runtime concepts.
-   - Mitigation: strict ownership charter and parity tests as gate.
+   - Mitigation: strict ownership charter, lint boundary rules, and explicit runtime ownership docs.
 2. Risk: extraction churn delays Track 04.
    - Mitigation: narrow scope to core orchestration surface first.
 3. Risk: package sprawl in early phase.
@@ -288,7 +285,7 @@ Definition of done:
 1. Should `@gooi/execution-kernel` be the canonical package name, or should it use `@gooi/kernel-runtime` for consistency with existing naming?
    - Owner: Runtime Platform
    - Target decision date: `2026-03-02`
-2. Should Track 03 roadmap stories move under the new kernel lane, or remain runtime lane stories with kernel acceptance gates?
+2. Should Track 03 roadmap stories move under the new kernel lane, or remain runtime lane stories with kernel acceptance expectations?
    - Owner: Product Platform
    - Target decision date: `2026-03-02`
 
@@ -297,3 +294,4 @@ Definition of done:
 - `2026-02-27` - Decided to frontload kernel as a dedicated product lane before Track 04 implementation work.
 - `2026-02-27` - Decided kernel standalone consumption is a first-class product objective, not an incidental runtime detail.
 - `2026-02-27` - Confirmed shared contracts remain under `products/contracts/*` and no new `packages/*-contracts` boundary is introduced for kernel work.
+- `2026-02-27` - Decided kernel is the canonical runtime orchestration core; old-vs-new coexistence paths are out of scope.

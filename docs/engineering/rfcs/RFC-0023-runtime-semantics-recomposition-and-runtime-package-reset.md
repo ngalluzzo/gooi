@@ -39,7 +39,7 @@ Because no public version has shipped, we can take a deliberate architectural br
 2. Recompose runtime packages so ownership is explicit and layering is enforceable.
 3. Keep domain/projection/guard feature behavior deterministic while removing duplicate orchestration logic.
 4. Finish with no legacy runtime package debt left in the mainline architecture.
-5. Define a migration sequence that is fast, test-gated, and deletion-oriented.
+5. Define a migration sequence that is fast, test-backed, and deletion-oriented.
 
 ## Non-goals
 
@@ -62,7 +62,7 @@ Metrics:
   - `100%` runtime execution entrypoints route through kernel-owned orchestration surfaces.
   - `0` duplicate orchestration implementations for policy order, envelope shaping, and host port validation.
 - Reliability metric(s):
-  - `0` parity regressions across domain/projection/guard golden fixtures during cutover.
+  - `0` kernel boundary regressions across domain/projection/guard golden fixtures during cutover.
   - `100%` runtime invocations emit canonical typed envelopes from shared contracts.
 - Developer experience metric(s):
   - Runtime package discovery time (new engineer finding execution path) reduced to `<= 15 minutes` in onboarding runbook tests.
@@ -107,7 +107,7 @@ Recomposition principles:
 1. `Runtime recomposition`: structural rewrite of runtime ownership and package layout without preserving legacy architecture.
 2. `Execution spine`: kernel-owned orchestration path every runtime invocation must traverse.
 3. `Feature semantic engine`: domain/projection/guard package that contains feature logic but not orchestration policy.
-4. `Cutover gate`: phase acceptance criteria that must pass before deleting legacy paths.
+4. `Cutover checkpoint`: phase acceptance criteria that must be reviewed before deleting legacy paths.
 5. `Legacy debt`: any runtime code path or package retained only for compatibility with pre-reset layout.
 
 ## Boundaries and ownership
@@ -159,7 +159,7 @@ Must-not-cross constraints:
 - Principal/auth context schema:
   - canonical principal context remains sourced from `@gooi/host-contracts/principal`.
 - Access evaluation order:
-  - kernel-enforced and test-gated as single canonical sequence.
+  - kernel-enforced and test-backed as single canonical sequence.
 - Error taxonomy:
   - preserve typed families from RFC-0002/RFC-0009/RFC-0010/RFC-0019; remove duplicate legacy aliases after cutover.
 - Compatibility policy:
@@ -244,15 +244,15 @@ Phase 2: Kernel-centric runtime wiring
 - Entry criteria:
   - Phase 1 complete.
 - Exit criteria:
-  - query/mutation execution routes through kernel spine with parity against baseline fixtures.
+  - query/mutation execution routes through kernel spine with no legacy orchestration path.
 - Deliverables:
   - kernel-first orchestration wiring.
-  - parity harness for old-vs-new execution path.
+  - lint boundary rules and ownership docs that make non-kernel orchestration reintroduction explicit.
 
 Phase 3: Semantic engine extraction and package reset
 
 - Entry criteria:
-  - Phase 2 parity green.
+  - Phase 2 boundary linting and ownership checklist accepted.
 - Exit criteria:
   - domain/projection/guard packages no longer implement orchestration policy.
   - runtime package internals match target ownership model.
@@ -260,16 +260,16 @@ Phase 3: Semantic engine extraction and package reset
   - refactored semantic engine modules.
   - removed duplicated policy/envelope code.
 
-Phase 4: Legacy deletion and gate hardening
+Phase 4: Legacy deletion and boundary hardening
 
 - Entry criteria:
-  - Phase 3 complete and CI green.
+  - Phase 3 complete and workspace lint/typecheck/test baseline green.
 - Exit criteria:
   - all legacy runtime paths deleted.
-  - boundary gates prevent reintroduction.
+  - boundary linting and ownership docs prevent reintroduction.
 - Deliverables:
   - runtime package cleanup PR(s).
-  - CI boundary checks and enforcement docs.
+  - lint rule set, architecture notes, and enforcement docs.
 
 ## Test strategy and acceptance criteria
 
@@ -279,14 +279,14 @@ Phase 4: Legacy deletion and gate hardening
 2. Integration coverage:
    - end-to-end query and mutation paths through surface -> kernel -> semantic engine -> envelope.
 3. Conformance coverage:
-   - existing conformance suites plus runtime recomposition parity suite.
+   - existing conformance suites plus runtime recomposition kernel-boundary suite.
 4. Determinism/golden coverage:
    - identical fixture inputs produce byte-stable envelopes, diagnostics, and signal metadata.
 
 Definition of done:
 
 1. runtime invocations no longer rely on legacy orchestration paths.
-2. all cutover gates pass and legacy runtime paths are deleted.
+2. cutover checklist is complete and legacy runtime paths are deleted.
 3. docs and ownership maps match shipped package boundaries.
 4. `bun run typecheck` and `bun run test` pass on final cutover branch.
 
@@ -299,22 +299,22 @@ Definition of done:
 3. Security requirements:
    - no bypass around principal validation and host policy order.
 4. Runbooks and incident readiness:
-   - runtime cutover rollback/forward runbook and parity failure triage guide.
+   - runtime cutover rollback/forward runbook and kernel-boundary failure triage guide.
 5. Alert thresholds tied to service-level targets:
-   - parity suite failure rate > `0%` on mainline.
+   - unexpected boundary-lint violations > `0` in release candidate reviews.
    - envelope determinism regression count > `0` per release candidate.
    - kernel orchestration overhead p95 exceeds target by `> 10%` for 24h.
 
 ## Risks and mitigations
 
 1. Risk: broad refactor introduces hidden runtime regressions.
-   - Mitigation: strict parity harness and phased deletion gates.
+   - Mitigation: strict kernel-boundary harness and phased deletion checklist.
 2. Risk: package reset causes temporary contributor confusion.
    - Mitigation: publish package ownership map and migration notes before Phase 3.
 3. Risk: kernel package becomes a catch-all module.
    - Mitigation: enforce kernel charter and reject feature-semantic logic in kernel reviews.
 4. Risk: long-lived branches delay integration.
-   - Mitigation: phase by phase merge strategy with mandatory green gates.
+   - Mitigation: phase-by-phase merge strategy with explicit merge criteria.
 
 ## Alternatives considered
 
@@ -334,10 +334,10 @@ Definition of done:
    - Owner: `Runtime Platform`
    - Target decision date: `2026-03-05`
 3. Do we keep a one-phase temporary re-export window for developer ergonomics, or enforce immediate path hard-break at Phase 4 start?
-   - Owner: `Developer Experience`
-   - Target decision date: `2026-03-06`
+   - Resolved: enforce immediate path hard-break at Phase 4 start (no temporary re-export window).
 
 ## Decision log
 
 - `2026-02-27` - Draft created as explicit post-RFC-0021 planning RFC for runtime semantics replacement and runtime package reset.
 - `2026-02-27` - Declared deletion-oriented cutover strategy (no long-lived compatibility layer) as default posture.
+- `2026-02-27` - Removed old-vs-new coexistence framing; kernel-boundary enforcement is the only cutover checkpoint.

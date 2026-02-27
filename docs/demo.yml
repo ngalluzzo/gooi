@@ -11,6 +11,13 @@
 #   domain.actions      →  mutations  (write implementation → write interface)
 #   views.screens       →  routes     (render implementation → navigation interface)
 #
+# Runtime execution map:
+#   surface adapters    →  entrypoint runtime adapters  →  execution kernel  →  semantic engines
+#   (transport only)       (binding only)                  (policy/order)       (domain/projection/guard logic)
+#
+# Kernel is the runtime core product line. Other runtime packages consume kernel
+# orchestration and do not implement independent policy/order/envelope paths.
+#
 # Concept owners:
 #   domain   — owned by the business
 #   session  — owned by the user

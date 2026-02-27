@@ -1,0 +1,43 @@
+{
+	"name": "@gooi/app-spec-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/spec/spec.js",
+	"types": "./src/spec/spec.ts",
+	"exports": {
+		"./spec": {
+			"types": "./src/spec/spec.ts",
+			"bun": "./src/spec/spec.ts",
+			"import": "./dist/spec/spec.js",
+			"default": "./dist/spec/spec.js"
+		},
+		"./compiled": {
+			"types": "./src/compiled/compiled.ts",
+			"bun": "./src/compiled/compiled.ts",
+			"import": "./dist/compiled/compiled.js",
+			"default": "./dist/compiled/compiled.js"
+		},
+		"./diagnostics": {
+			"types": "./src/diagnostics/diagnostics.ts",
+			"bun": "./src/diagnostics/diagnostics.ts",
+			"import": "./dist/diagnostics/diagnostics.js",
+			"default": "./dist/diagnostics/diagnostics.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/spec/spec.ts --outfile ./dist/spec/spec.js --external zod && bun build ./src/compiled/compiled.ts --outfile ./dist/compiled/compiled.js --external zod && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	}
+}

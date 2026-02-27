@@ -280,6 +280,7 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/execution-kernel": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
+        "@gooi/kernel-host-bridge": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",

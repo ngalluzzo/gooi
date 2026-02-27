@@ -1,5 +1,6 @@
 import {
 	type KernelHostPortSet,
+	KernelHostPortSetValidationError,
 	parseKernelHostPortSet,
 } from "@gooi/kernel-host-bridge/host-portset";
 import type { KernelInvokeInput, KernelInvokeResult } from "./invoke";
@@ -28,8 +29,23 @@ export const createKernelRuntime = (
 	input: CreateKernelRuntimeInput,
 ): KernelRuntime => ({
 	invoke: async (call) => {
-		const hostPorts = parseKernelHostPortSet(call.hostPorts);
-		return input.invoke({ call, hostPorts });
+		try {
+			const hostPorts = parseKernelHostPortSet(call.hostPorts);
+			return input.invoke({ call, hostPorts });
+		} catch (error) {
+			if (error instanceof KernelHostPortSetValidationError) {
+				return {
+					ok: false,
+					error: {
+						code: "validation_error",
+						message: error.message,
+						details: error.details,
+					},
+				};
+			}
+
+			throw error;
+		}
 	},
 	trace: (traceInput) =>
 		createKernelTraceEnvelope(traceInput, (input.nowIso ?? defaultNowIso)()),

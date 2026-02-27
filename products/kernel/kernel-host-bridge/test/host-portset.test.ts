@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { parseKernelHostPortSet } from "../src/host-portset";
+import {
+	getMissingKernelHostPortSetMembers,
+	KernelHostPortSetValidationError,
+	parseKernelHostPortSet,
+} from "../src/host-portset";
 
 describe("kernel-host-bridge scaffold", () => {
 	test("returns host-port input as typed host-port set", () => {
@@ -20,5 +24,33 @@ describe("kernel-host-bridge scaffold", () => {
 
 		expect(typeof portSet.clock.nowIso).toBe("function");
 		expect(typeof portSet.identity.newTraceId).toBe("function");
+	});
+
+	test("reports missing host-port members in deterministic order", () => {
+		const missing = getMissingKernelHostPortSetMembers({
+			clock: {},
+			identity: {
+				newTraceId: () => "trace-1",
+			},
+		});
+
+		expect(missing).toEqual([
+			{ path: "clock.nowIso", expected: "function" },
+			{ path: "identity.newInvocationId", expected: "function" },
+			{ path: "principal.validatePrincipal", expected: "function" },
+			{ path: "principal.deriveRoles", expected: "function" },
+			{
+				path: "capabilityDelegation.invokeDelegated",
+				expected: "function",
+			},
+		]);
+	});
+
+	test("throws a typed validation error for invalid host-port sets", () => {
+		expect(() =>
+			parseKernelHostPortSet({
+				clock: {},
+			}),
+		).toThrow(KernelHostPortSetValidationError);
 	});
 });

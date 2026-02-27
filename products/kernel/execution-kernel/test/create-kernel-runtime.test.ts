@@ -67,4 +67,37 @@ describe("execution-kernel scaffold", () => {
 			timestamp: "2026-02-27T00:00:00.000Z",
 		});
 	});
+
+	test("returns typed validation errors when host ports are invalid", async () => {
+		const runtime = createKernelRuntime({
+			invoke: async () => ({
+				ok: true,
+				output: { ok: true },
+			}),
+		});
+
+		const result = await runtime.invoke({
+			entrypointId: "q.invalid",
+			kind: "query",
+			payload: {},
+			principal: null,
+			hostPorts: {
+				clock: {},
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("validation_error");
+			expect(result.error.details).toEqual({
+				code: "host_port_missing",
+				missingHostPortMembers: expect.arrayContaining([
+					expect.objectContaining({
+						path: "clock.nowIso",
+						expected: "function",
+					}),
+				]),
+			});
+		}
+	});
 });

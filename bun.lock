@@ -280,10 +280,10 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/capability-contracts": "workspace:*",
-        "@gooi/entrypoint-runtime": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
         "@gooi/guard-runtime": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",

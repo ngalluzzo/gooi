@@ -1,4 +1,4 @@
-import { createDomainRuntime } from "@gooi/domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "@gooi/domain-runtime/conformance";
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
@@ -15,7 +15,7 @@ export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 	readonly flowGuard: CompiledGuardDefinition;
 	readonly projectionGuard: CompiledInvariantDefinition;
 }) => {
-	const runtime = createDomainRuntime({
+	const runtime = createDomainRuntimeConformanceHarness({
 		mutationEntrypointActionMap: {
 			submit_message: "guestbook.submit",
 		},

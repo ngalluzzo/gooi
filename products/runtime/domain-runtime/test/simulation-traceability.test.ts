@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { createDomainRuntime } from "../src/runtime/create-domain-runtime";
+import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
 
 describe("domain-runtime simulation and traceability", () => {
 	test("runs deterministic simulation paths without live side effects", async () => {
 		let liveInvokeCount = 0;
 		let simulateInvokeCount = 0;
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},
@@ -74,7 +74,7 @@ describe("domain-runtime simulation and traceability", () => {
 	});
 
 	test("includes action and capability step identifiers in runtime traces", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},
@@ -138,7 +138,7 @@ describe("domain-runtime simulation and traceability", () => {
 	});
 
 	test("compares simulation envelopes against live envelopes by deterministic trace shape", async () => {
-		const runtime = createDomainRuntime({
+		const runtime = createDomainRuntimeConformanceHarness({
 			mutationEntrypointActionMap: {
 				submit_message: "guestbook.submit",
 			},

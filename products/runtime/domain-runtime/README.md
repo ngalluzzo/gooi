@@ -26,7 +26,7 @@ const domainRuntime = createDomainRuntime({
   capabilities,
 });
 
-const result = await domainRuntime.port.executeMutation({
+const result = await domainRuntime.executeMutation({
   entrypoint,
   kind: "mutation",
   input,
@@ -43,3 +43,4 @@ const result = await domainRuntime.port.executeMutation({
 
 - `createDomainRuntime(input)`
 - `DomainRuntime`
+- `@gooi/domain-runtime/conformance` -> `createDomainRuntimeConformanceHarness(input)`

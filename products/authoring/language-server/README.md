@@ -21,7 +21,7 @@ The package is deterministic and artifact-driven. It consumes:
 
 - Context-aware completion domain inference (`do`, `emits`, `refresh_on_signals`)
 - Deferred completion metadata resolution (`completionItem/resolve` style)
-- Lockfile parity evaluation with degraded read-mode behavior
+- Lockfile parity evaluation across artifact+catalog identities with degraded read-mode behavior
 - Deterministic diagnostics ordering (`path`, `code`, `message`)
 - Graph-backed definition/references and symbol listing helpers
 - Code lens list/resolve for run, provider visibility, and affected-query actions

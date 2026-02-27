@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 import {
 	type AuthoringLockfile,
+	authoringRequiredArtifactIds,
 	createAuthoringLockfile,
 } from "@gooi/authoring-contracts/lockfile";
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
@@ -13,6 +14,7 @@ import type { BuildSymbolGraphSnapshotInput } from "@gooi/symbol-graph/contracts
 
 // LOC-EXCEPTION: Single fixture file captures full authoring snapshot inputs for deterministic tests.
 const createLockfile = (input: {
+	compiledEntrypointBundleHash: string;
 	capabilityIndexHash: string;
 	symbolGraphHash: string;
 	catalogHash: string;
@@ -22,9 +24,21 @@ const createLockfile = (input: {
 		sourceHash: "4".repeat(64),
 		sourceKind: "workspace-local",
 		requiredArtifacts: {
-			compiledEntrypointBundle: "5".repeat(64),
-			capabilityIndexSnapshot: input.capabilityIndexHash,
-			symbolGraphSnapshot: input.symbolGraphHash,
+			compiledEntrypointBundle: {
+				artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+				artifactVersion: "1.0.0",
+				artifactHash: input.compiledEntrypointBundleHash,
+			},
+			capabilityIndexSnapshot: {
+				artifactId: authoringRequiredArtifactIds.capabilityIndexSnapshot,
+				artifactVersion: "1.0.0",
+				artifactHash: input.capabilityIndexHash,
+			},
+			symbolGraphSnapshot: {
+				artifactId: authoringRequiredArtifactIds.symbolGraphSnapshot,
+				artifactVersion: "1.0.0",
+				artifactHash: input.symbolGraphHash,
+			},
 		},
 		catalogSnapshot: {
 			catalogSource: "demo-catalog",
@@ -179,13 +193,21 @@ export const createAuthoringWorkspaceFixture = (): {
 
 	const capabilitySnapshot = buildCapabilityIndexSnapshot(capabilityInput);
 	const symbolSnapshot = buildSymbolGraphSnapshot(symbolInput);
+	const compiledEntrypointBundleIdentity = {
+		artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+		artifactVersion: "1.0.0",
+		artifactHash: "5".repeat(64),
+	} as const;
 	const context = {
 		documentUri: `file://${documentPath}`,
 		documentPath: "docs/demo.yml",
 		documentText,
+		compiledEntrypointBundleIdentity,
 		capabilityIndexSnapshot: capabilitySnapshot,
 		symbolGraphSnapshot: symbolSnapshot,
 		lockfile: createLockfile({
+			compiledEntrypointBundleHash:
+				compiledEntrypointBundleIdentity.artifactHash,
 			capabilityIndexHash: capabilitySnapshot.artifactHash,
 			symbolGraphHash: symbolSnapshot.artifactHash,
 			catalogHash: capabilitySnapshot.catalogIdentity.catalogHash,

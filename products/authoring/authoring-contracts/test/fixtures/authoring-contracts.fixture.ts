@@ -2,7 +2,10 @@ import type { AuthoringDiagnosticsEnvelope } from "../../src/envelopes/authoring
 import type { AuthoringErrorEnvelope } from "../../src/envelopes/authoring-error-envelope";
 import type { AuthoringRequestEnvelope } from "../../src/envelopes/authoring-request-envelope";
 import type { AuthoringResultEnvelope } from "../../src/envelopes/authoring-result-envelope";
-import type { AuthoringLockfileContent } from "../../src/lockfile/authoring-lockfile";
+import {
+	type AuthoringLockfileContent,
+	authoringRequiredArtifactIds,
+} from "../../src/lockfile/authoring-lockfile";
 
 /**
  * Fixed timestamp used by phase-1 fixtures.
@@ -17,9 +20,21 @@ export const authoringLockfileContentFixture: AuthoringLockfileContent = {
 	sourceHash: "a".repeat(64),
 	sourceKind: "workspace-local",
 	requiredArtifacts: {
-		compiledEntrypointBundle: "b".repeat(64),
-		capabilityIndexSnapshot: "c".repeat(64),
-		symbolGraphSnapshot: "d".repeat(64),
+		compiledEntrypointBundle: {
+			artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+			artifactVersion: "1.0.0",
+			artifactHash: "b".repeat(64),
+		},
+		capabilityIndexSnapshot: {
+			artifactId: authoringRequiredArtifactIds.capabilityIndexSnapshot,
+			artifactVersion: "1.0.0",
+			artifactHash: "c".repeat(64),
+		},
+		symbolGraphSnapshot: {
+			artifactId: authoringRequiredArtifactIds.symbolGraphSnapshot,
+			artifactVersion: "1.0.0",
+			artifactHash: "d".repeat(64),
+		},
 	},
 	catalogSnapshot: {
 		catalogSource: "demo-catalog",

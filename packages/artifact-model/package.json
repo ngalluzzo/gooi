@@ -17,6 +17,12 @@
 			"import": "./dist/validation/validate-manifest.js",
 			"default": "./dist/validation/validate-manifest.js"
 		},
+		"./trust-policy": {
+			"types": "./src/trust-policy/manifest-signature-policy.ts",
+			"bun": "./src/trust-policy/manifest-signature-policy.ts",
+			"import": "./dist/trust-policy/manifest-signature-policy.js",
+			"default": "./dist/trust-policy/manifest-signature-policy.js"
+		},
 		"./bundle": {
 			"types": "./src/bundle/bundle.ts",
 			"bun": "./src/bundle/bundle.ts",
@@ -32,7 +38,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/manifest/manifest.ts --outfile ./dist/manifest/manifest.js --external zod --external @gooi/stable-json && bun build ./src/validation/validate-manifest.ts --outfile ./dist/validation/validate-manifest.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest && bun build ./src/bundle/bundle.ts --target=node --outfile ./dist/bundle/bundle.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest --external @gooi/artifact-model/validation",
+		"build": "bun build ./src/manifest/manifest.ts --outfile ./dist/manifest/manifest.js --external zod --external @gooi/stable-json && bun build ./src/trust-policy/manifest-signature-policy.ts --outfile ./dist/trust-policy/manifest-signature-policy.js --external zod --external @gooi/artifact-model/manifest && bun build ./src/validation/validate-manifest.ts --outfile ./dist/validation/validate-manifest.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest --external @gooi/artifact-model/trust-policy && bun build ./src/bundle/bundle.ts --target=node --outfile ./dist/bundle/bundle.js --external zod --external @gooi/stable-json --external @gooi/artifact-model/manifest --external @gooi/artifact-model/validation",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

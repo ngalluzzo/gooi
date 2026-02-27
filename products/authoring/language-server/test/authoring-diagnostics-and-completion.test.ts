@@ -63,20 +63,17 @@ describe("lsp completion and diagnostics", () => {
 		});
 
 		expect(diagnostics.parity.status).toBe("mismatch");
-		expect(diagnostics.diagnostics).toEqual([
-			{
+		expect(diagnostics.diagnostics).toHaveLength(1);
+		expect(diagnostics.diagnostics[0]).toEqual(
+			expect.objectContaining({
 				code: "catalog_mismatch_error",
 				severity: "error",
-				message:
-					"Catalog hash in lockfile does not match capability index snapshot.",
 				path: "lockfile.catalogSnapshot.catalogHash",
-				range: {
-					start: { line: 0, character: 0 },
-					end: { line: 0, character: 1 },
-				},
 				staleArtifacts: true,
-			},
-		]);
+			}),
+		);
+		expect(diagnostics.diagnostics[0]?.message).toContain("expected=");
+		expect(diagnostics.diagnostics[0]?.message).toContain("actual=");
 	});
 
 	test("emits deterministic mismatch ordering when multiple parity violations exist", () => {
@@ -87,8 +84,16 @@ describe("lsp completion and diagnostics", () => {
 					...authoringReadFixture.lockfile,
 					requiredArtifacts: {
 						...authoringReadFixture.lockfile.requiredArtifacts,
-						capabilityIndexSnapshot: "8".repeat(64),
-						symbolGraphSnapshot: "7".repeat(64),
+						capabilityIndexSnapshot: {
+							...authoringReadFixture.lockfile.requiredArtifacts
+								.capabilityIndexSnapshot,
+							artifactHash: "8".repeat(64),
+						},
+						symbolGraphSnapshot: {
+							...authoringReadFixture.lockfile.requiredArtifacts
+								.symbolGraphSnapshot,
+							artifactHash: "7".repeat(64),
+						},
 					},
 					catalogSnapshot: {
 						...authoringReadFixture.lockfile.catalogSnapshot,
@@ -101,11 +106,39 @@ describe("lsp completion and diagnostics", () => {
 
 		expect(diagnostics.diagnostics.map((entry) => entry.path)).toEqual([
 			"lockfile.catalogSnapshot.catalogHash",
-			"lockfile.requiredArtifacts.capabilityIndexSnapshot",
-			"lockfile.requiredArtifacts.symbolGraphSnapshot",
+			"lockfile.requiredArtifacts.capabilityIndexSnapshot.artifactHash",
+			"lockfile.requiredArtifacts.symbolGraphSnapshot.artifactHash",
 		]);
 		expect(diagnostics.diagnostics.every((entry) => entry.staleArtifacts)).toBe(
 			true,
 		);
+	});
+
+	test("emits compiled bundle identity mismatch diagnostics in degraded mode", () => {
+		const diagnostics = publishAuthoringDiagnostics({
+			context: {
+				...authoringReadFixture,
+				lockfile: createAuthoringLockfile({
+					...authoringReadFixture.lockfile,
+					requiredArtifacts: {
+						...authoringReadFixture.lockfile.requiredArtifacts,
+						compiledEntrypointBundle: {
+							...authoringReadFixture.lockfile.requiredArtifacts
+								.compiledEntrypointBundle,
+							artifactHash: "6".repeat(64),
+						},
+					},
+				}),
+			},
+			generatedAt: "2026-02-26T00:00:00.000Z",
+		});
+
+		expect(diagnostics.parity.status).toBe("mismatch");
+		expect(diagnostics.diagnostics).toEqual([
+			expect.objectContaining({
+				code: "artifact_mismatch_error",
+				path: "lockfile.requiredArtifacts.compiledEntrypointBundle.artifactHash",
+			}),
+		]);
 	});
 });

@@ -19,6 +19,9 @@ Concrete host-port implementations belong in marketplace provider packages.
 `module-loader` and `module-integrity` define the enforced provider-runtime
 module activation boundary.
 
+Provider constructors enforce manifest and `createPort` factory shape
+deterministically at construction time.
+
 ## Quick Start
 
 ```ts

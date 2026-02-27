@@ -1,19 +1,27 @@
 {
-	"entryPoints": [
-		"./src/result/result.ts",
-		"./src/clock/clock.ts",
-		"./src/identity/identity.ts",
-		"./src/principal/principal.ts",
-		"./src/replay/replay.ts",
-		"./src/activation-policy/activation-policy.ts",
-		"./src/module-loader/module-loader.ts",
-		"./src/module-integrity/module-integrity.ts",
-		"./src/delegation/delegation.ts"
-	],
-	"tsconfig": "tsconfig.json",
-	"plugin": ["typedoc-plugin-markdown"],
-	"readme": "none",
-	"hideGenerator": true,
-	"excludePrivate": true,
-	"excludeInternal": true
+  "entryPoints": [
+    "./src/result/result.ts",
+    "./src/clock/clock.ts",
+    "./src/identity/identity.ts",
+    "./src/principal/principal.ts",
+    "./src/replay/replay.ts",
+    "./src/activation-policy/activation-policy.ts",
+    "./src/module-loader/module-loader.ts",
+    "./src/module-integrity/module-integrity.ts",
+    "./src/delegation/delegation.ts"
+  ],
+  "tsconfig": "tsconfig.json",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
+  "readme": "none",
+  "hideGenerator": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "entryFileName": "index",
+  "outputFileStrategy": "members",
+  "parametersFormat": "table",
+  "propertiesFormat": "table",
+  "enumMembersFormat": "table",
+  "indexFormat": "table"
 }

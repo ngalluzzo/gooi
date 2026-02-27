@@ -1,17 +1,25 @@
 {
-	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": [
-		"./src/lockfile/authoring-lockfile.ts",
-		"./src/envelopes/authoring-request-envelope.ts",
-		"./src/envelopes/authoring-result-envelope.ts",
-		"./src/envelopes/authoring-error-envelope.ts",
-		"./src/envelopes/authoring-diagnostics-envelope.ts"
-	],
-	"entryPointStrategy": "resolve",
-	"excludePrivate": true,
-	"excludeProtected": true,
-	"excludeInternal": true,
-	"readme": "none",
-	"plugin": ["typedoc-plugin-markdown"],
-	"out": "../../apps/docs/docs/api/authoring-contracts"
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/lockfile/authoring-lockfile.ts",
+    "./src/envelopes/authoring-request-envelope.ts",
+    "./src/envelopes/authoring-result-envelope.ts",
+    "./src/envelopes/authoring-error-envelope.ts",
+    "./src/envelopes/authoring-diagnostics-envelope.ts"
+  ],
+  "entryPointStrategy": "resolve",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "readme": "none",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
+  "out": "../../apps/docs/docs/api/authoring-contracts",
+  "entryFileName": "index",
+  "outputFileStrategy": "members",
+  "parametersFormat": "table",
+  "propertiesFormat": "table",
+  "enumMembersFormat": "table",
+  "indexFormat": "table"
 }

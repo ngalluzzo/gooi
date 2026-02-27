@@ -1,16 +1,24 @@
 {
-	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": [
-		"./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts",
-		"./src/symbol-graph-contracts/symbol-graph.contracts.ts",
-		"./src/derive-signal-impact-edges/derive-signal-impact-edges.ts",
-		"./src/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.ts"
-	],
-	"entryPointStrategy": "resolve",
-	"excludePrivate": true,
-	"excludeProtected": true,
-	"excludeInternal": true,
-	"readme": "none",
-	"plugin": ["typedoc-plugin-markdown"],
-	"out": "../../../apps/docs/docs/api/symbol-graph"
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/build-symbol-graph-snapshot/build-symbol-graph-snapshot.ts",
+    "./src/symbol-graph-contracts/symbol-graph.contracts.ts",
+    "./src/derive-signal-impact-edges/derive-signal-impact-edges.ts",
+    "./src/parse-symbol-graph-snapshot/parse-symbol-graph-snapshot.ts"
+  ],
+  "entryPointStrategy": "resolve",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "readme": "none",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
+  "out": "../../../apps/docs/docs/api/symbol-graph",
+  "entryFileName": "index",
+  "outputFileStrategy": "members",
+  "parametersFormat": "table",
+  "propertiesFormat": "table",
+  "enumMembersFormat": "table",
+  "indexFormat": "table"
 }

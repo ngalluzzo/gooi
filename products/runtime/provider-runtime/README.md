@@ -14,6 +14,8 @@ It validates host compatibility, enforces binding-plan and lockfile constraints,
 ## Features
 
 - Provider activation compatibility checks (`hostApiRange` vs host version)
+- Explicit provider runtime host-port set contract checks (`clock`, `activationPolicy`, `capabilityDelegation`)
+- Deterministic fail-fast activation errors when required host-port members are missing
 - Hard-fail activation when binding/lockfile checks fail
 - Deterministic reachability execution semantics (`local` / `delegated` / `capability_unreachable_error`)
 - Delegated invocation path uses explicit `delegateRouteId` from deployment artifacts

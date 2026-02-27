@@ -16,7 +16,11 @@ import {
 	errorResult,
 	idempotencyScopeKey,
 } from "./errors/errors";
-import { createDefaultHostPorts, type HostPortSet } from "./host";
+import {
+	createDefaultHostPorts,
+	getMissingHostPortSetMembers,
+	type HostPortSet,
+} from "./host";
 import { validateEntrypointInput } from "./input-validation/input-validation";
 import {
 	buildRefreshTriggers,
@@ -33,6 +37,9 @@ export type { DomainRuntimePort };
 export { createDefaultHostPorts };
 
 const envelopeVersion = surfaceEnvelopeVersion;
+const hostPortValidationFallbackNow = "1970-01-01T00:00:00.000Z";
+const hostPortValidationFallbackTraceId = "trace_host_port_missing";
+const hostPortValidationFallbackInvocationId = "invocation_host_port_missing";
 
 interface ExecuteTailInput {
 	readonly entrypoint: CompiledEntrypoint;
@@ -276,6 +283,44 @@ export const runEntrypoint = async (
 	input: RunEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
 	const hostPorts = input.hostPorts ?? createDefaultHostPorts();
+	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
+	if (missingHostPortMembers.length > 0) {
+		const fallbackNow = input.now ?? hostPortValidationFallbackNow;
+		const baseInvocation: InvocationEnvelope<
+			Readonly<Record<string, unknown>>
+		> = {
+			envelopeVersion,
+			traceId: input.traceId ?? hostPortValidationFallbackTraceId,
+			invocationId:
+				input.invocationId ?? hostPortValidationFallbackInvocationId,
+			entrypointId: input.binding.entrypointId,
+			entrypointKind: input.binding.entrypointKind,
+			principal: input.principal,
+			input: {},
+			meta: {
+				...(input.idempotencyKey === undefined
+					? {}
+					: { idempotencyKey: input.idempotencyKey }),
+				requestReceivedAt: fallbackNow,
+			},
+		};
+		return errorResult(
+			baseInvocation,
+			input.bundle.artifactHash,
+			fallbackNow,
+			() => fallbackNow,
+			errorEnvelope(
+				"validation_error",
+				"Host port set is missing required members.",
+				false,
+				{
+					code: "host_port_missing",
+					missingHostPortMembers,
+				},
+			),
+		);
+	}
+
 	const startedAt = input.now ?? hostPorts.clock.nowIso();
 	const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
 

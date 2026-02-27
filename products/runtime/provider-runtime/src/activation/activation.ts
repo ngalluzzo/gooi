@@ -1,6 +1,7 @@
 import { isHostApiCompatible } from "../compatibility/compatibility";
 import {
 	createDefaultProviderRuntimeHostPorts,
+	getMissingProviderRuntimeHostPortMembers,
 	type ProviderRuntimeHostPorts,
 } from "../host";
 import { capabilityKey } from "../shared/capability-key";
@@ -25,6 +26,18 @@ export const activateProvider = async (
 ): Promise<RuntimeResult<ActivatedProvider>> => {
 	const hostPorts: ProviderRuntimeHostPorts =
 		input.hostPorts ?? createDefaultProviderRuntimeHostPorts();
+	const missingHostPortMembers =
+		getMissingProviderRuntimeHostPortMembers(hostPorts);
+	if (missingHostPortMembers.length > 0) {
+		return fail(
+			"activation_error",
+			"Host port set is missing required members.",
+			{
+				code: "host_port_missing",
+				missingHostPortMembers,
+			},
+		);
+	}
 	const parsedManifestResult = providerManifestSafeParse(
 		input.providerModule.manifest,
 	);

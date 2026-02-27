@@ -9,6 +9,7 @@ import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
 import { isAccessAllowed } from "./access-policy/access-policy";
+import { buildRuntimeActivationReport } from "./artifact-manifest/runtime-activation-report";
 import { validateRuntimeArtifactManifest } from "./artifact-manifest/validate-artifact-manifest";
 import type { DomainRuntimePort } from "./domain";
 import {
@@ -318,6 +319,11 @@ export const runEntrypoint = async (
 	const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
 	const manifestValidation = validateRuntimeArtifactManifest(input.bundle);
 	if (!manifestValidation.ok) {
+		const activationReport = buildRuntimeActivationReport({
+			bundle: input.bundle,
+			status: "mismatch",
+			diagnostics: manifestValidation.diagnostics,
+		});
 		return errorResult(
 			baseInvocation,
 			input.bundle.artifactHash,
@@ -330,6 +336,7 @@ export const runEntrypoint = async (
 				{
 					code: "manifest_validation_error",
 					diagnostics: manifestValidation.diagnostics,
+					activation: activationReport,
 				},
 			),
 		);

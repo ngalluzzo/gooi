@@ -6,6 +6,7 @@ Composable runtime engine for executing compiled query and mutation entrypoints.
 
 - Typed `HostPortSet` orchestration boundary (clock, identity, principal, delegation, optional replay)
 - Deterministic fail-fast behavior when required host-port members are missing
+- Manifest activation mismatch errors include bundle/manifest artifact identities and typed diagnostics
 - Policy-gate access checks derived from principal claims and compiled access rules
 - Strict input validation before domain execution
 

@@ -3,6 +3,8 @@ import type { ProjectionFieldSelection } from "@gooi/projection-contracts/plans/
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 	typeof value === "object" && value !== null;
 
+const unsafePathSegments = new Set(["__proto__", "prototype", "constructor"]);
+
 /**
  * Reads one dot-delimited field path from a row-like object.
  */
@@ -20,7 +22,11 @@ export const readFieldPath = (
 		if (!isRecord(cursor)) {
 			return undefined;
 		}
-		cursor = cursor[part];
+		if (unsafePathSegments.has(part) || !Object.hasOwn(cursor, part)) {
+			return undefined;
+		}
+		const next = cursor[part];
+		cursor = next;
 	}
 	return cursor;
 };

@@ -3,48 +3,76 @@ import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/proje
 import type { SignalMigrationOperation } from "@gooi/projection-contracts/plans/signal-migration-plan";
 import { readFieldPath } from "../shared/field-path";
 
+const unsafePathSegments = new Set(["__proto__", "prototype", "constructor"]);
+
 const splitPath = (path: string): readonly string[] =>
 	path.split(".").filter((segment) => segment.length > 0);
+
+const isSafePath = (path: string): boolean => {
+	const parts = splitPath(path);
+	return (
+		parts.length > 0 &&
+		parts.every((segment) => !unsafePathSegments.has(segment))
+	);
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
 
 const setPathValue = (
 	target: Record<string, unknown>,
 	path: string,
 	value: unknown,
-): void => {
+): boolean => {
 	const parts = splitPath(path);
-	if (parts.length === 0) {
-		return;
+	if (
+		parts.length === 0 ||
+		parts.some((part) => unsafePathSegments.has(part))
+	) {
+		return false;
 	}
 	let current: Record<string, unknown> = target;
 	for (const part of parts.slice(0, -1)) {
-		const next = current[part];
-		if (typeof next === "object" && next !== null) {
+		if (unsafePathSegments.has(part)) {
+			return false;
+		}
+		const next = Object.hasOwn(current, part) ? current[part] : undefined;
+		if (isRecord(next)) {
 			current = next as Record<string, unknown>;
 			continue;
 		}
-		current[part] = {};
-		current = current[part] as Record<string, unknown>;
+		const created = Object.create(null) as Record<string, unknown>;
+		current[part] = created;
+		current = created;
 	}
 	current[parts[parts.length - 1] as string] = value;
+	return true;
 };
 
 const removePathValue = (
 	target: Record<string, unknown>,
 	path: string,
-): void => {
+): boolean => {
 	const parts = splitPath(path);
-	if (parts.length === 0) {
-		return;
+	if (
+		parts.length === 0 ||
+		parts.some((part) => unsafePathSegments.has(part))
+	) {
+		return false;
 	}
 	let current: Record<string, unknown> = target;
 	for (const part of parts.slice(0, -1)) {
+		if (unsafePathSegments.has(part) || !Object.hasOwn(current, part)) {
+			return false;
+		}
 		const next = current[part];
-		if (typeof next !== "object" || next === null) {
-			return;
+		if (!isRecord(next)) {
+			return false;
 		}
 		current = next as Record<string, unknown>;
 	}
 	delete current[parts[parts.length - 1] as string];
+	return true;
 };
 
 const toBoolean = (value: unknown): boolean => {
@@ -119,22 +147,97 @@ export const applySignalMigrationOperation = (
 			readonly error: ReturnType<typeof createProjectionError>;
 	  } => {
 	if (operation.op === "set") {
-		setPathValue(payload, operation.field, operation.value);
+		if (
+			!isSafePath(operation.field) ||
+			!setPathValue(payload, operation.field, operation.value)
+		) {
+			return {
+				ok: false,
+				error: buildSignalMigrationError(
+					sourceRef,
+					"Signal migration path is unsafe or invalid.",
+					{ signalName, fromVersion, field: operation.field },
+				),
+			};
+		}
 		return { ok: true };
 	}
 	if (operation.op === "remove") {
-		removePathValue(payload, operation.field);
+		if (
+			!isSafePath(operation.field) ||
+			!removePathValue(payload, operation.field)
+		) {
+			return {
+				ok: false,
+				error: buildSignalMigrationError(
+					sourceRef,
+					"Signal migration path is unsafe or invalid.",
+					{ signalName, fromVersion, field: operation.field },
+				),
+			};
+		}
 		return { ok: true };
 	}
 	if (operation.op === "copy" || operation.op === "rename") {
+		if (!isSafePath(operation.from) || !isSafePath(operation.to)) {
+			return {
+				ok: false,
+				error: buildSignalMigrationError(
+					sourceRef,
+					"Signal migration path is unsafe or invalid.",
+					{
+						signalName,
+						fromVersion,
+						from: operation.from,
+						to: operation.to,
+					},
+				),
+			};
+		}
 		const value = readFieldPath(payload, operation.from);
-		setPathValue(payload, operation.to, value);
+		if (!setPathValue(payload, operation.to, value)) {
+			return {
+				ok: false,
+				error: buildSignalMigrationError(
+					sourceRef,
+					"Signal migration path is unsafe or invalid.",
+					{
+						signalName,
+						fromVersion,
+						to: operation.to,
+					},
+				),
+			};
+		}
 		if (operation.op === "rename") {
-			removePathValue(payload, operation.from);
+			if (!removePathValue(payload, operation.from)) {
+				return {
+					ok: false,
+					error: buildSignalMigrationError(
+						sourceRef,
+						"Signal migration path is unsafe or invalid.",
+						{
+							signalName,
+							fromVersion,
+							from: operation.from,
+						},
+					),
+				};
+			}
 		}
 		return { ok: true };
 	}
 
+	if (!isSafePath(operation.field)) {
+		return {
+			ok: false,
+			error: buildSignalMigrationError(
+				sourceRef,
+				"Signal migration path is unsafe or invalid.",
+				{ signalName, fromVersion, field: operation.field },
+			),
+		};
+	}
 	const value = readFieldPath(payload, operation.field);
 	const coerced = coerceValue(value, operation.to);
 	if (!coerced.ok) {
@@ -147,6 +250,15 @@ export const applySignalMigrationOperation = (
 			),
 		};
 	}
-	setPathValue(payload, operation.field, coerced.value);
+	if (!setPathValue(payload, operation.field, coerced.value)) {
+		return {
+			ok: false,
+			error: buildSignalMigrationError(
+				sourceRef,
+				"Signal migration path is unsafe or invalid.",
+				{ signalName, fromVersion, field: operation.field },
+			),
+		};
+	}
 	return { ok: true };
 };

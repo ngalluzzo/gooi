@@ -51,3 +51,10 @@ export const providerModule: ProviderModule = {
 2. `exports` must include `types` and `default` entries.
 3. Do not use barrel files for package API exposure.
 4. Keep provider modules functional and explicit; avoid OOP patterns.
+
+## Publication checklist
+
+Provider release evidence requirements, including host/replay conformance artifacts,
+are tracked in:
+
+- [Provider Publication Checklist](/Users/ngalluzzo/repos/gooi/docs/engineering/providers/provider-publication-checklist.md)

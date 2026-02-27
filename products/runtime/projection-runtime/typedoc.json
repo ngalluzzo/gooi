@@ -1,20 +1,18 @@
 {
-  "entryPoints": [
-    "./src/execute/execute-projection.ts",
-    "./src/execute/refresh-impact.ts"
-  ],
-  "entryFileName": "index",
-  "outputFileStrategy": "members",
-  "parametersFormat": "table",
-  "propertiesFormat": "table",
-  "enumMembersFormat": "table",
-  "indexFormat": "table",
-  "tsconfig": "tsconfig.json",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
-  "readme": "none",
-  "hideGenerator": true,
-  "excludePrivate": true,
-  "excludeInternal": true
+	"entryPoints": [
+		"./src/execute/execute-projection.ts",
+		"./src/execute/refresh-impact.ts"
+	],
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table",
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
 }

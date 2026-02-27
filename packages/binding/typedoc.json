@@ -1,19 +1,15 @@
 {
-  "entryPoints": [
-    "./src/binding-plan/binding-plan.ts"
-  ],
-  "tsconfig": "tsconfig.json",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
-  "readme": "none",
-  "hideGenerator": true,
-  "excludePrivate": true,
-  "excludeInternal": true,
-  "entryFileName": "index",
-  "outputFileStrategy": "members",
-  "parametersFormat": "table",
-  "propertiesFormat": "table",
-  "enumMembersFormat": "table",
-  "indexFormat": "table"
+	"entryPoints": ["./src/binding-plan/binding-plan.ts"],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true,
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table"
 }

@@ -1,24 +1,22 @@
 {
-  "entryPoints": [
-    "./src/plans/projection-plan.ts",
-    "./src/plans/timeline-history-policy.ts",
-    "./src/plans/signal-migration-plan.ts",
-    "./src/ports/history-port-contract.ts",
-    "./src/envelopes/projection-result-envelope.ts",
-    "./src/errors/projection-errors.ts"
-  ],
-  "entryFileName": "index",
-  "outputFileStrategy": "members",
-  "parametersFormat": "table",
-  "propertiesFormat": "table",
-  "enumMembersFormat": "table",
-  "indexFormat": "table",
-  "tsconfig": "tsconfig.json",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
-  "readme": "none",
-  "hideGenerator": true,
-  "excludePrivate": true,
-  "excludeInternal": true
+	"entryPoints": [
+		"./src/plans/projection-plan.ts",
+		"./src/plans/timeline-history-policy.ts",
+		"./src/plans/signal-migration-plan.ts",
+		"./src/ports/history-port-contract.ts",
+		"./src/envelopes/projection-result-envelope.ts",
+		"./src/errors/projection-errors.ts"
+	],
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table",
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true
 }

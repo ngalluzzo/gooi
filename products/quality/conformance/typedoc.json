@@ -1,23 +1,21 @@
 {
-  "entryPoints": [
-    "src/provider-conformance/run-provider-conformance.ts",
-    "src/entrypoint-conformance/run-entrypoint-conformance.ts",
-    "src/authoring-conformance/run-authoring-conformance.ts",
-    "src/host-port-conformance/host-port-conformance.ts",
-    "src/replay-store-conformance/run-replay-store-conformance.ts"
-  ],
-  "tsconfig": "tsconfig.json",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
-  "readme": "none",
-  "hideGenerator": true,
-  "excludePrivate": true,
-  "excludeInternal": true,
-  "entryFileName": "index",
-  "outputFileStrategy": "members",
-  "parametersFormat": "table",
-  "propertiesFormat": "table",
-  "enumMembersFormat": "table",
-  "indexFormat": "table"
+	"entryPoints": [
+		"src/provider-conformance/run-provider-conformance.ts",
+		"src/entrypoint-conformance/run-entrypoint-conformance.ts",
+		"src/authoring-conformance/run-authoring-conformance.ts",
+		"src/host-port-conformance/host-port-conformance.ts",
+		"src/replay-store-conformance/run-replay-store-conformance.ts"
+	],
+	"tsconfig": "tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"readme": "none",
+	"hideGenerator": true,
+	"excludePrivate": true,
+	"excludeInternal": true,
+	"entryFileName": "index",
+	"outputFileStrategy": "members",
+	"parametersFormat": "table",
+	"propertiesFormat": "table",
+	"enumMembersFormat": "table",
+	"indexFormat": "table"
 }

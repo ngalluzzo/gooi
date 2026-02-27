@@ -1,3 +1,4 @@
+import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
 import type { CompiledSignalReplayPolicy } from "./signal-migration-plan";
 import type { CompiledTimelineHistoryPolicy } from "./timeline-history-policy";
 
@@ -71,6 +72,8 @@ export interface CompiledFromCollectionProjectionPlan {
 	readonly fields: readonly ProjectionFieldSelection[];
 	readonly sort: readonly ProjectionSortRule[];
 	readonly pagination: ProjectionPaginationPlan;
+	/** Optional read-time row invariants for projection guard enforcement. */
+	readonly guard?: CompiledInvariantDefinition;
 }
 
 /**
@@ -101,6 +104,8 @@ export interface CompiledJoinProjectionPlan {
 	readonly fields: readonly ProjectionFieldSelection[];
 	readonly sort: readonly ProjectionSortRule[];
 	readonly pagination: ProjectionPaginationPlan;
+	/** Optional read-time row invariants for projection guard enforcement. */
+	readonly guard?: CompiledInvariantDefinition;
 }
 
 /**
@@ -136,6 +141,8 @@ export interface CompiledAggregateProjectionPlan {
 	readonly metrics: readonly ProjectionAggregateMetricPlan[];
 	readonly sort: readonly ProjectionSortRule[];
 	readonly pagination: ProjectionPaginationPlan;
+	/** Optional read-time row invariants for projection guard enforcement. */
+	readonly guard?: CompiledInvariantDefinition;
 }
 
 /**
@@ -172,6 +179,8 @@ export interface CompiledTimelineProjectionPlan {
 	readonly signalReplay: CompiledSignalReplayPolicy;
 	readonly pagination: ProjectionPaginationPlan;
 	readonly history: CompiledTimelineHistoryPolicy;
+	/** Optional read-time row invariants for projection guard enforcement. */
+	readonly guard?: CompiledInvariantDefinition;
 }
 
 /**

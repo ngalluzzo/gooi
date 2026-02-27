@@ -5,14 +5,14 @@
 [![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
 
 Conformance harness for RFC-0001 provider runtime, RFC-0002 entrypoint runtime,
-RFC-0003 authoring intelligence behavior checks, and RFC-0010 projection runtime
-parity checks.
+RFC-0003 authoring intelligence behavior checks, RFC-0010 projection runtime
+parity checks, RFC-0019 guard contracts, and RFC-0020 scenario runtime behavior.
 
 ## Overview
 
 `@gooi/conformance` runs conformance suites across runtime and authoring
 surfaces: provider runtime checks, entrypoint runtime checks, replay-store host
-provider checks, and authoring intelligence checks.
+provider checks, authoring intelligence checks, guard checks, and scenario checks.
 
 ## Features
 
@@ -27,6 +27,8 @@ provider checks, and authoring intelligence checks.
 - Projection/domain parity checks (`runProjectionConformance`)
 - Projection conformance includes history contract gates, rebuild workflow recovery,
   and signal migration-chain enforcement checks
+- Guard matrix and semantic policy checks (`runGuardConformance`)
+- Scenario runtime behavior and lockfile determinism checks (`runScenarioConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -49,6 +51,8 @@ import { runReplayStoreConformance } from "@gooi/conformance/replay-store";
 import { runAuthoringConformance } from "@gooi/conformance/authoring";
 import { runReachabilityParitySuite } from "@gooi/conformance/reachability-parity";
 import { runProjectionConformance } from "@gooi/conformance/projection";
+import { runGuardConformance } from "@gooi/conformance/guard";
+import { runScenarioConformance } from "@gooi/conformance/scenario";
 
 const report = await runProviderConformance({
   providerModule,
@@ -70,6 +74,8 @@ console.log(report.passed, report.checks);
 - `runAuthoringConformance(input)`
 - `runReachabilityParitySuite(input)`
 - `runProjectionConformance(input)`
+- `runGuardConformance(input)`
+- `runScenarioConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -87,6 +93,8 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/authoring`
 - `@gooi/conformance/reachability-parity`
 - `@gooi/conformance/projection`
+- `@gooi/conformance/guard`
+- `@gooi/conformance/scenario`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
@@ -95,6 +103,8 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/authoring-contracts`
 - `@gooi/conformance/reachability-parity-contracts`
 - `@gooi/conformance/projection-contracts`
+- `@gooi/conformance/guard-contracts`
+- `@gooi/conformance/scenario-contracts`
 
 ## Development
 

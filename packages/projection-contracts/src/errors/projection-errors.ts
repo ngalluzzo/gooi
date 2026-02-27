@@ -13,6 +13,7 @@ export const projectionErrorCodeSchema = z.enum([
 	"projection_signal_migration_error",
 	"projection_rebuild_required_error",
 	"projection_pagination_error",
+	"projection_guard_error",
 ]);
 
 /**

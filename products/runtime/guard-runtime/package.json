@@ -1,0 +1,38 @@
+{
+	"name": "@gooi/guard-runtime",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/evaluate/evaluate-guard.js",
+	"types": "./src/evaluate/evaluate-guard.ts",
+	"exports": {
+		"./evaluate": {
+			"types": "./src/evaluate/evaluate-guard.ts",
+			"bun": "./src/evaluate/evaluate-guard.ts",
+			"import": "./dist/evaluate/evaluate-guard.js",
+			"default": "./dist/evaluate/evaluate-guard.js"
+		},
+		"./policies": {
+			"types": "./src/policies/apply-guard-policy.ts",
+			"bun": "./src/policies/apply-guard-policy.ts",
+			"import": "./dist/policies/apply-guard-policy.js",
+			"default": "./dist/policies/apply-guard-policy.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/evaluate/evaluate-guard.ts --outfile ./dist/evaluate/evaluate-guard.js --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/errors/guard-errors --external @gooi/guard-contracts/signals/guard-violation-signal --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/stable-json && bun build ./src/policies/apply-guard-policy.ts --outfile ./dist/policies/apply-guard-policy.js --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/errors/guard-errors --external @gooi/guard-contracts/signals/guard-violation-signal --external @gooi/stable-json",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/stable-json": "workspace:*"
+	}
+}

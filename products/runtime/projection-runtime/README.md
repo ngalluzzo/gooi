@@ -13,6 +13,7 @@ query semantics.
 - Timeline accumulation drift fail-fast gate with explicit rebuild workflow
 - Timeline signal migration-chain replay before reducer evaluation
 - Stable page metadata and timeline lifecycle metadata
+- Projection row-guard enforcement with typed abort/log-and-continue policy outcomes
 - Typed projection diagnostics with source references
 - Refresh impact resolver for signal-to-query invalidation parity
 

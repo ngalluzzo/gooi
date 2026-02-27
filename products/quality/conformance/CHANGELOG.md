@@ -16,3 +16,7 @@ The format is based on Changesets.
   as_of capability enforcement, and duplicate event-key dedupe behavior.
 - Expanded projection conformance with history operation contract gating,
   explicit rebuild recovery, and migration-chain replay/gap enforcement checks.
+- Added guard conformance suite for RFC-0019 layered guard matrix and semantic
+  policy behavior checks.
+- Added scenario conformance suite for RFC-0020 trigger/expect/capture semantics,
+  persona-generated input lockfile determinism, and typed failure traceability.

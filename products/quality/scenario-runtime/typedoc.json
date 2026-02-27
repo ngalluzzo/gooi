@@ -1,0 +1,8 @@
+{
+	"entryPoints": [
+		"./src/run/run-scenario.ts",
+		"./src/suite/run-scenario-suite.ts",
+		"./src/reports/report-persona-coverage.ts"
+	],
+	"out": "docs"
+}

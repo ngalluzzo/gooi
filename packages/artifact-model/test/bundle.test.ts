@@ -85,7 +85,7 @@ describe("artifact-model packaged bundle", () => {
 		const unpacked = unpackPackagedBundle({ bundle: corrupted });
 		expect(unpacked.ok).toBe(false);
 		if (!unpacked.ok) {
-			expect(unpacked.diagnostics[0]?.code).toBe("bundle_unpack_error");
+			expect(unpacked.diagnostics[0]?.code).toBe("artifact_mismatch_error");
 			expect(
 				unpacked.diagnostics.some(
 					(diagnostic) => diagnostic.code === "bundle_unpack_error",

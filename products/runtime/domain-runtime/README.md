@@ -8,8 +8,11 @@ and simulation traceability.
 - Deterministic action step input resolution (defaults, null handling, unknown-key enforcement)
 - Capability input contract validation before invocation side effects
 - Stable typed domain runtime error taxonomy
+- Canonical guard boundary enforcement for collection invariants, action guards, signal guards, and flow guards
+- Guard-boundary traces/errors carry typed violations and diagnostics for deterministic policy analysis
 - Typed session outcome envelopes for success/failure paths
 - Simulation mode support with deterministic trace envelopes
+- Canonical query-path failure envelopes aligned with typed mutation failure contracts
 - Live/simulation mutation envelope comparability checks
 
 ## Quick Start

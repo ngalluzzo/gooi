@@ -1,8 +1,8 @@
-import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 import type {
 	CompileDiagnostic,
 	CompiledReachabilityRequirement,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 
 interface CompileReachabilityRequirementsOutput {
 	readonly requirements: Readonly<

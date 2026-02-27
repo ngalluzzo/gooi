@@ -1,9 +1,9 @@
-import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 import type {
 	CompileDiagnostic,
 	CompiledEntrypoint,
 	CompiledRefreshSubscription,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 
 interface CompileRefreshSubscriptionsOutput {
 	readonly subscriptions: Readonly<Record<string, CompiledRefreshSubscription>>;

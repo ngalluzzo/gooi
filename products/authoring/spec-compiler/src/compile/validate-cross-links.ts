@@ -1,7 +1,7 @@
 import type {
 	CanonicalSpecModel,
 	CompileDiagnostic,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
 import { validateAccessLinks } from "./cross-links/validate-access-links";
 import { validateCapabilityLinks } from "./cross-links/validate-capability-links";
 import { validateDuplicateIds } from "./cross-links/validate-duplicate-ids";

@@ -1,9 +1,3 @@
-import {
-	buildArtifactManifestFromArtifacts,
-	buildLaneArtifact,
-	type CompiledArtifactManifest,
-	type CompiledLaneArtifact,
-} from "@gooi/artifact-model/manifest";
 import type {
 	CanonicalSpecModel,
 	CompiledAccessPlan,
@@ -12,7 +6,13 @@ import type {
 	CompiledJsonSchemaArtifact,
 	CompiledRefreshSubscription,
 	CompiledSurfaceBinding,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import {
+	buildArtifactManifestFromArtifacts,
+	buildLaneArtifact,
+	type CompiledArtifactManifest,
+	type CompiledLaneArtifact,
+} from "@gooi/artifact-model/manifest";
 
 interface CompileLaneArtifactsInput {
 	readonly canonicalModel: CanonicalSpecModel;

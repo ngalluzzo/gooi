@@ -1,10 +1,10 @@
-import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 import type {
 	CompileDiagnostic,
 	CompiledEntrypoint,
 	CompiledEntrypointKind,
 	CompiledSurfaceBinding,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import type { AuthoringEntrypointSpec } from "@gooi/app-spec-contracts/spec";
 
 interface CompileBindingsOutput {
 	readonly bindings: Readonly<Record<string, CompiledSurfaceBinding>>;

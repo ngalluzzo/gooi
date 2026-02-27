@@ -1,10 +1,10 @@
-import { sha256, stableStringify } from "@gooi/stable-json";
 import {
 	type CompiledBindingRequirements,
 	type CompiledReachabilityRequirement,
 	compiledBindingRequirementsArtifactVersionSchema,
 	compiledReachabilityModeSchema,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
+import { sha256, stableStringify } from "@gooi/stable-json";
 
 const bindingRequirementsArtifactHashInput = (
 	artifact: Omit<CompiledBindingRequirements, "artifactHash">,

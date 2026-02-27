@@ -1,7 +1,7 @@
 import type {
 	CompileDiagnostic,
 	DiagnosticSeverity,
-} from "./compile.contracts";
+} from "@gooi/app-spec-contracts/compiled";
 
 const severityRank: Record<DiagnosticSeverity, number> = {
 	error: 0,

@@ -42,7 +42,12 @@ export const errorResult = (
 			completedAt,
 			durationMs: calculateIsoDurationMs(startedAt, completedAt),
 		},
-		meta: { replayed: false, artifactHash, affectedQueryIds: [] },
+		meta: {
+			replayed: false,
+			artifactHash,
+			affectedQueryIds: [],
+			refreshTriggers: [],
+		},
 	};
 };
 

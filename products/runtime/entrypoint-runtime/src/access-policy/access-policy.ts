@@ -76,10 +76,21 @@ export const isAccessAllowed = (
 	entrypointKey: string,
 	principal: PrincipalContext,
 ): boolean => {
+	const effectiveRoles = deriveEffectiveRoles(principal, accessPlan);
+	return isAccessAllowedForRoles(accessPlan, entrypointKey, effectiveRoles);
+};
+
+/**
+ * Evaluates entrypoint access based on compiled access plan and pre-derived roles.
+ */
+export const isAccessAllowedForRoles = (
+	accessPlan: CompiledAccessPlan,
+	entrypointKey: string,
+	effectiveRoles: readonly string[],
+): boolean => {
 	const required = accessPlan.entrypointRoles[entrypointKey];
 	if (required === undefined || required.length === 0) {
 		return accessPlan.defaultPolicy === "allow";
 	}
-	const effectiveRoles = deriveEffectiveRoles(principal, accessPlan);
 	return required.some((role) => effectiveRoles.includes(role));
 };

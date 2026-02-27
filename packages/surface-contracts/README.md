@@ -27,6 +27,13 @@ const request = parseSurfaceRequestPayload(rawRequest);
 const result = parseResultEnvelope(rawResult);
 ```
 
+## Result Envelope Notes
+
+- `result.meta.refreshTriggers` is the canonical invalidation payload set:
+  `signalId`, `signalVersion`, `payloadHash`.
+- `result.meta.affectedQueryIds` is a deterministic, sorted set resolved from
+  compiled refresh subscriptions.
+
 ## Development
 
 ```bash

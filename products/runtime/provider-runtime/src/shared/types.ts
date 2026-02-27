@@ -92,6 +92,8 @@ export interface CapabilityResult {
 	readonly error?: unknown;
 	/** Runtime-observed side effects. */
 	readonly observedEffects: readonly EffectKind[];
+	/** Invocation reachability mode resolved by runtime (`local` or `delegated`). */
+	readonly reachabilityMode?: "local" | "delegated";
 }
 
 /**

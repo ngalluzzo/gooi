@@ -77,6 +77,18 @@
 			"import": "./dist/replay-store-conformance/contracts.js",
 			"default": "./dist/replay-store-conformance/contracts.js"
 		},
+		"./reachability-parity": {
+			"types": "./src/reachability-parity/run-reachability-parity-suite.ts",
+			"bun": "./src/reachability-parity/run-reachability-parity-suite.ts",
+			"import": "./dist/reachability-parity/run-reachability-parity-suite.js",
+			"default": "./dist/reachability-parity/run-reachability-parity-suite.js"
+		},
+		"./reachability-parity-contracts": {
+			"types": "./src/reachability-parity/contracts.ts",
+			"bun": "./src/reachability-parity/contracts.ts",
+			"import": "./dist/reachability-parity/contracts.js",
+			"default": "./dist/reachability-parity/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -86,7 +98,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts --outdir ./dist --external zod --external @gooi/language-server",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts --outdir ./dist --external zod --external @gooi/language-server",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

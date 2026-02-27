@@ -20,6 +20,7 @@ provider checks, and authoring intelligence checks.
 - Host runtime checks (`runHostConformance`)
 - Replay-store host provider checks (`runReplayStoreConformance`)
 - Authoring checks (`runAuthoringConformance`)
+- Reachability parity checks (`runReachabilityParitySuite`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -40,6 +41,7 @@ import { runEntrypointConformance } from "@gooi/conformance/entrypoint";
 import { runHostConformance } from "@gooi/conformance/host";
 import { runReplayStoreConformance } from "@gooi/conformance/replay-store";
 import { runAuthoringConformance } from "@gooi/conformance/authoring";
+import { runReachabilityParitySuite } from "@gooi/conformance/reachability-parity";
 
 const report = await runProviderConformance({
   providerModule,
@@ -59,6 +61,7 @@ console.log(report.passed, report.checks);
 - `runHostConformance(input)`
 - `runReplayStoreConformance(input)`
 - `runAuthoringConformance(input)`
+- `runReachabilityParitySuite(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -73,12 +76,14 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/host`
 - `@gooi/conformance/replay-store`
 - `@gooi/conformance/authoring`
+- `@gooi/conformance/reachability-parity`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
 - `@gooi/conformance/host-contracts`
 - `@gooi/conformance/replay-store-contracts`
 - `@gooi/conformance/authoring-contracts`
+- `@gooi/conformance/reachability-parity-contracts`
 
 ## Development
 

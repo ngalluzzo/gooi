@@ -55,6 +55,8 @@ export const invokeCapability = async (
 
 	const key = capabilityKey(call.portId, call.portVersion);
 	const resolution = activated.bindingResolutions?.get(key);
+	const reachabilityMode =
+		resolution?.mode === "delegated" ? "delegated" : "local";
 	if (activated.bindingResolutions !== undefined && resolution === undefined) {
 		return unreachableError(
 			call,
@@ -149,6 +151,7 @@ export const invokeCapability = async (
 			ok: true,
 			output: outputValidation.data,
 			observedEffects: response.observedEffects,
+			reachabilityMode,
 		});
 	}
 
@@ -167,5 +170,6 @@ export const invokeCapability = async (
 		ok: false,
 		error: errorValidation.data,
 		observedEffects: response.observedEffects,
+		reachabilityMode,
 	});
 };

@@ -5,7 +5,7 @@ import {
 	parseProviderManifestBase,
 	safeParseProviderManifestBase,
 	semverPattern,
-} from "@gooi/provider-manifest/base";
+} from "@gooi/marketplace-contracts/provider-manifest/base";
 import { z } from "zod";
 
 const capabilityContractHashSchema = z.string().regex(/^[a-f0-9]{64}$/);

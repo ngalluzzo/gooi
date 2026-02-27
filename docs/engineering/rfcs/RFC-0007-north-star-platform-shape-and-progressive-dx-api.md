@@ -305,7 +305,7 @@ Provider-manifest layering:
 4. `marketplace/resolution-engine`
 5. `marketplace/trust-plane`
 
-`marketplace/*`:
+`products/marketplace/*`:
 
 1. `@gooi-marketplace/*` provider and adapter implementations.
 
@@ -330,7 +330,7 @@ Provider-manifest layering:
 - Proposed location(s):
   - Keep reusable primitives in `packages/*`.
   - Keep lane-specific product behavior in `products/<lane>/*`.
-  - Keep concrete providers in `marketplace/*`.
+  - Keep concrete providers in `products/marketplace/*`.
 - Lane (if `products/*`):
   - `authoring`, `runtime`, `quality`, `marketplace`.
 - Why this boundary is correct:

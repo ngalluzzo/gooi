@@ -19,6 +19,6 @@
 		{ "path": "./products/authoring/spec-compiler" },
 		{ "path": "./products/runtime/entrypoint-runtime" },
 		{ "path": "./products/runtime/surface-runtime" },
-		{ "path": "./marketplace/memory" }
+		{ "path": "./products/marketplace/memory" }
 	]
 }

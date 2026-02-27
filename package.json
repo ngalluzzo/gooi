@@ -5,14 +5,13 @@
 		"apps/*",
 		"packages/*",
 		"products/*/*",
-		"marketplace/*",
 		"capabilities/*",
 		"tools/*"
 	],
 	"scripts": {
 		"dev": "bun dev:apps && bun dev:pkg && bun dev:tools",
 		"dev:apps": "bun -F './apps/*' dev",
-		"dev:pkg": "bun -F './packages/*' -F './products/*/*' -F './capabilities/*' -F './marketplace/*' dev",
+		"dev:pkg": "bun -F './packages/*' -F './products/*/*' -F './capabilities/*' dev",
 		"dev:tools": "bun -F './tools/*' dev",
 		"doc": "bun run docs:api",
 		"docs:api": "bun ./tools/docs/generate-api-docs.ts",

@@ -8,6 +8,8 @@ import {
 	surfaceEnvelopeVersionSchema,
 } from "../envelope-version/envelope-version";
 import {
+	type RefreshTrigger,
+	refreshTriggerSchema,
 	type SignalEnvelope,
 	signalEnvelopeSchema,
 } from "../signal-envelope/signal-envelope";
@@ -61,6 +63,7 @@ export const resultEnvelopeSchema = z.object({
 		replayed: z.boolean(),
 		artifactHash: z.string().min(1),
 		affectedQueryIds: z.array(z.string().min(1)),
+		refreshTriggers: z.array(refreshTriggerSchema),
 	}),
 });
 
@@ -90,6 +93,7 @@ export type ResultEnvelope<TOutput, TTypedError> = ResultEnvelopeShape & {
 		readonly replayed: boolean;
 		readonly artifactHash: string;
 		readonly affectedQueryIds: readonly string[];
+		readonly refreshTriggers: readonly RefreshTrigger[];
 	};
 };
 

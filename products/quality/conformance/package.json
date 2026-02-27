@@ -160,6 +160,7 @@
 		"@gooi/scenario-runtime": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
+		"@gooi/surface-runtime": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"@gooi/marketplace-contracts": "workspace:*",
 		"@gooi/symbol-graph": "workspace:*",

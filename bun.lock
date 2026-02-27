@@ -261,6 +261,7 @@
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
+        "@gooi/surface-runtime": "workspace:*",
         "@gooi/symbol-graph": "workspace:*",
         "zod": "^4.3.6",
       },

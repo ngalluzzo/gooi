@@ -9,6 +9,7 @@ import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
 import { isAccessAllowed } from "./access-policy/access-policy";
+import { validateRuntimeArtifactManifest } from "./artifact-manifest/validate-artifact-manifest";
 import type { DomainRuntimePort } from "./domain";
 import {
 	entrypointKey,
@@ -315,6 +316,24 @@ export const runEntrypoint = async (
 
 	const startedAt = input.now ?? hostPorts.clock.nowIso();
 	const baseInvocation = buildInvocationEnvelope(input, startedAt, hostPorts);
+	const manifestValidation = validateRuntimeArtifactManifest(input.bundle);
+	if (!manifestValidation.ok) {
+		return errorResult(
+			baseInvocation,
+			input.bundle.artifactHash,
+			startedAt,
+			hostPorts.clock.nowIso,
+			errorEnvelope(
+				"validation_error",
+				"Compiled artifact manifest validation failed during activation.",
+				false,
+				{
+					code: "manifest_validation_error",
+					diagnostics: manifestValidation.diagnostics,
+				},
+			),
+		);
+	}
 
 	const entrypoint = resolveEntrypoint(
 		input.binding.entrypointKind,

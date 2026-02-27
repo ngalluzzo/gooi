@@ -5,7 +5,8 @@
 [![Release](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml/badge.svg)](https://github.com/ngalluzzo/gooi/actions/workflows/release.yml)
 
 Conformance harness for RFC-0001 provider runtime, RFC-0002 entrypoint runtime,
-and RFC-0003 authoring intelligence behavior checks.
+RFC-0003 authoring intelligence behavior checks, and RFC-0010 projection runtime
+parity checks.
 
 ## Overview
 
@@ -23,6 +24,7 @@ provider checks, and authoring intelligence checks.
 - Default test runner baseline includes host + replay-store conformance suites
 - Authoring checks (`runAuthoringConformance`)
 - Reachability parity checks (`runReachabilityParitySuite`)
+- Projection/domain parity checks (`runProjectionConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -44,6 +46,7 @@ import { runHostConformance } from "@gooi/conformance/host";
 import { runReplayStoreConformance } from "@gooi/conformance/replay-store";
 import { runAuthoringConformance } from "@gooi/conformance/authoring";
 import { runReachabilityParitySuite } from "@gooi/conformance/reachability-parity";
+import { runProjectionConformance } from "@gooi/conformance/projection";
 
 const report = await runProviderConformance({
   providerModule,
@@ -64,11 +67,13 @@ console.log(report.passed, report.checks);
 - `runReplayStoreConformance(input)`
 - `runAuthoringConformance(input)`
 - `runReachabilityParitySuite(input)`
+- `runProjectionConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
 - `HostConformanceReport`
 - `AuthoringConformanceReport`
+- `ProjectionConformanceReport`
 
 ## Export Paths
 
@@ -79,6 +84,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/replay-store`
 - `@gooi/conformance/authoring`
 - `@gooi/conformance/reachability-parity`
+- `@gooi/conformance/projection`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
@@ -86,6 +92,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/replay-store-contracts`
 - `@gooi/conformance/authoring-contracts`
 - `@gooi/conformance/reachability-parity-contracts`
+- `@gooi/conformance/projection-contracts`
 
 ## Development
 

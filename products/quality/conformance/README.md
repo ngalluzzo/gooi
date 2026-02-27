@@ -18,6 +18,7 @@ provider checks, and authoring intelligence checks.
 - Provider runtime checks (`runProviderConformance`)
 - Entrypoint runtime checks (`runEntrypointConformance`)
 - Host runtime checks (`runHostConformance`)
+- Host runtime checks include success and fail-fast missing-host-port coverage
 - Replay-store host provider checks (`runReplayStoreConformance`)
 - Authoring checks (`runAuthoringConformance`)
 - Reachability parity checks (`runReachabilityParitySuite`)

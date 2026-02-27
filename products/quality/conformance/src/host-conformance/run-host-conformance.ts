@@ -84,6 +84,28 @@ export const runHostConformance = async (
 	input: RunHostConformanceInput,
 ): Promise<HostConformanceReport> => {
 	const checks: Array<HostConformanceReport["checks"][number]> = [];
+	const hasMissingHostPortDiagnostic = (
+		details: unknown,
+		expectedPath: string,
+	): boolean => {
+		if (details === null || typeof details !== "object") {
+			return false;
+		}
+		const detailsRecord = details as Readonly<Record<string, unknown>>;
+		if (detailsRecord.code !== "host_port_missing") {
+			return false;
+		}
+		if (!Array.isArray(detailsRecord.missingHostPortMembers)) {
+			return false;
+		}
+		return detailsRecord.missingHostPortMembers.some((member) => {
+			if (member === null || typeof member !== "object") {
+				return false;
+			}
+			const memberRecord = member as Readonly<Record<string, unknown>>;
+			return memberRecord.path === expectedPath;
+		});
+	};
 
 	const entrypointClockValues = [
 		"2026-02-26T00:00:00.000Z",
@@ -141,6 +163,78 @@ export const runHostConformance = async (
 				: "Entrypoint runtime did not use host-provided clock values.",
 		),
 	);
+
+	const runEntrypointWithHostPorts = (hostPorts: unknown) =>
+		createEntrypointRuntime({
+			bundle: input.bundle,
+			domainRuntime: input.domainRuntime,
+			hostPorts: hostPorts as never,
+		}).run({
+			binding: input.queryBinding,
+			request: input.queryRequest,
+			principal: input.principal,
+		});
+
+	const invalidEntrypointHostPortCases = [
+		{
+			id: "entrypoint_missing_clock_rejected",
+			path: "clock.nowIso",
+			hostPorts: {
+				...createDefaultHostPorts(),
+				clock: {},
+			},
+		},
+		{
+			id: "entrypoint_missing_identity_rejected",
+			path: "identity.newTraceId",
+			hostPorts: {
+				...createDefaultHostPorts(),
+				identity: {
+					newInvocationId: () => "inv_missing_identity",
+				},
+			},
+		},
+		{
+			id: "entrypoint_missing_principal_rejected",
+			path: "principal.validatePrincipal",
+			hostPorts: {
+				...createDefaultHostPorts(),
+				principal: {
+					deriveRoles: createDefaultHostPorts().principal.deriveRoles,
+				},
+			},
+		},
+		{
+			id: "entrypoint_missing_delegation_rejected",
+			path: "capabilityDelegation.invokeDelegated",
+			hostPorts: {
+				...createDefaultHostPorts(),
+				capabilityDelegation: {},
+			},
+		},
+	] as const;
+
+	for (const invalidCase of invalidEntrypointHostPortCases) {
+		const invalidResult = await runEntrypointWithHostPorts(
+			invalidCase.hostPorts,
+		);
+		const passed =
+			!invalidResult.ok &&
+			invalidResult.error?.code === "validation_error" &&
+			hasMissingHostPortDiagnostic(
+				invalidResult.error.details,
+				invalidCase.path,
+			);
+		checks.push(
+			buildHostPortConformanceCheck(
+				invalidCase.id,
+				passed,
+				passed
+					? `Entrypoint runtime rejected missing host port member ${invalidCase.path}.`
+					: `Entrypoint runtime did not reject missing host port member ${invalidCase.path}.`,
+			),
+		);
+	}
 
 	const providerId = "gooi.providers.host.conformance";
 	const providerVersion = "1.0.0";
@@ -253,6 +347,64 @@ export const runHostConformance = async (
 				: "Provider activation did not consult host activation policy.",
 		),
 	);
+
+	const activateProviderWithHostPorts = (hostPorts: unknown) =>
+		createProviderRuntime({
+			hostApiVersion: input.providerHostApiVersion,
+			contracts: [input.providerContract],
+		}).activate({
+			providerModule,
+			hostPorts: hostPorts as never,
+		});
+
+	const invalidProviderHostPortCases = [
+		{
+			id: "provider_missing_clock_rejected",
+			path: "clock.nowIso",
+			hostPorts: {
+				...providerHostPorts,
+				clock: {},
+			},
+		},
+		{
+			id: "provider_missing_activation_policy_rejected",
+			path: "activationPolicy.assertHostVersionAligned",
+			hostPorts: {
+				...providerHostPorts,
+				activationPolicy: {},
+			},
+		},
+		{
+			id: "provider_missing_delegation_rejected",
+			path: "capabilityDelegation.invokeDelegated",
+			hostPorts: {
+				...providerHostPorts,
+				capabilityDelegation: {},
+			},
+		},
+	] as const;
+
+	for (const invalidCase of invalidProviderHostPortCases) {
+		const invalidActivation = await activateProviderWithHostPorts(
+			invalidCase.hostPorts,
+		);
+		const passed =
+			!invalidActivation.ok &&
+			invalidActivation.error.kind === "activation_error" &&
+			hasMissingHostPortDiagnostic(
+				invalidActivation.error.details,
+				invalidCase.path,
+			);
+		checks.push(
+			buildHostPortConformanceCheck(
+				invalidCase.id,
+				passed,
+				passed
+					? `Provider runtime rejected missing host port member ${invalidCase.path}.`
+					: `Provider runtime did not reject missing host port member ${invalidCase.path}.`,
+			),
+		);
+	}
 
 	return {
 		passed: areHostPortConformanceChecksPassing(checks),

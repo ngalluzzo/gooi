@@ -17,7 +17,7 @@ export type KernelEntrypointHostPortSet = SharedHostPortSet<
 	ResultEnvelope<unknown, unknown>
 >;
 
-export interface RunEntrypointThroughKernelSpineInput {
+export interface RunEntrypointThroughKernelInput {
 	readonly bundle: CompiledEntrypointBundle;
 	readonly binding: CompiledSurfaceBinding;
 	readonly request: SurfaceRequestPayload;
@@ -34,7 +34,7 @@ export interface RunEntrypointThroughKernelSpineInput {
 
 export type DomainRuntimePort = KernelSemanticRuntimePort;
 export type HostPortSet = KernelEntrypointHostPortSet;
-export type RunEntrypointInput = RunEntrypointThroughKernelSpineInput;
+export type RunEntrypointInput = RunEntrypointThroughKernelInput;
 export type {
 	KernelSemanticExecutionInput,
 	KernelSemanticExecutionResult,

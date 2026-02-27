@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import type { KernelInvokeInput } from "@gooi/kernel-contracts/invocation";
 import { createKernelRuntime } from "../src/create-kernel-runtime";
-import type { KernelInvokeInput } from "../src/invoke";
 
 describe("execution-kernel scaffold", () => {
 	test("creates a runtime with invoke and trace surfaces", async () => {

@@ -189,7 +189,7 @@ Feature-oriented module layout (end-state target):
 
 Public APIs via `package.json` exports:
 
-1. `@gooi/execution-kernel/{create,invoke}` as canonical runtime orchestration surface.
+1. `@gooi/execution-kernel/{create,entrypoint}` as canonical runtime orchestration surface.
 2. `@gooi/entrypoint-runtime/{query,mutation}` for transport integration points.
 3. Runtime semantic engines expose minimal explicit subpaths consumed by kernel only.
 4. No wildcard or barrel export surfaces.

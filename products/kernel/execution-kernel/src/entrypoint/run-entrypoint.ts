@@ -28,7 +28,7 @@ import { validateRuntimeArtifactManifest } from "./validate-artifact-manifest";
 /**
  * Executes one compiled query or mutation entrypoint invocation.
  */
-export const runEntrypointThroughKernelSpine = async (
+export const runEntrypointThroughKernel = async (
 	input: RunEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
 	const hostPorts = input.hostPorts;
@@ -230,3 +230,15 @@ export const runEntrypointThroughKernelSpine = async (
 
 	return result;
 };
+
+export type {
+	DomainRuntimePort,
+	HostPortContractIssue,
+	HostPortSet,
+	KernelEntrypointHostPortSet,
+	KernelSemanticExecutionInput,
+	KernelSemanticExecutionResult,
+	KernelSemanticRuntimePort,
+	RunEntrypointInput,
+	RunEntrypointThroughKernelInput,
+} from "./types";

@@ -1,4 +1,4 @@
-import { runEntrypointThroughKernelSpine } from "@gooi/execution-kernel/entrypoint-spine";
+import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import { createDefaultHostPorts } from "../host";
 import type { RunEntrypointInput as SharedRunEntrypointInput } from "../types/types";
@@ -14,7 +14,7 @@ export type RunEntrypointInput = SharedRunEntrypointInput;
 export const runEntrypoint = async (
 	input: RunEntrypointInput,
 ): Promise<ResultEnvelope<unknown, unknown>> =>
-	runEntrypointThroughKernelSpine({
+	runEntrypointThroughKernel({
 		bundle: input.bundle,
 		binding: input.binding,
 		request: input.request,

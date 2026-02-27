@@ -17,23 +17,11 @@
 			"import": "./dist/create-kernel-runtime.js",
 			"default": "./dist/create-kernel-runtime.js"
 		},
-		"./invoke": {
-			"types": "./src/invoke.ts",
-			"bun": "./src/invoke.ts",
-			"import": "./dist/invoke.js",
-			"default": "./dist/invoke.js"
-		},
-		"./entrypoint-spine": {
-			"types": "./src/entrypoint-spine.ts",
-			"bun": "./src/entrypoint-spine.ts",
-			"import": "./dist/entrypoint-spine.js",
-			"default": "./dist/entrypoint-spine.js"
-		},
-		"./execution-spine": {
-			"types": "./src/execution-spine.ts",
-			"bun": "./src/execution-spine.ts",
-			"import": "./dist/execution-spine.js",
-			"default": "./dist/execution-spine.js"
+		"./entrypoint": {
+			"types": "./src/entrypoint/run-entrypoint.ts",
+			"bun": "./src/entrypoint/run-entrypoint.ts",
+			"import": "./dist/entrypoint/run-entrypoint.js",
+			"default": "./dist/entrypoint/run-entrypoint.js"
 		},
 		"./trace": {
 			"types": "./src/trace.ts",
@@ -50,7 +38,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/invoke.ts --outfile ./dist/invoke.js && bun build ./src/entrypoint-spine.ts --outfile ./dist/entrypoint-spine.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime && bun build ./src/execution-spine.ts --outfile ./dist/execution-spine.js --external @gooi/kernel-contracts/orchestration && bun build ./src/trace.ts --outfile ./dist/trace.js",
+		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/entrypoint/run-entrypoint.ts --outfile ./dist/entrypoint/run-entrypoint.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime --external @gooi/kernel-contracts/semantic-engine && bun build ./src/trace.ts --outfile ./dist/trace.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

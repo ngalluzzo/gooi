@@ -10,8 +10,8 @@
 
 One contract now defines orchestration stage order for both query and mutation:
 
-- Source: `/Users/ngalluzzo/repos/gooi/products/kernel/execution-kernel/src/execution-spine.ts`
-- Export: `@gooi/execution-kernel/execution-spine`
+- Source: `/Users/ngalluzzo/repos/gooi/products/contracts/kernel-contracts/src/orchestration/orchestration.ts`
+- Export: `@gooi/kernel-contracts/orchestration`
 - Contract version: `2026-02-27`
 
 Query order:
@@ -59,7 +59,6 @@ graph TD
   Entrypoint --> Kernel["products/kernel/execution-kernel"]
   Kernel --> Contracts["products/contracts/*"]
   Kernel --> HostContracts["products/contracts/host-contracts"]
-  Kernel --> HostBridge["products/kernel/host-bridge"]
   Kernel --> DomainEngine["products/runtime/domain-runtime (semantic engine ownership)"]
   Kernel --> ProjectionEngine["products/runtime/projection-runtime (semantic engine ownership)"]
   Kernel --> GuardEngine["products/runtime/guard-runtime (semantic engine ownership)"]

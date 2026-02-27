@@ -1,23 +1,8 @@
-import type { KernelExecutionSpineStage } from "./execution-spine";
-
-export interface KernelTraceInput {
-	readonly entrypointId: string;
-	readonly kind: "query" | "mutation";
-	readonly stage: KernelExecutionSpineStage;
-	readonly invocationId?: string;
-	readonly traceId?: string;
-	readonly metadata?: Readonly<Record<string, unknown>>;
-}
-
-export interface KernelTraceEnvelope {
-	readonly traceId: string;
-	readonly invocationId: string;
-	readonly entrypointId: string;
-	readonly kind: "query" | "mutation";
-	readonly stage: KernelExecutionSpineStage;
-	readonly timestamp: string;
-	readonly metadata?: Readonly<Record<string, unknown>>;
-}
+import type {
+	KernelTraceEnvelope,
+	KernelTraceInput,
+} from "@gooi/kernel-contracts/trace";
+export type { KernelTraceEnvelope, KernelTraceInput };
 
 export const createKernelTraceEnvelope = (
 	input: KernelTraceInput,

@@ -10,7 +10,6 @@ const createInvalidHostPorts = (
 		| "identity.newTraceId"
 		| "identity.newInvocationId"
 		| "principal.validatePrincipal"
-		| "principal.deriveRoles"
 		| "capabilityDelegation.invokeDelegated",
 ): HostPortSet => {
 	const base = createDefaultHostPorts();
@@ -38,16 +37,7 @@ const createInvalidHostPorts = (
 		case "principal.validatePrincipal":
 			return {
 				...base,
-				principal: {
-					deriveRoles: base.principal.deriveRoles,
-				},
-			} as never;
-		case "principal.deriveRoles":
-			return {
-				...base,
-				principal: {
-					validatePrincipal: base.principal.validatePrincipal,
-				},
+				principal: {},
 			} as never;
 		case "capabilityDelegation.invokeDelegated":
 			return {
@@ -124,7 +114,6 @@ describe("entrypoint-runtime host port set", () => {
 			"identity.newTraceId",
 			"identity.newInvocationId",
 			"principal.validatePrincipal",
-			"principal.deriveRoles",
 			"capabilityDelegation.invokeDelegated",
 		] as const;
 		let queryCalls = 0;

@@ -1,27 +1,13 @@
 import {
-	type KernelHostPortSet,
-	KernelHostPortSetValidationError,
-	parseKernelHostPortSet,
-} from "@gooi/kernel-host-bridge/host-portset";
-import type { KernelInvokeInput, KernelInvokeResult } from "./invoke";
-import {
-	createKernelTraceEnvelope,
-	type KernelTraceEnvelope,
-	type KernelTraceInput,
-} from "./trace";
-
-export interface KernelRuntime {
-	readonly invoke: (input: KernelInvokeInput) => Promise<KernelInvokeResult>;
-	readonly trace: (input: KernelTraceInput) => KernelTraceEnvelope;
-}
-
-export interface CreateKernelRuntimeInput {
-	readonly invoke: (input: {
-		readonly call: KernelInvokeInput;
-		readonly hostPorts: KernelHostPortSet;
-	}) => Promise<KernelInvokeResult>;
-	readonly nowIso?: () => string;
-}
+	HostPortSetValidationError,
+	parseHostPortSet,
+} from "@gooi/host-contracts/portset";
+import type {
+	KernelRuntime,
+	CreateKernelRuntimeInput as SharedCreateKernelRuntimeInput,
+} from "@gooi/kernel-contracts/runtime";
+import { createKernelTraceEnvelope } from "./trace";
+export type CreateKernelRuntimeInput = SharedCreateKernelRuntimeInput;
 
 const defaultNowIso = (): string => new Date().toISOString();
 
@@ -30,10 +16,10 @@ export const createKernelRuntime = (
 ): KernelRuntime => ({
 	invoke: async (call) => {
 		try {
-			const hostPorts = parseKernelHostPortSet(call.hostPorts);
+			const hostPorts = parseHostPortSet(call.hostPorts);
 			return input.invoke({ call, hostPorts });
 		} catch (error) {
-			if (error instanceof KernelHostPortSetValidationError) {
+			if (error instanceof HostPortSetValidationError) {
 				return {
 					ok: false,
 					error: {

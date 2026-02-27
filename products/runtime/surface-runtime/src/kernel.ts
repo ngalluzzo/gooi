@@ -1,5 +1,5 @@
-import type { KernelRuntime } from "@gooi/execution-kernel";
-import type { KernelInvokeResult } from "@gooi/execution-kernel/invoke";
+import type { KernelInvokeResult } from "@gooi/kernel-contracts/invocation";
+import type { KernelRuntime } from "@gooi/kernel-contracts/runtime";
 import type {
 	CompiledEntrypoint,
 	CompiledSurfaceBinding,

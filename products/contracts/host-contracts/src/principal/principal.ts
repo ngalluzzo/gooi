@@ -40,21 +40,13 @@ export type HostPrincipalProviderManifest = HostPortProviderManifest<
 >;
 
 /**
- * Host principal policy contract.
+ * Host principal validation contract.
  */
-export interface HostPrincipalPort<
-	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
-> {
+export interface HostPrincipalPort<TPrincipalContext = PrincipalContext> {
 	/** Validates untrusted principal payloads. */
 	readonly validatePrincipal: (
 		value: unknown,
 	) => HostPortResult<TPrincipalContext>;
-	/** Derives effective roles from principal context and policy access plan. */
-	readonly deriveRoles: (input: {
-		readonly principal: TPrincipalContext;
-		readonly accessPlan: TAccessPlan;
-	}) => HostPortResult<readonly string[]>;
 }
 
 /**
@@ -62,54 +54,42 @@ export interface HostPrincipalPort<
  */
 export interface CreateHostPrincipalPortInput<
 	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
 > {
 	readonly validatePrincipal: (
 		value: unknown,
 	) => HostPortResult<TPrincipalContext>;
-	readonly deriveRoles: (input: {
-		readonly principal: TPrincipalContext;
-		readonly accessPlan: TAccessPlan;
-	}) => HostPortResult<readonly string[]>;
 }
 
 /**
- * Creates a host principal port from caller-provided policy callbacks.
+ * Creates a host principal port from caller-provided validation callback.
  */
-export const createHostPrincipalPort = <
-	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
->(
-	input: CreateHostPrincipalPortInput<TPrincipalContext, TAccessPlan>,
-): HostPrincipalPort<TPrincipalContext, TAccessPlan> => ({
+export const createHostPrincipalPort = <TPrincipalContext = PrincipalContext>(
+	input: CreateHostPrincipalPortInput<TPrincipalContext>,
+): HostPrincipalPort<TPrincipalContext> => ({
 	validatePrincipal: input.validatePrincipal,
-	deriveRoles: input.deriveRoles,
 });
 
 /**
  * Principal provider contract consumed by marketplace contributors.
  */
-export type HostPrincipalProvider<
-	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
-> = HostPortProvider<
-	() => HostPrincipalPort<TPrincipalContext, TAccessPlan>,
-	typeof hostPrincipalContract
->;
+export type HostPrincipalProvider<TPrincipalContext = PrincipalContext> =
+	HostPortProvider<
+		() => HostPrincipalPort<TPrincipalContext>,
+		typeof hostPrincipalContract
+	>;
 
 /**
  * Input payload for principal provider construction.
  */
 export interface CreateHostPrincipalProviderInput<
 	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
 > {
 	readonly manifest: {
 		readonly providerId: string;
 		readonly providerVersion: string;
 		readonly hostApiRange: string;
 	};
-	readonly createPort: () => HostPrincipalPort<TPrincipalContext, TAccessPlan>;
+	readonly createPort: () => HostPrincipalPort<TPrincipalContext>;
 }
 
 /**
@@ -117,10 +97,9 @@ export interface CreateHostPrincipalProviderInput<
  */
 export const createHostPrincipalProvider = <
 	TPrincipalContext = PrincipalContext,
-	TAccessPlan = unknown,
 >(
-	input: CreateHostPrincipalProviderInput<TPrincipalContext, TAccessPlan>,
-): HostPrincipalProvider<TPrincipalContext, TAccessPlan> =>
+	input: CreateHostPrincipalProviderInput<TPrincipalContext>,
+): HostPrincipalProvider<TPrincipalContext> =>
 	createHostPortProvider({
 		manifest: createHostPortProviderManifest({
 			manifest: input.manifest,

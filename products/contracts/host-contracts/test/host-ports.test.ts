@@ -27,7 +27,6 @@ describe("host contracts - ports", () => {
 					claims: {},
 					tags: [],
 				}),
-			deriveRoles: () => hostOk(["authenticated"]),
 		});
 		const records = new Map<
 			string,

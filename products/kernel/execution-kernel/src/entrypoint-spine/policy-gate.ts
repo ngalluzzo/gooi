@@ -5,7 +5,7 @@ import type {
 } from "@gooi/spec-compiler/contracts";
 import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import { isAccessAllowedForRoles } from "./access-policy";
+import { deriveEffectiveRoles, isAccessAllowedForRoles } from "./access-policy";
 import { entrypointKey, errorEnvelope, errorResult } from "./errors";
 import type { HostPortSet } from "./types";
 
@@ -64,38 +64,9 @@ export const resolvePolicyGate = (
 	}
 
 	const principalForPolicy = validatedPrincipalResult.value;
-	const derivedRolesResult = input.hostPorts.principal.deriveRoles({
-		principal: principalForPolicy,
-		accessPlan: input.bundle.accessPlan,
-	});
-	if (!derivedRolesResult.ok) {
-		return {
-			ok: false,
-			result: errorResult(
-				{
-					...input.invocation,
-					principal: principalForPolicy,
-				},
-				input.bundle.artifactHash,
-				input.startedAt,
-				input.nowIso,
-				errorEnvelope(
-					"validation_error",
-					derivedRolesResult.error.message,
-					false,
-					{
-						code: "principal_role_derivation_error",
-						hostErrorCode: derivedRolesResult.error.code,
-						...(derivedRolesResult.error.details === undefined
-							? {}
-							: { hostErrorDetails: derivedRolesResult.error.details }),
-					},
-				),
-			),
-		};
-	}
-
-	const effectiveRoles = normalizeRoles(derivedRolesResult.value);
+	const effectiveRoles = normalizeRoles(
+		deriveEffectiveRoles(principalForPolicy, input.bundle.accessPlan),
+	);
 	const invocationEntrypointKey = entrypointKey(input.entrypoint);
 	if (
 		!isAccessAllowedForRoles(

@@ -170,6 +170,16 @@
         "@gooi/provider-manifest": "workspace:*",
       },
     },
+    "products/contracts/kernel-contracts": {
+      "name": "@gooi/kernel-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/capability-contracts": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/spec-compiler": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+      },
+    },
     "products/contracts/projection-contracts": {
       "name": "@gooi/projection-contracts",
       "version": "0.1.0",
@@ -206,17 +216,13 @@
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
-        "@gooi/kernel-host-bridge": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "@gooi/surface-runtime": "workspace:*",
         "zod": "^4.3.6",
       },
-    },
-    "products/kernel/kernel-host-bridge": {
-      "name": "@gooi/kernel-host-bridge",
-      "version": "0.1.0",
     },
     "products/marketplace/memory": {
       "name": "@gooi-marketplace/memory",
@@ -288,7 +294,7 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/execution-kernel": "workspace:*",
         "@gooi/host-contracts": "workspace:*",
-        "@gooi/kernel-host-bridge": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
@@ -329,7 +335,7 @@
       "name": "@gooi/surface-runtime",
       "version": "0.1.0",
       "dependencies": {
-        "@gooi/execution-kernel": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
       },
@@ -880,7 +886,7 @@
 
     "@gooi/host-contracts": ["@gooi/host-contracts@workspace:products/contracts/host-contracts"],
 
-    "@gooi/kernel-host-bridge": ["@gooi/kernel-host-bridge@workspace:products/kernel/kernel-host-bridge"],
+    "@gooi/kernel-contracts": ["@gooi/kernel-contracts@workspace:products/contracts/kernel-contracts"],
 
     "@gooi/language-server": ["@gooi/language-server@workspace:products/authoring/language-server"],
 

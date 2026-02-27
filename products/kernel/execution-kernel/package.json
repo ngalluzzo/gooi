@@ -50,7 +50,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/kernel-host-bridge/host-portset && bun build ./src/invoke.ts --outfile ./dist/invoke.js && bun build ./src/entrypoint-spine.ts --outfile ./dist/entrypoint-spine.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/kernel-host-bridge/host-portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime && bun build ./src/execution-spine.ts --outfile ./dist/execution-spine.js && bun build ./src/trace.ts --outfile ./dist/trace.js",
+		"build": "bun build ./src/create-kernel-runtime.ts --outfile ./dist/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/invoke.ts --outfile ./dist/invoke.js && bun build ./src/entrypoint-spine.ts --outfile ./dist/entrypoint-spine.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/spec-compiler/contracts --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/invocation-envelope --external @gooi/surface-contracts/result-envelope --external @gooi/surface-contracts/signal-envelope --external @gooi/surface-contracts/surface-request --external @gooi/surface-runtime && bun build ./src/execution-spine.ts --outfile ./dist/execution-spine.js --external @gooi/kernel-contracts/orchestration && bun build ./src/trace.ts --outfile ./dist/trace.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -59,7 +59,7 @@
 		"@gooi/artifact-model": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
-		"@gooi/kernel-host-bridge": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",

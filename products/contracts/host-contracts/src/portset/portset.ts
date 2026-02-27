@@ -1,47 +1,43 @@
-export interface KernelHostPortSet {
-	readonly clock: {
-		readonly nowIso: () => string;
-	};
-	readonly identity: {
-		readonly newTraceId: () => string;
-		readonly newInvocationId: () => string;
-	};
-	readonly principal: {
-		readonly validatePrincipal: (value: unknown) => unknown;
-		readonly deriveRoles: (input: {
-			readonly principal: unknown;
-			readonly accessPlan: unknown;
-		}) => unknown;
-	};
-	readonly capabilityDelegation: {
-		readonly invokeDelegated: (input: unknown) => Promise<unknown>;
-	};
-	readonly replay?: {
-		readonly load: (scopeKey: string) => Promise<unknown>;
-		readonly save: (input: unknown) => Promise<void>;
-	};
+import type { HostClockPort } from "../clock/clock";
+import type { HostCapabilityDelegationPort } from "../delegation/delegation";
+import type { HostIdentityPort } from "../identity/identity";
+import type {
+	HostPrincipalPort,
+	PrincipalContext,
+} from "../principal/principal";
+import type { HostReplayStorePort } from "../replay/replay";
+
+export interface HostPortSet<
+	TPrincipalContext = PrincipalContext,
+	TReplayResult = unknown,
+> {
+	readonly clock: HostClockPort;
+	readonly identity: HostIdentityPort;
+	readonly principal: HostPrincipalPort<TPrincipalContext>;
+	readonly capabilityDelegation: HostCapabilityDelegationPort;
+	readonly replay?: HostReplayStorePort<TReplayResult>;
 }
 
-export type KernelHostPortSetInput = unknown;
+export type HostPortSetInput = unknown;
 
 export interface HostPortContractIssue {
 	readonly path: string;
 	readonly expected: "function";
 }
 
-export interface KernelHostPortSetValidationDetails
+export interface HostPortSetValidationDetails
 	extends Readonly<Record<string, unknown>> {
 	readonly code: "host_port_missing";
 	readonly missingHostPortMembers: readonly HostPortContractIssue[];
 }
 
-export class KernelHostPortSetValidationError extends Error {
+export class HostPortSetValidationError extends Error {
 	readonly code = "host_port_missing" as const;
-	readonly details: KernelHostPortSetValidationDetails;
+	readonly details: HostPortSetValidationDetails;
 
 	constructor(missingHostPortMembers: readonly HostPortContractIssue[]) {
 		super("Host port set is missing required members.");
-		this.name = "KernelHostPortSetValidationError";
+		this.name = "HostPortSetValidationError";
 		this.details = {
 			code: "host_port_missing",
 			missingHostPortMembers,
@@ -52,7 +48,7 @@ export class KernelHostPortSetValidationError extends Error {
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 	typeof value === "object" && value !== null;
 
-export const getMissingKernelHostPortSetMembers = (
+export const getMissingHostPortSetMembers = (
 	hostPorts: unknown,
 ): readonly HostPortContractIssue[] => {
 	const record = isRecord(hostPorts) ? hostPorts : {};
@@ -80,12 +76,6 @@ export const getMissingKernelHostPortSetMembers = (
 			valid: () =>
 				isRecord(record.principal) &&
 				typeof record.principal.validatePrincipal === "function",
-		},
-		{
-			path: "principal.deriveRoles",
-			valid: () =>
-				isRecord(record.principal) &&
-				typeof record.principal.deriveRoles === "function",
 		},
 		{
 			path: "capabilityDelegation.invokeDelegated",
@@ -122,13 +112,16 @@ export const getMissingKernelHostPortSetMembers = (
 	return issues;
 };
 
-export const parseKernelHostPortSet = (
-	input: KernelHostPortSetInput,
-): KernelHostPortSet => {
-	const missingHostPortMembers = getMissingKernelHostPortSetMembers(input);
+export const parseHostPortSet = <
+	TPrincipalContext = PrincipalContext,
+	TReplayResult = unknown,
+>(
+	input: HostPortSetInput,
+): HostPortSet<TPrincipalContext, TReplayResult> => {
+	const missingHostPortMembers = getMissingHostPortSetMembers(input);
 	if (missingHostPortMembers.length > 0) {
-		throw new KernelHostPortSetValidationError(missingHostPortMembers);
+		throw new HostPortSetValidationError(missingHostPortMembers);
 	}
 
-	return input as KernelHostPortSet;
+	return input as HostPortSet<TPrincipalContext, TReplayResult>;
 };

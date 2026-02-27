@@ -28,7 +28,6 @@ describe("execution-kernel scaffold", () => {
 				},
 				principal: {
 					validatePrincipal: () => ({ ok: true, value: null }),
-					deriveRoles: () => ({ ok: true, value: [] }),
 				},
 				capabilityDelegation: {
 					invokeDelegated: async () => ({

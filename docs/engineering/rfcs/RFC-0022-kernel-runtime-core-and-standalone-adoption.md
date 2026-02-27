@@ -166,13 +166,16 @@ Feature-oriented module layout:
 
 1. `products/kernel/execution-kernel`
    - core orchestration runtime API.
-2. `products/kernel/kernel-host-bridge`
-   - host-portset normalization/validation helpers for standalone consumers.
+2. `products/contracts/host-contracts`
+   - canonical host portset normalization/validation helpers for standalone consumers.
+3. `products/contracts/kernel-contracts`
+   - canonical kernel invocation/trace/orchestration contracts for all runtime consumers.
 
 Public APIs via `package.json` exports:
 
 1. `@gooi/execution-kernel`
-2. `@gooi/kernel-host-bridge`
+2. `@gooi/host-contracts/portset`
+3. `@gooi/kernel-contracts/*`
 3. no barrel exports; explicit feature paths only.
 
 No barrel files:

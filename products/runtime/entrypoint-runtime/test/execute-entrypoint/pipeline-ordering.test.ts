@@ -3,7 +3,6 @@ import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import { createHostPrincipalPort } from "@gooi/host-contracts/principal";
 import { hostOk } from "@gooi/host-contracts/result";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
-import type { CompiledAccessPlan } from "@gooi/spec-compiler/contracts";
 import { runEntrypoint } from "../../src/engine";
 import { createDefaultHostPorts } from "../../src/host";
 
@@ -75,18 +74,13 @@ describe("entrypoint-runtime canonical pipeline ordering", () => {
 	test("runs binding and input validation before policy-gate principal evaluation", async () => {
 		const fixture = createCompiledQueryFixture();
 		let validatePrincipalCalls = 0;
-		let deriveRolesCalls = 0;
 		let queryCalls = 0;
 		const hostPorts = {
 			...createDefaultHostPorts(),
-			principal: createHostPrincipalPort<PrincipalContext, CompiledAccessPlan>({
+			principal: createHostPrincipalPort<PrincipalContext>({
 				validatePrincipal: (value) => {
 					validatePrincipalCalls += 1;
 					return hostOk(value as PrincipalContext);
-				},
-				deriveRoles: () => {
-					deriveRolesCalls += 1;
-					return hostOk(["authenticated"]);
 				},
 			}),
 		};
@@ -119,7 +113,6 @@ describe("entrypoint-runtime canonical pipeline ordering", () => {
 			expect(result.error?.code).toBe("validation_error");
 		}
 		expect(validatePrincipalCalls).toBe(0);
-		expect(deriveRolesCalls).toBe(0);
 		expect(queryCalls).toBe(0);
 	});
 
@@ -128,7 +121,7 @@ describe("entrypoint-runtime canonical pipeline ordering", () => {
 		const callOrder: string[] = [];
 		const hostPorts = {
 			...createDefaultHostPorts(),
-			principal: createHostPrincipalPort<PrincipalContext, CompiledAccessPlan>({
+			principal: createHostPrincipalPort<PrincipalContext>({
 				validatePrincipal: () => {
 					callOrder.push("principal.validate");
 					return hostOk({
@@ -136,11 +129,6 @@ describe("entrypoint-runtime canonical pipeline ordering", () => {
 						claims: {},
 						tags: ["authenticated"],
 					});
-				},
-				deriveRoles: ({ principal }) => {
-					callOrder.push("principal.derive");
-					expect(principal.subject).toBe("normalized_user");
-					return hostOk(["authenticated"]);
 				},
 			}),
 		};
@@ -170,10 +158,6 @@ describe("entrypoint-runtime canonical pipeline ordering", () => {
 		});
 
 		expect(result.ok).toBe(true);
-		expect(callOrder).toEqual([
-			"principal.validate",
-			"principal.derive",
-			"domain.executeQuery",
-		]);
+		expect(callOrder).toEqual(["principal.validate", "domain.executeQuery"]);
 	});
 });

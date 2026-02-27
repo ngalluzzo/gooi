@@ -1,7 +1,4 @@
-import type {
-	HostPortContractIssue,
-	HostPortSet as SharedHostPortSet,
-} from "@gooi/host-contracts/portset";
+import type { HostPortSet } from "@gooi/host-contracts/portset";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
@@ -12,32 +9,17 @@ import type {
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
 
-export type KernelEntrypointHostPortSet = SharedHostPortSet<
-	PrincipalContext,
-	ResultEnvelope<unknown, unknown>
->;
-
-export interface RunEntrypointThroughKernelSpineInput {
+export interface RunEntrypointThroughKernelRuntimeInput {
 	readonly bundle: CompiledEntrypointBundle;
 	readonly binding: CompiledSurfaceBinding;
 	readonly request: SurfaceRequestPayload;
 	readonly principal: PrincipalContext;
 	readonly domainRuntime: KernelSemanticRuntimePort;
-	readonly hostPorts: KernelEntrypointHostPortSet;
-	readonly idempotencyKey?: string | undefined;
+	readonly hostPorts: HostPortSet;
+	readonly idempotencyKey?: string;
 	readonly replayStore?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
 	readonly replayTtlSeconds?: number;
 	readonly invocationId?: string;
 	readonly traceId?: string;
 	readonly now?: string;
 }
-
-export type DomainRuntimePort = KernelSemanticRuntimePort;
-export type HostPortSet = KernelEntrypointHostPortSet;
-export type RunEntrypointInput = RunEntrypointThroughKernelSpineInput;
-export type {
-	KernelSemanticExecutionInput,
-	KernelSemanticExecutionResult,
-	KernelSemanticRuntimePort,
-} from "@gooi/kernel-contracts/semantic-engine";
-export type { HostPortContractIssue };

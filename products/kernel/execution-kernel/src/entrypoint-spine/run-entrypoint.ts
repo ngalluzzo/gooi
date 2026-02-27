@@ -1,4 +1,4 @@
-import { getMissingKernelHostPortSetMembers } from "@gooi/kernel-host-bridge/host-portset";
+import { getMissingHostPortSetMembers } from "@gooi/host-contracts/portset";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
@@ -41,7 +41,7 @@ export const runEntrypointThroughKernelSpine = async (
 		});
 	}
 
-	const missingHostPortMembers = getMissingKernelHostPortSetMembers(hostPorts);
+	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
 	if (missingHostPortMembers.length > 0) {
 		return buildMissingHostPortsResult({
 			invocation: buildInvocationMeta(input),

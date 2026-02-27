@@ -26,13 +26,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/engine.ts --outfile ./dist/engine.js --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/binding --external @gooi/surface-contracts/surface-request && bun build ./src/kernel.ts --outfile ./dist/kernel.js --external @gooi/execution-kernel --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/surface-request",
+		"build": "bun build ./src/engine.ts --outfile ./dist/engine.js --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/binding --external @gooi/surface-contracts/surface-request && bun build ./src/kernel.ts --outfile ./dist/kernel.js --external @gooi/spec-compiler/contracts --external @gooi/surface-contracts/surface-request",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
-		"@gooi/execution-kernel": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*"
 	}

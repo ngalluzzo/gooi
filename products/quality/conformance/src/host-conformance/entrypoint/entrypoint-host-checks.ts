@@ -115,9 +115,7 @@ export const runEntrypointHostChecks = async (
 			path: "principal.validatePrincipal",
 			hostPorts: {
 				...createDefaultHostPorts(),
-				principal: {
-					deriveRoles: createDefaultHostPorts().principal.deriveRoles,
-				},
+				principal: {},
 			},
 		},
 		{

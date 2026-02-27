@@ -50,7 +50,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/surface-request/surface-request.ts --outfile ./dist/surface-request/surface-request.js --external zod --external @gooi/contract-primitives/json && bun build ./src/binding/binding.ts --outfile ./dist/binding/binding.js --external zod --external @gooi/contract-primitives/json --external @gooi/spec-compiler/contracts && bun build ./src/envelope-version/envelope-version.ts --outfile ./dist/envelope-version/envelope-version.js --external zod && bun build ./src/invocation-envelope/invocation-envelope.ts --outfile ./dist/invocation-envelope/invocation-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/host-contracts/principal --external @gooi/surface-contracts/envelope-version && bun build ./src/signal-envelope/signal-envelope.ts --outfile ./dist/signal-envelope/signal-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/surface-contracts/envelope-version && bun build ./src/result-envelope/result-envelope.ts --outfile ./dist/result-envelope/result-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/capability-contracts/capability-port --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/signal-envelope",
+		"build": "bun build ./src/surface-request/surface-request.ts --outfile ./dist/surface-request/surface-request.js --external zod --external @gooi/contract-primitives/json && bun build ./src/binding/binding.ts --outfile ./dist/binding/binding.js --external zod --external @gooi/contract-primitives/json && bun build ./src/envelope-version/envelope-version.ts --outfile ./dist/envelope-version/envelope-version.js --external zod && bun build ./src/invocation-envelope/invocation-envelope.ts --outfile ./dist/invocation-envelope/invocation-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/host-contracts/principal --external @gooi/surface-contracts/envelope-version && bun build ./src/signal-envelope/signal-envelope.ts --outfile ./dist/signal-envelope/signal-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/surface-contracts/envelope-version && bun build ./src/result-envelope/result-envelope.ts --outfile ./dist/result-envelope/result-envelope.js --external zod --external @gooi/contract-primitives/json --external @gooi/capability-contracts/capability-port --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/signal-envelope",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -59,7 +59,6 @@
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/contract-primitives": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
-		"@gooi/spec-compiler": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

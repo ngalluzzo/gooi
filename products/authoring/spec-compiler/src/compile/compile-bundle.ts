@@ -1,12 +1,12 @@
 import {
+	authoringEntrypointSpecSchema,
+	parseAuthoringEntrypointSpec,
+} from "@gooi/app-spec-contracts/spec";
+import {
 	buildPackagedBundle,
 	type PackagedAppBundle,
 } from "@gooi/artifact-model/bundle";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import {
-	authoringEntrypointSpecSchema,
-	parseAuthoringEntrypointSpec,
-} from "../authoring-spec/authoring-spec";
 import {
 	artifactVersionSchema,
 	type CompileDiagnostic,

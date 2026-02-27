@@ -1,4 +1,4 @@
-import type { GooiAppSpec } from "../authoring-spec/authoring-spec";
+import type { GooiAppSpec } from "@gooi/app-spec-contracts/spec";
 import type { CanonicalSpecModel } from "./compile.contracts";
 
 const sortLexical = (values: readonly string[]): readonly string[] =>

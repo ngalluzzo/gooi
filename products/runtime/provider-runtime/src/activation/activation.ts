@@ -117,10 +117,21 @@ export const activateProvider = async (
 			contract,
 		]),
 	);
+	const bindingResolutions =
+		input.bindingPlan === undefined
+			? undefined
+			: new Map(
+					input.bindingPlan.capabilityBindings.map((binding) => [
+						capabilityKey(binding.portId, binding.portVersion),
+						binding.resolution,
+					]),
+				);
 
 	return ok({
 		manifest,
 		instance,
 		contracts,
+		...(bindingResolutions === undefined ? {} : { bindingResolutions }),
+		hostPorts,
 	});
 };

@@ -6,6 +6,7 @@ import {
 	createDefaultHostPorts,
 	createEntrypointRuntime,
 } from "@gooi/entrypoint-runtime";
+import { createFailingCapabilityDelegationPort } from "@gooi/host-contracts/delegation";
 import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import {
 	createProviderRuntime,
@@ -177,6 +178,7 @@ export const runHostConformance = async (
 		activationPolicy: {
 			assertHostVersionAligned: () => hostOk(undefined),
 		},
+		capabilityDelegation: createFailingCapabilityDelegationPort(),
 	};
 	const providerRuntime = createProviderRuntime({
 		hostApiVersion: input.providerHostApiVersion,
@@ -233,6 +235,7 @@ export const runHostConformance = async (
 						"Activation policy denied alignment.",
 					),
 			},
+			capabilityDelegation: providerHostPorts.capabilityDelegation,
 		},
 	});
 

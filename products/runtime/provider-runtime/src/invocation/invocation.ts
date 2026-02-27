@@ -17,6 +17,17 @@ const capabilityResultSchema = z.object({
 	observedEffects: z.array(effectKindSchema),
 });
 
+const unreachableError = (
+	call: CapabilityCall,
+	message: string,
+	details?: Readonly<Record<string, unknown>>,
+): RuntimeResult<CapabilityResult> =>
+	fail("capability_unreachable_error", message, {
+		portId: call.portId,
+		portVersion: call.portVersion,
+		...(details ?? {}),
+	});
+
 /**
  * Invokes a validated capability contract on an activated provider.
  */
@@ -29,13 +40,9 @@ export const invokeCapability = async (
 	);
 
 	if (contract === undefined) {
-		return fail(
-			"capability_unreachable_error",
+		return unreachableError(
+			call,
 			"No contract registered for capability call.",
-			{
-				portId: call.portId,
-				portVersion: call.portVersion,
-			},
 		);
 	}
 
@@ -46,17 +53,70 @@ export const invokeCapability = async (
 		});
 	}
 
+	const key = capabilityKey(call.portId, call.portVersion);
+	const resolution = activated.bindingResolutions?.get(key);
+	if (activated.bindingResolutions !== undefined && resolution === undefined) {
+		return unreachableError(
+			call,
+			"No binding resolution registered for capability call.",
+		);
+	}
+
+	if (resolution?.mode === "unreachable") {
+		return unreachableError(
+			call,
+			"Capability is unreachable in binding plan.",
+			{
+				resolutionMode: resolution.mode,
+			},
+		);
+	}
+
 	let rawResult: unknown;
 
-	try {
-		rawResult = await activated.instance.invoke({
-			...call,
-			input: inputValidation.data,
-		});
-	} catch (error) {
-		return fail("invocation_error", "Provider invocation threw an exception.", {
-			cause: error instanceof Error ? error.message : String(error),
-		});
+	if (resolution?.mode === "delegated") {
+		const delegated =
+			await activated.hostPorts.capabilityDelegation.invokeDelegated({
+				routeId: resolution.delegateRouteId,
+				traceId: call.ctx.traceId,
+				invocationId: call.ctx.id,
+				capabilityCall: {
+					portId: call.portId,
+					portVersion: call.portVersion,
+					input: inputValidation.data,
+					principal: call.principal,
+					ctx: call.ctx,
+				},
+			});
+		if (!delegated.ok) {
+			return fail(
+				"capability_delegation_error",
+				"Delegated capability invocation failed.",
+				{
+					routeId: resolution.delegateRouteId,
+					targetHost: resolution.targetHost,
+					hostErrorCode: delegated.error.code,
+					hostErrorMessage: delegated.error.message,
+					...(delegated.error.details ?? {}),
+				},
+			);
+		}
+		rawResult = delegated.value;
+	} else {
+		try {
+			rawResult = await activated.instance.invoke({
+				...call,
+				input: inputValidation.data,
+			});
+		} catch (error) {
+			return fail(
+				"invocation_error",
+				"Provider invocation threw an exception.",
+				{
+					cause: error instanceof Error ? error.message : String(error),
+				},
+			);
+		}
 	}
 
 	const resultValidation = capabilityResultSchema.safeParse(rawResult);

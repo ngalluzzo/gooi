@@ -1,5 +1,5 @@
+import type { CompiledEntrypointBundle } from "@gooi/app-spec-contracts/compiled";
 import type { ArtifactManifestValidationDiagnostic } from "@gooi/artifact-model/validation";
-import type { CompiledEntrypointBundle } from "@gooi/spec-compiler/contracts";
 
 /**
  * One required manifest artifact identity captured in activation diagnostics.

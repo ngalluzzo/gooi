@@ -1,4 +1,4 @@
-import type { CompiledRefreshSubscription } from "@gooi/spec-compiler/contracts";
+import type { CompiledRefreshSubscription } from "@gooi/app-spec-contracts/compiled";
 import type {
 	RefreshTrigger,
 	SignalEnvelope,

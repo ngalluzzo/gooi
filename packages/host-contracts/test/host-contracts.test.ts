@@ -252,4 +252,30 @@ describe("host-contracts", () => {
 			"gooi.host.capability-delegation",
 		);
 	});
+
+	test("enforces provider manifest shape deterministically in feature constructor", () => {
+		expect(() =>
+			createHostClockProvider({
+				manifest: {
+					providerId: "gooi.providers.memory",
+					providerVersion: "invalid-semver",
+					hostApiRange: "^1.0.0",
+				},
+				createPort: createSystemClockPort,
+			}),
+		).toThrow("Invalid host provider manifest");
+	});
+
+	test("enforces createPort factory shape deterministically in feature constructor", () => {
+		expect(() =>
+			createHostClockProvider({
+				manifest: {
+					providerId: "gooi.providers.memory",
+					providerVersion: "1.0.0",
+					hostApiRange: "^1.0.0",
+				},
+				createPort: {} as never,
+			}),
+		).toThrow("Invalid host provider createPort");
+	});
 });

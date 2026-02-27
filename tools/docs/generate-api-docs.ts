@@ -16,8 +16,15 @@ interface PackageMetadata {
 }
 
 const repoRoot = resolve(import.meta.dir, "..", "..");
-const packagesRoot = join(repoRoot, "packages");
 const apiDocsRoot = join(repoRoot, "apps", "docs", "docs", "api");
+
+// Roots to scan: { path, depth } where depth=1 means direct children,
+// depth=2 means grandchildren (e.g. products/authoring/authoring-contracts)
+const scanRoots = [
+	{ path: join(repoRoot, "packages"), depth: 1 },
+	{ path: join(repoRoot, "products"), depth: 2 },
+	{ path: join(repoRoot, "marketplace"), depth: 1 },
+];
 
 async function pathExists(path: string): Promise<boolean> {
 	try {
@@ -33,13 +40,11 @@ async function loadPackageMetadata(
 ): Promise<PackageMetadata | null> {
 	const typedocConfigPath = join(packageDir, "typedoc.json");
 	const packageJsonPath = join(packageDir, "package.json");
-	const entryPointPath = join(packageDir, "src", "index.ts");
 
 	const hasConfig = await pathExists(typedocConfigPath);
 	const hasPackage = await pathExists(packageJsonPath);
-	const hasEntryPoint = await pathExists(entryPointPath);
 
-	if (!hasConfig || !hasPackage || !hasEntryPoint) {
+	if (!hasConfig || !hasPackage) {
 		return null;
 	}
 
@@ -52,16 +57,42 @@ async function loadPackageMetadata(
 	};
 }
 
-async function resolvePackages(): Promise<readonly PackageMetadata[]> {
-	const entries = await readdir(packagesRoot, { withFileTypes: true });
-	const directories = entries
+async function collectDirectories(
+	root: string,
+	depth: number,
+): Promise<string[]> {
+	const entries = await readdir(root, { withFileTypes: true });
+	const dirs = entries
 		.filter((entry) => entry.isDirectory())
-		.map((entry) => join(packagesRoot, entry.name))
-		.sort((left, right) => left.localeCompare(right));
+		.map((entry) => join(root, entry.name));
+
+	if (depth <= 1) return dirs;
+
+	const nested: string[] = [];
+	for (const dir of dirs) {
+		const children = await readdir(dir, { withFileTypes: true });
+		for (const child of children) {
+			if (child.isDirectory()) {
+				nested.push(join(dir, child.name));
+			}
+		}
+	}
+	return nested;
+}
+
+async function resolvePackages(): Promise<readonly PackageMetadata[]> {
+	const allDirectories: string[] = [];
+
+	for (const { path, depth } of scanRoots) {
+		const dirs = await collectDirectories(path, depth);
+		allDirectories.push(...dirs);
+	}
+
+	allDirectories.sort((left, right) => left.localeCompare(right));
 
 	const packages: PackageMetadata[] = [];
 
-	for (const directory of directories) {
+	for (const directory of allDirectories) {
 		const metadata = await loadPackageMetadata(directory);
 		if (metadata !== null) {
 			packages.push(metadata);

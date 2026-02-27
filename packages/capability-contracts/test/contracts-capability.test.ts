@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
 	buildSchemaArtifact,
 	defineCapabilityPort,
+	hostProviderSchemaProfile,
 } from "../src/capability-port/capability-port";
 import {
 	parseProviderManifest,
@@ -32,7 +33,24 @@ describe("capability-contracts", () => {
 			.string()
 			.transform((value) => value.toUpperCase());
 
-		expect(() => buildSchemaArtifact(unrepresentable, "draft-7")).toThrow();
+		expect(() =>
+			buildSchemaArtifact(unrepresentable, hostProviderSchemaProfile),
+		).toThrow();
+	});
+
+	test("pins defined capability contracts to the host/provider schema profile", () => {
+		const contract = defineCapabilityPort({
+			id: "ids.generate",
+			version: "1.0.0",
+			input: z.object({ count: z.number().int().positive() }),
+			output: z.object({ ids: z.array(z.string()) }),
+			error: z.object({ code: z.string(), message: z.string() }),
+			declaredEffects: ["compute"] as const,
+		});
+
+		expect(contract.artifacts.input.target).toBe(hostProviderSchemaProfile);
+		expect(contract.artifacts.output.target).toBe(hostProviderSchemaProfile);
+		expect(contract.artifacts.error.target).toBe(hostProviderSchemaProfile);
 	});
 
 	test("validates provider manifests", () => {

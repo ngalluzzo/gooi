@@ -14,6 +14,7 @@ import type {
 import {
 	providerManifestSafeParse,
 	validateBindingRequirements,
+	validateContractSchemaProfiles,
 } from "../validation/validation";
 
 /**
@@ -51,6 +52,13 @@ export const activateProvider = async (
 				hostApiVersion: input.hostApiVersion,
 			},
 		);
+	}
+
+	const schemaProfileValidation = validateContractSchemaProfiles(
+		input.contracts,
+	);
+	if (!schemaProfileValidation.ok) {
+		return schemaProfileValidation;
 	}
 
 	if ((input.bindingPlan === undefined) !== (input.lockfile === undefined)) {

@@ -1,4 +1,5 @@
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
+import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { CompiledEntrypoint } from "@gooi/spec-compiler/contracts";
 import { sha256, stableStringify } from "@gooi/stable-json";
@@ -344,9 +345,9 @@ export const runEntrypoint = async (
 		input: bound.value,
 	};
 
-	if (
-		input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey] === undefined
-	) {
+	const schemaArtifact =
+		input.bundle.schemaArtifacts[entrypoint.schemaArtifactKey];
+	if (schemaArtifact === undefined) {
 		return errorResult(
 			resolvedInvocation,
 			input.bundle.artifactHash,
@@ -357,6 +358,28 @@ export const runEntrypoint = async (
 				"Compiled entrypoint schema artifact is missing.",
 				false,
 				{
+					entrypointId: entrypoint.id,
+					entrypointKind: entrypoint.kind,
+					schemaArtifactKey: entrypoint.schemaArtifactKey,
+				},
+			),
+		);
+	}
+
+	if (schemaArtifact.target !== hostProviderSchemaProfile) {
+		return errorResult(
+			resolvedInvocation,
+			input.bundle.artifactHash,
+			startedAt,
+			hostPorts.clock.nowIso,
+			errorEnvelope(
+				"validation_error",
+				"Compiled entrypoint schema profile does not match the pinned host/provider profile.",
+				false,
+				{
+					code: "schema_profile_mismatch",
+					expectedSchemaProfile: hostProviderSchemaProfile,
+					actualSchemaProfile: schemaArtifact.target,
 					entrypointId: entrypoint.id,
 					entrypointKind: entrypoint.kind,
 					schemaArtifactKey: entrypoint.schemaArtifactKey,

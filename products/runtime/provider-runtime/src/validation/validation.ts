@@ -5,12 +5,39 @@ import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
 import { isLockedProviderIntegrity } from "@gooi/binding/lockfile/integrity";
 import { getLockedProvider } from "@gooi/binding/lockfile/lookup";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
+import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import {
 	type ProviderManifest,
 	safeParseProviderManifest,
 } from "@gooi/capability-contracts/provider-manifest";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
+
+export const validateContractSchemaProfiles = (
+	contracts: readonly CapabilityPortContract[],
+): RuntimeResult<void> => {
+	for (const contract of contracts) {
+		for (const boundary of ["input", "output", "error"] as const) {
+			const target = contract.artifacts[boundary].target;
+			if (target !== hostProviderSchemaProfile) {
+				return fail(
+					"compatibility_error",
+					"Capability contract schema profile is incompatible with host/provider profile.",
+					{
+						code: "schema_profile_mismatch",
+						portId: contract.id,
+						portVersion: contract.version,
+						boundary,
+						expectedSchemaProfile: hostProviderSchemaProfile,
+						actualSchemaProfile: target,
+					},
+				);
+			}
+		}
+	}
+
+	return ok(undefined);
+};
 
 export const validateBindingRequirements = (
 	manifest: ProviderManifest,

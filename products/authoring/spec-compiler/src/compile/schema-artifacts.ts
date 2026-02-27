@@ -1,5 +1,6 @@
 import {
 	buildSchemaArtifact,
+	hostProviderSchemaProfile,
 	type JsonSchema,
 	type SchemaArtifact,
 } from "@gooi/capability-contracts/capability-port";
@@ -97,7 +98,7 @@ export const buildInputFieldContracts = (
 const toCompiledArtifact = (
 	artifact: SchemaArtifact,
 ): CompiledJsonSchemaArtifact => ({
-	target: "draft-7",
+	target: hostProviderSchemaProfile,
 	schema: artifact.schema as JsonSchema,
 	hash: artifact.hash,
 });
@@ -106,7 +107,7 @@ const toCompiledArtifact = (
  * Builds a generated JSON Schema artifact for compiled input fields.
  *
  * @param inputFields - Compiled field contracts.
- * @returns Generated draft-7 schema artifact.
+ * @returns Generated pinned host/provider schema-profile artifact.
  *
  * @example
  * const artifact = buildInputSchemaArtifact({ message: { scalarType: "text", required: true } });
@@ -120,6 +121,9 @@ export const buildInputSchemaArtifact = (
 		shape[fieldName] = field.required ? scalarSchema : scalarSchema.optional();
 	}
 	const objectSchema = z.object(shape).strict();
-	const generated = buildSchemaArtifact(objectSchema, "draft-7");
+	const generated = buildSchemaArtifact(
+		objectSchema,
+		hostProviderSchemaProfile,
+	);
 	return toCompiledArtifact(generated);
 };

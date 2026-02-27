@@ -4,6 +4,10 @@ import {
 	type LaneId,
 	safeParseCompiledArtifactManifest,
 } from "@gooi/artifact-model/manifest";
+import {
+	type ManifestSignaturePolicy,
+	validateManifestSignaturesForPolicy,
+} from "@gooi/artifact-model/trust-policy";
 
 const sortDiagnostics = <
 	T extends { readonly path: string; readonly code: string },
@@ -25,7 +29,9 @@ export type ArtifactManifestValidationCode =
 	| "manifest_schema_error"
 	| "manifest_compatibility_error"
 	| "artifact_missing_error"
-	| "artifact_mismatch_error";
+	| "artifact_mismatch_error"
+	| "manifest_signature_missing_error"
+	| "manifest_signature_policy_error";
 
 /**
  * One deterministic manifest validation diagnostic.
@@ -55,6 +61,7 @@ export interface ValidateArtifactManifestInput {
 		Record<string, RequiredArtifactExpectation>
 	>;
 	readonly verifyAggregateHash?: boolean;
+	readonly signaturePolicy?: ManifestSignaturePolicy;
 }
 
 /**
@@ -196,6 +203,15 @@ export const validateArtifactManifest = (
 				actual: actual.hashAlgorithm,
 			});
 		}
+	}
+
+	const signatureValidation = validateManifestSignaturesForPolicy(
+		input.signaturePolicy === undefined
+			? { manifest }
+			: { manifest, policy: input.signaturePolicy },
+	);
+	if (!signatureValidation.ok) {
+		diagnostics.push(...signatureValidation.diagnostics);
 	}
 
 	if (diagnostics.length > 0) {

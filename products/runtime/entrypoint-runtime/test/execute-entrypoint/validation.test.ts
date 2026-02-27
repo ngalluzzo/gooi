@@ -307,6 +307,19 @@ describe("entrypoint-runtime", () => {
 
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
+			const runtimeArtifact =
+				invalidManifestBundle.laneArtifacts.runtimeEntrypointContracts;
+			const bindingRequirementsArtifact =
+				invalidManifestBundle.laneArtifacts.bindingRequirements;
+			expect(runtimeArtifact).toBeDefined();
+			expect(bindingRequirementsArtifact).toBeDefined();
+			if (
+				runtimeArtifact === undefined ||
+				bindingRequirementsArtifact === undefined
+			) {
+				return;
+			}
+
 			expect(result.error?.code).toBe("validation_error");
 			expect(result.error?.details).toEqual(
 				expect.objectContaining({
@@ -317,6 +330,31 @@ describe("entrypoint-runtime", () => {
 							path: "aggregateHash",
 						}),
 					]),
+					activation: expect.objectContaining({
+						status: "mismatch",
+						bundleIdentity: expect.objectContaining({
+							artifactHash: invalidManifestBundle.artifactHash,
+							artifactVersion: invalidManifestBundle.artifactVersion,
+						}),
+						manifestIdentity: expect.objectContaining({
+							aggregateHash:
+								invalidManifestBundle.artifactManifest.aggregateHash,
+							artifactVersion:
+								invalidManifestBundle.artifactManifest.artifactVersion,
+						}),
+						requiredArtifacts: expect.arrayContaining([
+							expect.objectContaining({
+								artifactKey: "runtimeEntrypointContracts",
+								artifactId: runtimeArtifact.artifactId,
+								artifactVersion: runtimeArtifact.artifactVersion,
+							}),
+							expect.objectContaining({
+								artifactKey: "bindingRequirements",
+								artifactId: bindingRequirementsArtifact.artifactId,
+								artifactVersion: bindingRequirementsArtifact.artifactVersion,
+							}),
+						]),
+					}),
 				}),
 			);
 		}

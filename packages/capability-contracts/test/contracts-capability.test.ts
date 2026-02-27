@@ -103,4 +103,56 @@ describe("capability-contracts", () => {
 			);
 		}
 	});
+
+	test("parses provider manifests deterministically for identical input", () => {
+		const input = {
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.2.3",
+			hostApiRange: "^1.0.0",
+			capabilities: [
+				{
+					portId: "ids.generate",
+					portVersion: "1.0.0",
+					contractHash:
+						"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					executionHosts: ["node"],
+				},
+			],
+		};
+
+		const first = parseProviderManifest(input);
+		const second = parseProviderManifest(input);
+
+		expect(first).toStrictEqual(second);
+		expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+	});
+
+	test("rejects provider and capability versions outside semver", () => {
+		const parsed = safeParseProviderManifest({
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.2",
+			hostApiRange: "^1.0.0",
+			capabilities: [
+				{
+					portId: "ids.generate",
+					portVersion: "1",
+					contractHash:
+						"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					executionHosts: ["node"],
+				},
+			],
+		});
+
+		expect(parsed.success).toBe(false);
+		if (!parsed.success) {
+			expect(parsed.error.issues).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						path: expect.any(Array),
+						message: expect.stringContaining("Expected semver"),
+					}),
+				]),
+			);
+		}
+	});
 });

@@ -1,8 +1,6 @@
-import type {
-	BindingPlan,
-	DeploymentLockfile,
-	ExecutionHost,
-} from "@gooi/binding/binding-plan";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
+import type { ExecutionHost } from "@gooi/binding/reachability/contracts";
 import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
 import { z } from "zod";
 import type { ProviderModule } from "../../src/engine";
@@ -105,7 +103,10 @@ export const createUnreachableResolution = (
 	reason,
 });
 
-export const createLockfile = (contractHash: string): DeploymentLockfile => ({
+export const createLockfile = (
+	contractHash: string,
+	options?: { integrity?: string },
+): DeploymentLockfile => ({
 	appId,
 	environment,
 	hostApiVersion,
@@ -113,7 +114,9 @@ export const createLockfile = (contractHash: string): DeploymentLockfile => ({
 		{
 			providerId,
 			providerVersion,
-			integrity: "sha256:abc123",
+			integrity:
+				options?.integrity ??
+				"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
 			capabilities: [
 				{
 					portId: "ids.generate",

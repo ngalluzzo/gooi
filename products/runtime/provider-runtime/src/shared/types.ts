@@ -1,8 +1,6 @@
-import type {
-	BindingPlan,
-	CapabilityBindingResolution,
-	DeploymentLockfile,
-} from "@gooi/binding/binding-plan";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
+import type { CapabilityBindingResolution } from "@gooi/binding/reachability/contracts";
 import type {
 	CapabilityPortContract,
 	EffectKind,

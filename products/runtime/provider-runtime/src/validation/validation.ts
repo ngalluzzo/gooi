@@ -1,10 +1,9 @@
-import {
-	areBindingArtifactsAligned,
-	type BindingPlan,
-	type DeploymentLockfile,
-	getCapabilityBinding,
-	getLockedProvider,
-} from "@gooi/binding/binding-plan";
+import { areBindingArtifactsAligned } from "@gooi/binding/artifact-alignment/policy";
+import type { BindingPlan } from "@gooi/binding/binding-plan/contracts";
+import { getCapabilityBinding } from "@gooi/binding/binding-plan/lookup";
+import type { DeploymentLockfile } from "@gooi/binding/lockfile/contracts";
+import { isLockedProviderIntegrity } from "@gooi/binding/lockfile/integrity";
+import { getLockedProvider } from "@gooi/binding/lockfile/lookup";
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
 import {
 	type ProviderManifest,
@@ -37,6 +36,18 @@ export const validateBindingRequirements = (
 			providerId: manifest.providerId,
 			providerVersion: manifest.providerVersion,
 		});
+	}
+
+	if (!isLockedProviderIntegrity(lockEntry.integrity)) {
+		return fail(
+			"activation_error",
+			"Lockfile provider integrity is invalid; expected sha256 checksum format.",
+			{
+				providerId: manifest.providerId,
+				providerVersion: manifest.providerVersion,
+				integrity: lockEntry.integrity,
+			},
+		);
 	}
 
 	for (const contract of contracts) {

@@ -14,4 +14,3 @@ Canonical runtime evaluator for collection invariants and action/signal/flow/pro
 
 - `evaluateGuard(input)`
 - `evaluateInvariant(input)`
-- `applyGuardPolicy(input)`

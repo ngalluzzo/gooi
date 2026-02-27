@@ -12,7 +12,7 @@ import {
 	type GuardRuntimeEnvironment,
 } from "@gooi/guard-contracts/plans/guard-plan";
 import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
-import { applyGuardPolicy } from "../policies/apply-guard-policy";
+import { applyGuardPolicy } from "./apply-guard-policy";
 import { evaluateInvariant } from "./evaluate-invariant";
 import { evaluateSemanticTier } from "./semantic";
 import { evaluateStructuralRule } from "./structural";

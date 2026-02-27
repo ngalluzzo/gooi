@@ -1,3 +1,5 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
+
 /**
  * Canonical immutable history record persisted for timeline projections.
  */
@@ -7,7 +9,7 @@ export interface HistoryRecord {
 	readonly eventKey: string;
 	readonly emittedAt: string;
 	readonly traceId: string;
-	readonly payload: Readonly<Record<string, unknown>>;
+	readonly payload: JsonObject;
 }
 
 /**
@@ -49,8 +51,8 @@ export interface HistoryRebuildInput {
 	readonly groupBy: string | null;
 	readonly orderBy: HistoryOrderBy;
 	readonly fromTimestamp?: string;
-	readonly start: Readonly<Record<string, unknown>> | null;
-	readonly handlers: Readonly<Record<string, unknown>> | null;
+	readonly start: JsonObject | null;
+	readonly handlers: JsonObject | null;
 }
 
 /**
@@ -74,6 +76,6 @@ export interface HistoryPort {
 	readonly rebuild: (input: HistoryRebuildInput) => Promise<void>;
 	readonly persist: (input: {
 		readonly projectionId: string;
-		readonly rows: readonly Readonly<Record<string, unknown>>[];
+		readonly rows: readonly JsonObject[];
 	}) => Promise<void>;
 }

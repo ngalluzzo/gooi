@@ -1,3 +1,5 @@
+import type { JsonValue } from "@gooi/contract-primitives/json";
+
 /**
  * Scalar coercion targets supported by migration operations.
  */
@@ -10,7 +12,7 @@ export type SignalMigrationOperation =
 	| {
 			readonly op: "set";
 			readonly field: string;
-			readonly value: unknown;
+			readonly value: JsonValue;
 	  }
 	| {
 			readonly op: "copy";

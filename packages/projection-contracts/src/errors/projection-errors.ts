@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import type { ProjectionSourceRef } from "../plans/projection-plan";
 
@@ -32,7 +33,7 @@ export interface ProjectionTypedError {
 	/** Source reference for authored projection/query context. */
 	readonly sourceRef: ProjectionSourceRef;
 	/** Optional structured details payload. */
-	readonly details?: Readonly<Record<string, unknown>>;
+	readonly details?: JsonObject;
 }
 
 /**
@@ -42,7 +43,7 @@ export const createProjectionError = (
 	code: ProjectionErrorCode,
 	message: string,
 	sourceRef: ProjectionSourceRef,
-	details?: Readonly<Record<string, unknown>>,
+	details?: JsonObject,
 ): ProjectionTypedError => ({
 	code,
 	message,

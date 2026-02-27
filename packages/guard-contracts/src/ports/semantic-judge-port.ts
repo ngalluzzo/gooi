@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { SemanticConfidence } from "../plans/guard-plan";
 
 export interface SemanticJudgeResult {
@@ -12,6 +13,6 @@ export interface SemanticJudgePort {
 		readonly confidence: SemanticConfidence;
 		readonly invocationIndex: number;
 		readonly invocationCount: number;
-		readonly context: Readonly<Record<string, unknown>>;
+		readonly context: JsonObject;
 	}) => Promise<SemanticJudgeResult>;
 }

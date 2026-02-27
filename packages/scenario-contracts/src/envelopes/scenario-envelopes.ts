@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { ScenarioTypedError } from "../errors/scenario-errors";
 import type {
 	CompiledScenarioStep,
@@ -14,7 +15,7 @@ export interface ScenarioStepResultEnvelope {
 	readonly ok: boolean;
 	readonly traceId: string;
 	readonly invocationId: string;
-	readonly captures: Readonly<Record<string, unknown>>;
+	readonly captures: JsonObject;
 	readonly error?: ScenarioTypedError;
 }
 
@@ -23,7 +24,7 @@ export interface ScenarioRunEnvelope {
 	readonly scenarioId: string;
 	readonly ok: boolean;
 	readonly stepResults: readonly ScenarioStepResultEnvelope[];
-	readonly captures: Readonly<Record<string, unknown>>;
+	readonly captures: JsonObject;
 	readonly lockSnapshot: ScenarioGeneratedInputLockSnapshot;
 	readonly error?: ScenarioTypedError;
 }

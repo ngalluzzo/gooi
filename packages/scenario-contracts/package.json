@@ -44,6 +44,7 @@
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/contract-primitives": "workspace:*",
 		"@gooi/guard-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}

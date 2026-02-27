@@ -118,6 +118,7 @@
       "name": "@gooi/guard-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -133,6 +134,7 @@
       "name": "@gooi/projection-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -145,6 +147,7 @@
       "name": "@gooi/scenario-contracts",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
         "zod": "^4.3.6",
       },

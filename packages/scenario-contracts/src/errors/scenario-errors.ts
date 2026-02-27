@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 export const scenarioErrorCodeSchema = z.enum([
@@ -17,7 +18,7 @@ export interface ScenarioTypedError {
 	readonly message: string;
 	readonly scenarioId: string;
 	readonly stepIndex: number;
-	readonly details?: Readonly<Record<string, unknown>>;
+	readonly details?: JsonObject;
 }
 
 export const createScenarioError = (
@@ -25,7 +26,7 @@ export const createScenarioError = (
 	message: string,
 	scenarioId: string,
 	stepIndex: number,
-	details?: Readonly<Record<string, unknown>>,
+	details?: JsonObject,
 ): ScenarioTypedError => ({
 	code,
 	message,

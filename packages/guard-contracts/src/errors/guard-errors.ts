@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import type { GuardSourceRef } from "../plans/guard-plan";
 
@@ -17,14 +18,14 @@ export interface GuardTypedError {
 	readonly code: GuardErrorCode;
 	readonly message: string;
 	readonly sourceRef: GuardSourceRef;
-	readonly details?: Readonly<Record<string, unknown>>;
+	readonly details?: JsonObject;
 }
 
 export const createGuardError = (
 	code: GuardErrorCode,
 	message: string,
 	sourceRef: GuardSourceRef,
-	details?: Readonly<Record<string, unknown>>,
+	details?: JsonObject,
 ): GuardTypedError => ({
 	code,
 	message,

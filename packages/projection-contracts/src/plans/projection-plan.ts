@@ -1,3 +1,4 @@
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
 import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
 import type { CompiledSignalReplayPolicy } from "./signal-migration-plan";
 import type { CompiledTimelineHistoryPolicy } from "./timeline-history-policy";
@@ -154,7 +155,7 @@ export type TimelineReducerOperation =
 			readonly field: string;
 			readonly valueFrom: "payload" | "signal" | "literal";
 			readonly path?: string;
-			readonly value?: unknown;
+			readonly value?: JsonValue;
 	  }
 	| {
 			readonly op: "inc" | "dec";
@@ -172,7 +173,7 @@ export interface CompiledTimelineProjectionPlan {
 	readonly signals: readonly string[];
 	readonly groupByField: string | null;
 	readonly orderBy: ProjectionSortRule;
-	readonly start: Readonly<Record<string, unknown>> | null;
+	readonly start: JsonObject | null;
 	readonly reducers: Readonly<
 		Record<string, readonly TimelineReducerOperation[]>
 	>;

@@ -1,3 +1,4 @@
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
 export const guardRuntimeEnvironmentSchema = z.enum([
@@ -52,7 +53,7 @@ export type GuardOperand =
 	  }
 	| {
 			readonly kind: "literal";
-			readonly value: unknown;
+			readonly value: JsonValue;
 	  };
 
 export type StructuralOperator =

@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes/guard-envelopes";
 import type { GuardTypedError } from "@gooi/guard-contracts/errors/guard-errors";
 import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals/guard-violation-signal";
@@ -62,7 +63,7 @@ export interface ProjectionResultMeta {
 export interface ProjectionResultEnvelope {
 	readonly envelopeVersion: typeof projectionResultEnvelopeVersion;
 	readonly ok: boolean;
-	readonly rows?: readonly Readonly<Record<string, unknown>>[];
+	readonly rows?: readonly JsonObject[];
 	readonly meta?: ProjectionResultMeta;
 	readonly error?: ProjectionTypedError;
 }

@@ -1,3 +1,4 @@
+import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
 import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
 
 export const compiledScenarioPlanSetVersion = "1.0.0" as const;
@@ -5,22 +6,22 @@ export const compiledScenarioPlanSetVersion = "1.0.0" as const;
 export interface CompiledPersonaDefinition {
 	readonly personaId: string;
 	readonly description: string;
-	readonly traits: Readonly<Record<string, unknown>>;
-	readonly history: readonly unknown[];
+	readonly traits: JsonObject;
+	readonly history: readonly JsonValue[];
 	readonly tags: readonly string[];
 }
 
 export interface CompiledScenarioContext {
 	readonly personaId?: string;
-	readonly principal?: Readonly<Record<string, unknown>>;
-	readonly session?: Readonly<Record<string, unknown>>;
-	readonly providerOverrides?: Readonly<Record<string, unknown>>;
+	readonly principal?: JsonObject;
+	readonly session?: JsonObject;
+	readonly providerOverrides?: JsonObject;
 }
 
 export interface CompiledScenarioTriggerPlan {
 	readonly entrypointKind: "mutation" | "query";
 	readonly entrypointId: string;
-	readonly input?: Readonly<Record<string, unknown>>;
+	readonly input?: JsonObject;
 	readonly inputFromCapture?: Readonly<Record<string, string>>;
 	readonly generate?: boolean;
 }
@@ -33,7 +34,7 @@ export type CompiledScenarioExpectationTarget =
 	| {
 			readonly kind: "query";
 			readonly queryId: string;
-			readonly args?: Readonly<Record<string, unknown>>;
+			readonly args?: JsonObject;
 	  }
 	| {
 			readonly kind: "flow";
@@ -42,7 +43,7 @@ export type CompiledScenarioExpectationTarget =
 	| {
 			readonly kind: "projection";
 			readonly projectionId: string;
-			readonly args?: Readonly<Record<string, unknown>>;
+			readonly args?: JsonObject;
 	  };
 
 export interface CompiledScenarioCaptureBinding {
@@ -80,7 +81,7 @@ export interface CompiledScenarioPlan {
 
 export interface ScenarioGeneratedInputLockSnapshot {
 	readonly generated: Readonly<
-		Record<string, Readonly<Record<number, Readonly<Record<string, unknown>>>>>
+		Record<string, Readonly<Record<number, JsonObject>>>
 	>;
 }
 

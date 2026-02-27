@@ -1,3 +1,4 @@
+import type { JsonObject } from "@gooi/contract-primitives/json";
 import type { GuardTypedError } from "../errors/guard-errors";
 import type { GuardPolicy, GuardRuntimeEnvironment } from "../plans/guard-plan";
 import type { GuardViolationSignalEnvelope } from "../signals/guard-violation-signal";
@@ -9,7 +10,7 @@ export interface GuardViolationRecord {
 	readonly description: string;
 	readonly tier: "structural" | "semantic";
 	readonly blocking: boolean;
-	readonly details?: Readonly<Record<string, unknown>>;
+	readonly details?: JsonObject;
 }
 
 export interface GuardPolicyOutcome {

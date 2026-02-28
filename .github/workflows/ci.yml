@@ -49,6 +49,9 @@ jobs:
       - name: Marketplace control-plane conformance checks
         run: bun run conformance:marketplace:control-plane
 
+      - name: Marketplace resolution conformance checks
+        run: bun run conformance:marketplace:resolution
+
       - name: Tiered conformance smoke gate
         run: bun run conformance:tier:smoke
 

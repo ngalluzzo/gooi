@@ -28,3 +28,5 @@ The format is based on Changesets.
   runtime/flaky threshold enforcement and gate-role metadata.
 - Added marketplace control-plane conformance suite covering listing/catalog/
   certification behavior plus governance-report deterministic serialization.
+- Added marketplace resolution conformance suite covering deterministic outputs,
+  explainability mode contracts, policy/scoring enforcement, and delegated route checks.

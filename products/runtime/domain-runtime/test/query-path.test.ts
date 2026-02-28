@@ -1,13 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
+import {
+	createDomainRuntimeIRFixture,
+	createSessionIRFixture,
+} from "./runtime-ir.fixture";
 
 describe("domain-runtime query path", () => {
 	test("returns typed query-not-found failure envelope", async () => {
 		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {},
-			actions: {},
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {},
+				actions: {},
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {},
-			queries: {},
 		});
 
 		const result = await runtime.executeQueryEnvelope({
@@ -29,10 +35,14 @@ describe("domain-runtime query path", () => {
 
 	test("uses canonical failure envelope for typed query invocation failures", async () => {
 		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {},
-			actions: {},
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {},
+				actions: {},
+				queries: ["messages.list"],
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {},
-			queries: {
+			queryHandlers: {
 				"messages.list": {
 					run: async () => ({
 						ok: false,

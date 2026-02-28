@@ -1,4 +1,9 @@
 import type {
+	CompiledDomainMutationPlan,
+	CompiledDomainRuntimeIR,
+	CompiledSessionIR,
+} from "@gooi/app-spec-contracts/compiled";
+import type {
 	KernelSemanticExecutionInput,
 	KernelSemanticExecutionResult,
 	KernelSemanticMutationCoreResult,
@@ -12,13 +17,13 @@ import {
 } from "../execution-core/envelopes";
 import { createDomainRuntimeError } from "../execution-core/errors";
 import type {
-	DomainActionPlan,
 	DomainCapabilityHandler,
 	DomainGuardRuntime,
 } from "../mutation-path/contracts";
 import type { RunMutationPathInput } from "../mutation-path/run-mutation-state";
 import type { DomainQueryHandler } from "../query-path/contracts";
 import type { QueryPathExecutionInput } from "../query-path/run-query-path";
+import { applyMutationInputBindings } from "./runtime-input-bindings";
 
 export type SemanticInput = KernelSemanticExecutionInput;
 export type DomainSemanticResult = KernelSemanticExecutionResult;
@@ -36,11 +41,11 @@ export interface RuntimeExecutionInput {
 }
 
 export interface CreateDomainRuntimeInput {
-	readonly mutationEntrypointActionMap: Readonly<Record<string, string>>;
-	readonly actions: Readonly<Record<string, DomainActionPlan>>;
+	readonly domainRuntimeIR: CompiledDomainRuntimeIR;
+	readonly sessionIR: CompiledSessionIR;
 	readonly capabilities: Readonly<Record<string, DomainCapabilityHandler>>;
 	readonly guards?: DomainGuardRuntime;
-	readonly queries?: Readonly<Record<string, DomainQueryHandler>>;
+	readonly queryHandlers?: Readonly<Record<string, DomainQueryHandler>>;
 }
 
 export interface DomainRuntimeConformanceHarness {
@@ -60,6 +65,19 @@ export interface DomainRuntimeConformanceHarness {
 const resolveMode = (input: {
 	readonly ctx: { readonly mode?: DomainRuntimeMode };
 }): DomainRuntimeMode => input.ctx.mode ?? "live";
+
+export const assertSessionIRContracts = (
+	sessionIR: CompiledSessionIR,
+): void => {
+	for (const fieldId of Object.keys(sessionIR.defaults)) {
+		if (sessionIR.fields[fieldId] !== undefined) {
+			continue;
+		}
+		throw new Error(
+			`Session IR default references undeclared field: ${fieldId}`,
+		);
+	}
+};
 
 export const toRuntimeExecutionInput = (
 	input: SemanticInput,
@@ -124,6 +142,34 @@ export const buildActionNotFoundEnvelope = (
 	},
 });
 
+export const buildQueryNotFoundEnvelope = (
+	execution: RuntimeExecutionInput,
+): DomainQueryEnvelope => ({
+	envelopeVersion: domainRuntimeEnvelopeVersion,
+	mode: execution.ctx.mode,
+	entrypointId: execution.entrypointId,
+	ok: false,
+	error: createDomainRuntimeError(
+		"query_not_found_error",
+		"No compiled query runtime plan exists for this entrypoint.",
+		{ entrypointId: execution.entrypointId },
+	),
+	observedEffects: [],
+	trace: {
+		mode: execution.ctx.mode,
+		entrypointId: execution.entrypointId,
+		invocationId: execution.ctx.invocationId,
+		traceId: execution.ctx.traceId,
+		steps: [],
+	},
+});
+
+export const resolveCompiledQueryPlan = (input: {
+	readonly domainRuntimeIR: CompiledDomainRuntimeIR;
+	readonly execution: RuntimeExecutionInput;
+}): CompiledDomainRuntimeIR["queries"][string] | undefined =>
+	input.domainRuntimeIR.queries[input.execution.entrypointId];
+
 export const toQueryExecution = (
 	input: RuntimeExecutionInput,
 ): QueryPathExecutionInput => ({
@@ -135,14 +181,18 @@ export const toQueryExecution = (
 
 export const toRunMutationInput = (
 	execution: RuntimeExecutionInput,
-	action: DomainActionPlan,
+	action: CompiledDomainRuntimeIR["actions"][string],
+	mutationPlan: CompiledDomainMutationPlan,
 	guards: DomainGuardRuntime | undefined,
 	capabilities: Readonly<Record<string, DomainCapabilityHandler>>,
 ): RunMutationPathInput => ({
 	entrypointId: execution.entrypointId,
 	action,
 	capabilities,
-	input: execution.input,
+	input: applyMutationInputBindings({
+		payload: execution.input,
+		mutationPlan,
+	}),
 	principal: execution.principal,
 	...(guards === undefined ? {} : { guardRuntime: guards }),
 	ctx: execution.ctx,
@@ -151,42 +201,50 @@ export const toRunMutationInput = (
 type ResolveActionResult =
 	| {
 			readonly ok: true;
-			readonly action: DomainActionPlan;
+			readonly action: CompiledDomainRuntimeIR["actions"][string];
 			readonly actionId: string;
+			readonly mutationPlan: CompiledDomainMutationPlan;
 	  }
 	| { readonly ok: false; readonly envelope: DomainMutationEnvelope };
 
 export const resolveMutationAction = (input: {
-	readonly mutationEntrypointActionMap: Readonly<Record<string, string>>;
-	readonly actions: Readonly<Record<string, DomainActionPlan>>;
+	readonly domainRuntimeIR: CompiledDomainRuntimeIR;
 	readonly execution: RuntimeExecutionInput;
 }): ResolveActionResult => {
-	const actionId =
-		input.mutationEntrypointActionMap[input.execution.entrypointId];
-	if (actionId === undefined) {
+	const mutationPlan =
+		input.domainRuntimeIR.mutations[input.execution.entrypointId];
+	if (mutationPlan === undefined) {
 		return {
 			ok: false,
 			envelope: buildActionNotFoundEnvelope(
 				input.execution,
-				"No action mapping exists for the mutation entrypoint.",
+				"No compiled mutation runtime plan exists for this entrypoint.",
 				{ entrypointId: input.execution.entrypointId },
 			),
 		};
 	}
 
-	const action = input.actions[actionId];
+	const action = input.domainRuntimeIR.actions[mutationPlan.actionId];
 	if (action === undefined) {
 		return {
 			ok: false,
 			envelope: buildActionNotFoundEnvelope(
 				input.execution,
-				"Mapped action was not found in the runtime action plan registry.",
-				{ entrypointId: input.execution.entrypointId, actionId },
-				actionId,
+				"Compiled mutation runtime plan references an unknown action.",
+				{
+					entrypointId: input.execution.entrypointId,
+					actionId: mutationPlan.actionId,
+				},
+				mutationPlan.actionId,
 			),
 		};
 	}
-	return { ok: true, actionId, action };
+	return {
+		ok: true,
+		actionId: mutationPlan.actionId,
+		action,
+		mutationPlan,
+	};
 };
 
 export const mapActionResolveFailureToPreparation = (

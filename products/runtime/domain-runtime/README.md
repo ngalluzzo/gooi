@@ -21,8 +21,8 @@ and simulation traceability.
 import { createDomainRuntime } from "@gooi/domain-runtime";
 
 const domainRuntime = createDomainRuntime({
-  mutationEntrypointActionMap: { submit_message: "guestbook.submit" },
-  actions,
+  domainRuntimeIR,
+  sessionIR,
   capabilities,
 });
 

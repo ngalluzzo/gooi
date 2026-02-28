@@ -11,6 +11,7 @@ import type {
 } from "@gooi/scenario-contracts/reports";
 
 export type ScenarioConformanceCheckId =
+	| "compiled_artifact_parity"
 	| "trigger_expect_capture_semantics"
 	| "persona_generation_lockfile_deterministic"
 	| "typed_failure_traceability";

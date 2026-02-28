@@ -1,51 +1,59 @@
 import { describe, expect, test } from "bun:test";
 import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
+import {
+	createDomainRuntimeIRFixture,
+	createSessionIRFixture,
+} from "./runtime-ir.fixture";
 
 describe("domain-runtime session outcomes and policy ordering", () => {
 	test("applies typed success/failure session outcome envelopes deterministically", async () => {
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "persist",
+						capabilityId: "collections.write",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
+							},
+						},
+					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
+				},
+			},
+			"guestbook.fail": {
+				actionId: "guestbook.fail",
+				steps: [
+					{
+						stepId: "persist",
+						capabilityId: "collections.fail",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
+							},
+						},
+					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
+				},
+			},
+		} as const;
 		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-				fail_message: "guestbook.fail",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.write",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
-							},
-						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
-					},
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+					fail_message: "guestbook.fail",
 				},
-				"guestbook.fail": {
-					actionId: "guestbook.fail",
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.fail",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
-							},
-						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
-					},
-				},
-			},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"collections.write": {
 					capabilityId: "collections.write",

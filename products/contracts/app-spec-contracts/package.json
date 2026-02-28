@@ -28,7 +28,10 @@
 		"@gooi/render-contracts": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/contract-primitives": "workspace:*",
+		"@gooi/guard-contracts": "workspace:*",
 		"@gooi/marketplace-contracts": "workspace:*",
+		"@gooi/projection-contracts": "workspace:*",
+		"@gooi/scenario-contracts": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}

@@ -57,18 +57,36 @@ describe("spec-compiler compile", () => {
 		expect(Object.keys(first.bundle.viewRenderIR.nodes)).toEqual([
 			"messages_list",
 		]);
+		expect(Object.keys(first.bundle.projectionIR.projections)).toEqual([
+			"latest_messages",
+			"messages_with_authors",
+		]);
+		expect(Object.keys(first.bundle.projectionIR.queries)).toEqual([
+			"list_messages",
+		]);
+		expect(first.bundle.domainRuntimeIR.artifactVersion).toBe("1.0.0");
+		expect(first.bundle.sessionIR.artifactVersion).toBe("1.0.0");
+		expect(first.bundle.scenarioIR.artifactVersion).toBe("1.0.0");
 		expect(Object.keys(first.bundle.laneArtifacts)).toEqual([
 			"authoringCanonicalModel",
 			"bindingRequirements",
+			"domainRuntimeIR",
+			"projectionIR",
 			"qualityConformanceSeed",
 			"runtimeEntrypointContracts",
+			"scenarioIR",
+			"sessionIR",
 			"viewRenderIR",
 		]);
 		expect(Object.keys(first.bundle.artifactManifest.artifacts)).toEqual([
 			"authoringCanonicalModel",
 			"bindingRequirements",
+			"domainRuntimeIR",
+			"projectionIR",
 			"qualityConformanceSeed",
 			"runtimeEntrypointContracts",
+			"scenarioIR",
+			"sessionIR",
 			"viewRenderIR",
 		]);
 

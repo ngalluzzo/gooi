@@ -1,157 +1,323 @@
 {
-	"accessPlan": {
-		"defaultPolicy": "deny",
-		"entrypointRoles": {
-			"mutation:submit_message": ["authenticated"],
-			"query:list_messages": ["authenticated"]
+	"artifactVersion": "1.0.0",
+	"compilerVersion": "1.0.0",
+	"sourceSpecHash": "e4b44d8fea2cbb1b58c3da520157f34cf4c6e25589c442d4b1e20c98033ceb46",
+	"sections": {
+		"app": {
+			"id": "hello_world_demo",
+			"name": "Hello World Demo",
+			"tz": "UTC"
 		},
-		"knownRoles": ["admin", "anonymous", "authenticated"],
-		"roleDefinitions": {
-			"admin": { "deriveRules": [], "extends": [], "roleId": "admin" },
-			"anonymous": { "deriveRules": [], "extends": [], "roleId": "anonymous" },
-			"authenticated": {
-				"deriveRules": [],
-				"extends": [],
-				"roleId": "authenticated"
+		"domain": {
+			"collections": {},
+			"signals": {
+				"message.created": {},
+				"message.deleted": {}
+			},
+			"capabilities": {
+				"notifications.send": {
+					"version": "1.0.0"
+				},
+				"ids.generate": {
+					"version": "1.0.0"
+				},
+				"legacy.audit": {
+					"version": "1.0.0"
+				}
+			},
+			"actions": {
+				"guestbook.submit": {}
+			},
+			"flows": {
+				"rejection_followup": {}
+			},
+			"projections": {
+				"latest_messages": {
+					"strategy": "from_collection",
+					"collectionId": "messages",
+					"fields": [
+						{
+							"source": "id",
+							"as": "id"
+						},
+						{
+							"source": "message",
+							"as": "message"
+						}
+					],
+					"sort": [
+						{
+							"field": "created_at",
+							"direction": "desc"
+						}
+					],
+					"pagination": {
+						"mode": "page",
+						"pageArg": "page",
+						"pageSizeArg": "page_size",
+						"defaultPage": 1,
+						"defaultPageSize": 10,
+						"maxPageSize": 50
+					}
+				},
+				"messages_with_authors": {
+					"strategy": "from_collection",
+					"collectionId": "messages",
+					"fields": [
+						{
+							"source": "id",
+							"as": "id"
+						},
+						{
+							"source": "author_name",
+							"as": "author_name"
+						}
+					],
+					"sort": [
+						{
+							"field": "author_name",
+							"direction": "asc"
+						}
+					],
+					"pagination": {
+						"mode": "page",
+						"pageArg": "page",
+						"pageSizeArg": "page_size",
+						"defaultPage": 1,
+						"defaultPageSize": 10,
+						"maxPageSize": 50
+					}
+				}
+			}
+		},
+		"session": {
+			"fields": {}
+		},
+		"views": {
+			"nodes": [
+				{
+					"id": "messages_list",
+					"type": "list"
+				}
+			],
+			"screens": [
+				{
+					"id": "home",
+					"data": {
+						"messages": {
+							"query": "list_messages",
+							"refresh_on_signals": ["message.created", "message.deleted"]
+						}
+					}
+				}
+			]
+		},
+		"routes": [
+			{
+				"id": "home_route",
+				"access": {
+					"roles": ["authenticated"]
+				},
+				"renders": "home"
+			}
+		],
+		"personas": {
+			"frustrated_enterprise_buyer": {
+				"description": "Senior ops manager with low patience who expects direct answers."
+			}
+		},
+		"scenarios": {
+			"happy_path_message_submission": {
+				"context": {
+					"persona": "frustrated_enterprise_buyer"
+				},
+				"steps": [
+					{
+						"trigger": {
+							"mutation": "submit_message"
+						},
+						"expect": {
+							"query": "list_messages",
+							"projection": "latest_messages",
+							"flow_completed": "rejection_followup"
+						}
+					}
+				]
+			}
+		},
+		"wiring": {
+			"surfaces": {
+				"http": {
+					"queries": {
+						"list_messages": {
+							"bind": {
+								"page": "query.page",
+								"page_size": "query.page_size",
+								"q": "query.q"
+							},
+							"method": "GET",
+							"path": "/messages"
+						}
+					},
+					"mutations": {
+						"submit_message": {
+							"bind": {
+								"message": "body.message"
+							},
+							"method": "POST",
+							"path": "/messages"
+						}
+					},
+					"routes": {
+						"home_route": {
+							"bind": {}
+						}
+					}
+				}
+			},
+			"requirements": {
+				"capabilities": [
+					{
+						"portId": "notifications.send",
+						"portVersion": "1.0.0",
+						"mode": "delegated"
+					},
+					{
+						"portId": "ids.generate",
+						"portVersion": "1.0.0",
+						"mode": "local"
+					},
+					{
+						"portId": "legacy.audit",
+						"portVersion": "1.0.0",
+						"mode": "unreachable"
+					}
+				]
+			}
+		},
+		"access": {
+			"default_policy": "deny",
+			"roles": {
+				"anonymous": {},
+				"authenticated": {},
+				"admin": {}
 			}
 		}
 	},
-	"artifactHash": "26ad64ed11d6f7c16729da245f0b031521d6f658936f33af081ff49ed77af301",
-	"artifactManifest": {
-		"aggregateHash": "08655b372ecf6d6d24bee4e601c8bcc2990b9ed1053d934394791ebfb3a9d9c9",
-		"artifacts": {
-			"authoringCanonicalModel": {
-				"artifactHash": "ad2f03daad6e8f4a1a203320bc4840126cf49ce3fdd23e9b18d05085af538721",
-				"artifactId": "CompiledAuthoringCanonicalModel",
-				"artifactVersion": "1.0.0",
-				"hashAlgorithm": "sha256",
-				"lane": "authoring",
-				"refVersion": "1.0.0"
-			},
-			"bindingRequirements": {
-				"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8",
-				"artifactId": "CompiledBindingRequirements",
-				"artifactVersion": "1.0.0",
-				"compatibility": {
-					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
-					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
-					"supportedModes": ["local", "delegated", "unreachable"]
+	"entrypoints": {
+		"query:list_messages": {
+			"id": "list_messages",
+			"kind": "query",
+			"inputFields": {
+				"page": {
+					"scalarType": "int",
+					"required": false
 				},
-				"hashAlgorithm": "sha256",
-				"lane": "marketplace",
-				"refVersion": "1.0.0"
+				"page_size": {
+					"scalarType": "int",
+					"required": false
+				},
+				"q": {
+					"scalarType": "text",
+					"required": false
+				}
 			},
-			"qualityConformanceSeed": {
-				"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547",
-				"artifactId": "CompiledQualityConformanceSeed",
-				"artifactVersion": "1.0.0",
-				"hashAlgorithm": "sha256",
-				"lane": "quality",
-				"refVersion": "1.0.0"
+			"defaultInput": {
+				"page": 1,
+				"page_size": 10
 			},
-			"runtimeEntrypointContracts": {
-				"artifactHash": "8a414af055f2e674622f2698fc21b0a15430e76d4c234cb19d3b78a9ad05788a",
-				"artifactId": "CompiledRuntimeEntrypointContracts",
-				"artifactVersion": "1.0.0",
-				"hashAlgorithm": "sha256",
-				"lane": "runtime",
-				"refVersion": "1.0.0"
-			},
-			"viewRenderIR": {
-				"artifactHash": "2d730545cc4d3716fd921f4d8c5455bcde78b8e7a56d45039134487a9d6c7cef",
-				"artifactId": "CompiledViewRenderIR",
-				"artifactVersion": "1.0.0",
-				"hashAlgorithm": "sha256",
-				"lane": "runtime",
-				"refVersion": "1.0.0"
-			}
+			"accessRoles": ["authenticated"],
+			"schemaArtifactKey": "entrypoint.query.list_messages.input"
 		},
-		"artifactVersion": "2.0.0",
-		"hashAlgorithm": "sha256"
-	},
-	"artifactVersion": "1.0.0",
-	"bindingRequirementsArtifact": {
-		"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd",
-		"artifactId": "CompiledBindingRequirements",
-		"artifactVersion": "1.0.0",
-		"compatibility": {
-			"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
-			"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
-			"supportedModes": ["local", "delegated", "unreachable"]
-		},
-		"requirements": {
-			"ids.generate@1.0.0": {
-				"mode": "local",
-				"portId": "ids.generate",
-				"portVersion": "1.0.0"
+		"mutation:submit_message": {
+			"id": "submit_message",
+			"kind": "mutation",
+			"inputFields": {
+				"message": {
+					"scalarType": "text",
+					"required": true
+				}
 			},
-			"legacy.audit@1.0.0": {
-				"mode": "unreachable",
-				"portId": "legacy.audit",
-				"portVersion": "1.0.0"
-			},
-			"notifications.send@1.0.0": {
-				"mode": "delegated",
-				"portId": "notifications.send",
-				"portVersion": "1.0.0"
-			}
+			"defaultInput": {},
+			"accessRoles": ["authenticated"],
+			"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
 		}
 	},
 	"bindings": {
-		"http:mutation:submit_message": {
-			"entrypointId": "submit_message",
-			"entrypointKind": "mutation",
-			"fieldBindings": { "message": "body.message" },
-			"surfaceId": "http"
-		},
 		"http:query:list_messages": {
-			"entrypointId": "list_messages",
+			"surfaceId": "http",
 			"entrypointKind": "query",
+			"entrypointId": "list_messages",
 			"fieldBindings": {
 				"page": "query.page",
 				"page_size": "query.page_size",
 				"q": "query.q"
-			},
-			"surfaceId": "http"
+			}
+		},
+		"http:mutation:submit_message": {
+			"surfaceId": "http",
+			"entrypointKind": "mutation",
+			"entrypointId": "submit_message",
+			"fieldBindings": {
+				"message": "body.message"
+			}
 		}
 	},
-	"compilerVersion": "1.0.0",
 	"dispatchPlans": {
 		"artifactVersion": "1.0.0",
 		"plans": {
 			"http": {
+				"surfaceId": "http",
 				"handlers": [
 					{
 						"handlerId": "http:mutation:submit_message",
+						"surfaceId": "http",
 						"matcher": {
+							"surfaceType": "http",
 							"clauses": [
-								{ "key": "method", "op": "eq", "value": "POST" },
-								{ "key": "path", "op": "path_template", "value": "/messages" }
-							],
-							"surfaceType": "http"
+								{
+									"key": "method",
+									"op": "eq",
+									"value": "POST"
+								},
+								{
+									"key": "path",
+									"op": "path_template",
+									"value": "/messages"
+								}
+							]
 						},
 						"specificity": 240,
-						"surfaceId": "http",
 						"target": {
-							"entrypointId": "submit_message",
 							"entrypointKind": "mutation",
-							"fieldBindings": { "message": "body.message" }
+							"entrypointId": "submit_message",
+							"fieldBindings": {
+								"message": "body.message"
+							}
 						}
 					},
 					{
 						"handlerId": "http:query:list_messages",
+						"surfaceId": "http",
 						"matcher": {
+							"surfaceType": "http",
 							"clauses": [
-								{ "key": "method", "op": "eq", "value": "GET" },
-								{ "key": "path", "op": "path_template", "value": "/messages" }
-							],
-							"surfaceType": "http"
+								{
+									"key": "method",
+									"op": "eq",
+									"value": "GET"
+								},
+								{
+									"key": "path",
+									"op": "path_template",
+									"value": "/messages"
+								}
+							]
 						},
 						"specificity": 240,
-						"surfaceId": "http",
 						"target": {
-							"entrypointId": "list_messages",
 							"entrypointKind": "query",
+							"entrypointId": "list_messages",
 							"fieldBindings": {
 								"page": "query.page",
 								"page_size": "query.page_size",
@@ -161,167 +327,309 @@
 					},
 					{
 						"handlerId": "http:route:home_route",
+						"surfaceId": "http",
 						"matcher": {
+							"surfaceType": "http",
 							"clauses": [
-								{ "key": "routeId", "op": "eq", "value": "home_route" }
-							],
-							"surfaceType": "http"
+								{
+									"key": "routeId",
+									"op": "eq",
+									"value": "home_route"
+								}
+							]
 						},
 						"specificity": 40,
-						"surfaceId": "http",
 						"target": {
-							"entrypointId": "home_route",
 							"entrypointKind": "route",
+							"entrypointId": "home_route",
 							"fieldBindings": {}
 						}
 					}
-				],
-				"surfaceId": "http"
+				]
 			}
 		}
 	},
-	"entrypoints": {
-		"mutation:submit_message": {
-			"accessRoles": ["authenticated"],
-			"defaultInput": {},
-			"id": "submit_message",
-			"inputFields": { "message": { "required": true, "scalarType": "text" } },
-			"kind": "mutation",
-			"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
+	"reachabilityRequirements": {
+		"ids.generate@1.0.0": {
+			"portId": "ids.generate",
+			"portVersion": "1.0.0",
+			"mode": "local"
 		},
-		"query:list_messages": {
-			"accessRoles": ["authenticated"],
-			"defaultInput": { "page": 1, "page_size": 10 },
-			"id": "list_messages",
-			"inputFields": {
-				"page": { "required": false, "scalarType": "int" },
-				"page_size": { "required": false, "scalarType": "int" },
-				"q": { "required": false, "scalarType": "text" }
-			},
-			"kind": "query",
-			"schemaArtifactKey": "entrypoint.query.list_messages.input"
+		"legacy.audit@1.0.0": {
+			"portId": "legacy.audit",
+			"portVersion": "1.0.0",
+			"mode": "unreachable"
+		},
+		"notifications.send@1.0.0": {
+			"portId": "notifications.send",
+			"portVersion": "1.0.0",
+			"mode": "delegated"
 		}
+	},
+	"bindingRequirementsArtifact": {
+		"artifactId": "CompiledBindingRequirements",
+		"artifactVersion": "1.0.0",
+		"requirements": {
+			"ids.generate@1.0.0": {
+				"portId": "ids.generate",
+				"portVersion": "1.0.0",
+				"mode": "local"
+			},
+			"legacy.audit@1.0.0": {
+				"portId": "legacy.audit",
+				"portVersion": "1.0.0",
+				"mode": "unreachable"
+			},
+			"notifications.send@1.0.0": {
+				"portId": "notifications.send",
+				"portVersion": "1.0.0",
+				"mode": "delegated"
+			}
+		},
+		"compatibility": {
+			"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
+			"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
+			"supportedModes": ["local", "delegated", "unreachable"]
+		},
+		"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd"
+	},
+	"artifactManifest": {
+		"artifactVersion": "2.0.0",
+		"hashAlgorithm": "sha256",
+		"artifacts": {
+			"authoringCanonicalModel": {
+				"refVersion": "1.0.0",
+				"lane": "authoring",
+				"artifactId": "CompiledAuthoringCanonicalModel",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "c2a9ff1a37af83024c2006fb4a542cbba0c8407bfdcaed9a36e2b2df82aa7023",
+				"hashAlgorithm": "sha256"
+			},
+			"bindingRequirements": {
+				"refVersion": "1.0.0",
+				"lane": "marketplace",
+				"artifactId": "CompiledBindingRequirements",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8",
+				"hashAlgorithm": "sha256",
+				"compatibility": {
+					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
+					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
+					"supportedModes": ["local", "delegated", "unreachable"]
+				}
+			},
+			"domainRuntimeIR": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledDomainRuntimeIR",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "5711050ba66cad4c2b5a4c675b06bb04d35915a821269ff26d225c794bcb7650",
+				"hashAlgorithm": "sha256"
+			},
+			"projectionIR": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledProjectionIR",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "0bea3244ad34667e0a95dea186ce6fd8d34ae9d1bb6aa292286f91398085b966",
+				"hashAlgorithm": "sha256"
+			},
+			"qualityConformanceSeed": {
+				"refVersion": "1.0.0",
+				"lane": "quality",
+				"artifactId": "CompiledQualityConformanceSeed",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547",
+				"hashAlgorithm": "sha256"
+			},
+			"runtimeEntrypointContracts": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledRuntimeEntrypointContracts",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "37aa04c94d81c69dafa3772052b01ae399c269b9926754fd9a6acc01d19b49ca",
+				"hashAlgorithm": "sha256"
+			},
+			"scenarioIR": {
+				"refVersion": "1.0.0",
+				"lane": "quality",
+				"artifactId": "CompiledScenarioPlanSet",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "d8c778097fd3d9691ae7b4d1d933d5b968d39a0455f871273841be301ddaa0e8",
+				"hashAlgorithm": "sha256"
+			},
+			"sessionIR": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledSessionIR",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "f2551fae752500ca6218f1fc15acaac01882c809b9c2912907e6e3c8c5607b7c",
+				"hashAlgorithm": "sha256"
+			},
+			"viewRenderIR": {
+				"refVersion": "1.0.0",
+				"lane": "runtime",
+				"artifactId": "CompiledViewRenderIR",
+				"artifactVersion": "1.0.0",
+				"artifactHash": "2d730545cc4d3716fd921f4d8c5455bcde78b8e7a56d45039134487a9d6c7cef",
+				"hashAlgorithm": "sha256"
+			}
+		},
+		"aggregateHash": "1d97162ecbf91b356b296fc3c73e2aa2f198482d87966bcf7601b4f9028548a3"
 	},
 	"laneArtifacts": {
 		"authoringCanonicalModel": {
-			"artifactHash": "ad2f03daad6e8f4a1a203320bc4840126cf49ce3fdd23e9b18d05085af538721",
 			"artifactId": "CompiledAuthoringCanonicalModel",
 			"artifactVersion": "1.0.0",
-			"hashAlgorithm": "sha256",
 			"lane": "authoring",
+			"hashAlgorithm": "sha256",
 			"payload": {
-				"references": {
-					"actionIds": ["guestbook.submit"],
-					"capabilityRefs": [
-						"ids.generate@1.0.0",
-						"legacy.audit@1.0.0",
-						"notifications.send@1.0.0"
-					],
-					"mutationIds": ["submit_message"],
-					"personaIds": ["frustrated_enterprise_buyer"],
-					"projectionIds": ["latest_messages", "messages_with_authors"],
-					"queryIds": ["list_messages"],
-					"routeIds": ["home_route"],
-					"scenarioIds": ["happy_path_message_submission"],
-					"screenIds": ["home"],
-					"viewNodeIds": ["messages_list"]
-				},
 				"sections": {
-					"access": {
-						"default_policy": "deny",
-						"roles": { "admin": {}, "anonymous": {}, "authenticated": {} }
-					},
 					"app": {
 						"id": "hello_world_demo",
 						"name": "Hello World Demo",
 						"tz": "UTC"
 					},
 					"domain": {
-						"actions": { "guestbook.submit": {} },
-						"capabilities": {
-							"ids.generate": { "version": "1.0.0" },
-							"legacy.audit": { "version": "1.0.0" },
-							"notifications.send": { "version": "1.0.0" }
-						},
 						"collections": {},
-						"flows": { "rejection_followup": {} },
-						"projections": {
-							"latest_messages": {},
-							"messages_with_authors": {}
+						"signals": {
+							"message.created": {},
+							"message.deleted": {}
 						},
-						"signals": { "message.created": {}, "message.deleted": {} }
-					},
-					"personas": {
-						"frustrated_enterprise_buyer": {
-							"description": "Senior ops manager with low patience who expects direct answers."
-						}
-					},
-					"routes": [
-						{
-							"access": { "roles": ["authenticated"] },
-							"id": "home_route",
-							"renders": "home"
-						}
-					],
-					"scenarios": {
-						"happy_path_message_submission": {
-							"context": { "persona": "frustrated_enterprise_buyer" },
-							"steps": [
-								{
-									"expect": {
-										"flow_completed": "rejection_followup",
-										"projection": "latest_messages",
-										"query": "list_messages"
+						"capabilities": {
+							"notifications.send": {
+								"version": "1.0.0"
+							},
+							"ids.generate": {
+								"version": "1.0.0"
+							},
+							"legacy.audit": {
+								"version": "1.0.0"
+							}
+						},
+						"actions": {
+							"guestbook.submit": {}
+						},
+						"flows": {
+							"rejection_followup": {}
+						},
+						"projections": {
+							"latest_messages": {
+								"strategy": "from_collection",
+								"collectionId": "messages",
+								"fields": [
+									{
+										"source": "id",
+										"as": "id"
 									},
-									"trigger": { "mutation": "submit_message" }
+									{
+										"source": "message",
+										"as": "message"
+									}
+								],
+								"sort": [
+									{
+										"field": "created_at",
+										"direction": "desc"
+									}
+								],
+								"pagination": {
+									"mode": "page",
+									"pageArg": "page",
+									"pageSizeArg": "page_size",
+									"defaultPage": 1,
+									"defaultPageSize": 10,
+									"maxPageSize": 50
 								}
-							]
+							},
+							"messages_with_authors": {
+								"strategy": "from_collection",
+								"collectionId": "messages",
+								"fields": [
+									{
+										"source": "id",
+										"as": "id"
+									},
+									{
+										"source": "author_name",
+										"as": "author_name"
+									}
+								],
+								"sort": [
+									{
+										"field": "author_name",
+										"direction": "asc"
+									}
+								],
+								"pagination": {
+									"mode": "page",
+									"pageArg": "page",
+									"pageSizeArg": "page_size",
+									"defaultPage": 1,
+									"defaultPageSize": 10,
+									"maxPageSize": 50
+								}
+							}
 						}
 					},
-					"session": { "fields": {} },
+					"session": {
+						"fields": {}
+					},
 					"views": {
-						"nodes": [{ "id": "messages_list", "type": "list" }],
+						"nodes": [
+							{
+								"id": "messages_list",
+								"type": "list"
+							}
+						],
 						"screens": [
 							{
+								"id": "home",
 								"data": {
 									"messages": {
 										"query": "list_messages",
 										"refresh_on_signals": ["message.created", "message.deleted"]
 									}
-								},
-								"id": "home"
+								}
 							}
 						]
 					},
-					"wiring": {
-						"requirements": {
-							"capabilities": [
+					"routes": [
+						{
+							"id": "home_route",
+							"access": {
+								"roles": ["authenticated"]
+							},
+							"renders": "home"
+						}
+					],
+					"personas": {
+						"frustrated_enterprise_buyer": {
+							"description": "Senior ops manager with low patience who expects direct answers."
+						}
+					},
+					"scenarios": {
+						"happy_path_message_submission": {
+							"context": {
+								"persona": "frustrated_enterprise_buyer"
+							},
+							"steps": [
 								{
-									"mode": "delegated",
-									"portId": "notifications.send",
-									"portVersion": "1.0.0"
-								},
-								{
-									"mode": "local",
-									"portId": "ids.generate",
-									"portVersion": "1.0.0"
-								},
-								{
-									"mode": "unreachable",
-									"portId": "legacy.audit",
-									"portVersion": "1.0.0"
+									"trigger": {
+										"mutation": "submit_message"
+									},
+									"expect": {
+										"query": "list_messages",
+										"projection": "latest_messages",
+										"flow_completed": "rejection_followup"
+									}
 								}
 							]
-						},
+						}
+					},
+					"wiring": {
 						"surfaces": {
 							"http": {
-								"mutations": {
-									"submit_message": {
-										"bind": { "message": "body.message" },
-										"method": "POST",
-										"path": "/messages"
-									}
-								},
 								"queries": {
 									"list_messages": {
 										"bind": {
@@ -333,152 +641,372 @@
 										"path": "/messages"
 									}
 								},
-								"routes": { "home_route": { "bind": {} } }
+								"mutations": {
+									"submit_message": {
+										"bind": {
+											"message": "body.message"
+										},
+										"method": "POST",
+										"path": "/messages"
+									}
+								},
+								"routes": {
+									"home_route": {
+										"bind": {}
+									}
+								}
 							}
+						},
+						"requirements": {
+							"capabilities": [
+								{
+									"portId": "notifications.send",
+									"portVersion": "1.0.0",
+									"mode": "delegated"
+								},
+								{
+									"portId": "ids.generate",
+									"portVersion": "1.0.0",
+									"mode": "local"
+								},
+								{
+									"portId": "legacy.audit",
+									"portVersion": "1.0.0",
+									"mode": "unreachable"
+								}
+							]
+						}
+					},
+					"access": {
+						"default_policy": "deny",
+						"roles": {
+							"anonymous": {},
+							"authenticated": {},
+							"admin": {}
 						}
 					}
+				},
+				"references": {
+					"queryIds": ["list_messages"],
+					"mutationIds": ["submit_message"],
+					"routeIds": ["home_route"],
+					"screenIds": ["home"],
+					"viewNodeIds": ["messages_list"],
+					"actionIds": ["guestbook.submit"],
+					"projectionIds": ["latest_messages", "messages_with_authors"],
+					"capabilityRefs": [
+						"ids.generate@1.0.0",
+						"legacy.audit@1.0.0",
+						"notifications.send@1.0.0"
+					],
+					"personaIds": ["frustrated_enterprise_buyer"],
+					"scenarioIds": ["happy_path_message_submission"]
 				}
-			}
+			},
+			"artifactHash": "c2a9ff1a37af83024c2006fb4a542cbba0c8407bfdcaed9a36e2b2df82aa7023"
 		},
 		"bindingRequirements": {
-			"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8",
 			"artifactId": "CompiledBindingRequirements",
 			"artifactVersion": "1.0.0",
-			"hashAlgorithm": "sha256",
 			"lane": "marketplace",
+			"hashAlgorithm": "sha256",
 			"payload": {
-				"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd",
 				"artifactId": "CompiledBindingRequirements",
 				"artifactVersion": "1.0.0",
+				"requirements": {
+					"ids.generate@1.0.0": {
+						"portId": "ids.generate",
+						"portVersion": "1.0.0",
+						"mode": "local"
+					},
+					"legacy.audit@1.0.0": {
+						"portId": "legacy.audit",
+						"portVersion": "1.0.0",
+						"mode": "unreachable"
+					},
+					"notifications.send@1.0.0": {
+						"portId": "notifications.send",
+						"portVersion": "1.0.0",
+						"mode": "delegated"
+					}
+				},
 				"compatibility": {
 					"resolverInputContract": "CapabilityReachabilityRequirement@1.0.0",
 					"runtimeResolutionContract": "CapabilityBindingResolution@1.0.0",
 					"supportedModes": ["local", "delegated", "unreachable"]
 				},
-				"requirements": {
-					"ids.generate@1.0.0": {
-						"mode": "local",
-						"portId": "ids.generate",
-						"portVersion": "1.0.0"
-					},
-					"legacy.audit@1.0.0": {
-						"mode": "unreachable",
-						"portId": "legacy.audit",
-						"portVersion": "1.0.0"
-					},
-					"notifications.send@1.0.0": {
-						"mode": "delegated",
-						"portId": "notifications.send",
-						"portVersion": "1.0.0"
-					}
-				}
-			}
+				"artifactHash": "4e4a6f6bba46de0938d5ed6ccb04c19c46ec510388ba26f04142d754655151bd"
+			},
+			"artifactHash": "045a28a73061e163020bd1f6a4080a366e4afeb201783accc16120005fc286d8"
 		},
-		"qualityConformanceSeed": {
-			"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547",
-			"artifactId": "CompiledQualityConformanceSeed",
+		"domainRuntimeIR": {
+			"artifactId": "CompiledDomainRuntimeIR",
 			"artifactVersion": "1.0.0",
-			"hashAlgorithm": "sha256",
-			"lane": "quality",
-			"payload": {
-				"mutationIds": ["submit_message"],
-				"personaIds": ["frustrated_enterprise_buyer"],
-				"queryIds": ["list_messages"],
-				"routeIds": ["home_route"],
-				"scenarioIds": ["happy_path_message_submission"],
-				"screenIds": ["home"]
-			}
-		},
-		"runtimeEntrypointContracts": {
-			"artifactHash": "8a414af055f2e674622f2698fc21b0a15430e76d4c234cb19d3b78a9ad05788a",
-			"artifactId": "CompiledRuntimeEntrypointContracts",
-			"artifactVersion": "1.0.0",
-			"hashAlgorithm": "sha256",
 			"lane": "runtime",
+			"hashAlgorithm": "sha256",
 			"payload": {
-				"accessPlan": {
-					"defaultPolicy": "deny",
-					"entrypointRoles": {
-						"mutation:submit_message": ["authenticated"],
-						"query:list_messages": ["authenticated"]
-					},
-					"knownRoles": ["admin", "anonymous", "authenticated"],
-					"roleDefinitions": {
-						"admin": { "deriveRules": [], "extends": [], "roleId": "admin" },
-						"anonymous": {
-							"deriveRules": [],
-							"extends": [],
-							"roleId": "anonymous"
-						},
-						"authenticated": {
-							"deriveRules": [],
-							"extends": [],
-							"roleId": "authenticated"
+				"artifactVersion": "1.0.0",
+				"actions": {
+					"guestbook.submit": {
+						"actionId": "guestbook.submit",
+						"steps": [],
+						"session": {
+							"onSuccess": "preserve",
+							"onFailure": "preserve"
 						}
 					}
 				},
-				"bindings": {
-					"http:mutation:submit_message": {
+				"mutations": {
+					"submit_message": {
 						"entrypointId": "submit_message",
-						"entrypointKind": "mutation",
-						"fieldBindings": { "message": "body.message" },
-						"surfaceId": "http"
+						"actionId": "guestbook.submit",
+						"inputBindings": {
+							"message": {
+								"kind": "input",
+								"path": "message"
+							}
+						}
+					}
+				},
+				"queries": {
+					"list_messages": {
+						"queryId": "list_messages"
+					}
+				},
+				"flows": {
+					"rejection_followup": {
+						"flowId": "rejection_followup"
+					}
+				}
+			},
+			"artifactHash": "5711050ba66cad4c2b5a4c675b06bb04d35915a821269ff26d225c794bcb7650"
+		},
+		"projectionIR": {
+			"artifactId": "CompiledProjectionIR",
+			"artifactVersion": "1.0.0",
+			"lane": "runtime",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"artifactVersion": "1.0.0",
+				"projections": {
+					"latest_messages": {
+						"projectionId": "latest_messages",
+						"strategy": "from_collection",
+						"sourceRef": {
+							"projectionId": "latest_messages",
+							"path": "domain.projections.latest_messages",
+							"strategy": "from_collection"
+						},
+						"collectionId": "messages",
+						"fields": [
+							{
+								"source": "id",
+								"as": "id"
+							},
+							{
+								"source": "message",
+								"as": "message"
+							}
+						],
+						"sort": [
+							{
+								"field": "created_at",
+								"direction": "desc"
+							}
+						],
+						"pagination": {
+							"mode": "page",
+							"pageArg": "page",
+							"pageSizeArg": "page_size",
+							"defaultPage": 1,
+							"defaultPageSize": 10,
+							"maxPageSize": 50
+						}
 					},
+					"messages_with_authors": {
+						"projectionId": "messages_with_authors",
+						"strategy": "from_collection",
+						"sourceRef": {
+							"projectionId": "messages_with_authors",
+							"path": "domain.projections.messages_with_authors",
+							"strategy": "from_collection"
+						},
+						"collectionId": "messages",
+						"fields": [
+							{
+								"source": "author_name",
+								"as": "author_name"
+							},
+							{
+								"source": "id",
+								"as": "id"
+							}
+						],
+						"sort": [
+							{
+								"field": "author_name",
+								"direction": "asc"
+							}
+						],
+						"pagination": {
+							"mode": "page",
+							"pageArg": "page",
+							"pageSizeArg": "page_size",
+							"defaultPage": 1,
+							"defaultPageSize": 10,
+							"maxPageSize": 50
+						}
+					}
+				},
+				"queries": {
+					"list_messages": {
+						"queryId": "list_messages",
+						"projectionId": "latest_messages",
+						"allowsAsOf": false,
+						"sourceRef": {
+							"queryId": "list_messages",
+							"path": "queries.0.returns.projection"
+						}
+					}
+				}
+			},
+			"artifactHash": "0bea3244ad34667e0a95dea186ce6fd8d34ae9d1bb6aa292286f91398085b966"
+		},
+		"qualityConformanceSeed": {
+			"artifactId": "CompiledQualityConformanceSeed",
+			"artifactVersion": "1.0.0",
+			"lane": "quality",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"queryIds": ["list_messages"],
+				"mutationIds": ["submit_message"],
+				"routeIds": ["home_route"],
+				"screenIds": ["home"],
+				"personaIds": ["frustrated_enterprise_buyer"],
+				"scenarioIds": ["happy_path_message_submission"]
+			},
+			"artifactHash": "71c6501b3af40d4827556c62d78809cb2c5d4e5c30728d2b3e75c96b06889547"
+		},
+		"runtimeEntrypointContracts": {
+			"artifactId": "CompiledRuntimeEntrypointContracts",
+			"artifactVersion": "1.0.0",
+			"lane": "runtime",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"entrypoints": {
+					"query:list_messages": {
+						"id": "list_messages",
+						"kind": "query",
+						"inputFields": {
+							"page": {
+								"scalarType": "int",
+								"required": false
+							},
+							"page_size": {
+								"scalarType": "int",
+								"required": false
+							},
+							"q": {
+								"scalarType": "text",
+								"required": false
+							}
+						},
+						"defaultInput": {
+							"page": 1,
+							"page_size": 10
+						},
+						"accessRoles": ["authenticated"],
+						"schemaArtifactKey": "entrypoint.query.list_messages.input"
+					},
+					"mutation:submit_message": {
+						"id": "submit_message",
+						"kind": "mutation",
+						"inputFields": {
+							"message": {
+								"scalarType": "text",
+								"required": true
+							}
+						},
+						"defaultInput": {},
+						"accessRoles": ["authenticated"],
+						"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
+					}
+				},
+				"bindings": {
 					"http:query:list_messages": {
-						"entrypointId": "list_messages",
+						"surfaceId": "http",
 						"entrypointKind": "query",
+						"entrypointId": "list_messages",
 						"fieldBindings": {
 							"page": "query.page",
 							"page_size": "query.page_size",
 							"q": "query.q"
-						},
-						"surfaceId": "http"
+						}
+					},
+					"http:mutation:submit_message": {
+						"surfaceId": "http",
+						"entrypointKind": "mutation",
+						"entrypointId": "submit_message",
+						"fieldBindings": {
+							"message": "body.message"
+						}
 					}
 				},
 				"dispatchPlans": {
 					"artifactVersion": "1.0.0",
 					"plans": {
 						"http": {
+							"surfaceId": "http",
 							"handlers": [
 								{
 									"handlerId": "http:mutation:submit_message",
+									"surfaceId": "http",
 									"matcher": {
+										"surfaceType": "http",
 										"clauses": [
-											{ "key": "method", "op": "eq", "value": "POST" },
+											{
+												"key": "method",
+												"op": "eq",
+												"value": "POST"
+											},
 											{
 												"key": "path",
 												"op": "path_template",
 												"value": "/messages"
 											}
-										],
-										"surfaceType": "http"
+										]
 									},
 									"specificity": 240,
-									"surfaceId": "http",
 									"target": {
-										"entrypointId": "submit_message",
 										"entrypointKind": "mutation",
-										"fieldBindings": { "message": "body.message" }
+										"entrypointId": "submit_message",
+										"fieldBindings": {
+											"message": "body.message"
+										}
 									}
 								},
 								{
 									"handlerId": "http:query:list_messages",
+									"surfaceId": "http",
 									"matcher": {
+										"surfaceType": "http",
 										"clauses": [
-											{ "key": "method", "op": "eq", "value": "GET" },
+											{
+												"key": "method",
+												"op": "eq",
+												"value": "GET"
+											},
 											{
 												"key": "path",
 												"op": "path_template",
 												"value": "/messages"
 											}
-										],
-										"surfaceType": "http"
+										]
 									},
 									"specificity": 240,
-									"surfaceId": "http",
 									"target": {
-										"entrypointId": "list_messages",
 										"entrypointKind": "query",
+										"entrypointId": "list_messages",
 										"fieldBindings": {
 											"page": "query.page",
 											"page_size": "query.page_size",
@@ -488,47 +1016,26 @@
 								},
 								{
 									"handlerId": "http:route:home_route",
+									"surfaceId": "http",
 									"matcher": {
+										"surfaceType": "http",
 										"clauses": [
-											{ "key": "routeId", "op": "eq", "value": "home_route" }
-										],
-										"surfaceType": "http"
+											{
+												"key": "routeId",
+												"op": "eq",
+												"value": "home_route"
+											}
+										]
 									},
 									"specificity": 40,
-									"surfaceId": "http",
 									"target": {
-										"entrypointId": "home_route",
 										"entrypointKind": "route",
+										"entrypointId": "home_route",
 										"fieldBindings": {}
 									}
 								}
-							],
-							"surfaceId": "http"
+							]
 						}
-					}
-				},
-				"entrypoints": {
-					"mutation:submit_message": {
-						"accessRoles": ["authenticated"],
-						"defaultInput": {},
-						"id": "submit_message",
-						"inputFields": {
-							"message": { "required": true, "scalarType": "text" }
-						},
-						"kind": "mutation",
-						"schemaArtifactKey": "entrypoint.mutation.submit_message.input"
-					},
-					"query:list_messages": {
-						"accessRoles": ["authenticated"],
-						"defaultInput": { "page": 1, "page_size": 10 },
-						"id": "list_messages",
-						"inputFields": {
-							"page": { "required": false, "scalarType": "int" },
-							"page_size": { "required": false, "scalarType": "int" },
-							"q": { "required": false, "scalarType": "text" }
-						},
-						"kind": "query",
-						"schemaArtifactKey": "entrypoint.query.list_messages.input"
 					}
 				},
 				"refreshSubscriptions": {
@@ -537,23 +1044,40 @@
 						"signalIds": ["message.created", "message.deleted"]
 					}
 				},
-				"schemaArtifacts": {
-					"entrypoint.mutation.submit_message.input": {
-						"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a",
-						"schema": {
-							"~standard": { "jsonSchema": {}, "vendor": "zod", "version": 1 },
-							"$schema": "https://json-schema.org/draft/2020-12/schema",
-							"additionalProperties": false,
-							"properties": { "message": { "type": "string" } },
-							"required": ["message"],
-							"type": "object"
+				"accessPlan": {
+					"defaultPolicy": "deny",
+					"knownRoles": ["admin", "anonymous", "authenticated"],
+					"roleDefinitions": {
+						"admin": {
+							"roleId": "admin",
+							"extends": [],
+							"deriveRules": []
 						},
-						"target": "draft-2020-12"
+						"anonymous": {
+							"roleId": "anonymous",
+							"extends": [],
+							"deriveRules": []
+						},
+						"authenticated": {
+							"roleId": "authenticated",
+							"extends": [],
+							"deriveRules": []
+						}
 					},
+					"entrypointRoles": {
+						"query:list_messages": ["authenticated"],
+						"mutation:submit_message": ["authenticated"]
+					}
+				},
+				"schemaArtifacts": {
 					"entrypoint.query.list_messages.input": {
-						"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d",
+						"target": "draft-2020-12",
 						"schema": {
-							"~standard": { "jsonSchema": {}, "vendor": "zod", "version": 1 },
+							"~standard": {
+								"jsonSchema": {},
+								"vendor": "zod",
+								"version": 1
+							},
 							"$schema": "https://json-schema.org/draft/2020-12/schema",
 							"additionalProperties": false,
 							"properties": {
@@ -567,180 +1091,514 @@
 									"minimum": -9007199254740991,
 									"type": "integer"
 								},
-								"q": { "type": "string" }
+								"q": {
+									"type": "string"
+								}
 							},
 							"type": "object"
 						},
-						"target": "draft-2020-12"
+						"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d"
+					},
+					"entrypoint.mutation.submit_message.input": {
+						"target": "draft-2020-12",
+						"schema": {
+							"~standard": {
+								"jsonSchema": {},
+								"vendor": "zod",
+								"version": 1
+							},
+							"$schema": "https://json-schema.org/draft/2020-12/schema",
+							"additionalProperties": false,
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							},
+							"required": ["message"],
+							"type": "object"
+						},
+						"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 					}
 				},
-				"sections": {
-					"access": {
-						"default_policy": "deny",
-						"roles": { "admin": {}, "anonymous": {}, "authenticated": {} }
-					},
-					"app": {
-						"id": "hello_world_demo",
-						"name": "Hello World Demo",
-						"tz": "UTC"
-					},
-					"domain": {
-						"actions": { "guestbook.submit": {} },
-						"capabilities": {
-							"ids.generate": { "version": "1.0.0" },
-							"legacy.audit": { "version": "1.0.0" },
-							"notifications.send": { "version": "1.0.0" }
-						},
-						"collections": {},
-						"flows": { "rejection_followup": {} },
-						"projections": {
-							"latest_messages": {},
-							"messages_with_authors": {}
-						},
-						"signals": { "message.created": {}, "message.deleted": {} }
-					},
-					"personas": {
-						"frustrated_enterprise_buyer": {
-							"description": "Senior ops manager with low patience who expects direct answers."
-						}
-					},
-					"routes": [
-						{
-							"access": { "roles": ["authenticated"] },
-							"id": "home_route",
-							"renders": "home"
-						}
-					],
-					"scenarios": {
-						"happy_path_message_submission": {
-							"context": { "persona": "frustrated_enterprise_buyer" },
-							"steps": [
+				"projectionIR": {
+					"artifactVersion": "1.0.0",
+					"projections": {
+						"latest_messages": {
+							"projectionId": "latest_messages",
+							"strategy": "from_collection",
+							"sourceRef": {
+								"projectionId": "latest_messages",
+								"path": "domain.projections.latest_messages",
+								"strategy": "from_collection"
+							},
+							"collectionId": "messages",
+							"fields": [
 								{
-									"expect": {
-										"flow_completed": "rejection_followup",
-										"projection": "latest_messages",
-										"query": "list_messages"
-									},
-									"trigger": { "mutation": "submit_message" }
-								}
-							]
-						}
-					},
-					"session": { "fields": {} },
-					"views": {
-						"nodes": [{ "id": "messages_list", "type": "list" }],
-						"screens": [
-							{
-								"data": {
-									"messages": {
-										"query": "list_messages",
-										"refresh_on_signals": ["message.created", "message.deleted"]
-									}
+									"source": "id",
+									"as": "id"
 								},
-								"id": "home"
+								{
+									"source": "message",
+									"as": "message"
+								}
+							],
+							"sort": [
+								{
+									"field": "created_at",
+									"direction": "desc"
+								}
+							],
+							"pagination": {
+								"mode": "page",
+								"pageArg": "page",
+								"pageSizeArg": "page_size",
+								"defaultPage": 1,
+								"defaultPageSize": 10,
+								"maxPageSize": 50
 							}
-						]
-					},
-					"wiring": {
-						"requirements": {
-							"capabilities": [
-								{
-									"mode": "delegated",
-									"portId": "notifications.send",
-									"portVersion": "1.0.0"
-								},
-								{
-									"mode": "local",
-									"portId": "ids.generate",
-									"portVersion": "1.0.0"
-								},
-								{
-									"mode": "unreachable",
-									"portId": "legacy.audit",
-									"portVersion": "1.0.0"
-								}
-							]
 						},
-						"surfaces": {
-							"http": {
-								"mutations": {
-									"submit_message": {
-										"bind": { "message": "body.message" },
-										"method": "POST",
-										"path": "/messages"
-									}
+						"messages_with_authors": {
+							"projectionId": "messages_with_authors",
+							"strategy": "from_collection",
+							"sourceRef": {
+								"projectionId": "messages_with_authors",
+								"path": "domain.projections.messages_with_authors",
+								"strategy": "from_collection"
+							},
+							"collectionId": "messages",
+							"fields": [
+								{
+									"source": "author_name",
+									"as": "author_name"
 								},
-								"queries": {
-									"list_messages": {
-										"bind": {
-											"page": "query.page",
-											"page_size": "query.page_size",
-											"q": "query.q"
-										},
-										"method": "GET",
-										"path": "/messages"
-									}
-								},
-								"routes": { "home_route": { "bind": {} } }
+								{
+									"source": "id",
+									"as": "id"
+								}
+							],
+							"sort": [
+								{
+									"field": "author_name",
+									"direction": "asc"
+								}
+							],
+							"pagination": {
+								"mode": "page",
+								"pageArg": "page",
+								"pageSizeArg": "page_size",
+								"defaultPage": 1,
+								"defaultPageSize": 10,
+								"maxPageSize": 50
+							}
+						}
+					},
+					"queries": {
+						"list_messages": {
+							"queryId": "list_messages",
+							"projectionId": "latest_messages",
+							"allowsAsOf": false,
+							"sourceRef": {
+								"queryId": "list_messages",
+								"path": "queries.0.returns.projection"
 							}
 						}
 					}
+				},
+				"viewRenderIR": {
+					"artifactVersion": "1.0.0",
+					"nodes": {
+						"messages_list": {
+							"id": "messages_list",
+							"type": "list",
+							"propPlans": {},
+							"children": [],
+							"interactions": {}
+						}
+					},
+					"screens": {
+						"home": {
+							"id": "home",
+							"data": {
+								"messages": {
+									"queryId": "list_messages",
+									"refreshOnSignals": ["message.created", "message.deleted"]
+								}
+							},
+							"rootNodeIds": []
+						}
+					},
+					"screenOrder": ["home"],
+					"nodeOrder": ["messages_list"],
+					"nodeIntentPlans": {
+						"messages_list": {
+							"nodeId": "messages_list",
+							"interactionPlans": {}
+						}
+					}
+				},
+				"domainRuntimeIR": {
+					"artifactVersion": "1.0.0",
+					"actions": {
+						"guestbook.submit": {
+							"actionId": "guestbook.submit",
+							"steps": [],
+							"session": {
+								"onSuccess": "preserve",
+								"onFailure": "preserve"
+							}
+						}
+					},
+					"mutations": {
+						"submit_message": {
+							"entrypointId": "submit_message",
+							"actionId": "guestbook.submit",
+							"inputBindings": {
+								"message": {
+									"kind": "input",
+									"path": "message"
+								}
+							}
+						}
+					},
+					"queries": {
+						"list_messages": {
+							"queryId": "list_messages"
+						}
+					},
+					"flows": {
+						"rejection_followup": {
+							"flowId": "rejection_followup"
+						}
+					}
+				},
+				"sessionIR": {
+					"artifactVersion": "1.0.0",
+					"fields": {},
+					"defaults": {}
 				}
-			}
+			},
+			"artifactHash": "37aa04c94d81c69dafa3772052b01ae399c269b9926754fd9a6acc01d19b49ca"
 		},
-		"viewRenderIR": {
-			"artifactHash": "2d730545cc4d3716fd921f4d8c5455bcde78b8e7a56d45039134487a9d6c7cef",
-			"artifactId": "CompiledViewRenderIR",
+		"scenarioIR": {
+			"artifactId": "CompiledScenarioPlanSet",
 			"artifactVersion": "1.0.0",
+			"lane": "quality",
 			"hashAlgorithm": "sha256",
-			"lane": "runtime",
 			"payload": {
 				"artifactVersion": "1.0.0",
-				"nodeIntentPlans": {
-					"messages_list": { "interactionPlans": {}, "nodeId": "messages_list" }
-				},
-				"nodeOrder": ["messages_list"],
-				"nodes": {
-					"messages_list": {
-						"children": [],
-						"id": "messages_list",
-						"interactions": {},
-						"propPlans": {},
-						"type": "list"
+				"sectionHash": "e0a39c6933bc52dd3fac973c07b49d388c985e09b0e9224e48c84420228ac7b3",
+				"personas": {
+					"frustrated_enterprise_buyer": {
+						"personaId": "frustrated_enterprise_buyer",
+						"description": "Senior ops manager with low patience who expects direct answers.",
+						"traits": {},
+						"history": [],
+						"tags": []
 					}
 				},
-				"screenOrder": ["home"],
+				"scenarios": {
+					"happy_path_message_submission": {
+						"scenarioId": "happy_path_message_submission",
+						"tags": [],
+						"context": {
+							"personaId": "frustrated_enterprise_buyer"
+						},
+						"steps": [
+							{
+								"kind": "trigger",
+								"trigger": {
+									"entrypointKind": "mutation",
+									"entrypointId": "submit_message"
+								}
+							},
+							{
+								"kind": "expect",
+								"expect": {
+									"kind": "query",
+									"queryId": "list_messages"
+								}
+							},
+							{
+								"kind": "expect",
+								"expect": {
+									"kind": "projection",
+									"projectionId": "latest_messages"
+								}
+							},
+							{
+								"kind": "expect",
+								"expect": {
+									"kind": "flow",
+									"flowId": "rejection_followup"
+								}
+							}
+						]
+					}
+				},
+				"artifactHash": "07afb6be3b15308acd6136a06b0ea408b098b097c1fc1a1c5cd3f6f17c12ad24"
+			},
+			"artifactHash": "d8c778097fd3d9691ae7b4d1d933d5b968d39a0455f871273841be301ddaa0e8"
+		},
+		"sessionIR": {
+			"artifactId": "CompiledSessionIR",
+			"artifactVersion": "1.0.0",
+			"lane": "runtime",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"artifactVersion": "1.0.0",
+				"fields": {},
+				"defaults": {}
+			},
+			"artifactHash": "f2551fae752500ca6218f1fc15acaac01882c809b9c2912907e6e3c8c5607b7c"
+		},
+		"viewRenderIR": {
+			"artifactId": "CompiledViewRenderIR",
+			"artifactVersion": "1.0.0",
+			"lane": "runtime",
+			"hashAlgorithm": "sha256",
+			"payload": {
+				"artifactVersion": "1.0.0",
+				"nodes": {
+					"messages_list": {
+						"id": "messages_list",
+						"type": "list",
+						"propPlans": {},
+						"children": [],
+						"interactions": {}
+					}
+				},
 				"screens": {
 					"home": {
+						"id": "home",
 						"data": {
 							"messages": {
 								"queryId": "list_messages",
 								"refreshOnSignals": ["message.created", "message.deleted"]
 							}
 						},
-						"id": "home",
 						"rootNodeIds": []
 					}
+				},
+				"screenOrder": ["home"],
+				"nodeOrder": ["messages_list"],
+				"nodeIntentPlans": {
+					"messages_list": {
+						"nodeId": "messages_list",
+						"interactionPlans": {}
+					}
+				}
+			},
+			"artifactHash": "2d730545cc4d3716fd921f4d8c5455bcde78b8e7a56d45039134487a9d6c7cef"
+		}
+	},
+	"projectionIR": {
+		"artifactVersion": "1.0.0",
+		"projections": {
+			"latest_messages": {
+				"projectionId": "latest_messages",
+				"strategy": "from_collection",
+				"sourceRef": {
+					"projectionId": "latest_messages",
+					"path": "domain.projections.latest_messages",
+					"strategy": "from_collection"
+				},
+				"collectionId": "messages",
+				"fields": [
+					{
+						"source": "id",
+						"as": "id"
+					},
+					{
+						"source": "message",
+						"as": "message"
+					}
+				],
+				"sort": [
+					{
+						"field": "created_at",
+						"direction": "desc"
+					}
+				],
+				"pagination": {
+					"mode": "page",
+					"pageArg": "page",
+					"pageSizeArg": "page_size",
+					"defaultPage": 1,
+					"defaultPageSize": 10,
+					"maxPageSize": 50
+				}
+			},
+			"messages_with_authors": {
+				"projectionId": "messages_with_authors",
+				"strategy": "from_collection",
+				"sourceRef": {
+					"projectionId": "messages_with_authors",
+					"path": "domain.projections.messages_with_authors",
+					"strategy": "from_collection"
+				},
+				"collectionId": "messages",
+				"fields": [
+					{
+						"source": "author_name",
+						"as": "author_name"
+					},
+					{
+						"source": "id",
+						"as": "id"
+					}
+				],
+				"sort": [
+					{
+						"field": "author_name",
+						"direction": "asc"
+					}
+				],
+				"pagination": {
+					"mode": "page",
+					"pageArg": "page",
+					"pageSizeArg": "page_size",
+					"defaultPage": 1,
+					"defaultPageSize": 10,
+					"maxPageSize": 50
+				}
+			}
+		},
+		"queries": {
+			"list_messages": {
+				"queryId": "list_messages",
+				"projectionId": "latest_messages",
+				"allowsAsOf": false,
+				"sourceRef": {
+					"queryId": "list_messages",
+					"path": "queries.0.returns.projection"
 				}
 			}
 		}
 	},
-	"reachabilityRequirements": {
-		"ids.generate@1.0.0": {
-			"mode": "local",
-			"portId": "ids.generate",
-			"portVersion": "1.0.0"
+	"viewRenderIR": {
+		"artifactVersion": "1.0.0",
+		"nodes": {
+			"messages_list": {
+				"id": "messages_list",
+				"type": "list",
+				"propPlans": {},
+				"children": [],
+				"interactions": {}
+			}
 		},
-		"legacy.audit@1.0.0": {
-			"mode": "unreachable",
-			"portId": "legacy.audit",
-			"portVersion": "1.0.0"
+		"screens": {
+			"home": {
+				"id": "home",
+				"data": {
+					"messages": {
+						"queryId": "list_messages",
+						"refreshOnSignals": ["message.created", "message.deleted"]
+					}
+				},
+				"rootNodeIds": []
+			}
 		},
-		"notifications.send@1.0.0": {
-			"mode": "delegated",
-			"portId": "notifications.send",
-			"portVersion": "1.0.0"
+		"screenOrder": ["home"],
+		"nodeOrder": ["messages_list"],
+		"nodeIntentPlans": {
+			"messages_list": {
+				"nodeId": "messages_list",
+				"interactionPlans": {}
+			}
 		}
+	},
+	"domainRuntimeIR": {
+		"artifactVersion": "1.0.0",
+		"actions": {
+			"guestbook.submit": {
+				"actionId": "guestbook.submit",
+				"steps": [],
+				"session": {
+					"onSuccess": "preserve",
+					"onFailure": "preserve"
+				}
+			}
+		},
+		"mutations": {
+			"submit_message": {
+				"entrypointId": "submit_message",
+				"actionId": "guestbook.submit",
+				"inputBindings": {
+					"message": {
+						"kind": "input",
+						"path": "message"
+					}
+				}
+			}
+		},
+		"queries": {
+			"list_messages": {
+				"queryId": "list_messages"
+			}
+		},
+		"flows": {
+			"rejection_followup": {
+				"flowId": "rejection_followup"
+			}
+		}
+	},
+	"sessionIR": {
+		"artifactVersion": "1.0.0",
+		"fields": {},
+		"defaults": {}
+	},
+	"scenarioIR": {
+		"artifactVersion": "1.0.0",
+		"sectionHash": "e0a39c6933bc52dd3fac973c07b49d388c985e09b0e9224e48c84420228ac7b3",
+		"personas": {
+			"frustrated_enterprise_buyer": {
+				"personaId": "frustrated_enterprise_buyer",
+				"description": "Senior ops manager with low patience who expects direct answers.",
+				"traits": {},
+				"history": [],
+				"tags": []
+			}
+		},
+		"scenarios": {
+			"happy_path_message_submission": {
+				"scenarioId": "happy_path_message_submission",
+				"tags": [],
+				"context": {
+					"personaId": "frustrated_enterprise_buyer"
+				},
+				"steps": [
+					{
+						"kind": "trigger",
+						"trigger": {
+							"entrypointKind": "mutation",
+							"entrypointId": "submit_message"
+						}
+					},
+					{
+						"kind": "expect",
+						"expect": {
+							"kind": "query",
+							"queryId": "list_messages"
+						}
+					},
+					{
+						"kind": "expect",
+						"expect": {
+							"kind": "projection",
+							"projectionId": "latest_messages"
+						}
+					},
+					{
+						"kind": "expect",
+						"expect": {
+							"kind": "flow",
+							"flowId": "rejection_followup"
+						}
+					}
+				]
+			}
+		},
+		"artifactHash": "07afb6be3b15308acd6136a06b0ea408b098b097c1fc1a1c5cd3f6f17c12ad24"
 	},
 	"refreshSubscriptions": {
 		"list_messages": {
@@ -748,23 +1606,40 @@
 			"signalIds": ["message.created", "message.deleted"]
 		}
 	},
-	"schemaArtifacts": {
-		"entrypoint.mutation.submit_message.input": {
-			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a",
-			"schema": {
-				"~standard": { "jsonSchema": {}, "vendor": "zod", "version": 1 },
-				"$schema": "https://json-schema.org/draft/2020-12/schema",
-				"additionalProperties": false,
-				"properties": { "message": { "type": "string" } },
-				"required": ["message"],
-				"type": "object"
+	"accessPlan": {
+		"defaultPolicy": "deny",
+		"knownRoles": ["admin", "anonymous", "authenticated"],
+		"roleDefinitions": {
+			"admin": {
+				"roleId": "admin",
+				"extends": [],
+				"deriveRules": []
 			},
-			"target": "draft-2020-12"
+			"anonymous": {
+				"roleId": "anonymous",
+				"extends": [],
+				"deriveRules": []
+			},
+			"authenticated": {
+				"roleId": "authenticated",
+				"extends": [],
+				"deriveRules": []
+			}
 		},
+		"entrypointRoles": {
+			"query:list_messages": ["authenticated"],
+			"mutation:submit_message": ["authenticated"]
+		}
+	},
+	"schemaArtifacts": {
 		"entrypoint.query.list_messages.input": {
-			"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d",
+			"target": "draft-2020-12",
 			"schema": {
-				"~standard": { "jsonSchema": {}, "vendor": "zod", "version": 1 },
+				"~standard": {
+					"jsonSchema": {},
+					"vendor": "zod",
+					"version": 1
+				},
 				"$schema": "https://json-schema.org/draft/2020-12/schema",
 				"additionalProperties": false,
 				"properties": {
@@ -778,146 +1653,34 @@
 						"minimum": -9007199254740991,
 						"type": "integer"
 					},
-					"q": { "type": "string" }
+					"q": {
+						"type": "string"
+					}
 				},
 				"type": "object"
 			},
-			"target": "draft-2020-12"
-		}
-	},
-	"sections": {
-		"access": {
-			"default_policy": "deny",
-			"roles": { "admin": {}, "anonymous": {}, "authenticated": {} }
+			"hash": "16955f1a4ce08a1bac4e5a7a90fb699ea8e53504d9112a96bda8b5dc380d040d"
 		},
-		"app": {
-			"id": "hello_world_demo",
-			"name": "Hello World Demo",
-			"tz": "UTC"
-		},
-		"domain": {
-			"actions": { "guestbook.submit": {} },
-			"capabilities": {
-				"ids.generate": { "version": "1.0.0" },
-				"legacy.audit": { "version": "1.0.0" },
-				"notifications.send": { "version": "1.0.0" }
-			},
-			"collections": {},
-			"flows": { "rejection_followup": {} },
-			"projections": { "latest_messages": {}, "messages_with_authors": {} },
-			"signals": { "message.created": {}, "message.deleted": {} }
-		},
-		"personas": {
-			"frustrated_enterprise_buyer": {
-				"description": "Senior ops manager with low patience who expects direct answers."
-			}
-		},
-		"routes": [
-			{
-				"access": { "roles": ["authenticated"] },
-				"id": "home_route",
-				"renders": "home"
-			}
-		],
-		"scenarios": {
-			"happy_path_message_submission": {
-				"context": { "persona": "frustrated_enterprise_buyer" },
-				"steps": [
-					{
-						"expect": {
-							"flow_completed": "rejection_followup",
-							"projection": "latest_messages",
-							"query": "list_messages"
-						},
-						"trigger": { "mutation": "submit_message" }
-					}
-				]
-			}
-		},
-		"session": { "fields": {} },
-		"views": {
-			"nodes": [{ "id": "messages_list", "type": "list" }],
-			"screens": [
-				{
-					"data": {
-						"messages": {
-							"query": "list_messages",
-							"refresh_on_signals": ["message.created", "message.deleted"]
-						}
-					},
-					"id": "home"
-				}
-			]
-		},
-		"wiring": {
-			"requirements": {
-				"capabilities": [
-					{
-						"mode": "delegated",
-						"portId": "notifications.send",
-						"portVersion": "1.0.0"
-					},
-					{ "mode": "local", "portId": "ids.generate", "portVersion": "1.0.0" },
-					{
-						"mode": "unreachable",
-						"portId": "legacy.audit",
-						"portVersion": "1.0.0"
-					}
-				]
-			},
-			"surfaces": {
-				"http": {
-					"mutations": {
-						"submit_message": {
-							"bind": { "message": "body.message" },
-							"method": "POST",
-							"path": "/messages"
-						}
-					},
-					"queries": {
-						"list_messages": {
-							"bind": {
-								"page": "query.page",
-								"page_size": "query.page_size",
-								"q": "query.q"
-							},
-							"method": "GET",
-							"path": "/messages"
-						}
-					},
-					"routes": { "home_route": { "bind": {} } }
-				}
-			}
-		}
-	},
-	"sourceSpecHash": "aee5792de6b5a57a0a789eb05036f792fc824ac349bc96912f532b198af7855d",
-	"viewRenderIR": {
-		"artifactVersion": "1.0.0",
-		"nodeIntentPlans": {
-			"messages_list": { "interactionPlans": {}, "nodeId": "messages_list" }
-		},
-		"nodeOrder": ["messages_list"],
-		"nodes": {
-			"messages_list": {
-				"children": [],
-				"id": "messages_list",
-				"interactions": {},
-				"propPlans": {},
-				"type": "list"
-			}
-		},
-		"screenOrder": ["home"],
-		"screens": {
-			"home": {
-				"data": {
-					"messages": {
-						"queryId": "list_messages",
-						"refreshOnSignals": ["message.created", "message.deleted"]
+		"entrypoint.mutation.submit_message.input": {
+			"target": "draft-2020-12",
+			"schema": {
+				"~standard": {
+					"jsonSchema": {},
+					"vendor": "zod",
+					"version": 1
+				},
+				"$schema": "https://json-schema.org/draft/2020-12/schema",
+				"additionalProperties": false,
+				"properties": {
+					"message": {
+						"type": "string"
 					}
 				},
-				"id": "home",
-				"rootNodeIds": []
-			}
+				"required": ["message"],
+				"type": "object"
+			},
+			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 		}
-	}
+	},
+	"artifactHash": "69f1b9c0e87d7530e07e3280a8629e3045c6d3666e249466009422c684277342"
 }

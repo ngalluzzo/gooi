@@ -1,18 +1,15 @@
 import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans";
-import type {
-	CompiledPersonaDefinition,
-	CompiledScenarioPlanSet,
-	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans";
+import type { ScenarioGeneratedInputLockSnapshot } from "@gooi/scenario-contracts/plans";
 import { reportPersonaCoverage } from "@gooi/scenario-runtime/coverage";
 import { runScenario } from "@gooi/scenario-runtime/run";
 import { runScenarioSuite } from "@gooi/scenario-runtime/suite";
+import { compileEntrypointBundle } from "@gooi/spec-compiler";
 
 const signalGuard: CompiledGuardDefinition = {
 	sourceRef: {
 		primitiveKind: "signal",
 		primitiveId: "message.created",
-		path: "scenarios.happy_path.steps.1.guard",
+		path: "scenarios.happy_path.steps.1.expect.guard",
 	},
 	onFail: "abort",
 	structural: [
@@ -34,57 +31,111 @@ const signalGuard: CompiledGuardDefinition = {
 	],
 };
 
-const planSet: CompiledScenarioPlanSet = {
-	artifactVersion: "1.0.0",
-	artifactHash: "scenario_hash",
-	sectionHash: "scenario_section_hash",
-	personas: {
-		guest: {
-			personaId: "guest",
-			description: "normal user",
-			traits: { tone: "neutral" },
-			history: [],
-			tags: ["authenticated"],
-		},
-	},
-	scenarios: {
-		happy_path: {
-			scenarioId: "happy_path",
-			tags: ["smoke"],
-			context: { personaId: "guest", principal: { subject: "user_1" } },
-			steps: [
+const compileScenarioPlanSet = () => {
+	const compiled = compileEntrypointBundle({
+		spec: {
+			app: {
+				id: "scenario_conformance_app",
+				name: "Scenario Conformance App",
+				tz: "UTC",
+			},
+			domain: {
+				actions: {
+					"guestbook.submit": {},
+				},
+			},
+			session: {
+				fields: {},
+			},
+			access: {
+				default_policy: "deny" as const,
+				roles: {
+					authenticated: {},
+				},
+			},
+			queries: [],
+			mutations: [
 				{
-					kind: "trigger",
-					trigger: {
-						entrypointKind: "mutation",
-						entrypointId: "submit_message",
-						generate: true,
+					id: "submit_message",
+					access: { roles: ["authenticated"] },
+					in: {
+						message: "text!",
 					},
-				},
-				{
-					kind: "expect",
-					expect: { kind: "signal", signalId: "message.created" },
-					guard: signalGuard,
-				},
-			],
-		},
-		rejection_path: {
-			scenarioId: "rejection_path",
-			tags: ["smoke"],
-			context: { personaId: "guest", principal: { subject: "user_2" } },
-			steps: [
-				{
-					kind: "trigger",
-					trigger: {
-						entrypointKind: "mutation",
-						entrypointId: "submit_message",
-						input: { message: "spam" },
+					run: {
+						actionId: "guestbook.submit",
+						input: {
+							message: { $expr: { var: "input.message" } },
+						},
 					},
 				},
 			],
+			routes: [],
+			personas: {
+				guest: {
+					description: "normal user",
+					traits: { tone: "neutral" },
+					history: [],
+					tags: ["authenticated"],
+				},
+			},
+			scenarios: {
+				happy_path: {
+					tags: ["smoke"],
+					context: { persona: "guest", principal: { subject: "user_1" } },
+					steps: [
+						{
+							trigger: {
+								mutation: "submit_message",
+								generate: true,
+							},
+						},
+						{
+							expect: {
+								signal: "message.created",
+								guard: signalGuard,
+							},
+						},
+					],
+				},
+				rejection_path: {
+					tags: ["smoke"],
+					context: { persona: "guest", principal: { subject: "user_2" } },
+					steps: [
+						{
+							trigger: {
+								mutation: "submit_message",
+								input: { message: "spam" },
+							},
+						},
+						{
+							expect: {
+								signal: "message.created",
+							},
+						},
+					],
+				},
+			},
+			wiring: {
+				surfaces: {},
+			},
+			views: {
+				nodes: [],
+				screens: [],
+			},
 		},
-	},
+		compilerVersion: "1.0.0",
+	});
+
+	if (!compiled.ok) {
+		throw new Error(
+			`Scenario conformance fixture compile failed: ${compiled.diagnostics.map((item) => item.code).join(",")}`,
+		);
+	}
+
+	return compiled.bundle.scenarioIR;
 };
+
+const planSet = compileScenarioPlanSet();
 
 const lockSnapshot: ScenarioGeneratedInputLockSnapshot = {
 	generated: {
@@ -98,12 +149,6 @@ const invokeEntrypoint = async (input: {
 	readonly entrypointKind: "mutation" | "query";
 	readonly entrypointId: string;
 	readonly input: Readonly<Record<string, unknown>>;
-	readonly context: {
-		readonly principal?: Readonly<Record<string, unknown>>;
-		readonly session?: Readonly<Record<string, unknown>>;
-		readonly persona?: CompiledPersonaDefinition;
-		readonly providerOverrides?: Readonly<Record<string, unknown>>;
-	};
 }) => {
 	if (input.entrypointKind === "mutation") {
 		const message = String(input.input.message ?? "");

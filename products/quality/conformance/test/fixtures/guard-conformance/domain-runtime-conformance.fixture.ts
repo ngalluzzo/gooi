@@ -4,9 +4,114 @@ import type {
 	CompiledInvariantDefinition,
 } from "@gooi/guard-contracts/plans";
 import { createProjectionRuntime } from "@gooi/projection-runtime";
+import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { envelope } from "@gooi/surface-contracts/envelope";
 import { createSignalPayloadHash } from "./guard-definitions.fixture";
 import { projectionPlan } from "./projection-plan.fixture";
+
+const compileGuardConformanceRuntimeIR = (input: {
+	readonly collectionInvariant: CompiledInvariantDefinition;
+	readonly actionGuard: CompiledGuardDefinition;
+	readonly signalGuard: CompiledGuardDefinition;
+	readonly flowGuard: CompiledGuardDefinition;
+}) => {
+	const compiled = compileEntrypointBundle({
+		spec: {
+			app: {
+				id: "guard_conformance_app",
+				name: "Guard Conformance App",
+				tz: "UTC",
+			},
+			domain: {
+				actions: {
+					"guestbook.submit": {
+						guards: {
+							pre: input.actionGuard,
+						},
+						steps: [
+							{
+								stepId: "persist",
+								capabilityId: "collections.write",
+								input: {
+									fields: {
+										message: {
+											$expr: { var: "input.message" },
+										},
+									},
+								},
+								invariants: [input.collectionInvariant],
+							},
+						],
+						signalGuards: [
+							{
+								signalId: "message.rejected",
+								definition: input.signalGuard,
+							},
+						],
+						flowGuards: [
+							{
+								flowId: "rejection_followup",
+								definition: input.flowGuard,
+							},
+						],
+						session: {
+							onSuccess: "clear",
+							onFailure: "preserve",
+						},
+					},
+				},
+				flows: {
+					rejection_followup: {},
+				},
+			},
+			session: {
+				fields: {},
+			},
+			access: {
+				default_policy: "deny" as const,
+				roles: {
+					authenticated: {},
+				},
+			},
+			queries: [],
+			mutations: [
+				{
+					id: "submit_message",
+					access: { roles: ["authenticated"] },
+					in: {
+						message: "text!",
+					},
+					run: {
+						actionId: "guestbook.submit",
+						input: {
+							message: { $expr: { var: "input.message" } },
+						},
+					},
+				},
+			],
+			routes: [],
+			personas: {},
+			scenarios: {},
+			wiring: {
+				surfaces: {},
+			},
+			views: {
+				nodes: [],
+				screens: [],
+			},
+		},
+		compilerVersion: "1.0.0",
+	});
+	if (!compiled.ok) {
+		throw new Error(
+			`Guard conformance fixture compile failed: ${compiled.diagnostics.map((item) => item.code).join(",")}`,
+		);
+	}
+	return {
+		domainRuntimeIR: compiled.bundle.domainRuntimeIR,
+		sessionIR: compiled.bundle.sessionIR,
+	};
+};
 
 export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 	readonly collectionInvariant: CompiledInvariantDefinition;
@@ -15,46 +120,16 @@ export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 	readonly flowGuard: CompiledGuardDefinition;
 	readonly projectionGuard: CompiledInvariantDefinition;
 }) => {
+	const { domainRuntimeIR, sessionIR } = compileGuardConformanceRuntimeIR({
+		collectionInvariant: input.collectionInvariant,
+		actionGuard: input.actionGuard,
+		signalGuard: input.signalGuard,
+		flowGuard: input.flowGuard,
+	});
+
 	const runtime = createDomainRuntimeConformanceHarness({
-		mutationEntrypointActionMap: {
-			submit_message: "guestbook.submit",
-		},
-		actions: {
-			"guestbook.submit": {
-				actionId: "guestbook.submit",
-				guards: {
-					pre: input.actionGuard,
-				},
-				steps: [
-					{
-						stepId: "persist",
-						capabilityId: "collections.write",
-						input: {
-							fields: {
-								message: { kind: "input", path: "message" },
-							},
-						},
-						invariants: [input.collectionInvariant],
-					},
-				],
-				signalGuards: [
-					{
-						signalId: "message.rejected",
-						definition: input.signalGuard,
-					},
-				],
-				flowGuards: [
-					{
-						flowId: "rejection_followup",
-						definition: input.flowGuard,
-					},
-				],
-				session: {
-					onSuccess: "clear",
-					onFailure: "preserve",
-				},
-			},
-		},
+		domainRuntimeIR,
+		sessionIR,
 		capabilities: {
 			"collections.write": {
 				capabilityId: "collections.write",

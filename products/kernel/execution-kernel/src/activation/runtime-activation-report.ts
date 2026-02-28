@@ -5,7 +5,12 @@ import type { ArtifactManifestValidationDiagnostic } from "@gooi/artifact-model/
  * One required manifest artifact identity captured in activation diagnostics.
  */
 export interface RuntimeActivationArtifactIdentity {
-	readonly artifactKey: "runtimeEntrypointContracts" | "bindingRequirements";
+	readonly artifactKey:
+		| "runtimeEntrypointContracts"
+		| "bindingRequirements"
+		| "projectionIR"
+		| "domainRuntimeIR"
+		| "sessionIR";
 	readonly lane: "runtime" | "marketplace";
 	readonly artifactId: string | null;
 	readonly artifactVersion: string | null;
@@ -43,6 +48,31 @@ const buildRequiredArtifacts = (
 			bundle.laneArtifacts.bindingRequirements?.artifactVersion ?? null,
 		artifactHash:
 			bundle.laneArtifacts.bindingRequirements?.artifactHash ?? null,
+		hashAlgorithm: "sha256",
+	},
+	{
+		artifactKey: "projectionIR",
+		lane: "runtime",
+		artifactId: bundle.laneArtifacts.projectionIR?.artifactId ?? null,
+		artifactVersion: bundle.laneArtifacts.projectionIR?.artifactVersion ?? null,
+		artifactHash: bundle.laneArtifacts.projectionIR?.artifactHash ?? null,
+		hashAlgorithm: "sha256",
+	},
+	{
+		artifactKey: "domainRuntimeIR",
+		lane: "runtime",
+		artifactId: bundle.laneArtifacts.domainRuntimeIR?.artifactId ?? null,
+		artifactVersion:
+			bundle.laneArtifacts.domainRuntimeIR?.artifactVersion ?? null,
+		artifactHash: bundle.laneArtifacts.domainRuntimeIR?.artifactHash ?? null,
+		hashAlgorithm: "sha256",
+	},
+	{
+		artifactKey: "sessionIR",
+		lane: "runtime",
+		artifactId: bundle.laneArtifacts.sessionIR?.artifactId ?? null,
+		artifactVersion: bundle.laneArtifacts.sessionIR?.artifactVersion ?? null,
+		artifactHash: bundle.laneArtifacts.sessionIR?.artifactHash ?? null,
 		hashAlgorithm: "sha256",
 	},
 	{

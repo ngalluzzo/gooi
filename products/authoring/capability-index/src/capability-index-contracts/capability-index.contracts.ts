@@ -13,6 +13,27 @@ export const capabilityIndexArtifactVersionSchema = z.literal("1.0.0");
 export const capabilityProvenanceSchema = z.enum(["local-spec", "catalog"]);
 
 /**
+ * Certification lifecycle state for a capability entry.
+ */
+export const capabilityCertificationStateSchema = z.enum([
+	"uncertified",
+	"pending",
+	"certified",
+	"rejected",
+	"revoked",
+]);
+
+/**
+ * Trust posture tier for capability resolution and diagnostics.
+ */
+export const capabilityTrustTierSchema = z.enum([
+	"unknown",
+	"community",
+	"verified",
+	"trusted",
+]);
+
+/**
  * One provider availability record for a capability.
  */
 export const capabilityProviderAvailabilitySchema = z.object({
@@ -52,6 +73,13 @@ export const capabilityIndexEntrySchema = z.object({
 	examples: capabilityExamplePayloadsSchema,
 	providerAvailability: z.array(capabilityProviderAvailabilitySchema),
 	provenance: capabilityProvenanceSchema,
+	certificationState: capabilityCertificationStateSchema,
+	trustTier: capabilityTrustTierSchema,
+	lastVerifiedAt: z.iso.datetime().nullable(),
+});
+
+const buildCapabilityIndexEntryInputSchema = capabilityIndexEntrySchema.omit({
+	provenance: true,
 });
 
 const catalogIdentitySchema = z.object({
@@ -72,6 +100,16 @@ export const capabilityIndexSnapshotSchema = z.object({
 });
 
 /**
+ * Input payload for capability index snapshot creation.
+ */
+export const buildCapabilityIndexSnapshotInputSchema = z.object({
+	sourceHash: z.string().regex(/^[a-f0-9]{64}$/),
+	catalogIdentity: catalogIdentitySchema,
+	localCapabilities: z.array(buildCapabilityIndexEntryInputSchema),
+	catalogCapabilities: z.array(buildCapabilityIndexEntryInputSchema),
+});
+
+/**
  * Parsed capability index entry.
  */
 export type CapabilityIndexEntry = z.infer<typeof capabilityIndexEntrySchema>;
@@ -86,19 +124,6 @@ export type CapabilityIndexSnapshot = z.infer<
 /**
  * Input payload for capability index snapshot creation.
  */
-export interface BuildCapabilityIndexSnapshotInput {
-	/** Content hash of source artifacts used to build the snapshot. */
-	readonly sourceHash: string;
-	/** Catalog identity associated with this snapshot. */
-	readonly catalogIdentity: z.infer<typeof catalogIdentitySchema>;
-	/** Local spec-defined capabilities. */
-	readonly localCapabilities: readonly Omit<
-		CapabilityIndexEntry,
-		"provenance"
-	>[];
-	/** Catalog-defined capabilities. */
-	readonly catalogCapabilities: readonly Omit<
-		CapabilityIndexEntry,
-		"provenance"
-	>[];
-}
+export type BuildCapabilityIndexSnapshotInput = z.infer<
+	typeof buildCapabilityIndexSnapshotInputSchema
+>;

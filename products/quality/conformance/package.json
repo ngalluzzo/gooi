@@ -29,6 +29,12 @@
 			"import": "./dist/authoring-conformance/run-authoring-conformance.js",
 			"default": "./dist/authoring-conformance/run-authoring-conformance.js"
 		},
+		"./cross-client-readiness": {
+			"types": "./src/cross-client-readiness-conformance/run-cross-client-readiness-conformance.ts",
+			"bun": "./src/cross-client-readiness-conformance/run-cross-client-readiness-conformance.ts",
+			"import": "./dist/cross-client-readiness-conformance/run-cross-client-readiness-conformance.js",
+			"default": "./dist/cross-client-readiness-conformance/run-cross-client-readiness-conformance.js"
+		},
 		"./host": {
 			"types": "./src/host-conformance/run-host-conformance.ts",
 			"bun": "./src/host-conformance/run-host-conformance.ts",
@@ -64,6 +70,12 @@
 			"bun": "./src/authoring-conformance/contracts.ts",
 			"import": "./dist/authoring-conformance/contracts.js",
 			"default": "./dist/authoring-conformance/contracts.js"
+		},
+		"./cross-client-readiness-contracts": {
+			"types": "./src/cross-client-readiness-conformance/contracts.ts",
+			"bun": "./src/cross-client-readiness-conformance/contracts.ts",
+			"import": "./dist/cross-client-readiness-conformance/contracts.js",
+			"default": "./dist/cross-client-readiness-conformance/contracts.js"
 		},
 		"./host-contracts": {
 			"types": "./src/host-conformance/contracts.ts",
@@ -182,7 +194,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts ./src/render-adapter-conformance/*.ts ./src/render-refresh-conformance/*.ts ./src/dispatch-render-conformance/*.ts ./src/surface-extension-conformance/*.ts ./src/guard-conformance/*.ts ./src/scenario-conformance/*.ts --outdir ./dist --external zod --external @gooi/conformance-contracts/checks --external @gooi/conformance-contracts/reports --external @gooi/conformance-contracts/diagnostics --external @gooi/execution-kernel/projection --external @gooi/execution-kernel/entrypoint --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/result --external @gooi/kernel-contracts/semantic-engine --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh --external @gooi/render-contracts --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-runtime/evaluate --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-runtime/run --external @gooi/scenario-runtime/suite --external @gooi/scenario-runtime/coverage --external @gooi/surface-contracts --external @gooi/surface-runtime",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/cross-client-readiness-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts ./src/render-adapter-conformance/*.ts ./src/render-refresh-conformance/*.ts ./src/dispatch-render-conformance/*.ts ./src/surface-extension-conformance/*.ts ./src/guard-conformance/*.ts ./src/scenario-conformance/*.ts --outdir ./dist --external zod --external @gooi/conformance-contracts/checks --external @gooi/conformance-contracts/reports --external @gooi/conformance-contracts/diagnostics --external @gooi/execution-kernel/projection --external @gooi/execution-kernel/entrypoint --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/result --external @gooi/kernel-contracts/semantic-engine --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh --external @gooi/render-contracts --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-runtime/evaluate --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-runtime/run --external @gooi/scenario-runtime/suite --external @gooi/scenario-runtime/coverage --external @gooi/surface-contracts --external @gooi/surface-runtime",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

@@ -10,6 +10,7 @@ describe("parseExtensionSettings", () => {
 			contextPath: ".gooi/authoring-context.json",
 			diagnosticsMode: "push",
 			enableCodeLens: true,
+			telemetryEnabled: false,
 		});
 	});
 
@@ -18,12 +19,14 @@ describe("parseExtensionSettings", () => {
 			contextPath: ".gooi/alt-context.json",
 			diagnosticsMode: "pull",
 			enableCodeLens: false,
+			telemetryEnabled: true,
 		});
 
 		expect(settings).toEqual({
 			contextPath: ".gooi/alt-context.json",
 			diagnosticsMode: "pull",
 			enableCodeLens: false,
+			telemetryEnabled: true,
 		});
 	});
 });

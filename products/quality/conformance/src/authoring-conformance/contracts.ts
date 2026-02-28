@@ -1,6 +1,8 @@
+import { lockfileContracts } from "@gooi/authoring-contracts/lockfile";
 import { checksContracts } from "@gooi/conformance-contracts/checks";
 import { reportsContracts } from "@gooi/conformance-contracts/reports";
 import { authoringPositionSchema } from "@gooi/language-server/contracts/positions";
+import { authoringReadContextSchema } from "@gooi/language-server/contracts/read-context";
 import { z } from "zod";
 
 /**
@@ -8,7 +10,11 @@ import { z } from "zod";
  */
 export const authoringConformanceCheckIdSchema = z.enum([
 	"completion_correctness",
+	"cli_lsp_parity",
 	"diagnostics_parity",
+	"reachability_diagnostics",
+	"guard_scenario_diagnostics",
+	"guard_scenario_completion",
 	"lens_correctness",
 	"rename_safety",
 	"expression_symbol_resolution",
@@ -50,19 +56,15 @@ export type AuthoringConformanceReport = z.infer<
  * Input payload for running authoring conformance checks.
  */
 export const runAuthoringConformanceInputSchema = z.object({
-	context: z.object({
-		documentUri: z.string().min(1),
-		documentPath: z.string().min(1),
-		documentText: z.string(),
-		compiledEntrypointBundleIdentity: z.any(),
-		capabilityIndexSnapshot: z.any(),
-		symbolGraphSnapshot: z.any(),
-		lockfile: z.any(),
-	}),
-	staleLockfile: z.any(),
+	context: authoringReadContextSchema,
+	staleLockfile: lockfileContracts.authoringLockfileSchema,
+	invalidReachabilitySourceSpec: z.unknown().optional(),
+	invalidGuardScenarioSourceSpec: z.unknown().optional(),
 	positions: z.object({
 		capabilityCompletion: authoringPositionSchema,
 		signalCompletion: authoringPositionSchema,
+		guardPolicyCompletion: authoringPositionSchema,
+		scenarioPersonaCompletion: authoringPositionSchema,
 		expressionReference: authoringPositionSchema,
 		ambientSymbol: authoringPositionSchema,
 	}),

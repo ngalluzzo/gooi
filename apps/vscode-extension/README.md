@@ -24,6 +24,7 @@ Features:
 - `gooi.authoring.contextPath` (default `.gooi/authoring-context.json`)
 - `gooi.authoring.diagnosticsMode` (`push` | `pull`, default `push`)
 - `gooi.authoring.enableCodeLens` (default `true`)
+- `gooi.authoring.telemetryEnabled` (default `false`, opt-in)
 
 ## Build and test
 
@@ -43,12 +44,14 @@ Publishing workflow:
 
 1. Build and package VSIX.
 2. Validate smoke tests and runbooks.
-3. Publish with `vsce` using a scoped marketplace token.
+3. Publish to the VS Code Marketplace first with `vsce` and scoped token.
+4. Treat Open VSX distribution as a follow-up release wave.
 
 Runbooks:
 
 - [release-runbook.md](./docs/release-runbook.md)
 - [rollback-runbook.md](./docs/rollback-runbook.md)
+- [privacy-and-telemetry.md](./docs/privacy-and-telemetry.md)
 
 ## Changelog
 

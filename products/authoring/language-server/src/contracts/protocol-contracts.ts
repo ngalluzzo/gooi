@@ -5,9 +5,18 @@ import { authoringCompletionItemSchema } from "./completion-contracts";
 import { authoringPositionSchema } from "./positions";
 
 /**
+ * Protocol request identifier.
+ */
+export const authoringProtocolRequestIdSchema = z.union([
+	z.string().min(1),
+	z.number().int().nonnegative(),
+]);
+
+/**
  * Supported protocol methods for authoring protocol test server.
  */
 export const authoringProtocolMethodSchema = z.enum([
+	"$/cancelRequest",
 	"textDocument/didOpen",
 	"textDocument/didChange",
 	"gooi/pullDiagnostics",
@@ -28,7 +37,7 @@ export const authoringProtocolMethodSchema = z.enum([
  * Protocol request envelope used by authoring protocol handlers.
  */
 export const authoringProtocolRequestSchema = z.object({
-	id: z.union([z.string().min(1), z.number().int().nonnegative()]).nullable(),
+	id: authoringProtocolRequestIdSchema.nullable(),
 	method: authoringProtocolMethodSchema,
 	params: z.unknown(),
 });
@@ -41,10 +50,17 @@ export type AuthoringProtocolRequest = z.infer<
 >;
 
 /**
+ * Parsed protocol request id.
+ */
+export type AuthoringProtocolRequestId = z.infer<
+	typeof authoringProtocolRequestIdSchema
+>;
+
+/**
  * Protocol response envelope used by authoring protocol handlers.
  */
 export const authoringProtocolResponseSchema = z.object({
-	id: z.union([z.string().min(1), z.number().int().nonnegative()]).nullable(),
+	id: authoringProtocolRequestIdSchema.nullable(),
 	result: z.unknown().optional(),
 	error: z
 		.object({
@@ -59,6 +75,13 @@ export const authoringProtocolResponseSchema = z.object({
 export type AuthoringProtocolResponse = z.infer<
 	typeof authoringProtocolResponseSchema
 >;
+
+/**
+ * Protocol params for request cancellation.
+ */
+export const authoringProtocolCancelParamsSchema = z.object({
+	id: authoringProtocolRequestIdSchema,
+});
 
 /**
  * Protocol params for completion.

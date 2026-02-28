@@ -4,10 +4,6 @@ import type {
 } from "@gooi/artifact-model/manifest";
 import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
-import type {
-	CompiledGuardDefinition,
-	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans";
 import type { CompiledProjectionIR } from "@gooi/projection-contracts/plans";
 import type { CompiledViewRenderIR } from "@gooi/render-contracts/ir";
 import type { CompiledScenarioPlanSet } from "@gooi/scenario-contracts/plans";
@@ -18,9 +14,51 @@ import {
 	type DiagnosticSeverity as SharedDiagnosticSeverity,
 	diagnosticSeveritySchema as sharedDiagnosticSeveritySchema,
 } from "../diagnostics/diagnostics";
+import type {
+	CompiledDomainActionGuardPlan as CompiledDomainActionGuardPlanValue,
+	CompiledDomainActionPlan as CompiledDomainActionPlanValue,
+	CompiledDomainActionStepInputPlan as CompiledDomainActionStepInputPlanValue,
+	CompiledDomainActionStepPlan as CompiledDomainActionStepPlanValue,
+	CompiledDomainCapabilityInputContract as CompiledDomainCapabilityInputContractValue,
+	CompiledDomainFlowGuardPlan as CompiledDomainFlowGuardPlanValue,
+	CompiledDomainFlowPlan as CompiledDomainFlowPlanValue,
+	CompiledDomainMutationPlan as CompiledDomainMutationPlanValue,
+	CompiledDomainQueryPlan as CompiledDomainQueryPlanValue,
+	CompiledDomainRuntimeIR as CompiledDomainRuntimeIRValue,
+	CompiledDomainSessionOutcomePolicy as CompiledDomainSessionOutcomePolicyValue,
+	CompiledDomainSignalGuardPlan as CompiledDomainSignalGuardPlanValue,
+	CompiledDomainValueSource as CompiledDomainValueSourceValue,
+	CompiledSessionFieldPlan as CompiledSessionFieldPlanValue,
+	CompiledSessionIR as CompiledSessionIRValue,
+} from "./domain-session-ir";
+import {
+	compiledDomainRuntimeIRVersion as compiledDomainRuntimeIRVersionValue,
+	compiledSessionIRVersion as compiledSessionIRVersionValue,
+} from "./domain-session-ir";
 
 export type { CompiledProjectionIR } from "@gooi/projection-contracts/plans";
 export type { CompiledScenarioPlanSet } from "@gooi/scenario-contracts/plans";
+export const compiledDomainRuntimeIRVersion =
+	compiledDomainRuntimeIRVersionValue;
+export const compiledSessionIRVersion = compiledSessionIRVersionValue;
+export type CompiledDomainActionGuardPlan = CompiledDomainActionGuardPlanValue;
+export type CompiledDomainActionPlan = CompiledDomainActionPlanValue;
+export type CompiledDomainActionStepInputPlan =
+	CompiledDomainActionStepInputPlanValue;
+export type CompiledDomainActionStepPlan = CompiledDomainActionStepPlanValue;
+export type CompiledDomainCapabilityInputContract =
+	CompiledDomainCapabilityInputContractValue;
+export type CompiledDomainFlowGuardPlan = CompiledDomainFlowGuardPlanValue;
+export type CompiledDomainFlowPlan = CompiledDomainFlowPlanValue;
+export type CompiledDomainMutationPlan = CompiledDomainMutationPlanValue;
+export type CompiledDomainQueryPlan = CompiledDomainQueryPlanValue;
+export type CompiledDomainRuntimeIR = CompiledDomainRuntimeIRValue;
+export type CompiledDomainSessionOutcomePolicy =
+	CompiledDomainSessionOutcomePolicyValue;
+export type CompiledDomainSignalGuardPlan = CompiledDomainSignalGuardPlanValue;
+export type CompiledDomainValueSource = CompiledDomainValueSourceValue;
+export type CompiledSessionFieldPlan = CompiledSessionFieldPlanValue;
+export type CompiledSessionIR = CompiledSessionIRValue;
 
 /**
  * Version identifier for compiled entrypoint bundle artifacts.
@@ -226,147 +264,6 @@ export interface CompiledRefreshSubscription {
 	readonly queryId: string;
 	/** Sorted unique signal ids that invalidate the query. */
 	readonly signalIds: readonly string[];
-}
-
-/**
- * Version identifier for compiled domain runtime IR artifacts.
- */
-export const compiledDomainRuntimeIRVersion = "1.0.0" as const;
-
-/**
- * Version identifier for compiled session IR artifacts.
- */
-export const compiledSessionIRVersion = "1.0.0" as const;
-
-/**
- * Value source used for compiled mutation step-input bindings.
- */
-export type CompiledDomainValueSource =
-	| { readonly kind: "input"; readonly path: string }
-	| { readonly kind: "literal"; readonly value: unknown };
-
-/**
- * Compiled capability input contract validated before invocation.
- */
-export interface CompiledDomainCapabilityInputContract {
-	readonly requiredKeys: readonly string[];
-	readonly allowedKeys?: readonly string[];
-	readonly allowUnknownKeys?: boolean;
-}
-
-/**
- * Compiled action step input plan.
- */
-export interface CompiledDomainActionStepInputPlan {
-	readonly fields: Readonly<Record<string, CompiledDomainValueSource>>;
-	readonly defaults?: Readonly<Record<string, unknown>>;
-}
-
-/**
- * Compiled action step execution plan.
- */
-export interface CompiledDomainActionStepPlan {
-	readonly stepId: string;
-	readonly capabilityId: string;
-	readonly input: CompiledDomainActionStepInputPlan;
-	readonly invariants?: readonly CompiledInvariantDefinition[];
-}
-
-/**
- * Compiled action-level guard declarations.
- */
-export interface CompiledDomainActionGuardPlan {
-	readonly pre?: CompiledGuardDefinition;
-	readonly post?: CompiledGuardDefinition;
-}
-
-/**
- * Compiled signal guard binding.
- */
-export interface CompiledDomainSignalGuardPlan {
-	readonly signalId: string;
-	readonly definition: CompiledGuardDefinition;
-}
-
-/**
- * Compiled flow guard binding.
- */
-export interface CompiledDomainFlowGuardPlan {
-	readonly flowId: string;
-	readonly definition: CompiledGuardDefinition;
-}
-
-/**
- * Compiled session outcome policy for one action.
- */
-export interface CompiledDomainSessionOutcomePolicy {
-	readonly onSuccess: "clear" | "preserve";
-	readonly onFailure: "clear" | "preserve";
-}
-
-/**
- * Compiled action execution plan.
- */
-export interface CompiledDomainActionPlan {
-	readonly actionId: string;
-	readonly steps: readonly CompiledDomainActionStepPlan[];
-	readonly guards?: CompiledDomainActionGuardPlan;
-	readonly signalGuards?: readonly CompiledDomainSignalGuardPlan[];
-	readonly flowGuards?: readonly CompiledDomainFlowGuardPlan[];
-	readonly session: CompiledDomainSessionOutcomePolicy;
-}
-
-/**
- * Compiled mutation-to-action plan.
- */
-export interface CompiledDomainMutationPlan {
-	readonly entrypointId: string;
-	readonly actionId: string;
-	readonly inputBindings: Readonly<Record<string, CompiledDomainValueSource>>;
-}
-
-/**
- * Compiled query entrypoint plan resolved by domain runtime.
- */
-export interface CompiledDomainQueryPlan {
-	readonly queryId: string;
-}
-
-/**
- * Compiled flow declaration used for scenario/guard references.
- */
-export interface CompiledDomainFlowPlan {
-	readonly flowId: string;
-}
-
-/**
- * Canonical compiled domain runtime IR consumed by mutation/query orchestration.
- */
-export interface CompiledDomainRuntimeIR {
-	readonly artifactVersion: typeof compiledDomainRuntimeIRVersion;
-	readonly actions: Readonly<Record<string, CompiledDomainActionPlan>>;
-	readonly mutations: Readonly<Record<string, CompiledDomainMutationPlan>>;
-	readonly queries: Readonly<Record<string, CompiledDomainQueryPlan>>;
-	readonly flows: Readonly<Record<string, CompiledDomainFlowPlan>>;
-}
-
-/**
- * Compiled session field contract consumed by runtime validation.
- */
-export interface CompiledSessionFieldPlan {
-	readonly fieldId: string;
-	readonly definition: unknown;
-	readonly required: boolean;
-	readonly hasDefault: boolean;
-}
-
-/**
- * Canonical compiled session IR consumed by runtime/session semantics.
- */
-export interface CompiledSessionIR {
-	readonly artifactVersion: typeof compiledSessionIRVersion;
-	readonly fields: Readonly<Record<string, CompiledSessionFieldPlan>>;
-	readonly defaults: Readonly<Record<string, unknown>>;
 }
 
 /**

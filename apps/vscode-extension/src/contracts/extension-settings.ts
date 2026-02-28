@@ -12,6 +12,7 @@ export const gooiExtensionSettingsSchema = z.object({
 	contextPath: z.string().min(1).default(".gooi/authoring-context.json"),
 	diagnosticsMode: gooiDiagnosticsModeSchema.default("push"),
 	enableCodeLens: z.boolean().default(true),
+	telemetryEnabled: z.boolean().default(false),
 });
 
 /**

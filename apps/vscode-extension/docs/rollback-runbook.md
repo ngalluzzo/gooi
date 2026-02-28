@@ -16,5 +16,5 @@
 ## Validation
 
 1. Re-run smoke checks on rolled-back version.
-2. Confirm telemetry stabilizes.
+2. Confirm telemetry stabilizes for opted-in users.
 3. Update incident log with root-cause and forward fix plan.

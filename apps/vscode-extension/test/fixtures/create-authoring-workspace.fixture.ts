@@ -77,6 +77,9 @@ const capabilityInput: BuildCapabilityIndexSnapshotInput = {
 			deprecation: { isDeprecated: false },
 			examples: { input: { userId: "u_1" }, output: { allowed: true } },
 			providerAvailability: [],
+			certificationState: "uncertified",
+			trustTier: "unknown",
+			lastVerifiedAt: null,
 		},
 	],
 	catalogCapabilities: [
@@ -98,6 +101,9 @@ const capabilityInput: BuildCapabilityIndexSnapshotInput = {
 					status: "available",
 				},
 			],
+			certificationState: "certified",
+			trustTier: "trusted",
+			lastVerifiedAt: "2026-02-26T00:00:00.000Z",
 		},
 	],
 };

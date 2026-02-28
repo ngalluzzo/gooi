@@ -17,6 +17,8 @@ describe("lsp navigation read path", () => {
 		expect(result.parity.status).toBe("matched");
 		expect(result.hover?.contents).toContain("message.is_allowed");
 		expect(result.hover?.contents).toContain("capability");
+		expect(result.hover?.contents).toContain("certification: uncertified");
+		expect(result.hover?.contents).toContain("trust tier: unknown");
 	});
 
 	test("resolves definition for expression reference to step binding", () => {

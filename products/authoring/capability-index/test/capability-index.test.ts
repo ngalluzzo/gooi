@@ -72,4 +72,27 @@ describe("capability-index", () => {
 			}),
 		).toBeUndefined();
 	});
+
+	test("stores certification and trust metadata in snapshot entries", () => {
+		const snapshot = parseCapabilityIndexSnapshot(capabilityIndexGolden);
+		const catalogCapability = resolveCapability(snapshot, {
+			capabilityId: "gooi-marketplace-bun-sqlite.insert_message",
+			capabilityVersion: "1.0.0",
+		});
+		const localCapability = resolveCapability(snapshot, {
+			capabilityId: "message.is_allowed",
+			capabilityVersion: "1.0.0",
+		});
+
+		expect(catalogCapability).toMatchObject({
+			certificationState: "certified",
+			trustTier: "trusted",
+			lastVerifiedAt: "2026-02-26T00:00:00.000Z",
+		});
+		expect(localCapability).toMatchObject({
+			certificationState: "uncertified",
+			trustTier: "unknown",
+			lastVerifiedAt: null,
+		});
+	});
 });

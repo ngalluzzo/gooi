@@ -28,6 +28,8 @@ The package is deterministic and artifact-driven. It consumes:
 - Rename preflight (`prepareRename`) and workspace edits (`rename`) with conflict checks
 - Stateful session helpers for `didOpen` / `didChange` integration loops
 - Protocol test server for LSP-style message routing in E2E fixture tests
+- CLI envelope executor for `diagnose`, `complete`, `rename`, and `index.build`
+- Cross-client deviation catalog contract with deterministic mitigation guidance
 - Latency threshold tests enforcing RFC-0003 p95 targets in the test suite
 
 ## Installation
@@ -65,6 +67,23 @@ console.log(result.parity.status, result.items.map((item) => item.label));
 - `applyAuthoringRename(value)`
 - `createAuthoringSession(value)`
 - `createAuthoringProtocolServer(value)`
+- `executeAuthoringCliEnvelope(value)`
+- `authoringClientDeviationCatalog`
+
+## CLI Commands
+
+Commands read JSON payload from stdin and emit authoring result/error envelopes:
+
+```bash
+bun run authoring:diagnose < payload.json
+bun run authoring:complete < payload.json
+bun run authoring:rename < payload.json
+bun run authoring:index < payload.json
+```
+
+CLI stability policy:
+- Command behavior is contract-bound to authoring envelope schemas (`AuthoringRequestEnvelope`, `AuthoringResultEnvelope`, `AuthoringErrorEnvelope`).
+- CLI handlers share language-server feature handlers to prevent payload-shape drift between CLI and LSP/protocol paths.
 
 ## Development
 

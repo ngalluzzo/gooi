@@ -18,9 +18,10 @@
    - verify completion, diagnostics, and rename flows.
 4. Publish:
    - `bunx @vscode/vsce publish --packagePath <vsix-file> --pat "$VSCE_TOKEN"`
+   - publish to VS Code Marketplace first for initial release waves.
 
 ## Post-release checks
 
 1. Verify Marketplace listing is updated.
-2. Validate activation and error telemetry for the new version.
+2. Validate activation and error telemetry for opted-in users only.
 3. Confirm no elevated crash-rate or latency alert in first 30 minutes.

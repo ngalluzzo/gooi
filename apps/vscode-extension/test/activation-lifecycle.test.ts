@@ -26,6 +26,7 @@ describe("activateExtension", () => {
 		expect(activation.settings.contextPath).toBe(
 			".gooi/authoring-context.json",
 		);
+		expect(activation.settings.telemetryEnabled).toBe(false);
 
 		await hostFixture.emitDidOpen({
 			uri: workspace.documentUri,

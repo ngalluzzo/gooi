@@ -71,6 +71,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Enables Gooi authoring code lenses."
+				},
+				"gooi.authoring.telemetryEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enables opt-in extension telemetry for activation and error events."
 				}
 			}
 		}

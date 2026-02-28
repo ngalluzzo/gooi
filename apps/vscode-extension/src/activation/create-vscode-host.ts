@@ -35,6 +35,7 @@ export const createVscodeHost = (): GooiExtensionHost => {
 				contextPath: configuration.get("contextPath"),
 				diagnosticsMode: configuration.get("diagnosticsMode"),
 				enableCodeLens: configuration.get("enableCodeLens"),
+				telemetryEnabled: configuration.get("telemetryEnabled"),
 			};
 		},
 		getWorkspaceRootPath: () =>

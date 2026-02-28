@@ -1,0 +1,97 @@
+import { createComposableEntrypointSpecFixture } from "./composable-entrypoint-base.fixture";
+
+/**
+ * Returns an invalid fixture with unsupported scalar type annotation.
+ */
+export const createUnsupportedScalarSpecFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const query = fixture.queries[0];
+	if (query !== undefined) {
+		query.in.page = "float";
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with a binding field missing from query input.
+ */
+export const createBindingFieldMismatchFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const bindMap = fixture.wiring.surfaces.http.queries.list_messages
+		.bind as Record<string, string>;
+	bindMap.not_declared = "query.not_declared";
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with conflicting reachability declarations.
+ */
+export const createAmbiguousReachabilityRequirementsFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		requirements.push({
+			portId: "ids.generate",
+			portVersion: "1.0.0",
+			mode: "delegated",
+		});
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unsupported reachability mode.
+ */
+export const createInvalidReachabilityModeFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			mode: "remote",
+		} as unknown as (typeof requirements)[number];
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unknown capability id reference.
+ */
+export const createUnknownReachabilityCapabilityIdFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			portId: "ids.unknown",
+		};
+	}
+	return fixture;
+};
+
+/**
+ * Returns an invalid fixture with unknown capability version reference.
+ */
+export const createUnknownReachabilityCapabilityVersionFixture = () => {
+	const fixture = createComposableEntrypointSpecFixture();
+	const requirements = fixture.wiring.requirements?.capabilities;
+	if (requirements !== undefined) {
+		const first = requirements[0];
+		if (first === undefined) {
+			return fixture;
+		}
+		requirements[0] = {
+			...first,
+			portVersion: "9.9.9",
+		};
+	}
+	return fixture;
+};

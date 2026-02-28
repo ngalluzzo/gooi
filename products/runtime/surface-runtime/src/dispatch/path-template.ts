@@ -1,5 +1,19 @@
-const normalizeRequestPath = (value: string): string =>
-	value.trim().replace(/\/+$/, "") || "/";
+const trimTrailingSlashes = (value: string): string => {
+	let end = value.length;
+	while (end > 0 && value.charCodeAt(end - 1) === 47) {
+		end -= 1;
+	}
+	return value.slice(0, end);
+};
+
+const normalizeRequestPath = (value: string): string => {
+	const trimmed = value.trim();
+	if (trimmed === "/") {
+		return "/";
+	}
+	const normalized = trimTrailingSlashes(trimmed);
+	return normalized.length === 0 ? "/" : normalized;
+};
 
 export const matchPathTemplate = (
 	template: string,

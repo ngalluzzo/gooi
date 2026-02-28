@@ -5,6 +5,13 @@
 - [RFC-0014](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0014-progressive-dx-facade-apis-and-compatibility-guarantees.md)
 - [RFC-0007](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0007-north-star-platform-shape-and-progressive-dx-api.md)
 
+## Boundary Guardrails
+
+1. Facades live in `packages/*` and remain thin composition layers only.
+2. Shared/public contract schemas consumed by facades live in `products/contracts/*`.
+3. Facades must not introduce shared `contracts.ts` authorities; they import canonical contract packages.
+4. Facade APIs remain semantic pass-through wrappers (no hidden behavior or synthesized metadata).
+
 ## Epic 1: Declarative Facade (`@gooi/app`)
 
 ### Story 1.1: Define canonical app facade contracts
@@ -83,3 +90,4 @@ Acceptance criteria:
 2. Developers can adopt incrementally without runtime lock-in.
 3. Marketplace-aware DX is available without forcing full platform adoption.
 4. Facade layer preserves mixed-host portability semantics end to end.
+5. Boundary checks prove shared contract authority remains in `products/contracts/*`.

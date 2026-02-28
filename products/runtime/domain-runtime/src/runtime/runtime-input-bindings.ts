@@ -3,6 +3,8 @@ import type {
 	CompiledDomainValueSource,
 } from "@gooi/app-spec-contracts/compiled";
 
+const blockedPathSegments = new Set(["__proto__", "prototype", "constructor"]);
+
 const resolvePath = (
 	root: Readonly<Record<string, unknown>>,
 	path: string,
@@ -13,10 +15,18 @@ const resolvePath = (
 	const segments = path.split(".");
 	let cursor: unknown = root;
 	for (const segment of segments) {
+		if (blockedPathSegments.has(segment)) {
+			return undefined;
+		}
 		if (typeof cursor !== "object" || cursor === null) {
 			return undefined;
 		}
-		cursor = (cursor as Readonly<Record<string, unknown>>)[segment];
+		const recordCursor = cursor as Readonly<Record<string, unknown>>;
+		const descriptor = Object.getOwnPropertyDescriptor(recordCursor, segment);
+		if (descriptor === undefined) {
+			return undefined;
+		}
+		cursor = descriptor.value;
 	}
 	return cursor;
 };

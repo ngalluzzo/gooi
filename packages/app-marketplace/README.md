@@ -6,6 +6,7 @@ marketplace contracts.
 ## Exports
 
 - `@gooi/app-marketplace/catalog`
+- `@gooi/app-marketplace/certification`
 - `@gooi/app-marketplace/discover`
 - `@gooi/app-marketplace/eligibility`
 - `@gooi/app-marketplace/listing`

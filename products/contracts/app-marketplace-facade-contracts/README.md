@@ -6,4 +6,5 @@ Canonical public contracts for marketplace-aware facade features.
 
 - `@gooi/app-marketplace-facade-contracts/discover`
 - `@gooi/app-marketplace-facade-contracts/eligibility`
+- `@gooi/app-marketplace-facade-contracts/listing`
 - `@gooi/app-marketplace-facade-contracts/resolve`

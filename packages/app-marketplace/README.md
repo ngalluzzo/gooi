@@ -7,4 +7,5 @@ marketplace contracts.
 
 - `@gooi/app-marketplace/discover`
 - `@gooi/app-marketplace/eligibility`
+- `@gooi/app-marketplace/listing`
 - `@gooi/app-marketplace/resolve`

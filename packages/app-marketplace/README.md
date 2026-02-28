@@ -6,3 +6,5 @@ marketplace contracts.
 ## Exports
 
 - `@gooi/app-marketplace/discover`
+- `@gooi/app-marketplace/eligibility`
+- `@gooi/app-marketplace/resolve`

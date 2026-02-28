@@ -1,0 +1,110 @@
+import { describe, expect, test } from "bun:test";
+import { discoveryContracts } from "../src/discovery/contracts";
+import { eligibilityContracts } from "../src/eligibility/contracts";
+
+const catalogFixture = discoveryContracts.discoverProviders({
+	lockfile: {
+		appId: "chat-assistant",
+		environment: "dev",
+		hostApiVersion: "1.0.0",
+		providers: [
+			{
+				providerId: "gooi.providers.memory",
+				providerVersion: "1.2.3",
+				integrity:
+					"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+				capabilities: [
+					{
+						portId: "notifications.send",
+						portVersion: "1.0.0",
+						contractHash:
+							"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					},
+				],
+			},
+			{
+				providerId: "gooi.providers.http",
+				providerVersion: "2.0.0",
+				integrity:
+					"sha256:fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
+				capabilities: [
+					{
+						portId: "notifications.send",
+						portVersion: "1.0.0",
+						contractHash:
+							"1111111111111111111111111111111111111111111111111111111111111111",
+					},
+				],
+			},
+		],
+	},
+	query: {
+		portId: "notifications.send",
+		portVersion: "1.0.0",
+		contractHash:
+			"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+		minTrustTier: "review",
+	},
+	trustIndex: {
+		"gooi.providers.memory@1.2.3": {
+			tier: "trusted",
+			certifications: ["soc2", "iso27001"],
+		},
+		"gooi.providers.http@2.0.0": {
+			tier: "review",
+			certifications: [],
+		},
+	},
+});
+
+describe("eligibility", () => {
+	test("produces explainable deterministic provider eligibility report", () => {
+		const result = eligibilityContracts.explainProviderEligibility({
+			catalog: catalogFixture,
+			requiredCertifications: ["soc2"],
+		});
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.report.summary).toEqual({
+			totalProviders: 2,
+			eligibleProviders: 1,
+			ineligibleProviders: 1,
+		});
+		expect(result.report.providers[1]?.status).toBe("ineligible");
+		expect(result.report.providers[1]?.reasons).toContain(
+			"capability_contract_mismatch",
+		);
+		expect(result.report.providers[1]?.reasons).toContain(
+			"certification_missing",
+		);
+	});
+
+	test("returns canonical request-schema errors for invalid inputs", () => {
+		const result = eligibilityContracts.explainProviderEligibility({
+			catalog: {
+				providers: [],
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (result.ok) {
+			return;
+		}
+		expect(result.error.code).toBe("resolver_request_schema_error");
+	});
+
+	test("is deterministic for identical eligibility input", () => {
+		const input = {
+			catalog: catalogFixture,
+			requiredCertifications: ["soc2"],
+		};
+		const first = eligibilityContracts.explainProviderEligibility(input);
+		const second = eligibilityContracts.explainProviderEligibility(input);
+
+		expect(first).toStrictEqual(second);
+		expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+	});
+});

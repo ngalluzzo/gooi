@@ -74,6 +74,9 @@ export const startCertification = (
 		status: "pending" as const,
 		profileId,
 		evidence: existing?.evidence ?? [],
+		...(existing?.trustDecision === undefined
+			? {}
+			: { trustDecision: existing.trustDecision }),
 		updatedAt: occurredAt,
 		updatedBy: actorId,
 		transitionCount: (existing?.transitionCount ?? 0) + 1,

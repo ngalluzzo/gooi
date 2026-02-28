@@ -2,6 +2,10 @@ import { z } from "zod";
 import { listingRegistryStateSchema } from "../listing/model";
 import { hexHashSchema } from "../shared/hashes";
 import { semverSchema } from "../shared/semver";
+import {
+	trustDecisionReportSchema,
+	trustDecisionVerdictSchema,
+} from "../trust/model";
 
 export const certificationStatusSchema = z.enum([
 	"pending",
@@ -64,6 +68,7 @@ export const certificationRecordSchema = z.object({
 	profileId: z.string().min(1),
 	evidence: z.array(certificationEvidenceSchema),
 	report: certificationReportSchema.optional(),
+	trustDecision: trustDecisionReportSchema.optional(),
 	updatedAt: z.string().datetime({ offset: true }),
 	updatedBy: z.string().min(1),
 	transitionCount: z.number().int().positive(),
@@ -105,9 +110,24 @@ export type CertificationRegistryState = z.infer<
 	typeof certificationRegistryStateSchema
 >;
 
+export const certificationTrustPolicySchema = z.object({
+	required: z.boolean().default(true),
+	requiredVerdict: trustDecisionVerdictSchema.default("trusted"),
+	requiredClaimIds: z.array(z.string().min(1)).default([]),
+});
+
+export type CertificationTrustPolicy = z.infer<
+	typeof certificationTrustPolicySchema
+>;
+
 export const certificationPolicyProfileSchema = z.object({
 	profileId: z.string().min(1),
 	requiredEvidenceKinds: z.array(certificationEvidenceKindSchema).default([]),
+	trust: certificationTrustPolicySchema.default({
+		required: true,
+		requiredVerdict: "trusted",
+		requiredClaimIds: [],
+	}),
 });
 
 export type CertificationPolicyProfile = z.infer<
@@ -138,6 +158,7 @@ export const completeCertificationInputSchema = z.object({
 	policy: certificationPolicyProfileSchema,
 	evidence: z.array(certificationEvidenceSchema).min(1),
 	report: certificationReportSchema,
+	trustDecision: trustDecisionReportSchema.optional(),
 });
 
 export type CompleteCertificationInput = z.input<

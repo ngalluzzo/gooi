@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { certificationContracts } from "@gooi/marketplace-contracts/certification";
 import { listingContracts } from "@gooi/marketplace-contracts/listing";
+import { trustContracts } from "@gooi/marketplace-contracts/trust";
 import {
 	completeMarketplaceCertification,
 	startMarketplaceCertification,
@@ -43,6 +44,59 @@ const seedListingState = () => {
 	return published.state;
 };
 
+const createTrustDecision = () => {
+	const trustResult = trustContracts.verifyReleaseTrust({
+		subject: {
+			subjectType: "release",
+			subjectId: "gooi.providers.memory@1.0.0",
+			providerId: "gooi.providers.memory",
+			providerVersion: "1.0.0",
+			namespace: "gooi",
+		},
+		artifactHash:
+			"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+		signatures: [
+			{
+				keyId: "publisher-key-1",
+				algorithm: "ed25519",
+				signature: "sig:publisher-signature",
+				signedArtifactHash:
+					"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+				issuedAt: "2026-02-28T10:00:00.000Z",
+			},
+		],
+		attestations: [
+			{
+				attestationId: "attestation-1",
+				builderId: "gooi.builder.ci",
+				sourceUri: "https://gooi.dev/source/repo",
+				subjectArtifactHash:
+					"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+				issuedAt: "2026-02-28T10:05:00.000Z",
+				signature: {
+					keyId: "builder-key-1",
+					algorithm: "ed25519",
+					signature: "sig:builder-signature",
+					signedArtifactHash:
+						"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+					issuedAt: "2026-02-28T10:05:00.000Z",
+				},
+			},
+		],
+		certificationStatus: "certified",
+		revoked: false,
+		mode: "production",
+		policy: {
+			profileId: "baseline-1.0.0",
+		},
+		evaluatedAt: "2026-02-28T10:10:00.000Z",
+	});
+	if (!trustResult.ok) {
+		throw new Error("failed to create trust decision");
+	}
+	return trustResult.report;
+};
+
 describe("@gooi/app-marketplace certification", () => {
 	test("maintains semantic parity for certification start/complete flows", () => {
 		const listingState = seedListingState();
@@ -79,6 +133,7 @@ describe("@gooi/app-marketplace certification", () => {
 			providerId: "gooi.providers.memory",
 			providerVersion: "1.0.0",
 			policy,
+			trustDecision: createTrustDecision(),
 			evidence: [
 				{
 					kind: "conformance_report" as const,

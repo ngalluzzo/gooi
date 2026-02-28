@@ -1,8 +1,10 @@
+import type { TrustDecisionReport } from "../trust/model";
 import type {
 	CertificationEvidence,
 	CertificationPolicyProfile,
 	CertificationRecord,
 	CertificationStatus,
+	CertificationTrustPolicy,
 } from "./model";
 
 const allowedTransitions = {
@@ -45,6 +47,41 @@ export const missingRequiredEvidenceKinds = (
 	const evidenceKinds = new Set(evidence.map((item) => item.kind));
 	return policy.requiredEvidenceKinds.filter(
 		(kind) => !evidenceKinds.has(kind),
+	);
+};
+
+export const missingRequiredTrustClaimIds = (
+	trustPolicy: CertificationTrustPolicy,
+	trustDecision: TrustDecisionReport,
+): string[] => {
+	const availableClaimIds = new Set(
+		trustDecision.claims
+			.filter((claim) => claim.verified)
+			.map((claim) => claim.claimId),
+	);
+	return trustPolicy.requiredClaimIds.filter(
+		(claimId) => !availableClaimIds.has(claimId),
+	);
+};
+
+export const trustDecisionMatchesRelease = (
+	trustDecision: TrustDecisionReport,
+	providerId: string,
+	providerVersion: string,
+): boolean => {
+	return (
+		trustDecision.subject.providerId === providerId &&
+		trustDecision.subject.providerVersion === providerVersion
+	);
+};
+
+export const isTrustedVerdictSatisfied = (
+	trustPolicy: CertificationTrustPolicy,
+	trustDecision: TrustDecisionReport,
+): boolean => {
+	return (
+		trustDecision.verified &&
+		trustDecision.verdict === trustPolicy.requiredVerdict
 	);
 };
 

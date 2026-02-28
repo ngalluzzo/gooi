@@ -2,7 +2,7 @@ import {
 	type ProviderManifestBase,
 	safeParseProviderManifestBase,
 	semverPattern,
-} from "@gooi/marketplace-contracts/provider-manifest/base";
+} from "@gooi/marketplace-contracts/provider-manifest";
 
 /**
  * Stable contract descriptor for one host port feature.
@@ -60,10 +60,15 @@ const normalizeHostPortProviderManifest = <
 		throw new Error(
 			issueMessage(
 				"Invalid host provider manifest",
-				manifestResult.error.issues.map((issue) => ({
-					path: issue.path.join("."),
-					message: issue.message,
-				})),
+				manifestResult.error.issues.map(
+					(issue: {
+						readonly path: readonly string[];
+						readonly message: string;
+					}) => ({
+						path: issue.path.join("."),
+						message: issue.message,
+					}),
+				),
 			),
 		);
 	}

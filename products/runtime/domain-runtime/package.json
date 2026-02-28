@@ -26,7 +26,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/runtime/create-domain-runtime.ts --outfile ./dist/runtime/create-domain-runtime.js --external @gooi/kernel-contracts/semantic-engine --external @gooi/capability-contracts/capability-port --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-contracts/errors/guard-errors --external @gooi/guard-contracts/signals/guard-violation-signal --external @gooi/guard-runtime/evaluate --external @gooi/host-contracts/principal --external @gooi/stable-json --external @gooi/surface-contracts/envelope-version --external @gooi/surface-contracts/signal-envelope --external zod && bun build ./src/conformance/domain-runtime-conformance.ts --outfile ./dist/conformance/domain-runtime-conformance.js",
+		"build": "bun build ./src/runtime/create-domain-runtime.ts --outfile ./dist/runtime/create-domain-runtime.js --external @gooi/kernel-contracts/semantic-engine --external @gooi/capability-contracts/capability-port --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-contracts/errors/guard-errors --external @gooi/guard-contracts/signals/guard-violation-signal --external @gooi/guard-runtime/evaluate --external @gooi/host-contracts/principal --external @gooi/stable-json --external @gooi/surface-contracts --external zod && bun build ./src/conformance/domain-runtime-conformance.ts --outfile ./dist/conformance/domain-runtime-conformance.js",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

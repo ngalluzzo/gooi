@@ -1,9 +1,9 @@
-import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
 import type {
+	CompiledTimelineProjectionPlan,
 	SignalMigrationStepPlan,
 	SignalReplayPlan,
-} from "@gooi/projection-contracts/plans/signal-migration-plan";
-import type { HistoryRecord } from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/plans";
+import type { HistoryRecord } from "@gooi/projection-contracts/ports";
 import {
 	applySignalMigrationOperation,
 	buildSignalMigrationError,

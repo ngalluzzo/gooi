@@ -2,14 +2,12 @@
 
 Zod-first contracts for surface request payloads, binding outcomes, and runtime envelopes.
 
-## Feature Entry Points
+## Package API
 
-- `@gooi/surface-contracts/surface-request`
 - `@gooi/surface-contracts/binding`
-- `@gooi/surface-contracts/envelope-version`
-- `@gooi/surface-contracts/invocation-envelope`
-- `@gooi/surface-contracts/signal-envelope`
-- `@gooi/surface-contracts/result-envelope`
+- `@gooi/surface-contracts/request`
+- `@gooi/surface-contracts/dispatch`
+- `@gooi/surface-contracts/envelope`
 
 ## Installation
 
@@ -20,11 +18,11 @@ bun add @gooi/surface-contracts
 ## Quick Start
 
 ```ts
-import { parseSurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
-import { parseResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import { request } from "@gooi/surface-contracts/request";
+import { envelope } from "@gooi/surface-contracts/envelope";
 
-const request = parseSurfaceRequestPayload(rawRequest);
-const result = parseResultEnvelope(rawResult);
+const parsedRequest = request.parseSurfaceRequestPayload(rawRequest);
+const result = envelope.parseResultEnvelope(rawResult);
 ```
 
 ## Result Envelope Notes

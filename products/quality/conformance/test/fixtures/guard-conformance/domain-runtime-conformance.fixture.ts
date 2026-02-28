@@ -2,9 +2,9 @@ import { createDomainRuntimeConformanceHarness } from "@gooi/domain-runtime/conf
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import { createProjectionRuntime } from "@gooi/projection-runtime";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
+import { envelope } from "@gooi/surface-contracts/envelope";
 import { createSignalPayloadHash } from "./guard-definitions.fixture";
 import { projectionPlan } from "./projection-plan.fixture";
 
@@ -69,7 +69,7 @@ export const evaluateGuardConformanceBoundaryMatrix = async (input: {
 						observedEffects: ["write", "emit"],
 						emittedSignals: [
 							{
-								envelopeVersion: surfaceEnvelopeVersion,
+								envelopeVersion: envelope.surfaceEnvelopeVersion,
 								signalId: "message.rejected",
 								signalVersion: 1,
 								payload,

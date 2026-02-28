@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryRecord,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 import { createProjectionRuntime } from "../src/execute/execute-projection";
 import {
 	createCollectionReaderFixture,

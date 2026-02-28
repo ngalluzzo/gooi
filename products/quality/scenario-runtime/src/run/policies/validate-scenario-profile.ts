@@ -1,9 +1,9 @@
-import type { GuardRuntimeEnvironment } from "@gooi/guard-contracts/plans/guard-plan";
+import type { GuardRuntimeEnvironment } from "@gooi/guard-contracts/plans";
 import {
-	createScenarioError,
+	errorsContracts,
 	type ScenarioTypedError,
-} from "@gooi/scenario-contracts/errors/scenario-errors";
-import type { CompiledScenarioPlan } from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/errors";
+import type { CompiledScenarioPlan } from "@gooi/scenario-contracts/plans";
 import {
 	defaultScenarioExecutionProfile,
 	type ScenarioExecutionProfile,
@@ -45,7 +45,7 @@ export const validateScenarioProfile = (input: {
 		if (!allowsGenerated) {
 			return {
 				ok: false,
-				error: createScenarioError(
+				error: errorsContracts.createScenarioError(
 					"scenario_policy_error",
 					"Generated triggers are allowed only in simulation and pre-merge profiles.",
 					input.scenario.scenarioId,
@@ -62,7 +62,7 @@ export const validateScenarioProfile = (input: {
 	) {
 		return {
 			ok: false,
-			error: createScenarioError(
+			error: errorsContracts.createScenarioError(
 				"scenario_policy_error",
 				"Provider overrides are not allowed in default CI profile runs.",
 				input.scenario.scenarioId,

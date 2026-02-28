@@ -1,10 +1,12 @@
 import {
 	type AuthoringDiagnosticsEnvelope,
-	parseAuthoringDiagnosticsEnvelope,
-} from "@gooi/authoring-contracts/envelopes/diagnostics";
+	envelopesContracts,
+} from "@gooi/authoring-contracts/envelopes";
 
 import { authoringDiagnosticsRequestSchema } from "../../contracts/diagnostics-contracts";
 import { evaluateAuthoringReadParity } from "../../internal/lockfile-parity";
+
+const { parseAuthoringDiagnosticsEnvelope } = envelopesContracts;
 
 const byDiagnosticOrder = (
 	left: AuthoringDiagnosticsEnvelope["diagnostics"][number],

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ProjectionSemanticExecutionResult } from "@gooi/kernel-contracts/projection-semantic";
-import { projectionResultEnvelopeVersion } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
-import type { CompiledAggregateProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import { envelopesContracts } from "@gooi/projection-contracts/envelopes";
+import type { CompiledAggregateProjectionPlan } from "@gooi/projection-contracts/plans";
 import { shapeProjectionQueryOutput } from "../src/projection/shape-query-output";
 
 const aggregatePlan: CompiledAggregateProjectionPlan = {
@@ -48,7 +48,7 @@ describe("projection query output shaping", () => {
 		});
 
 		expect(envelope).toEqual({
-			envelopeVersion: projectionResultEnvelopeVersion,
+			envelopeVersion: envelopesContracts.projectionResultEnvelopeVersion,
 			ok: true,
 			rows: [{ user_id: "u1", message_count: 2 }],
 			meta: {
@@ -83,7 +83,7 @@ describe("projection query output shaping", () => {
 		});
 
 		expect(envelope).toEqual({
-			envelopeVersion: projectionResultEnvelopeVersion,
+			envelopeVersion: envelopesContracts.projectionResultEnvelopeVersion,
 			ok: false,
 			error: {
 				code: "projection_plan_error",

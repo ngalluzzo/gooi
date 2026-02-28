@@ -1,24 +1,21 @@
+/**
+ * Canonical boundary contract API.
+ */
 import { z } from "zod";
 import { hexHashSchema, providerIntegritySchema } from "../shared/hashes";
 import { semverSchema } from "../shared/semver";
+import * as integrity from "./integrity";
+import * as lookup from "./lookup";
+import * as parse from "./parse";
 
-/**
- * Lock entry proving a provider can satisfy one capability contract hash.
- */
 export const lockedCapabilitySchema = z.object({
 	portId: z.string().min(1),
 	portVersion: semverSchema,
 	contractHash: hexHashSchema,
 });
 
-/**
- * Locked capability contract entry.
- */
 export type LockedCapability = z.infer<typeof lockedCapabilitySchema>;
 
-/**
- * One locked provider version and its capability hashes.
- */
 export const lockedProviderSchema = z.object({
 	providerId: z.string().min(1),
 	providerVersion: semverSchema,
@@ -26,14 +23,8 @@ export const lockedProviderSchema = z.object({
 	capabilities: z.array(lockedCapabilitySchema).min(1),
 });
 
-/**
- * Locked provider metadata entry.
- */
 export type LockedProvider = z.infer<typeof lockedProviderSchema>;
 
-/**
- * Deterministic lockfile artifact for resolved deployment providers.
- */
 export const deploymentLockfileSchema = z.object({
 	appId: z.string().min(1),
 	environment: z.string().min(1),
@@ -41,7 +32,16 @@ export const deploymentLockfileSchema = z.object({
 	providers: z.array(lockedProviderSchema).min(1),
 });
 
-/**
- * Deployment provider lockfile.
- */
 export type DeploymentLockfile = z.infer<typeof deploymentLockfileSchema>;
+
+export const lockfileContracts = Object.freeze({
+	lockedCapabilitySchema,
+	lockedProviderSchema,
+	deploymentLockfileSchema,
+	isLockedProviderIntegrity: integrity.isLockedProviderIntegrity,
+	getLockedProvider: lookup.getLockedProvider,
+	providerHasLockedCapability: lookup.providerHasLockedCapability,
+	parseDeploymentLockfile: parse.parseDeploymentLockfile,
+});
+
+export { integrity, lookup, parse };

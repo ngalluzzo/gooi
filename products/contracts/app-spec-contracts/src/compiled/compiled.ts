@@ -4,6 +4,7 @@ import type {
 } from "@gooi/artifact-model/manifest";
 import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
+import type { CompiledSurfaceDispatchPlanSet } from "@gooi/surface-contracts/dispatch";
 import { z } from "zod";
 import {
 	type DiagnosticRecord as SharedDiagnosticRecord,
@@ -352,6 +353,8 @@ export interface CompiledEntrypointBundle {
 	readonly entrypoints: Readonly<Record<string, CompiledEntrypoint>>;
 	/** Surface bindings keyed by `<surface>:<kind>:<id>`. */
 	readonly bindings: Readonly<Record<string, CompiledSurfaceBinding>>;
+	/** Surface dispatch plans keyed by surface id. */
+	readonly dispatchPlans: CompiledSurfaceDispatchPlanSet;
 	/** Reachability requirements keyed by `<portId>@<portVersion>`. */
 	readonly reachabilityRequirements?: Readonly<
 		Record<string, CompiledReachabilityRequirement>

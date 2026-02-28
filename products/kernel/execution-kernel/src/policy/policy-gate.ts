@@ -3,8 +3,10 @@ import type {
 	CompiledEntrypointBundle,
 } from "@gooi/app-spec-contracts/compiled";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type {
+	InvocationEnvelope,
+	ResultEnvelope,
+} from "@gooi/surface-contracts/envelope";
 import type { HostPortSet } from "../entrypoint/types";
 import { entrypointKey, errorEnvelope, errorResult } from "../errors/errors";
 import { deriveEffectiveRoles, isAccessAllowedForRoles } from "./access-policy";

@@ -1,7 +1,7 @@
 import type { ProjectionSemanticPageMeta } from "@gooi/kernel-contracts/projection-semantic";
-import type { ProjectionTypedError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { TimelineAccumulationState } from "@gooi/projection-contracts/plans/timeline-history-policy";
-import type { HistoryPort } from "@gooi/projection-contracts/ports/history-port-contract";
+import type { ProjectionTypedError } from "@gooi/projection-contracts/errors";
+import type { TimelineAccumulationState } from "@gooi/projection-contracts/plans";
+import type { HistoryPort } from "@gooi/projection-contracts/ports";
 import type { ProjectionCollectionReaderPort } from "../ports/collection-reader";
 
 export interface ExecuteProjectionContext {

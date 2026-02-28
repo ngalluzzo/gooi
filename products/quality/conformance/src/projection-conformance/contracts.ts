@@ -1,12 +1,12 @@
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { JsonObject } from "@gooi/contract-primitives/json";
-import type { ProjectionResultEnvelope } from "@gooi/projection-contracts/envelopes/projection-result-envelope";
+import type { ProjectionResultEnvelope } from "@gooi/projection-contracts/envelopes";
 import type {
 	CompiledAggregateProjectionPlan,
 	CompiledTimelineProjectionPlan,
-} from "@gooi/projection-contracts/plans/projection-plan";
-import type { HistoryPort } from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/plans";
+import type { HistoryPort } from "@gooi/projection-contracts/ports";
 import type { ProjectionRuntime } from "@gooi/projection-runtime";
 import type { ProjectionRefreshSubscriptions } from "@gooi/projection-runtime/refresh";
 

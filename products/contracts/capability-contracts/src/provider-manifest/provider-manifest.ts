@@ -5,8 +5,8 @@ import {
 	parseProviderManifestBase,
 	safeParseProviderManifestBase,
 	semverPattern,
-} from "@gooi/marketplace-contracts/provider-manifest/base";
-import { z } from "zod";
+} from "@gooi/marketplace-contracts/provider-manifest";
+import { type ZodIssue, z } from "zod";
 
 const capabilityContractHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
 const semverSchema = z.string().regex(semverPattern, {
@@ -68,7 +68,7 @@ const parseCapabilities = (
 		return {
 			success: false,
 			error: {
-				issues: parsed.error.issues.map((issue) => ({
+				issues: parsed.error.issues.map((issue: ZodIssue) => ({
 					path: issue.path.map((part) => String(part)),
 					message: issue.message,
 				})),

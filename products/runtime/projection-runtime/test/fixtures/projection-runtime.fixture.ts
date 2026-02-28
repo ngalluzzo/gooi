@@ -2,11 +2,11 @@ import type {
 	CompiledAggregateProjectionPlan,
 	CompiledJoinProjectionPlan,
 	CompiledTimelineProjectionPlan,
-} from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryRecord,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 import type { ProjectionCollectionReaderPort } from "../../src/ports/collection-reader";
 
 const collections: Readonly<

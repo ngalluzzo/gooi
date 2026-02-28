@@ -1,4 +1,4 @@
-import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans";
 import type {
 	ExecuteProjectionContext,
 	StrategyExecutionResult,

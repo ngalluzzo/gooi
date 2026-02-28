@@ -1,5 +1,5 @@
 import type { CapabilityBindingResolution } from "../reachability/contracts";
-import type { BindingPlan, CapabilityBinding } from "./contracts";
+import type { BindingPlan, CapabilityBinding } from "./binding-plan";
 
 /**
  * Locates the binding entry for a capability reference.

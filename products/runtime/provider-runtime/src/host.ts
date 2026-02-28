@@ -1,18 +1,18 @@
 import type { HostActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
-import { createStrictActivationPolicyPort } from "@gooi/host-contracts/activation-policy";
+import { activationPolicyContracts } from "@gooi/host-contracts/activation-policy";
 import type { HostClockPort } from "@gooi/host-contracts/clock";
-import { createSystemClockPort } from "@gooi/host-contracts/clock";
+import { clockContracts } from "@gooi/host-contracts/clock";
 import {
-	createFailingCapabilityDelegationPort,
+	delegationContracts,
 	type HostCapabilityDelegationPort,
 } from "@gooi/host-contracts/delegation";
 import {
-	createFailingModuleIntegrityPort,
 	type HostModuleIntegrityPort,
+	moduleIntegrityContracts,
 } from "@gooi/host-contracts/module-integrity";
 import {
-	createFailingModuleLoaderPort,
 	type HostModuleLoaderPort,
+	moduleLoaderContracts,
 } from "@gooi/host-contracts/module-loader";
 
 /**
@@ -103,9 +103,12 @@ export const getMissingProviderRuntimeHostPortMembers = (
  */
 export const createDefaultProviderRuntimeHostPorts =
 	(): ProviderRuntimeHostPorts => ({
-		clock: createSystemClockPort(),
-		activationPolicy: createStrictActivationPolicyPort(),
-		capabilityDelegation: createFailingCapabilityDelegationPort(),
-		moduleLoader: createFailingModuleLoaderPort(),
-		moduleIntegrity: createFailingModuleIntegrityPort(),
+		clock: clockContracts.createSystemClockPort(),
+		activationPolicy:
+			activationPolicyContracts.createStrictActivationPolicyPort(),
+		capabilityDelegation:
+			delegationContracts.createFailingCapabilityDelegationPort(),
+		moduleLoader: moduleLoaderContracts.createFailingModuleLoaderPort(),
+		moduleIntegrity:
+			moduleIntegrityContracts.createFailingModuleIntegrityPort(),
 	});

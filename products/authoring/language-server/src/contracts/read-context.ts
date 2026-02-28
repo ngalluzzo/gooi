@@ -1,11 +1,13 @@
-import {
-	authoringArtifactIdentitySchema,
-	authoringLockfileSchema,
-	authoringRequiredArtifactIds,
-} from "@gooi/authoring-contracts/lockfile";
+import { lockfileContracts } from "@gooi/authoring-contracts/lockfile";
 import { capabilityIndexSnapshotSchema } from "@gooi/capability-index/contracts";
 import { symbolGraphSnapshotSchema } from "@gooi/symbol-graph/contracts";
 import { z } from "zod";
+
+const {
+	authoringArtifactIdentitySchema,
+	authoringLockfileSchema,
+	authoringRequiredArtifactIds,
+} = lockfileContracts;
 
 const compiledEntrypointBundleIdentitySchema = authoringArtifactIdentitySchema
 	.extend({

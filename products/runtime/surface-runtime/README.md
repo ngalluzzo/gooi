@@ -1,16 +1,18 @@
 # @gooi/surface-runtime
 
-Deterministic surface-request to entrypoint-input binding runtime.
+Deterministic surface dispatch and surface-request to entrypoint-input binding runtime.
 
 ## Quick Start
 
 ```ts
-import { bindSurfaceInput } from "@gooi/surface-runtime";
+import { dispatchAndBindSurfaceIngress } from "@gooi/surface-runtime";
 
-const result = bindSurfaceInput({
-  request,
-  entrypoint,
-  binding,
+const result = dispatchAndBindSurfaceIngress({
+  surfaceId: "http",
+  ingress: { method: "GET", path: "/messages", query: { page: "2" } },
+  dispatchPlans,
+  entrypoints,
+  bindings,
 });
 
 if (!result.ok) {
@@ -21,4 +23,8 @@ if (!result.ok) {
 ## Public API
 
 - `bindSurfaceInput(input)`
-- Surface contracts are published from `@gooi/surface-contracts/*`
+- `dispatchSurfaceRequest(input)`
+- `dispatchAndBindSurfaceInput(input)`
+- `dispatchAndBindSurfaceIngress(input)`
+- `createSurfaceAdapterRegistry(adapters)`
+- Surface contracts are published from `@gooi/surface-contracts` via `surfaceContracts`

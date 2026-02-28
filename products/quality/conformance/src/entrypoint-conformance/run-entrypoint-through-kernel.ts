@@ -3,21 +3,22 @@ import type {
 	CompiledSurfaceBinding,
 } from "@gooi/app-spec-contracts/compiled";
 import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
-import { createSystemClockPort } from "@gooi/host-contracts/clock";
-import { createFailingCapabilityDelegationPort } from "@gooi/host-contracts/delegation";
-import { createSystemIdentityPort } from "@gooi/host-contracts/identity";
+import { clockContracts } from "@gooi/host-contracts/clock";
+import { delegationContracts } from "@gooi/host-contracts/delegation";
+import { identityContracts } from "@gooi/host-contracts/identity";
 import type { HostPortSet as SharedHostPortSet } from "@gooi/host-contracts/portset";
 import {
-	createHostPrincipalPort,
 	type PrincipalContext,
-	principalContextSchema,
+	principalContracts,
 } from "@gooi/host-contracts/principal";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
+import {
+	type ResultEnvelope,
+	surfaceEnvelopeVersion,
+} from "@gooi/surface-contracts/envelope";
+import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
 import { bindSurfaceInput } from "@gooi/surface-runtime";
 
 const calculateIsoDurationMs = (
@@ -32,7 +33,7 @@ const calculateIsoDurationMs = (
 	return Math.max(0, completedMs - startedMs);
 };
 
-const principalValidation = principalContextSchema.safeParse;
+const principalValidation = principalContracts.principalContextSchema.safeParse;
 
 export type EntrypointHostPortSet = SharedHostPortSet<
 	PrincipalContext,
@@ -55,9 +56,9 @@ export interface RunEntrypointInput {
 }
 
 export const createDefaultConformanceHostPorts = (): EntrypointHostPortSet => ({
-	clock: createSystemClockPort(),
-	identity: createSystemIdentityPort(),
-	principal: createHostPrincipalPort({
+	clock: clockContracts.createSystemClockPort(),
+	identity: identityContracts.createSystemIdentityPort(),
+	principal: principalContracts.createHostPrincipalPort({
 		validatePrincipal: (value) => {
 			const parsed = principalValidation(value);
 			if (!parsed.success) {
@@ -70,7 +71,8 @@ export const createDefaultConformanceHostPorts = (): EntrypointHostPortSet => ({
 			return hostOk(parsed.data);
 		},
 	}),
-	capabilityDelegation: createFailingCapabilityDelegationPort(),
+	capabilityDelegation:
+		delegationContracts.createFailingCapabilityDelegationPort(),
 });
 
 const resolveEntrypoint = (

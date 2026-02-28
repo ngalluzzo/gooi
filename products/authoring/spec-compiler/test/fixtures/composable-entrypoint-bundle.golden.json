@@ -1,7 +1,7 @@
 {
 	"artifactVersion": "1.0.0",
 	"compilerVersion": "1.0.0",
-	"sourceSpecHash": "7b574714b9af7f71f3468122cbcde99f2b6bfe134d268beb9ca836a348cf9b44",
+	"sourceSpecHash": "aee5792de6b5a57a0a789eb05036f792fc824ac349bc96912f532b198af7855d",
 	"sections": {
 		"app": {
 			"id": "hello_world_demo",
@@ -100,14 +100,18 @@
 								"page": "query.page",
 								"page_size": "query.page_size",
 								"q": "query.q"
-							}
+							},
+							"method": "GET",
+							"path": "/messages"
 						}
 					},
 					"mutations": {
 						"submit_message": {
 							"bind": {
 								"message": "body.message"
-							}
+							},
+							"method": "POST",
+							"path": "/messages"
 						}
 					},
 					"routes": {
@@ -205,6 +209,92 @@
 			}
 		}
 	},
+	"dispatchPlans": {
+		"artifactVersion": "1.0.0",
+		"plans": {
+			"http": {
+				"surfaceId": "http",
+				"handlers": [
+					{
+						"handlerId": "http:mutation:submit_message",
+						"surfaceId": "http",
+						"matcher": {
+							"surfaceType": "http",
+							"clauses": [
+								{
+									"key": "method",
+									"op": "eq",
+									"value": "POST"
+								},
+								{
+									"key": "path",
+									"op": "path_template",
+									"value": "/messages"
+								}
+							]
+						},
+						"specificity": 240,
+						"target": {
+							"entrypointKind": "mutation",
+							"entrypointId": "submit_message",
+							"fieldBindings": {
+								"message": "body.message"
+							}
+						}
+					},
+					{
+						"handlerId": "http:query:list_messages",
+						"surfaceId": "http",
+						"matcher": {
+							"surfaceType": "http",
+							"clauses": [
+								{
+									"key": "method",
+									"op": "eq",
+									"value": "GET"
+								},
+								{
+									"key": "path",
+									"op": "path_template",
+									"value": "/messages"
+								}
+							]
+						},
+						"specificity": 240,
+						"target": {
+							"entrypointKind": "query",
+							"entrypointId": "list_messages",
+							"fieldBindings": {
+								"page": "query.page",
+								"page_size": "query.page_size",
+								"q": "query.q"
+							}
+						}
+					},
+					{
+						"handlerId": "http:route:home_route",
+						"surfaceId": "http",
+						"matcher": {
+							"surfaceType": "http",
+							"clauses": [
+								{
+									"key": "routeId",
+									"op": "eq",
+									"value": "home_route"
+								}
+							]
+						},
+						"specificity": 40,
+						"target": {
+							"entrypointKind": "route",
+							"entrypointId": "home_route",
+							"fieldBindings": {}
+						}
+					}
+				]
+			}
+		}
+	},
 	"reachabilityRequirements": {
 		"ids.generate@1.0.0": {
 			"portId": "ids.generate",
@@ -258,7 +348,7 @@
 				"lane": "authoring",
 				"artifactId": "CompiledAuthoringCanonicalModel",
 				"artifactVersion": "1.0.0",
-				"artifactHash": "212231095e08427c44c517aacde371b441aa88a2d81a5de4549bead5670cf150",
+				"artifactHash": "4e67f9be445349f3e3c5c42840bf2385dfd36e8bd95ad68eff38ee3d17703552",
 				"hashAlgorithm": "sha256"
 			},
 			"bindingRequirements": {
@@ -287,11 +377,11 @@
 				"lane": "runtime",
 				"artifactId": "CompiledRuntimeEntrypointContracts",
 				"artifactVersion": "1.0.0",
-				"artifactHash": "15e85df8cf36515adc74a581289b32c614b035932ab6e7d5efd674a7935b11d2",
+				"artifactHash": "8a414af055f2e674622f2698fc21b0a15430e76d4c234cb19d3b78a9ad05788a",
 				"hashAlgorithm": "sha256"
 			}
 		},
-		"aggregateHash": "7b07412bd9fbe27b8fcda3e95f1c9be92e48b25a064d39575c63dc012d6c3963"
+		"aggregateHash": "c1012b005be47b3f96f9c4c3a0c5aa008e7831887e7b19d90e377f9ae9d39fa8"
 	},
 	"laneArtifacts": {
 		"authoringCanonicalModel": {
@@ -398,14 +488,18 @@
 											"page": "query.page",
 											"page_size": "query.page_size",
 											"q": "query.q"
-										}
+										},
+										"method": "GET",
+										"path": "/messages"
 									}
 								},
 								"mutations": {
 									"submit_message": {
 										"bind": {
 											"message": "body.message"
-										}
+										},
+										"method": "POST",
+										"path": "/messages"
 									}
 								},
 								"routes": {
@@ -460,7 +554,7 @@
 					"scenarioIds": ["happy_path_message_submission"]
 				}
 			},
-			"artifactHash": "212231095e08427c44c517aacde371b441aa88a2d81a5de4549bead5670cf150"
+			"artifactHash": "4e67f9be445349f3e3c5c42840bf2385dfd36e8bd95ad68eff38ee3d17703552"
 		},
 		"bindingRequirements": {
 			"artifactId": "CompiledBindingRequirements",
@@ -573,6 +667,92 @@
 						"entrypointId": "submit_message",
 						"fieldBindings": {
 							"message": "body.message"
+						}
+					}
+				},
+				"dispatchPlans": {
+					"artifactVersion": "1.0.0",
+					"plans": {
+						"http": {
+							"surfaceId": "http",
+							"handlers": [
+								{
+									"handlerId": "http:mutation:submit_message",
+									"surfaceId": "http",
+									"matcher": {
+										"surfaceType": "http",
+										"clauses": [
+											{
+												"key": "method",
+												"op": "eq",
+												"value": "POST"
+											},
+											{
+												"key": "path",
+												"op": "path_template",
+												"value": "/messages"
+											}
+										]
+									},
+									"specificity": 240,
+									"target": {
+										"entrypointKind": "mutation",
+										"entrypointId": "submit_message",
+										"fieldBindings": {
+											"message": "body.message"
+										}
+									}
+								},
+								{
+									"handlerId": "http:query:list_messages",
+									"surfaceId": "http",
+									"matcher": {
+										"surfaceType": "http",
+										"clauses": [
+											{
+												"key": "method",
+												"op": "eq",
+												"value": "GET"
+											},
+											{
+												"key": "path",
+												"op": "path_template",
+												"value": "/messages"
+											}
+										]
+									},
+									"specificity": 240,
+									"target": {
+										"entrypointKind": "query",
+										"entrypointId": "list_messages",
+										"fieldBindings": {
+											"page": "query.page",
+											"page_size": "query.page_size",
+											"q": "query.q"
+										}
+									}
+								},
+								{
+									"handlerId": "http:route:home_route",
+									"surfaceId": "http",
+									"matcher": {
+										"surfaceType": "http",
+										"clauses": [
+											{
+												"key": "routeId",
+												"op": "eq",
+												"value": "home_route"
+											}
+										]
+									},
+									"specificity": 40,
+									"target": {
+										"entrypointKind": "route",
+										"entrypointId": "home_route",
+										"fieldBindings": {}
+									}
+								}
+							]
 						}
 					}
 				},
@@ -756,14 +936,18 @@
 											"page": "query.page",
 											"page_size": "query.page_size",
 											"q": "query.q"
-										}
+										},
+										"method": "GET",
+										"path": "/messages"
 									}
 								},
 								"mutations": {
 									"submit_message": {
 										"bind": {
 											"message": "body.message"
-										}
+										},
+										"method": "POST",
+										"path": "/messages"
 									}
 								},
 								"routes": {
@@ -803,7 +987,7 @@
 					}
 				}
 			},
-			"artifactHash": "15e85df8cf36515adc74a581289b32c614b035932ab6e7d5efd674a7935b11d2"
+			"artifactHash": "8a414af055f2e674622f2698fc21b0a15430e76d4c234cb19d3b78a9ad05788a"
 		}
 	},
 	"refreshSubscriptions": {
@@ -888,5 +1072,5 @@
 			"hash": "5f0b6721c24ee020a872a1438dfbe030616abeaf0964c1262610ca896e3c402a"
 		}
 	},
-	"artifactHash": "8ecedb4b3729d2fce7455371028061e01a4f0bf3ca892e8e9aa70418bfde7aab"
+	"artifactHash": "79cbf86c337f9b848f266776647952f1a6e7010741c8e3f5a9a8ed5dea24dfe6"
 }

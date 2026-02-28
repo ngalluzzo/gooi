@@ -1,12 +1,14 @@
 import {
 	type AuthoringLockfile,
-	authoringRequiredArtifactIds,
-	createAuthoringLockfile,
+	lockfileContracts,
 } from "@gooi/authoring-contracts/lockfile";
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
 import type { BuildCapabilityIndexSnapshotInput } from "@gooi/capability-index/contracts";
 import { buildSymbolGraphSnapshot } from "@gooi/symbol-graph";
 import type { BuildSymbolGraphSnapshotInput } from "@gooi/symbol-graph/contracts";
+
+const { authoringRequiredArtifactIds, createAuthoringLockfile } =
+	lockfileContracts;
 
 const capabilityIndexInput: BuildCapabilityIndexSnapshotInput = {
 	sourceHash: "1".repeat(64),

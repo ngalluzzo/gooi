@@ -6,7 +6,7 @@ import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/che
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
-import type { SurfaceRequestPayload } from "@gooi/surface-contracts/surface-request";
+import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
 import type { runEntrypoint } from "./run-entrypoint-through-kernel";
 
 /**

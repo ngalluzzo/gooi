@@ -1,8 +1,10 @@
 import {
 	type AuthoringLockfile,
-	authoringRequiredArtifactIds,
-	createAuthoringLockfile,
+	lockfileContracts,
 } from "@gooi/authoring-contracts/lockfile";
+
+const { authoringRequiredArtifactIds } = lockfileContracts;
+
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
 import type { BuildCapabilityIndexSnapshotInput } from "@gooi/capability-index/contracts";
 import { buildSymbolGraphSnapshot } from "@gooi/symbol-graph";
@@ -149,7 +151,7 @@ const createLockfile = (input: {
 	readonly symbolGraphHash: string;
 	readonly catalogHash: string;
 }): AuthoringLockfile =>
-	createAuthoringLockfile({
+	lockfileContracts.createAuthoringLockfile({
 		artifactVersion: "1.0.0",
 		sourceHash: "4".repeat(64),
 		sourceKind: "workspace-local",

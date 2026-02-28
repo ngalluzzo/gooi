@@ -3,8 +3,10 @@ import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/che
 import type { ConformanceDiagnosticRecordBase } from "@gooi/conformance-contracts/diagnostics";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { JsonValue } from "@gooi/contract-primitives/json";
-import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/marketplace-contracts/binding-plan";
 import type {
 	PrincipalContext,
 	ProviderModule,

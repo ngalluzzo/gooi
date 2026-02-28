@@ -1,8 +1,7 @@
 import {
 	type CompiledBindingRequirements,
 	type CompiledReachabilityRequirement,
-	compiledBindingRequirementsArtifactVersionSchema,
-	compiledReachabilityModeSchema,
+	compiledContracts,
 } from "@gooi/app-spec-contracts/compiled";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
@@ -30,12 +29,15 @@ export const compileBindingRequirementsArtifact = (
 ): CompiledBindingRequirements => {
 	const partialArtifact: Omit<CompiledBindingRequirements, "artifactHash"> = {
 		artifactId: "CompiledBindingRequirements",
-		artifactVersion: compiledBindingRequirementsArtifactVersionSchema.value,
+		artifactVersion:
+			compiledContracts.compiledBindingRequirementsArtifactVersionSchema.value,
 		requirements: normalizeRequirements(requirements),
 		compatibility: {
 			resolverInputContract: "CapabilityReachabilityRequirement@1.0.0",
 			runtimeResolutionContract: "CapabilityBindingResolution@1.0.0",
-			supportedModes: [...compiledReachabilityModeSchema.options],
+			supportedModes: [
+				...compiledContracts.compiledReachabilityModeSchema.options,
+			],
 		},
 	};
 

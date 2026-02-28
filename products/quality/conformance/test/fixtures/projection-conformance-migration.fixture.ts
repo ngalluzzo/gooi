@@ -1,8 +1,8 @@
-import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryRecord,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 
 const versionedHistoryRecords: readonly HistoryRecord[] = [
 	{
@@ -38,7 +38,13 @@ export const versionedHistoryPortFixture: HistoryPort = {
 		records: versionedHistoryRecords,
 		historyComplete: true,
 	}),
-	scanAsOf: async (input) => ({
+	scanAsOf: async (input: {
+		readonly asOf: string;
+		readonly orderBy: {
+			readonly field: string;
+			readonly direction: "asc" | "desc";
+		};
+	}) => ({
 		records: versionedHistoryRecords.filter(
 			(record) => record.emittedAt.localeCompare(input.asOf) <= 0,
 		),

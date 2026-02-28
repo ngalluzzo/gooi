@@ -2,8 +2,10 @@ import type { CapabilityPortContract } from "@gooi/capability-contracts/capabili
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
 import type { JsonValue } from "@gooi/contract-primitives/json";
-import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/marketplace-contracts/binding-plan";
 import type { ProviderModule } from "@gooi/provider-runtime";
 
 /**

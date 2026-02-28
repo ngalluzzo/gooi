@@ -2,7 +2,7 @@ import type { CompiledRefreshSubscription } from "@gooi/app-spec-contracts/compi
 import type {
 	RefreshTrigger,
 	SignalEnvelope,
-} from "@gooi/surface-contracts/signal-envelope";
+} from "@gooi/surface-contracts/envelope";
 
 /**
  * Derives refresh triggers from emitted mutation signals.

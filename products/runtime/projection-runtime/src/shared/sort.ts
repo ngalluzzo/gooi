@@ -1,4 +1,4 @@
-import type { ProjectionSortRule } from "@gooi/projection-contracts/plans/projection-plan";
+import type { ProjectionSortRule } from "@gooi/projection-contracts/plans";
 import { stableStringify } from "@gooi/stable-json";
 import { readFieldPath } from "./field-path";
 

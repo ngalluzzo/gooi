@@ -2,16 +2,18 @@ import {
 	type GuardEvaluationEnvelope,
 	type GuardViolationRecord,
 	guardEvaluationEnvelopeVersion,
-} from "@gooi/guard-contracts/envelopes/guard-envelopes";
-import type { GuardTypedError } from "@gooi/guard-contracts/errors/guard-errors";
-import { createGuardError } from "@gooi/guard-contracts/errors/guard-errors";
+} from "@gooi/guard-contracts/envelopes";
+import {
+	createGuardError,
+	type GuardTypedError,
+} from "@gooi/guard-contracts/errors";
 import {
 	type CompiledGuardDefinition,
 	type CompiledGuardPolicyPlan,
 	defaultGuardPolicyPlan,
 	type GuardRuntimeEnvironment,
-} from "@gooi/guard-contracts/plans/guard-plan";
-import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
+} from "@gooi/guard-contracts/plans";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports";
 import { applyGuardPolicy } from "./apply-guard-policy";
 import { evaluateInvariant } from "./evaluate-invariant";
 import { evaluateSemanticTier } from "./semantic";

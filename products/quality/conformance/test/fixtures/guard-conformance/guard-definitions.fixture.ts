@@ -1,7 +1,7 @@
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
 export const collectionInvariant: CompiledInvariantDefinition = {

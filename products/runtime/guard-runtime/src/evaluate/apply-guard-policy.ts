@@ -2,17 +2,17 @@ import type {
 	GuardEvaluationEnvelope,
 	GuardViolationRecord,
 	InvariantEvaluationEnvelope,
-} from "@gooi/guard-contracts/envelopes/guard-envelopes";
-import { createGuardError } from "@gooi/guard-contracts/errors/guard-errors";
+} from "@gooi/guard-contracts/envelopes";
+import { createGuardError } from "@gooi/guard-contracts/errors";
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
 	GuardPolicy,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import {
 	type GuardViolationSignalEnvelope,
 	guardViolationSignalEnvelopeVersion,
-} from "@gooi/guard-contracts/signals/guard-violation-signal";
+} from "@gooi/guard-contracts/signals";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
 const errorCodeForPrimitive = (

@@ -1,11 +1,11 @@
 import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
 import type {
+	InvocationEnvelope,
 	ResultEnvelope,
 	TypedErrorEnvelope,
-} from "@gooi/surface-contracts/result-envelope";
+} from "@gooi/surface-contracts/envelope";
+import { envelope } from "@gooi/surface-contracts/envelope";
 import { calculateIsoDurationMs } from "../time/duration";
 
 export const errorEnvelope = (
@@ -14,7 +14,7 @@ export const errorEnvelope = (
 	retryable: boolean,
 	details?: Readonly<Record<string, unknown>>,
 ): TypedErrorEnvelope<unknown> => ({
-	envelopeVersion: surfaceEnvelopeVersion,
+	envelopeVersion: envelope.surfaceEnvelopeVersion,
 	code,
 	message,
 	retryable,
@@ -30,7 +30,7 @@ export const errorResult = (
 ): ResultEnvelope<unknown, unknown> => {
 	const completedAt = nowIso();
 	return {
-		envelopeVersion: surfaceEnvelopeVersion,
+		envelopeVersion: envelope.surfaceEnvelopeVersion,
 		traceId: invocation.traceId,
 		invocationId: invocation.invocationId,
 		ok: false,

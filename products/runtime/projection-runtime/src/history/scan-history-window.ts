@@ -1,12 +1,12 @@
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
 import type {
 	CompiledTimelineProjectionPlan,
 	ProjectionSourceRef,
-} from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryScanResult,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 
 interface ScanTimelineHistoryInput {
 	readonly historyPort: HistoryPort | undefined;
@@ -32,13 +32,13 @@ export const scanTimelineHistoryWindow = async (
 	| { readonly ok: true; readonly value: HistoryScanResult }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  }
 > => {
 	if (input.historyPort === undefined) {
 		return {
 			ok: false,
-			error: createProjectionError(
+			error: errorsContracts.createProjectionError(
 				"projection_history_capability_error",
 				"Timeline projection requires a bound history port.",
 				input.sourceRef,
@@ -79,7 +79,7 @@ export const scanTimelineHistoryWindow = async (
 	if (input.historyPort.scanAsOf === undefined) {
 		return {
 			ok: false,
-			error: createProjectionError(
+			error: errorsContracts.createProjectionError(
 				"projection_history_capability_error",
 				"Timeline as_of query requires history.scan_as_of capability.",
 				input.sourceRef,

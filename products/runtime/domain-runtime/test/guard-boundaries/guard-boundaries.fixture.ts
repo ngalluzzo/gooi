@@ -1,7 +1,7 @@
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 
 export const createActionGuard = (input: {
 	guardId: string;

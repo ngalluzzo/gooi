@@ -1,8 +1,10 @@
-import { defineCapabilityPort } from "@gooi/capability-contracts/capability-port";
+import { capabilityPortContracts } from "@gooi/capability-contracts/capability-port";
 import { hostFail, hostOk } from "@gooi/host-contracts/result";
-import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
-import type { ExecutionHost } from "@gooi/marketplace-contracts/reachability/contracts";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+	ExecutionHost,
+} from "@gooi/marketplace-contracts/binding-plan";
 import { z } from "zod";
 import type {
 	ProviderModule,
@@ -17,7 +19,7 @@ export const hostApiVersion = "1.0.0";
 export const providerSpecifier = "gooi.providers.test/module";
 
 export const createContract = () =>
-	defineCapabilityPort({
+	capabilityPortContracts.defineCapabilityPort({
 		id: "ids.generate",
 		version: "1.0.0",
 		input: z.object({ count: z.number().int().positive() }),
@@ -80,7 +82,7 @@ export const createHostPorts = (
 			hostFail("delegation_not_configured", "Delegation is not configured."),
 	},
 	moduleLoader: {
-		loadModule: async (specifier) => {
+		loadModule: async (specifier: string) => {
 			if (specifier !== providerSpecifier) {
 				throw new Error(`Unknown provider module specifier: ${specifier}`);
 			}

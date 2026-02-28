@@ -1,13 +1,15 @@
-import { authoringRequiredArtifactIds } from "@gooi/authoring-contracts/lockfile";
+import { lockfileContracts } from "@gooi/authoring-contracts/lockfile";
 import {
 	type AuthoringParityState,
 	authoringParityStateSchema,
 } from "../contracts/parity";
 import type { AuthoringReadContext } from "../contracts/read-context";
 
+const { authoringRequiredArtifactIds } = lockfileContracts;
+
 const byDiagnosticOrder = (
-	left: { path: string; code: string; message: string },
-	right: { path: string; code: string; message: string },
+	left: AuthoringParityState["issues"][number],
+	right: AuthoringParityState["issues"][number],
 ): number => {
 	if (left.path !== right.path) {
 		return left.path.localeCompare(right.path);

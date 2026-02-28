@@ -28,6 +28,8 @@ const scalarSchema = (scalarType: CompiledScalarType): z.ZodType<unknown> => {
 			return z.boolean();
 		case "timestamp":
 			return z.string().datetime({ offset: true });
+		default:
+			throw new Error(`Unsupported scalar type: ${String(scalarType)}`);
 	}
 };
 

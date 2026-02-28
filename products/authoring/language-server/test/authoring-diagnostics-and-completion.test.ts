@@ -1,12 +1,14 @@
 import { describe, expect, test } from "bun:test";
 
-import { createAuthoringLockfile } from "@gooi/authoring-contracts/lockfile";
+import { lockfileContracts } from "@gooi/authoring-contracts/lockfile";
 import { authoringCompletionListSchema } from "../src/contracts/completion-contracts";
 import { listAuthoringCompletionItems } from "../src/features/completion/list-authoring-completion-items";
 import { resolveAuthoringCompletionItem } from "../src/features/completion/resolve-authoring-completion-item";
 import { publishAuthoringDiagnostics } from "../src/features/diagnostics/publish-authoring-diagnostics";
 import { authoringReadFixture } from "./fixtures/authoring-read.fixture";
 import completionDoGolden from "./fixtures/completion-do.golden.json";
+
+const { createAuthoringLockfile } = lockfileContracts;
 
 describe("lsp completion and diagnostics", () => {
 	test("lists deterministic capability completions in do blocks", () => {
@@ -104,14 +106,18 @@ describe("lsp completion and diagnostics", () => {
 			generatedAt: "2026-02-26T00:00:00.000Z",
 		});
 
-		expect(diagnostics.diagnostics.map((entry) => entry.path)).toEqual([
+		expect(
+			diagnostics.diagnostics.map(
+				(entry: { readonly path: string }) => entry.path,
+			),
+		).toEqual([
 			"lockfile.catalogSnapshot.catalogHash",
 			"lockfile.requiredArtifacts.capabilityIndexSnapshot.artifactHash",
 			"lockfile.requiredArtifacts.symbolGraphSnapshot.artifactHash",
 		]);
-		expect(diagnostics.diagnostics.every((entry) => entry.staleArtifacts)).toBe(
-			true,
-		);
+		expect(
+			diagnostics.diagnostics.every((entry) => entry.staleArtifacts === true),
+		).toBe(true);
 	});
 
 	test("emits compiled bundle identity mismatch diagnostics in degraded mode", () => {

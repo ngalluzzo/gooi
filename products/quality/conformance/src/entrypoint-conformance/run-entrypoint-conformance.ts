@@ -1,4 +1,5 @@
-import { createHostReplayStorePort } from "@gooi/host-contracts/replay";
+import type { HostReplayRecord } from "@gooi/host-contracts/replay";
+import { replayContracts } from "@gooi/host-contracts/replay";
 import {
 	areHostPortConformanceChecksPassing,
 	buildHostPortConformanceCheck,
@@ -24,15 +25,12 @@ export const runEntrypointConformance = async (
 	const checks: Array<EntrypointConformanceReport["checks"][number]> = [];
 	const records = new Map<
 		string,
-		{
-			readonly inputHash: string;
-			readonly result: Awaited<ReturnType<typeof runEntrypoint>>;
-		}
+		HostReplayRecord<Awaited<ReturnType<typeof runEntrypoint>>>
 	>();
-	const store = createHostReplayStorePort<
+	const store = replayContracts.createHostReplayStorePort<
 		Awaited<ReturnType<typeof runEntrypoint>>
 	>({
-		load: async (scopeKey) => records.get(scopeKey) ?? null,
+		load: async (scopeKey: string) => records.get(scopeKey) ?? null,
 		save: async ({ scopeKey, record }) => {
 			records.set(scopeKey, record);
 		},

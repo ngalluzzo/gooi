@@ -1,9 +1,9 @@
-import { createScenarioError } from "@gooi/scenario-contracts/errors/scenario-errors";
+import { errorsContracts } from "@gooi/scenario-contracts/errors";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlan,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import { generateTriggerInput } from "../../persona/generate-trigger-input";
 import { applyCaptureBindings } from "../capture-bindings";
 import type {
@@ -41,7 +41,7 @@ export const executeTriggerStep = async (input: {
 		generateInput: input.runInput.generateInput ?? generateTriggerInput,
 	});
 	if (!resolvedInput.ok) {
-		const error = createScenarioError(
+		const error = errorsContracts.createScenarioError(
 			"scenario_capture_error",
 			"Scenario trigger input resolution failed due to missing capture.",
 			input.scenario.scenarioId,
@@ -105,7 +105,7 @@ export const executeTriggerStep = async (input: {
 	}
 
 	if (!result.ok) {
-		const error = createScenarioError(
+		const error = errorsContracts.createScenarioError(
 			"scenario_trigger_error",
 			"Scenario trigger invocation failed.",
 			input.scenario.scenarioId,
@@ -135,7 +135,7 @@ export const executeTriggerStep = async (input: {
 			context: input.scenario.context,
 		});
 		if (!capture.ok) {
-			const error = createScenarioError(
+			const error = errorsContracts.createScenarioError(
 				"scenario_capture_error",
 				"Scenario trigger capture failed.",
 				input.scenario.scenarioId,

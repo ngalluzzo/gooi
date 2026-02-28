@@ -1,8 +1,8 @@
 import {
-	createHostModuleIntegrityProvider,
 	type HostModuleIntegrityPort,
+	moduleIntegrityContracts,
 } from "@gooi/host-contracts/module-integrity";
-import { hostFail, hostOk } from "@gooi/host-contracts/result";
+import { resultContracts } from "@gooi/host-contracts/result";
 
 /**
  * Input payload for in-memory module-integrity configuration.
@@ -18,13 +18,21 @@ export interface CreateMemoryModuleIntegrityPortInput {
 export const createMemoryModuleIntegrityPort = (
 	input?: CreateMemoryModuleIntegrityPortInput,
 ): HostModuleIntegrityPort => ({
-	assertModuleIntegrity: async ({ providerId, providerVersion, integrity }) => {
+	assertModuleIntegrity: async ({
+		providerId,
+		providerVersion,
+		integrity,
+	}: {
+		providerId: string;
+		providerVersion: string;
+		integrity: string;
+	}) => {
 		const acceptedIntegrity = input?.acceptedIntegrity;
 		if (
 			acceptedIntegrity !== undefined &&
 			!acceptedIntegrity.includes(integrity)
 		) {
-			return hostFail(
+			return resultContracts.hostFail(
 				"module_integrity_failed",
 				"Integrity checksum is not accepted by memory provider.",
 				{
@@ -34,18 +42,19 @@ export const createMemoryModuleIntegrityPort = (
 				},
 			);
 		}
-		return hostOk(undefined);
+		return resultContracts.hostOk(undefined);
 	},
 });
 
 /**
  * Reference module-integrity provider for marketplace contributor implementations.
  */
-export const memoryModuleIntegrityProvider = createHostModuleIntegrityProvider({
-	manifest: {
-		providerId: "gooi.marketplace.memory",
-		providerVersion: "1.0.0",
-		hostApiRange: "^1.0.0",
-	},
-	createPort: createMemoryModuleIntegrityPort,
-});
+export const memoryModuleIntegrityProvider =
+	moduleIntegrityContracts.createHostModuleIntegrityProvider({
+		manifest: {
+			providerId: "gooi.marketplace.memory",
+			providerVersion: "1.0.0",
+			hostApiRange: "^1.0.0",
+		},
+		createPort: createMemoryModuleIntegrityPort,
+	});

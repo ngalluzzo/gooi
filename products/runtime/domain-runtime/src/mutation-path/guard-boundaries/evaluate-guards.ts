@@ -1,5 +1,5 @@
-import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes/guard-envelopes";
-import type { GuardTypedError } from "@gooi/guard-contracts/errors/guard-errors";
+import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes";
+import type { GuardTypedError } from "@gooi/guard-contracts/errors";
 import { evaluateGuard, evaluateInvariant } from "@gooi/guard-runtime/evaluate";
 import type { DomainRuntimeMode } from "../../execution-core/envelopes";
 import type { DomainRuntimeTypedError } from "../../execution-core/errors";

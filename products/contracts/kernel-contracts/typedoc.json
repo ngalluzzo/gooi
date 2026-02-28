@@ -1,4 +1,4 @@
 {
-	"entryPoints": ["src"],
+	"entryPoints": ["./src/kernel-contracts.ts"],
 	"out": "docs/api/kernel-contracts"
 }

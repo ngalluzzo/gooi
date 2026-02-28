@@ -2,20 +2,14 @@
 	"name": "@gooi/capability-contracts",
 	"version": "0.1.0",
 	"type": "module",
-	"main": "./dist/capability-port/capability-port.js",
-	"types": "./src/capability-port/capability-port.ts",
+	"main": "./dist/capability-contracts.js",
+	"types": "./src/capability-contracts.ts",
 	"exports": {
-		"./capability-port": {
-			"types": "./src/capability-port/capability-port.ts",
-			"bun": "./src/capability-port/capability-port.ts",
-			"import": "./dist/capability-port/capability-port.js",
-			"default": "./dist/capability-port/capability-port.js"
-		},
-		"./provider-manifest": {
-			"types": "./src/provider-manifest/provider-manifest.ts",
-			"bun": "./src/provider-manifest/provider-manifest.ts",
-			"import": "./dist/provider-manifest/provider-manifest.js",
-			"default": "./dist/provider-manifest/provider-manifest.js"
+		"./*": {
+			"types": "./src/*/contracts.ts",
+			"bun": "./src/*/contracts.ts",
+			"import": "./dist/*/contracts.js",
+			"default": "./dist/*/contracts.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -26,7 +20,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/capability-port/capability-port.ts --outfile ./dist/capability-port/capability-port.js --external zod --external @gooi/contract-primitives/json --external @gooi/stable-json && bun build ./src/provider-manifest/provider-manifest.ts --outfile ./dist/provider-manifest/provider-manifest.js --external zod --external @gooi/marketplace-contracts/provider-manifest/base",
+		"build": "bun build ./src/capability-port/contracts.ts --outfile ./dist/capability-port/contracts.js --external @gooi/* --external zod && bun build ./src/provider-manifest/contracts.ts --outfile ./dist/provider-manifest/contracts.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

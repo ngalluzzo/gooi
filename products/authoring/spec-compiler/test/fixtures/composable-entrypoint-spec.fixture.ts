@@ -112,6 +112,8 @@ export const createComposableEntrypointSpecFixture = () => ({
 			http: {
 				queries: {
 					list_messages: {
+						method: "GET",
+						path: "/messages",
 						bind: {
 							page: "query.page",
 							page_size: "query.page_size",
@@ -121,6 +123,8 @@ export const createComposableEntrypointSpecFixture = () => ({
 				},
 				mutations: {
 					submit_message: {
+						method: "POST",
+						path: "/messages",
 						bind: {
 							message: "body.message",
 						},

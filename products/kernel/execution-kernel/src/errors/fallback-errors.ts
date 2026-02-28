@@ -1,8 +1,10 @@
 import type { CompiledEntrypointKind } from "@gooi/app-spec-contracts/compiled";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import {
+	envelope,
+	type InvocationEnvelope,
+	type ResultEnvelope,
+} from "@gooi/surface-contracts/envelope";
 import type { HostPortContractIssue } from "../entrypoint/types";
 import { errorEnvelope, errorResult } from "./errors";
 
@@ -34,7 +36,7 @@ const buildFallbackInvocationEnvelope = (
 	input: FallbackInvocationInput,
 	fallbackNow: string,
 ): InvocationEnvelope<Readonly<Record<string, unknown>>> => ({
-	envelopeVersion: surfaceEnvelopeVersion,
+	envelopeVersion: envelope.surfaceEnvelopeVersion,
 	traceId: input.traceId ?? hostPortValidationFallbackTraceId,
 	invocationId: input.invocationId ?? hostPortValidationFallbackInvocationId,
 	entrypointId: input.binding.entrypointId,

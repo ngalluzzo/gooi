@@ -1,7 +1,6 @@
 import {
 	type AuthoringLockfile,
-	authoringRequiredArtifactIds,
-	createAuthoringLockfile,
+	lockfileContracts,
 } from "@gooi/authoring-contracts/lockfile";
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
 import type { BuildCapabilityIndexSnapshotInput } from "@gooi/capability-index/contracts";
@@ -138,23 +137,28 @@ const createLockfile = (input: {
 	readonly symbolGraphHash: string;
 	readonly catalogHash: string;
 }): AuthoringLockfile =>
-	createAuthoringLockfile({
+	lockfileContracts.createAuthoringLockfile({
 		artifactVersion: "1.0.0",
 		sourceHash: "4".repeat(64),
 		sourceKind: "workspace-local",
 		requiredArtifacts: {
 			compiledEntrypointBundle: {
-				artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds
+						.compiledEntrypointBundle,
 				artifactVersion: "1.0.0",
 				artifactHash: input.compiledEntrypointBundleHash,
 			},
 			capabilityIndexSnapshot: {
-				artifactId: authoringRequiredArtifactIds.capabilityIndexSnapshot,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds
+						.capabilityIndexSnapshot,
 				artifactVersion: capabilityIndexSnapshot.artifactVersion,
 				artifactHash: input.capabilityIndexHash,
 			},
 			symbolGraphSnapshot: {
-				artifactId: authoringRequiredArtifactIds.symbolGraphSnapshot,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds.symbolGraphSnapshot,
 				artifactVersion: symbolGraphSnapshot.artifactVersion,
 				artifactHash: input.symbolGraphHash,
 			},
@@ -176,7 +180,8 @@ const capabilityIndexSnapshot =
 	buildCapabilityIndexSnapshot(capabilityIndexInput);
 const symbolGraphSnapshot = buildSymbolGraphSnapshot(symbolGraphInput);
 const compiledEntrypointBundleIdentity = {
-	artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+	artifactId:
+		lockfileContracts.authoringRequiredArtifactIds.compiledEntrypointBundle,
 	artifactVersion: "1.0.0",
 	artifactHash: "5".repeat(64),
 } as const;

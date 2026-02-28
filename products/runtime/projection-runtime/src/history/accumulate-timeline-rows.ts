@@ -1,8 +1,8 @@
 import type {
 	CompiledTimelineProjectionPlan,
 	TimelineReducerOperation,
-} from "@gooi/projection-contracts/plans/projection-plan";
-import type { HistoryRecord } from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/plans";
+import type { HistoryRecord } from "@gooi/projection-contracts/ports";
 import { readFieldPath } from "../shared/field-path";
 
 const toTimelineRow = (

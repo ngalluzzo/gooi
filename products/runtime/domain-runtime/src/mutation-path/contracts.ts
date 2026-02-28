@@ -3,10 +3,10 @@ import type {
 	CompiledGuardDefinition,
 	CompiledGuardPolicyPlan,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
-import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
+} from "@gooi/guard-contracts/plans";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
+import type { SignalEnvelope } from "@gooi/surface-contracts/envelope";
 import type { DomainRuntimeMode } from "../execution-core/envelopes";
 
 /**

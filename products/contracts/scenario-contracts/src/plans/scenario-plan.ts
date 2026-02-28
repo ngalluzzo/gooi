@@ -1,5 +1,5 @@
 import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
-import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans";
 
 export const compiledScenarioPlanSetVersion = "1.0.0" as const;
 

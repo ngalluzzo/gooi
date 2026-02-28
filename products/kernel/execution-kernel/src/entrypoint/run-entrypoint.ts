@@ -1,6 +1,6 @@
-import { getMissingHostPortSetMembers } from "@gooi/host-contracts/portset";
+import { portsetContracts } from "@gooi/host-contracts/portset";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type { ResultEnvelope } from "@gooi/surface-contracts/envelope";
 import { buildRuntimeActivationReport } from "../activation/runtime-activation-report";
 import { validateSchemaProfile } from "../activation/schema-profile";
 import { validateRuntimeArtifactManifest } from "../activation/validate-artifact-manifest";
@@ -40,7 +40,8 @@ export const runEntrypointThroughKernel = async (
 		});
 	}
 
-	const missingHostPortMembers = getMissingHostPortSetMembers(hostPorts);
+	const missingHostPortMembers =
+		portsetContracts.getMissingHostPortSetMembers(hostPorts);
 	if (missingHostPortMembers.length > 0) {
 		return buildMissingHostPortsResult({
 			invocation: buildInvocationMeta(input),

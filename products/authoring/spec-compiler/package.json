@@ -26,7 +26,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/compile/compile-bundle.ts --outfile ./dist/compile/compile-bundle.js --external zod --external @gooi/app-spec-contracts/spec --external @gooi/app-spec-contracts/compiled --external @gooi/artifact-model/bundle --external @gooi/artifact-model/manifest --external @gooi/capability-contracts/capability-port --external @gooi/stable-json && bun build ./src/authoring-spec/authoring-spec.ts --outfile ./dist/authoring-spec/authoring-spec.js --external zod --external @gooi/app-spec-contracts/spec",
+		"build": "bun build ./src/compile/compile-bundle.ts --outfile ./dist/compile/compile-bundle.js --external zod --external @gooi/app-spec-contracts/spec --external @gooi/app-spec-contracts/compiled --external @gooi/artifact-model/bundle --external @gooi/artifact-model/manifest --external @gooi/capability-contracts/capability-port --external @gooi/surface-contracts --external @gooi/stable-json && bun build ./src/authoring-spec/authoring-spec.ts --outfile ./dist/authoring-spec/authoring-spec.js --external zod --external @gooi/app-spec-contracts/spec",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -36,6 +36,7 @@
 		"@gooi/artifact-model": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/contract-primitives": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
 		"@gooi/stable-json": "workspace:*",
 		"zod": "^4.3.6"
 	}

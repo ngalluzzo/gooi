@@ -1,10 +1,4 @@
 {
-	"entryPoints": [
-		"./src/plans/guard-plan.ts",
-		"./src/envelopes/guard-envelopes.ts",
-		"./src/errors/guard-errors.ts",
-		"./src/signals/guard-violation-signal.ts",
-		"./src/ports/semantic-judge-port.ts"
-	],
+	"entryPoints": ["./src/guard-contracts.ts"],
 	"out": "docs"
 }

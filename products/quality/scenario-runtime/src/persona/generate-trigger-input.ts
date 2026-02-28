@@ -1,7 +1,7 @@
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlan,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import { sha256, stableStringify } from "@gooi/stable-json";
 
 export interface GenerateTriggerInput {

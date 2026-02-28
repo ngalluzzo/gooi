@@ -1,6 +1,5 @@
 import {
-	createHostActivationPolicyProvider,
-	createStrictActivationPolicyPort,
+	activationPolicyContracts,
 	type HostActivationPolicyPort,
 } from "@gooi/host-contracts/activation-policy";
 
@@ -8,13 +7,13 @@ import {
  * Creates an in-memory activation policy port.
  */
 export const createMemoryActivationPolicyPort = (): HostActivationPolicyPort =>
-	createStrictActivationPolicyPort();
+	activationPolicyContracts.createStrictActivationPolicyPort();
 
 /**
  * Reference activation-policy provider for marketplace contributor implementations.
  */
 export const memoryActivationPolicyProvider =
-	createHostActivationPolicyProvider({
+	activationPolicyContracts.createHostActivationPolicyProvider({
 		manifest: {
 			providerId: "gooi.marketplace.memory",
 			providerVersion: "1.0.0",

@@ -3,8 +3,8 @@ import type {
 	CompiledSemanticGuardDefinition,
 	GuardRuntimeEnvironment,
 	SemanticConfidence,
-} from "@gooi/guard-contracts/plans/guard-plan";
-import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
+} from "@gooi/guard-contracts/plans";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports";
 import { sha256 } from "@gooi/stable-json";
 
 interface EvaluateSemanticTierInput {

@@ -1,4 +1,4 @@
-import type { ProjectionFieldSelection } from "@gooi/projection-contracts/plans/projection-plan";
+import type { ProjectionFieldSelection } from "@gooi/projection-contracts/plans";
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 	typeof value === "object" && value !== null;

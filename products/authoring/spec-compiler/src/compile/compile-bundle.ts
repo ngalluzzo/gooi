@@ -1,15 +1,12 @@
 import {
-	artifactVersionSchema,
 	type CompileDiagnostic,
 	type CompiledEntrypointBundle,
 	type CompiledRoleDefinition,
 	type CompiledRoleDeriveRule,
 	type CompileEntrypointBundleResult,
+	compiledContracts,
 } from "@gooi/app-spec-contracts/compiled";
-import {
-	authoringEntrypointSpecSchema,
-	parseAuthoringEntrypointSpec,
-} from "@gooi/app-spec-contracts/spec";
+import { specContracts } from "@gooi/app-spec-contracts/spec";
 import {
 	buildPackagedBundle,
 	type PackagedAppBundle,
@@ -18,6 +15,7 @@ import { sha256, stableStringify } from "@gooi/stable-json";
 import { compileBindingRequirementsArtifact } from "./compile-binding-requirements-artifact";
 import { compileBindings } from "./compile-bindings";
 import { buildCanonicalSpecModel } from "./compile-canonical-model";
+import { compileDispatchPlans } from "./compile-dispatch-plans";
 import { compileEntrypoints } from "./compile-entrypoints";
 import { compileLaneArtifacts } from "./compile-lane-artifacts";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
@@ -66,6 +64,9 @@ const hasErrors = (diagnostics: readonly CompileDiagnostic[]): boolean =>
 const artifactHashInput = (
 	bundle: Omit<CompiledEntrypointBundle, "artifactHash">,
 ): string => sha256(stableStringify(bundle));
+const { parseAuthoringEntrypointSpec, authoringEntrypointSpecSchema } =
+	specContracts;
+const { artifactVersionSchema } = compiledContracts;
 
 const compileAccessPlan = (
 	spec: ReturnType<typeof parseAuthoringEntrypointSpec>,
@@ -179,6 +180,10 @@ export const compileEntrypointBundle = (
 	const canonicalModel = buildCanonicalSpecModel(spec);
 	const entrypointOutput = compileEntrypoints(spec);
 	const bindingOutput = compileBindings(spec, entrypointOutput.entrypoints);
+	const dispatchOutput = compileDispatchPlans(
+		spec,
+		entrypointOutput.entrypoints,
+	);
 	const reachabilityOutput = compileReachabilityRequirements(spec);
 	const refreshOutput = compileRefreshSubscriptions(
 		spec,
@@ -188,6 +193,7 @@ export const compileEntrypointBundle = (
 		...validateCrossLinks(canonicalModel),
 		...entrypointOutput.diagnostics,
 		...bindingOutput.diagnostics,
+		...dispatchOutput.diagnostics,
 		...reachabilityOutput.diagnostics,
 		...refreshOutput.diagnostics,
 	]);
@@ -206,6 +212,7 @@ export const compileEntrypointBundle = (
 		canonicalModel,
 		entrypoints: entrypointOutput.entrypoints,
 		bindings: bindingOutput.bindings,
+		dispatchPlans: dispatchOutput.dispatchPlans,
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,
@@ -219,6 +226,7 @@ export const compileEntrypointBundle = (
 		sections: canonicalModel.sections,
 		entrypoints: entrypointOutput.entrypoints,
 		bindings: bindingOutput.bindings,
+		dispatchPlans: dispatchOutput.dispatchPlans,
 		reachabilityRequirements: reachabilityOutput.requirements,
 		bindingRequirementsArtifact,
 		artifactManifest,

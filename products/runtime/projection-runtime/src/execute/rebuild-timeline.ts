@@ -1,10 +1,12 @@
-import type { ProjectionTypedError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { CompiledTimelineProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
-import type { TimelineAccumulationState } from "@gooi/projection-contracts/plans/timeline-history-policy";
+import type { ProjectionTypedError } from "@gooi/projection-contracts/errors";
+import type {
+	CompiledTimelineProjectionPlan,
+	TimelineAccumulationState,
+} from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryRecord,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 import { accumulateTimelineRows } from "../history/accumulate-timeline-rows";
 import { dedupeHistoryRecords } from "../history/dedupe-history-records";
 import { enforceHistoryContractGate } from "../history/history-contract-gate";

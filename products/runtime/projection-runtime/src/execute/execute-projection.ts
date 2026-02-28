@@ -2,13 +2,13 @@ import type {
 	ProjectionSemanticExecutionResult,
 	ProjectionSemanticGuardMeta,
 } from "@gooi/kernel-contracts/projection-semantic";
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
 import type {
 	CompiledProjectionPlan,
 	CompiledTimelineProjectionPlan,
-} from "@gooi/projection-contracts/plans/projection-plan";
-import type { TimelineAccumulationState } from "@gooi/projection-contracts/plans/timeline-history-policy";
-import type { HistoryPort } from "@gooi/projection-contracts/ports/history-port-contract";
+	TimelineAccumulationState,
+} from "@gooi/projection-contracts/plans";
+import type { HistoryPort } from "@gooi/projection-contracts/ports";
 import type { ProjectionCollectionReaderPort } from "../ports/collection-reader";
 import { assertNever } from "../shared/assert-never";
 import { createProviderError } from "../shared/errors";
@@ -74,7 +74,7 @@ const ensureTimelineAsOfUsage = (
 	}
 	return {
 		ok: false,
-		error: createProjectionError(
+		error: errorsContracts.createProjectionError(
 			"projection_as_of_error",
 			"Query supplied as_of for a non-timeline projection strategy.",
 			plan.sourceRef,

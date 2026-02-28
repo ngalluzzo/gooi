@@ -1,7 +1,4 @@
-import {
-	createHostClockProvider,
-	type HostClockPort,
-} from "@gooi/host-contracts/clock";
+import { clockContracts, type HostClockPort } from "@gooi/host-contracts/clock";
 
 /**
  * Input payload for in-memory clock configuration.
@@ -36,7 +33,7 @@ export const createMemoryClockPort = (
 /**
  * Reference clock provider for marketplace contributor implementations.
  */
-export const memoryClockProvider = createHostClockProvider({
+export const memoryClockProvider = clockContracts.createHostClockProvider({
 	manifest: {
 		providerId: "gooi.marketplace.memory",
 		providerVersion: "1.0.0",

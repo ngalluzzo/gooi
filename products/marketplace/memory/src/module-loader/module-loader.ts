@@ -1,6 +1,6 @@
 import {
-	createHostModuleLoaderProvider,
 	type HostModuleLoaderPort,
+	moduleLoaderContracts,
 } from "@gooi/host-contracts/module-loader";
 
 /**
@@ -21,7 +21,7 @@ export const createMemoryModuleLoaderPort = <TModule = unknown>(
 ): HostModuleLoaderPort<TModule> => {
 	const modules = new Map(Object.entries(input?.modules ?? {}));
 	return {
-		loadModule: async (specifier) => {
+		loadModule: async (specifier: string) => {
 			if (modules.has(specifier)) {
 				return modules.get(specifier) as TModule;
 			}
@@ -36,11 +36,12 @@ export const createMemoryModuleLoaderPort = <TModule = unknown>(
 /**
  * Reference module-loader provider for marketplace contributor implementations.
  */
-export const memoryModuleLoaderProvider = createHostModuleLoaderProvider({
-	manifest: {
-		providerId: "gooi.marketplace.memory",
-		providerVersion: "1.0.0",
-		hostApiRange: "^1.0.0",
-	},
-	createPort: createMemoryModuleLoaderPort,
-});
+export const memoryModuleLoaderProvider =
+	moduleLoaderContracts.createHostModuleLoaderProvider({
+		manifest: {
+			providerId: "gooi.marketplace.memory",
+			providerVersion: "1.0.0",
+			hostApiRange: "^1.0.0",
+		},
+		createPort: createMemoryModuleLoaderPort,
+	});

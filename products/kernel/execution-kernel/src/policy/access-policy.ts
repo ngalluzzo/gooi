@@ -19,7 +19,9 @@ const canDeriveRole = (
 		return false;
 	}
 
-	if (definition.extends.some((parentRole) => !derived.has(parentRole))) {
+	if (
+		definition.extends.some((parentRole: string) => !derived.has(parentRole))
+	) {
 		return false;
 	}
 
@@ -92,5 +94,5 @@ export const isAccessAllowedForRoles = (
 	if (required === undefined || required.length === 0) {
 		return accessPlan.defaultPolicy === "allow";
 	}
-	return required.some((role) => effectiveRoles.includes(role));
+	return required.some((role: string) => effectiveRoles.includes(role));
 };

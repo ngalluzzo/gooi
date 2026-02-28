@@ -1,7 +1,7 @@
 import {
 	type DiagnosticRecord as SharedDiagnosticRecord,
 	diagnosticRecordSchema as sharedDiagnosticRecordSchema,
-} from "@gooi/app-spec-contracts/diagnostics";
+} from "@gooi/app-spec-contracts/compiled";
 
 /**
  * Shared base shape for one conformance diagnostic record.

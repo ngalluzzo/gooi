@@ -1,9 +1,9 @@
 import { evaluateGuard } from "@gooi/guard-runtime/evaluate";
-import { createScenarioError } from "@gooi/scenario-contracts/errors/scenario-errors";
+import { errorsContracts } from "@gooi/scenario-contracts/errors";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlan,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import type {
 	RunScenarioInput,
 	RuntimeState,
@@ -96,7 +96,7 @@ export const executeExpectStep = async (input: {
 
 	const expectation = await resolveExpectation(input);
 	if (expectation === null) {
-		const error = createScenarioError(
+		const error = errorsContracts.createScenarioError(
 			"scenario_expectation_error",
 			"Scenario expectation target was not satisfied.",
 			input.scenario.scenarioId,
@@ -131,7 +131,7 @@ export const executeExpectStep = async (input: {
 			samplingSeed: `${input.scenario.scenarioId}:${input.stepIndex}`,
 		});
 		if (!guard.ok) {
-			const error = createScenarioError(
+			const error = errorsContracts.createScenarioError(
 				"scenario_guard_error",
 				"Scenario expectation guard failed.",
 				input.scenario.scenarioId,

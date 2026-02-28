@@ -2,68 +2,14 @@
 	"name": "@gooi/host-contracts",
 	"version": "0.1.0",
 	"type": "module",
-	"main": "./dist/result/result.js",
-	"types": "./src/result/result.ts",
+	"main": "./dist/host-contracts.js",
+	"types": "./src/host-contracts.ts",
 	"exports": {
-		"./result": {
-			"types": "./src/result/result.ts",
-			"bun": "./src/result/result.ts",
-			"import": "./dist/result/result.js",
-			"default": "./dist/result/result.js"
-		},
-		"./clock": {
-			"types": "./src/clock/clock.ts",
-			"bun": "./src/clock/clock.ts",
-			"import": "./dist/clock/clock.js",
-			"default": "./dist/clock/clock.js"
-		},
-		"./identity": {
-			"types": "./src/identity/identity.ts",
-			"bun": "./src/identity/identity.ts",
-			"import": "./dist/identity/identity.js",
-			"default": "./dist/identity/identity.js"
-		},
-		"./principal": {
-			"types": "./src/principal/principal.ts",
-			"bun": "./src/principal/principal.ts",
-			"import": "./dist/principal/principal.js",
-			"default": "./dist/principal/principal.js"
-		},
-		"./replay": {
-			"types": "./src/replay/replay.ts",
-			"bun": "./src/replay/replay.ts",
-			"import": "./dist/replay/replay.js",
-			"default": "./dist/replay/replay.js"
-		},
-		"./activation-policy": {
-			"types": "./src/activation-policy/activation-policy.ts",
-			"bun": "./src/activation-policy/activation-policy.ts",
-			"import": "./dist/activation-policy/activation-policy.js",
-			"default": "./dist/activation-policy/activation-policy.js"
-		},
-		"./module-loader": {
-			"types": "./src/module-loader/module-loader.ts",
-			"bun": "./src/module-loader/module-loader.ts",
-			"import": "./dist/module-loader/module-loader.js",
-			"default": "./dist/module-loader/module-loader.js"
-		},
-		"./module-integrity": {
-			"types": "./src/module-integrity/module-integrity.ts",
-			"bun": "./src/module-integrity/module-integrity.ts",
-			"import": "./dist/module-integrity/module-integrity.js",
-			"default": "./dist/module-integrity/module-integrity.js"
-		},
-		"./delegation": {
-			"types": "./src/delegation/delegation.ts",
-			"bun": "./src/delegation/delegation.ts",
-			"import": "./dist/delegation/delegation.js",
-			"default": "./dist/delegation/delegation.js"
-		},
-		"./portset": {
-			"types": "./src/portset/portset.ts",
-			"bun": "./src/portset/portset.ts",
-			"import": "./dist/portset/portset.js",
-			"default": "./dist/portset/portset.js"
+		"./*": {
+			"types": "./src/*/contracts.ts",
+			"bun": "./src/*/contracts.ts",
+			"import": "./dist/*/contracts.js",
+			"default": "./dist/*/contracts.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -74,7 +20,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/result/result.ts --outfile ./dist/result/result.js && bun build ./src/clock/clock.ts --outfile ./dist/clock/clock.js && bun build ./src/identity/identity.ts --outfile ./dist/identity/identity.js && bun build ./src/principal/principal.ts --outfile ./dist/principal/principal.js && bun build ./src/replay/replay.ts --outfile ./dist/replay/replay.js && bun build ./src/activation-policy/activation-policy.ts --outfile ./dist/activation-policy/activation-policy.js && bun build ./src/module-loader/module-loader.ts --outfile ./dist/module-loader/module-loader.js && bun build ./src/module-integrity/module-integrity.ts --outfile ./dist/module-integrity/module-integrity.js && bun build ./src/delegation/delegation.ts --outfile ./dist/delegation/delegation.js && bun build ./src/portset/portset.ts --outfile ./dist/portset/portset.js",
+		"build": "bun build ./src/activation-policy/contracts.ts --outfile ./dist/activation-policy/contracts.js --external @gooi/* --external zod && bun build ./src/clock/contracts.ts --outfile ./dist/clock/contracts.js --external @gooi/* --external zod && bun build ./src/delegation/contracts.ts --outfile ./dist/delegation/contracts.js --external @gooi/* --external zod && bun build ./src/identity/contracts.ts --outfile ./dist/identity/contracts.js --external @gooi/* --external zod && bun build ./src/module-integrity/contracts.ts --outfile ./dist/module-integrity/contracts.js --external @gooi/* --external zod && bun build ./src/module-loader/contracts.ts --outfile ./dist/module-loader/contracts.js --external @gooi/* --external zod && bun build ./src/portset/contracts.ts --outfile ./dist/portset/contracts.js --external @gooi/* --external zod && bun build ./src/principal/contracts.ts --outfile ./dist/principal/contracts.js --external @gooi/* --external zod && bun build ./src/provider/contracts.ts --outfile ./dist/provider/contracts.js --external @gooi/* --external zod && bun build ./src/replay/contracts.ts --outfile ./dist/replay/contracts.js --external @gooi/* --external zod && bun build ./src/result/contracts.ts --outfile ./dist/result/contracts.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

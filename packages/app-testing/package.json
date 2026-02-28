@@ -30,12 +30,20 @@
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app": "workspace:*",
+		"@gooi/app-runtime": "workspace:*",
+		"@gooi/app-runtime-facade-contracts": "workspace:*",
 		"@gooi/app-testing-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/conformance": "workspace:*",
+		"@gooi/execution-kernel": "workspace:*",
 		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
 		"@gooi/scenario-contracts": "workspace:*",
 		"@gooi/scenario-runtime": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}
 }

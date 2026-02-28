@@ -4,6 +4,7 @@ import type {
 	CreateAppRuntimeInput,
 } from "@gooi/app-runtime-facade-contracts/create";
 import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
+import { describeRuntimeReachability } from "../reachability/describe-runtime-reachability";
 import {
 	createBindingIndex,
 	createMissingBindingFallback,
@@ -15,6 +16,14 @@ export const createAppRuntime = (input: CreateAppRuntimeInput): AppRuntime => {
 	const bindingIndex = createBindingIndex(input.bundle.bindings);
 
 	return {
+		describeReachability: (query) =>
+			describeRuntimeReachability({
+				requirements: input.bundle.bindingRequirementsArtifact,
+				...(input.bindingPlan === undefined
+					? {}
+					: { bindingPlan: input.bindingPlan }),
+				query,
+			}),
 		invoke: async (invokeInput: AppRuntimeInvokeInput) => {
 			const started = monotonicNow();
 			const binding = resolveBinding(bindingIndex, invokeInput);

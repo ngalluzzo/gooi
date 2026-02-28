@@ -8,6 +8,8 @@ export type {
 	AppRuntimeEntrypointKind,
 	AppRuntimeInvocationMeasurement,
 	AppRuntimeInvokeInput,
+	AppRuntimeReachabilityOutcome,
+	AppRuntimeReachabilityQuery,
 	CreateAppRuntimeInput,
 } from "./create";
 

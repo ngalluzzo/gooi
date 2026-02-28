@@ -72,7 +72,7 @@ export const createRuntimeSpecFixture = () => ({
 				{
 					portId: "notifications.send",
 					portVersion: "1.0.0",
-					mode: "local" as const,
+					mode: "delegated" as const,
 				},
 			],
 		},

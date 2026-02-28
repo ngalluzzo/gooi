@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { AppRuntimeInvocationMeasurement } from "@gooi/app-runtime-facade-contracts/create";
 import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { createAppRuntime } from "../src/create/create-app-runtime";
 import {
@@ -122,5 +123,82 @@ describe("@gooi/app-runtime create", () => {
 			return;
 		}
 		expect(result.error?.code).toBe("entrypoint_not_found_error");
+	});
+
+	test("surfaces delegated reachability requirements without hiding route requirements", () => {
+		const compiled = compileEntrypointBundle({
+			spec: createRuntimeSpecFixture(),
+			compilerVersion: "1.0.0",
+		});
+		expect(compiled.ok).toBe(true);
+		if (!compiled.ok) {
+			return;
+		}
+
+		const runtime = createAppRuntime({
+			bundle: compiled.bundle,
+			hostPorts: createHostPortSetFixture(),
+			domainRuntime: createDomainRuntimePortFixture(),
+		});
+		const reachability = runtime.describeReachability({
+			portId: "notifications.send",
+			portVersion: "1.0.0",
+		});
+		expect(reachability).toEqual({
+			portId: "notifications.send",
+			portVersion: "1.0.0",
+			mode: "delegated",
+			source: "requirements",
+			delegateRouteRequired: true,
+		});
+	});
+
+	test("resolves delegated route metadata from deployment binding plan", () => {
+		const compiled = compileEntrypointBundle({
+			spec: createRuntimeSpecFixture(),
+			compilerVersion: "1.0.0",
+		});
+		expect(compiled.ok).toBe(true);
+		if (!compiled.ok) {
+			return;
+		}
+
+		const bindingPlan: BindingPlan = {
+			appId: "app_runtime_demo",
+			environment: "dev",
+			hostApiVersion: "1.0.0",
+			capabilityBindings: [
+				{
+					portId: "notifications.send",
+					portVersion: "1.0.0",
+					resolution: {
+						mode: "delegated",
+						targetHost: "node",
+						providerId: "gooi.providers.notifications",
+						delegateRouteId: "route-node-1",
+					},
+				},
+			],
+		};
+		const runtime = createAppRuntime({
+			bundle: compiled.bundle,
+			hostPorts: createHostPortSetFixture(),
+			domainRuntime: createDomainRuntimePortFixture(),
+			bindingPlan,
+		});
+		const reachability = runtime.describeReachability({
+			portId: "notifications.send",
+			portVersion: "1.0.0",
+		});
+		expect(reachability).toEqual({
+			portId: "notifications.send",
+			portVersion: "1.0.0",
+			mode: "delegated",
+			source: "binding_plan",
+			targetHost: "node",
+			providerId: "gooi.providers.notifications",
+			delegateRouteId: "route-node-1",
+			delegateRouteRequired: false,
+		});
 	});
 });

@@ -9,8 +9,18 @@ import {
 } from "@gooi/host-contracts/principal";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
+import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan";
 import type { ResultEnvelope } from "@gooi/surface-contracts/envelope";
 import { z } from "zod";
+import type {
+	AppRuntimeReachabilityOutcome,
+	AppRuntimeReachabilityQuery,
+} from "../reachability/reachability";
+
+export type {
+	AppRuntimeReachabilityOutcome,
+	AppRuntimeReachabilityQuery,
+} from "../reachability/reachability";
 
 export const appRuntimeEntrypointKindSchema = z.enum(["query", "mutation"]);
 
@@ -48,6 +58,7 @@ export interface CreateAppRuntimeInput {
 		PrincipalContext,
 		ResultEnvelope<unknown, unknown>
 	>;
+	readonly bindingPlan?: BindingPlan;
 	readonly replayStore?: HostReplayStorePort<ResultEnvelope<unknown, unknown>>;
 	readonly replayTtlSeconds?: number;
 	readonly now?: string;
@@ -60,6 +71,9 @@ export interface AppRuntime {
 	readonly invoke: (
 		input: AppRuntimeInvokeInput,
 	) => Promise<ResultEnvelope<unknown, unknown>>;
+	readonly describeReachability: (
+		query: AppRuntimeReachabilityQuery,
+	) => AppRuntimeReachabilityOutcome;
 }
 
 export const parseAppRuntimeInvokeInput = (

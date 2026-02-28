@@ -15,6 +15,12 @@
 			"import": "./dist/run/run-app.js",
 			"default": "./dist/run/run-app.js"
 		},
+		"./reachability": {
+			"types": "./src/reachability/get-runtime-reachability.ts",
+			"bun": "./src/reachability/get-runtime-reachability.ts",
+			"import": "./dist/reachability/get-runtime-reachability.js",
+			"default": "./dist/reachability/get-runtime-reachability.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -24,7 +30,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/create/create-app-runtime.ts --outfile ./dist/create/create-app-runtime.js --external @gooi/* --external zod && bun build ./src/run/run-app.ts --outfile ./dist/run/run-app.js --external @gooi/* --external zod",
+		"build": "bun build ./src/create/create-app-runtime.ts --outfile ./dist/create/create-app-runtime.js --external @gooi/* --external zod && bun build ./src/run/run-app.ts --outfile ./dist/run/run-app.js --external @gooi/* --external zod && bun build ./src/reachability/get-runtime-reachability.ts --outfile ./dist/reachability/get-runtime-reachability.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -35,6 +41,7 @@
 		"@gooi/execution-kernel": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/kernel-contracts": "workspace:*",
+		"@gooi/marketplace-contracts": "workspace:*",
 		"@gooi/spec-compiler": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"zod": "^4.3.6"

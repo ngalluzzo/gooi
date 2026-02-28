@@ -6,3 +6,4 @@ Canonical public contracts for runtime helper facades.
 
 - `@gooi/app-runtime-facade-contracts/create`
 - `@gooi/app-runtime-facade-contracts/run`
+- `@gooi/app-runtime-facade-contracts/reachability`

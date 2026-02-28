@@ -12,6 +12,7 @@ import {
 	resolveAffectedQueryIds,
 } from "../refresh/refresh";
 import { calculateIsoDurationMs } from "../time/duration";
+import { executeMutationWithKernelGuards } from "./mutation-guards";
 
 const envelopeVersion = envelope.surfaceEnvelopeVersion;
 
@@ -49,29 +50,23 @@ const hasDisallowedQueryEffects = (effects: readonly EffectKind[]): boolean =>
 export const executeEntrypointTail = async (
 	input: ExecuteTailInput,
 ): Promise<ResultEnvelope<unknown, unknown>> => {
+	const semanticInput = {
+		entrypoint: input.entrypoint,
+		kind: input.entrypoint.kind,
+		input: input.invocation.input,
+		principal: input.invocation.principal,
+		ctx: {
+			invocationId: input.invocation.invocationId,
+			traceId: input.invocation.traceId,
+			now: input.startedAt,
+		},
+	} as const;
 	const execution =
 		input.entrypoint.kind === "query"
-			? await input.domainRuntime.executeQuery({
-					entrypoint: input.entrypoint,
-					kind: input.entrypoint.kind,
-					input: input.invocation.input,
-					principal: input.invocation.principal,
-					ctx: {
-						invocationId: input.invocation.invocationId,
-						traceId: input.invocation.traceId,
-						now: input.startedAt,
-					},
-				})
-			: await input.domainRuntime.executeMutation({
-					entrypoint: input.entrypoint,
-					kind: input.entrypoint.kind,
-					input: input.invocation.input,
-					principal: input.invocation.principal,
-					ctx: {
-						invocationId: input.invocation.invocationId,
-						traceId: input.invocation.traceId,
-						now: input.startedAt,
-					},
+			? await input.domainRuntime.executeQuery(semanticInput)
+			: await executeMutationWithKernelGuards({
+					domainRuntime: input.domainRuntime,
+					semanticInput,
 				});
 
 	if (

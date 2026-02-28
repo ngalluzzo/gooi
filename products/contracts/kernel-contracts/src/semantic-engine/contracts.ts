@@ -5,5 +5,11 @@
 export type {
 	KernelSemanticExecutionInput,
 	KernelSemanticExecutionResult,
+	KernelSemanticFlowGuardCheckpoint,
+	KernelSemanticGuardCheckpoint,
+	KernelSemanticGuardRuntime,
+	KernelSemanticMutationCoreResult,
+	KernelSemanticMutationPreparationResult,
 	KernelSemanticRuntimePort,
+	KernelSemanticSignalGuardCheckpoint,
 } from "./semantic-engine";

@@ -32,7 +32,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/runtime/create-kernel-runtime.ts --outfile ./dist/runtime/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/entrypoint/run-entrypoint.ts --outfile ./dist/entrypoint/run-entrypoint.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/app-spec-contracts/compiled --external @gooi/stable-json --external @gooi/surface-contracts --external @gooi/kernel-contracts/semantic-engine && bun build ./src/projection/shape-query-output.ts --outfile ./dist/projection/shape-query-output.js --external @gooi/kernel-contracts/projection-semantic --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-contracts/plans/projection-plan",
+		"build": "bun build ./src/runtime/create-kernel-runtime.ts --outfile ./dist/runtime/create-kernel-runtime.js --external @gooi/host-contracts/portset && bun build ./src/entrypoint/run-entrypoint.ts --outfile ./dist/entrypoint/run-entrypoint.js --external zod --external @gooi/artifact-model/validation --external @gooi/capability-contracts/capability-port --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/replay --external @gooi/host-contracts/portset --external @gooi/app-spec-contracts/compiled --external @gooi/stable-json --external @gooi/surface-contracts --external @gooi/kernel-contracts/semantic-engine --external @gooi/guard-runtime/evaluate && bun build ./src/projection/shape-query-output.ts --outfile ./dist/projection/shape-query-output.js --external @gooi/kernel-contracts/projection-semantic --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-contracts/plans/projection-plan",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
@@ -41,6 +41,8 @@
 		"@gooi/app-spec-contracts": "workspace:*",
 		"@gooi/artifact-model": "workspace:*",
 		"@gooi/capability-contracts": "workspace:*",
+		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/guard-runtime": "workspace:*",
 		"@gooi/host-contracts": "workspace:*",
 		"@gooi/kernel-contracts": "workspace:*",
 		"@gooi/projection-contracts": "workspace:*",

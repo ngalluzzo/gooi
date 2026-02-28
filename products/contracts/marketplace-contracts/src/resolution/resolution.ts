@@ -2,6 +2,7 @@ import type { ProviderEligibilityEntry } from "../eligibility/eligibility";
 import { createResolverError } from "../shared/resolver-errors";
 import {
 	countPolicyRejectedCandidates,
+	toCandidateScoreDiagnostics,
 	toDiagnosticIssues,
 	toTopRejectionReasons,
 } from "./diagnostics";
@@ -224,20 +225,30 @@ export const resolveTrustedProviders = (
 			),
 			stages,
 			explainability: {
-				policyRejectedCandidates: countPolicyRejectedCandidates({
-					providers,
-					diagnostics,
-					isPolicyDiagnostic,
-					isPolicyRejection,
-				}),
-				delegatedCandidates: ranked.filter(
-					(candidate) => candidate.provider.reachability.mode === "delegated",
-				).length,
-				localCandidates: ranked.filter(
-					(candidate) => candidate.provider.reachability.mode === "local",
-				).length,
-				topRejectionReasons: toTopRejectionReasons(providers, diagnostics),
-				eligibilityDiagnostics: diagnostics,
+				mode: parsedInput.data.explainabilityMode,
+				summary: {
+					policyRejectedCandidates: countPolicyRejectedCandidates({
+						providers,
+						diagnostics,
+						isPolicyDiagnostic,
+						isPolicyRejection,
+					}),
+					delegatedCandidates: ranked.filter(
+						(candidate) => candidate.provider.reachability.mode === "delegated",
+					).length,
+					localCandidates: ranked.filter(
+						(candidate) => candidate.provider.reachability.mode === "local",
+					).length,
+					topRejectionReasons: toTopRejectionReasons(providers, diagnostics),
+				},
+				...(parsedInput.data.explainabilityMode === "diagnostics"
+					? {
+							diagnostics: {
+								eligibilityDiagnostics: diagnostics,
+								candidateScores: toCandidateScoreDiagnostics(ranked),
+							},
+						}
+					: {}),
 			},
 		},
 	};

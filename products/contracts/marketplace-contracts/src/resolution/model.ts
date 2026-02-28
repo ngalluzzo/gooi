@@ -8,11 +8,21 @@ export const resolverStrategySchema = z.enum(["trust_then_version"]);
 
 export type ResolverStrategy = z.infer<typeof resolverStrategySchema>;
 
+export const resolverExplainabilityModeSchema = z.enum([
+	"summary",
+	"diagnostics",
+]);
+
+export type ResolverExplainabilityMode = z.infer<
+	typeof resolverExplainabilityModeSchema
+>;
+
 export const resolveTrustedProvidersInputSchema = z.object({
 	report: providerEligibilityReportSchema,
 	maxResults: z.number().int().positive().default(1),
 	requireEligible: z.boolean().default(true),
 	strategy: resolverStrategySchema.default("trust_then_version"),
+	explainabilityMode: resolverExplainabilityModeSchema.default("summary"),
 	scoringProfile: z
 		.object({
 			profileId: z.string().min(1).default("global-1.0.0"),
@@ -132,12 +142,42 @@ export const resolverStageSchema = z.object({
 
 export type ResolverStage = z.infer<typeof resolverStageSchema>;
 
-export const resolverExplainabilitySchema = z.object({
+export const resolverExplainabilitySummarySchema = z.object({
 	policyRejectedCandidates: z.number().int().nonnegative(),
 	delegatedCandidates: z.number().int().nonnegative(),
 	localCandidates: z.number().int().nonnegative(),
 	topRejectionReasons: z.array(z.string().min(1)),
+});
+
+export type ResolverExplainabilitySummary = z.infer<
+	typeof resolverExplainabilitySummarySchema
+>;
+
+export const resolverCandidateScoreDiagnosticSchema = z.object({
+	rank: z.number().int().positive(),
+	providerId: z.string().min(1),
+	providerVersion: z.string().min(1),
+	totalScore: z.number().int(),
+	scoreComponents: resolverScoreComponentsSchema,
+});
+
+export type ResolverCandidateScoreDiagnostic = z.infer<
+	typeof resolverCandidateScoreDiagnosticSchema
+>;
+
+export const resolverExplainabilityDiagnosticsSchema = z.object({
 	eligibilityDiagnostics: z.array(resolverEligibilityDiagnosticSchema),
+	candidateScores: z.array(resolverCandidateScoreDiagnosticSchema),
+});
+
+export type ResolverExplainabilityDiagnostics = z.infer<
+	typeof resolverExplainabilityDiagnosticsSchema
+>;
+
+export const resolverExplainabilitySchema = z.object({
+	mode: resolverExplainabilityModeSchema,
+	summary: resolverExplainabilitySummarySchema,
+	diagnostics: resolverExplainabilityDiagnosticsSchema.optional(),
 });
 
 export type ResolverExplainability = z.infer<

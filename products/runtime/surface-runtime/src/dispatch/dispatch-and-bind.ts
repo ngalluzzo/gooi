@@ -6,53 +6,13 @@ import type {
 	DispatchError,
 	DispatchRequest,
 } from "@gooi/surface-contracts/dispatch";
-import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
-import { parseSurfaceRequestPayload } from "@gooi/surface-contracts/request";
-import { bindSurfaceInput } from "../binding/bind-surface-input";
-import { readSourceValue } from "../binding/source-path";
+import { resolveDispatchBindingPipeline } from "./binding-pipeline";
+import { pickDispatchAuthContext } from "./context-pass-through";
 import {
 	type DispatchSurfaceRequestInput,
 	dispatchSurfaceRequest,
 	type SurfaceDispatchSelection,
 } from "./dispatch-surface-request";
-
-const toBindingKey = (input: {
-	readonly surfaceId: string;
-	readonly kind: "query" | "mutation";
-	readonly entrypointId: string;
-}): string => `${input.surfaceId}:${input.kind}:${input.entrypointId}`;
-
-const transportError = (input: {
-	readonly message: string;
-	readonly details?: Readonly<Record<string, unknown>>;
-}): DispatchError => ({
-	code: "dispatch_transport_error",
-	message: input.message,
-	...(input.details === undefined ? {} : { details: input.details }),
-});
-
-const parsePayloadBuckets = (
-	request: DispatchRequest,
-): SurfaceRequestPayload => {
-	const payloadCandidate = request.payload ?? {};
-	return parseSurfaceRequestPayload(payloadCandidate);
-};
-
-const bindRoutePayload = (input: {
-	readonly requestPayload: SurfaceRequestPayload;
-	readonly selection: SurfaceDispatchSelection;
-}): Readonly<Record<string, unknown>> => {
-	const output: Record<string, unknown> = {};
-	for (const [fieldName, sourcePath] of Object.entries(
-		input.selection.fieldBindings,
-	)) {
-		const resolved = readSourceValue(input.requestPayload, sourcePath);
-		if (resolved !== undefined) {
-			output[fieldName] = resolved;
-		}
-	}
-	return output;
-};
 
 export interface DispatchAndBindSurfaceInput
 	extends DispatchSurfaceRequestInput {
@@ -88,102 +48,16 @@ export const dispatchAndBindSurfaceInput = (
 		return dispatch;
 	}
 
-	const requestPayload = (() => {
-		try {
-			return parsePayloadBuckets(input.request);
-		} catch {
-			return null;
-		}
-	})();
-	if (requestPayload === null) {
-		return {
-			ok: false,
-			error: transportError({
-				message: "Dispatch payload failed surface request payload validation.",
-				details: {
-					surfaceId: input.request.surfaceId,
-					handlerId: dispatch.selection.handlerId,
-				},
-			}),
-			trace: dispatch.trace,
-		};
-	}
-
-	if (dispatch.selection.entrypointKind === "route") {
-		return {
-			ok: true,
-			dispatch: dispatch.selection,
-			boundInput: bindRoutePayload({
-				requestPayload,
-				selection: dispatch.selection,
-			}),
-			trace: dispatch.trace,
-			...(dispatch.request.principal === undefined
-				? {}
-				: { principal: dispatch.request.principal }),
-			...(dispatch.request.authContext === undefined
-				? {}
-				: { authContext: dispatch.request.authContext }),
-		};
-	}
-
-	const entrypointKey = `${dispatch.selection.entrypointKind}:${dispatch.selection.entrypointId}`;
-	const entrypoint = input.entrypoints[entrypointKey];
-	if (entrypoint === undefined) {
-		return {
-			ok: false,
-			error: transportError({
-				message:
-					"Dispatch target entrypoint contract is missing from compiled map.",
-				details: {
-					entrypointKind: dispatch.selection.entrypointKind,
-					entrypointId: dispatch.selection.entrypointId,
-					handlerId: dispatch.selection.handlerId,
-				},
-			}),
-			trace: dispatch.trace,
-		};
-	}
-
-	const bindingKey = toBindingKey({
-		surfaceId: dispatch.selection.surfaceId,
-		kind: dispatch.selection.entrypointKind,
-		entrypointId: dispatch.selection.entrypointId,
-	});
-	const binding = input.bindings[bindingKey];
-	if (binding === undefined) {
-		return {
-			ok: false,
-			error: transportError({
-				message:
-					"Dispatch target binding contract is missing from compiled map.",
-				details: {
-					bindingKey,
-					handlerId: dispatch.selection.handlerId,
-				},
-			}),
-			trace: dispatch.trace,
-		};
-	}
-
-	const bound = bindSurfaceInput({
-		request: requestPayload,
-		entrypoint,
-		binding,
+	const bound = resolveDispatchBindingPipeline({
+		request: dispatch.request,
+		selection: dispatch.selection,
+		entrypoints: input.entrypoints,
+		bindings: input.bindings,
 	});
 	if (!bound.ok) {
 		return {
 			ok: false,
-			error: transportError({
-				message: bound.error.message,
-				details: {
-					...(bound.error.details === undefined
-						? {}
-						: { bindingDetails: bound.error.details }),
-					handlerId: dispatch.selection.handlerId,
-					bindingKey,
-				},
-			}),
+			error: bound.error,
 			trace: dispatch.trace,
 		};
 	}
@@ -191,15 +65,10 @@ export const dispatchAndBindSurfaceInput = (
 	return {
 		ok: true,
 		dispatch: dispatch.selection,
-		boundInput: bound.value,
+		boundInput: bound.boundInput,
 		trace: dispatch.trace,
-		entrypoint,
-		binding,
-		...(dispatch.request.principal === undefined
-			? {}
-			: { principal: dispatch.request.principal }),
-		...(dispatch.request.authContext === undefined
-			? {}
-			: { authContext: dispatch.request.authContext }),
+		...(bound.entrypoint === undefined ? {} : { entrypoint: bound.entrypoint }),
+		...(bound.binding === undefined ? {} : { binding: bound.binding }),
+		...pickDispatchAuthContext(dispatch.request),
 	};
 };

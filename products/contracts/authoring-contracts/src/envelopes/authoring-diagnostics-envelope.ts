@@ -20,6 +20,13 @@ const rangeSchema = z.object({
 	end: positionSchema,
 });
 
+const authoringDiagnosticQuickFixSchema = z.object({
+	id: z.string().min(1),
+	title: z.string().min(1),
+	contractRef: z.string().min(1),
+	replacement: z.string().min(1).optional(),
+});
+
 /**
  * Diagnostic severity values used by authoring diagnostics.
  */
@@ -38,6 +45,8 @@ export const authoringDiagnosticSchema = z.object({
 	severity: authoringDiagnosticSeveritySchema,
 	range: rangeSchema,
 	staleArtifacts: z.boolean().optional(),
+	hint: z.string().min(1).optional(),
+	quickFixes: z.array(authoringDiagnosticQuickFixSchema).optional(),
 });
 
 const paritySchema = z.object({

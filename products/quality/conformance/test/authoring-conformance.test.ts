@@ -12,6 +12,9 @@ describe("authoring conformance", () => {
 		expect(report.checks.map((check) => check.id)).toEqual([
 			"completion_correctness",
 			"diagnostics_parity",
+			"reachability_diagnostics",
+			"guard_scenario_diagnostics",
+			"guard_scenario_completion",
 			"lens_correctness",
 			"expression_symbol_resolution",
 			"rename_safety",

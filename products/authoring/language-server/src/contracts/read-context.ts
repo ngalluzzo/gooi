@@ -24,6 +24,7 @@ export const authoringReadContextSchema = z.object({
 	documentUri: z.string().min(1),
 	documentPath: z.string().min(1),
 	documentText: z.string(),
+	sourceSpec: z.unknown().optional(),
 	compiledEntrypointBundleIdentity: compiledEntrypointBundleIdentitySchema,
 	capabilityIndexSnapshot: capabilityIndexSnapshotSchema,
 	symbolGraphSnapshot: symbolGraphSnapshotSchema,

@@ -10,6 +10,11 @@ import { authoringReadContextSchema } from "./read-context";
 export const authoringCompletionItemKindSchema = z.enum([
 	"capability",
 	"signal",
+	"flow",
+	"projection",
+	"persona",
+	"scenario",
+	"guard_policy",
 	"entrypoint",
 	"step_binding",
 	"expression_variable",

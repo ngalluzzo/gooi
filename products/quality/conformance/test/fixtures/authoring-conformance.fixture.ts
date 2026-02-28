@@ -200,6 +200,154 @@ const compiledEntrypointBundleIdentity = {
 	artifactHash: "5".repeat(64),
 } as const;
 
+const baseSourceSpec = {
+	domain: {
+		signals: {
+			"message.created": {},
+		},
+		flows: {
+			"flow.notify": {},
+		},
+		projections: {
+			"messages.timeline": {},
+		},
+	},
+	queries: [{ id: "home.data.messages" }],
+	mutations: [{ id: "guestbook.submit" }],
+	routes: [{ id: "home_route" }],
+	personas: {
+		moderator: {
+			description: "Moderation operator persona.",
+		},
+	},
+	scenarios: {
+		"happy-path": {
+			context: { persona: "moderator" },
+			steps: [
+				{
+					capture: [
+						{
+							captureId: "latest_message",
+							source: "context",
+							path: "session.latestMessage",
+						},
+					],
+				},
+			],
+		},
+	},
+	wiring: {
+		requirements: {
+			capabilities: [
+				{
+					portId: "message.is_allowed",
+					portVersion: "1.0.0",
+					mode: "local",
+				},
+			],
+		},
+	},
+};
+
+const invalidReachabilitySourceSpec = {
+	...baseSourceSpec,
+	wiring: {
+		requirements: {
+			capabilities: [
+				{
+					portId: "missing.capability",
+					portVersion: "9.9.9",
+					mode: "remote",
+				},
+				{
+					portId: "message.is_allowed",
+					portVersion: "1.0.0",
+					mode: "delegated",
+					delegateRouteId: "missing_route",
+				},
+				{
+					portId: "message.is_allowed",
+					portVersion: "9.9.9",
+					mode: "local",
+				},
+			],
+		},
+	},
+};
+
+const invalidGuardScenarioSourceSpec = {
+	...baseSourceSpec,
+	domain: {
+		...baseSourceSpec.domain,
+		actions: {
+			"guestbook.submit": {
+				signalGuards: [
+					{
+						signalId: "message.deleted",
+						definition: {
+							onFail: "panic",
+						},
+					},
+				],
+				flowGuards: [
+					{
+						flowId: "flow.missing",
+						definition: {
+							onFail: "abort",
+						},
+					},
+				],
+				steps: [
+					{
+						invariants: [
+							{
+								onFail: "fail_action",
+							},
+						],
+					},
+				],
+			},
+		},
+	},
+	scenarios: {
+		broken: {
+			context: { persona: "unknown_persona" },
+			steps: [
+				{
+					trigger: { mutation: "unknown.mutation" },
+					expect: { signal: "unknown.signal" },
+					capture: [
+						{
+							captureId: "bad_capture",
+							source: "not_valid",
+						},
+					],
+				},
+			],
+		},
+	},
+};
+
+const documentText = `actions:\n  guestbook.submit:\n    do:\n      - message.is_allowed\n      - gooi-marketplace-bun-sqlite.insert_message\nemits:\n  - message.created\nqueries:\n  home.data.messages:\n    refresh_on_signals:\n      - message.created\nrefs:\n  - generated_ids.ids.0\n  - payload.user_id\nstep_names:\n  - generated_ids\n  - existing_ids\nguards:\n  onFail:\nscenarios:\n  happy-path:\n    context:\n      persona:\n    steps:\n      - capture:\n          - source:\n`;
+
+const findPosition = (
+	token: string,
+	fallback: { line: number; character: number },
+) => {
+	const lines = documentText.split(/\r?\n/u);
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+		const line = lines[lineIndex] ?? "";
+		const character = line.indexOf(token);
+		if (character >= 0) {
+			return {
+				line: lineIndex,
+				character: character + token.length,
+			};
+		}
+	}
+	return fallback;
+};
+
 /**
  * Creates authoring conformance fixture input.
  */
@@ -208,7 +356,8 @@ export const createAuthoringConformanceFixture =
 		context: {
 			documentUri: "spec://docs/demo.yml",
 			documentPath: "docs/demo.yml",
-			documentText: `actions:\n  guestbook.submit:\n    do:\n      - message.is_allowed\n      - gooi-marketplace-bun-sqlite.insert_message\nemits:\n  - message.created\nqueries:\n  home.data.messages:\n    refresh_on_signals:\n      - message.created\nrefs:\n  - generated_ids.ids.0\n  - payload.user_id\nstep_names:\n  - generated_ids\n  - existing_ids\n`,
+			documentText,
+			sourceSpec: baseSourceSpec,
 			compiledEntrypointBundleIdentity,
 			capabilityIndexSnapshot,
 			symbolGraphSnapshot,
@@ -227,9 +376,19 @@ export const createAuthoringConformanceFixture =
 			symbolGraphHash: symbolGraphSnapshot.artifactHash,
 			catalogHash: capabilityIndexSnapshot.catalogIdentity.catalogHash,
 		}),
+		invalidReachabilitySourceSpec,
+		invalidGuardScenarioSourceSpec,
 		positions: {
 			capabilityCompletion: { line: 3, character: 10 },
 			signalCompletion: { line: 10, character: 10 },
+			guardPolicyCompletion: findPosition("onFail:", {
+				line: 18,
+				character: 10,
+			}),
+			scenarioPersonaCompletion: findPosition("persona:", {
+				line: 22,
+				character: 12,
+			}),
 			expressionReference: { line: 12, character: 10 },
 			ambientSymbol: { line: 13, character: 8 },
 		},

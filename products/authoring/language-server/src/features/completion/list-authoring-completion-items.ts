@@ -7,7 +7,18 @@ import {
 	authoringCompletionRequestSchema,
 } from "../../contracts/completion-contracts";
 import { inferCompletionDomain } from "../../internal/completion-context";
+import { getLineTextAtPosition } from "../../internal/document-token";
 import { evaluateAuthoringReadParity } from "../../internal/lockfile-parity";
+import {
+	sourceSpecCaptureSources,
+	sourceSpecFlowIds,
+	sourceSpecGuardPolicies,
+	sourceSpecMutationIds,
+	sourceSpecPersonaIds,
+	sourceSpecProjectionIds,
+	sourceSpecQueryIds,
+	sourceSpecScenarioIds,
+} from "../../internal/source-spec";
 
 const toCapabilityCompletionItem = (
 	entry: AuthoringCompletionRequest["context"]["capabilityIndexSnapshot"]["capabilities"][number],
@@ -33,6 +44,15 @@ const toSignalCompletionItem = (
 	},
 });
 
+const toSimpleCompletionItem = (input: {
+	readonly label: string;
+	readonly kind: AuthoringCompletionItem["kind"];
+}): AuthoringCompletionItem => ({
+	label: input.label,
+	kind: input.kind,
+	insertText: input.label,
+});
+
 const byLabel = (
 	left: AuthoringCompletionItem,
 	right: AuthoringCompletionItem,
@@ -46,6 +66,69 @@ const deduplicate = (
 		map.set(`${item.kind}:${item.label}`, item);
 	}
 	return [...map.values()].sort(byLabel);
+};
+
+const inferExtendedCompletionItems = (
+	request: AuthoringCompletionRequest,
+): AuthoringCompletionItem[] | undefined => {
+	if (request.context.sourceSpec === undefined) {
+		return undefined;
+	}
+
+	const lineText = getLineTextAtPosition({
+		documentText: request.context.documentText,
+		position: request.position,
+	});
+	const projectionItems = sourceSpecProjectionIds(
+		request.context.sourceSpec,
+	).map((label) => toSimpleCompletionItem({ label, kind: "projection" }));
+	const flowItems = sourceSpecFlowIds(request.context.sourceSpec).map((label) =>
+		toSimpleCompletionItem({ label, kind: "flow" }),
+	);
+	const personaItems = sourceSpecPersonaIds(request.context.sourceSpec).map(
+		(label) => toSimpleCompletionItem({ label, kind: "persona" }),
+	);
+	const scenarioItems = sourceSpecScenarioIds(request.context.sourceSpec).map(
+		(label) => toSimpleCompletionItem({ label, kind: "scenario" }),
+	);
+	const queryItems = sourceSpecQueryIds(request.context.sourceSpec).map(
+		(label) => toSimpleCompletionItem({ label, kind: "entrypoint" }),
+	);
+	const mutationItems = sourceSpecMutationIds(request.context.sourceSpec).map(
+		(label) => toSimpleCompletionItem({ label, kind: "entrypoint" }),
+	);
+	const guardPolicyItems = sourceSpecGuardPolicies.map((label) =>
+		toSimpleCompletionItem({ label, kind: "guard_policy" }),
+	);
+	const captureSourceItems = sourceSpecCaptureSources.map((label) =>
+		toSimpleCompletionItem({ label, kind: "scenario" }),
+	);
+
+	if (lineText.includes("onFail:")) {
+		return guardPolicyItems;
+	}
+	if (lineText.includes("persona:")) {
+		return personaItems;
+	}
+	if (lineText.includes("source:")) {
+		return captureSourceItems;
+	}
+	if (lineText.includes("flowId:") || lineText.includes("flow_completed:")) {
+		return flowItems;
+	}
+	if (lineText.includes("projection:")) {
+		return projectionItems;
+	}
+	if (lineText.includes("query:")) {
+		return queryItems;
+	}
+	if (lineText.includes("mutation:")) {
+		return mutationItems;
+	}
+	if (lineText.includes("scenario:")) {
+		return scenarioItems;
+	}
+	return undefined;
 };
 
 /**
@@ -64,6 +147,7 @@ export const listAuthoringCompletionItems = (value: unknown) => {
 		documentText: request.context.documentText,
 		position: request.position,
 	});
+	const extendedItems = inferExtendedCompletionItems(request);
 
 	const capabilityItems =
 		request.context.capabilityIndexSnapshot.capabilities.map(
@@ -74,15 +158,16 @@ export const listAuthoringCompletionItems = (value: unknown) => {
 		.map(toSignalCompletionItem)
 		.sort(byLabel);
 
-	const items =
-		domain === "capability"
+	const scopedItems =
+		extendedItems ??
+		(domain === "capability"
 			? capabilityItems
 			: domain === "signal"
 				? signalItems
-				: deduplicate([...capabilityItems, ...signalItems]);
+				: deduplicate([...capabilityItems, ...signalItems]));
 
 	return authoringCompletionListSchema.parse({
 		parity,
-		items: [...items].sort(byLabel),
+		items: [...scopedItems].sort(byLabel),
 	});
 };

@@ -71,6 +71,84 @@ export const runAuthoringConformance = (
 		}),
 	);
 
+	const reachabilityDiagnostics =
+		input.invalidReachabilitySourceSpec === undefined
+			? []
+			: publishAuthoringDiagnostics({
+					context: {
+						...input.context,
+						sourceSpec: input.invalidReachabilitySourceSpec,
+					},
+				}).diagnostics;
+	checks.push(
+		makeCheck({
+			id: "reachability_diagnostics",
+			passed:
+				reachabilityDiagnostics.length === 0 ||
+				reachabilityDiagnostics.some((diagnostic) =>
+					[
+						"reachability_mode_invalid",
+						"reachability_capability_unknown",
+						"reachability_capability_version_unknown",
+						"reachability_delegate_route_unknown",
+					].includes(diagnostic.code),
+				),
+			detail:
+				reachabilityDiagnostics.length === 0
+					? "Reachability diagnostics fixture omitted; baseline remains pass-through."
+					: "Reachability diagnostics emit typed failure codes.",
+		}),
+	);
+
+	const guardScenarioDiagnostics =
+		input.invalidGuardScenarioSourceSpec === undefined
+			? []
+			: publishAuthoringDiagnostics({
+					context: {
+						...input.context,
+						sourceSpec: input.invalidGuardScenarioSourceSpec,
+					},
+				}).diagnostics;
+	checks.push(
+		makeCheck({
+			id: "guard_scenario_diagnostics",
+			passed:
+				guardScenarioDiagnostics.length === 0 ||
+				guardScenarioDiagnostics.some((diagnostic) =>
+					[
+						"guard_signal_unknown",
+						"guard_flow_unknown",
+						"guard_policy_invalid",
+						"scenario_persona_unknown",
+						"scenario_capture_source_invalid",
+					].includes(diagnostic.code),
+				),
+			detail:
+				guardScenarioDiagnostics.length === 0
+					? "Guard/scenario diagnostics fixture omitted; baseline remains pass-through."
+					: "Guard/scenario diagnostics emit typed failure codes.",
+		}),
+	);
+
+	const guardPolicyCompletion = listAuthoringCompletionItems({
+		context: input.context,
+		position: input.positions.guardPolicyCompletion,
+	});
+	const scenarioPersonaCompletion = listAuthoringCompletionItems({
+		context: input.context,
+		position: input.positions.scenarioPersonaCompletion,
+	});
+	checks.push(
+		makeCheck({
+			id: "guard_scenario_completion",
+			passed:
+				guardPolicyCompletion.items.some((item) => item.label === "abort") &&
+				scenarioPersonaCompletion.items.some((item) => item.kind === "persona"),
+			detail:
+				"Completion is context-aware for guard policy and scenario persona authoring paths.",
+		}),
+	);
+
 	const unresolvedLenses = listAuthoringCodeLenses({ context: input.context });
 	const providerLens = unresolvedLenses.lenses.find(
 		(lens) => lens.kind === "show_providers_for_capability",

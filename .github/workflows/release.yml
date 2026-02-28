@@ -41,6 +41,9 @@ jobs:
       - name: Verify types
         run: bun run typecheck:pkg
 
+      - name: Verify golden governance
+        run: bun run golden:governance
+
       - name: Create release PR or publish
         uses: changesets/action@v1
         with:

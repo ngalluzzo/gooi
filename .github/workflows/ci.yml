@@ -40,6 +40,9 @@ jobs:
       - name: Facade compatibility policy checks
         run: bun run facade:compat
 
+      - name: Golden governance checks
+        run: bun run golden:governance
+
       - name: Test with coverage thresholds
         id: test_coverage
         continue-on-error: true

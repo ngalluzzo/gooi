@@ -46,6 +46,9 @@ jobs:
       - name: Determinism conformance checks
         run: bun run conformance:determinism
 
+      - name: Tiered conformance smoke gate
+        run: bun run conformance:tier:smoke
+
       - name: Test with coverage thresholds
         id: test_coverage
         continue-on-error: true

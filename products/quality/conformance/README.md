@@ -34,6 +34,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Scenario runtime behavior and lockfile determinism checks (`runScenarioConformance`)
 - Lane-aware progressive harness checks (`runLaneHarnessConformance`)
 - Deterministic artifact/envelope checks (`runDeterminismConformance`)
+- Tiered suite strategy checks (`runTieredConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -86,6 +87,7 @@ console.log(report.passed, report.checks);
 - `runScenarioConformance(input)`
 - `runLaneHarnessConformance(input)`
 - `runDeterminismConformance(input)`
+- `runTieredConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -110,6 +112,8 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/scenario`
 - `@gooi/conformance/lane-harness`
 - `@gooi/conformance/determinism`
+- `@gooi/conformance/tiered`
+- `@gooi/conformance/tiered-conformance-definitions`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
@@ -125,6 +129,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/scenario-contracts`
 - `@gooi/conformance/lane-harness-contracts`
 - `@gooi/conformance/determinism-contracts`
+- `@gooi/conformance/tiered-contracts`
 
 ## Development
 

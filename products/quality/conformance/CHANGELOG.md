@@ -24,3 +24,5 @@ The format is based on Changesets.
   deterministic lane/check identifiers and baseline reproducibility digests.
 - Added determinism conformance suite for repeated artifact/envelope checks with
   typed `conformance_determinism_error` diagnostics.
+- Added tiered suite strategy definitions (`smoke`, `full`, `expanded`) with
+  runtime/flaky threshold enforcement and gate-role metadata.

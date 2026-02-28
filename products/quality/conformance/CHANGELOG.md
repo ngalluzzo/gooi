@@ -22,3 +22,5 @@ The format is based on Changesets.
   persona-generated input lockfile determinism, and typed failure traceability.
 - Added lane-harness conformance suite for L0/L1/L2/L3 matrix execution with
   deterministic lane/check identifiers and baseline reproducibility digests.
+- Added determinism conformance suite for repeated artifact/envelope checks with
+  typed `conformance_determinism_error` diagnostics.

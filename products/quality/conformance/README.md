@@ -33,6 +33,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Guard matrix and semantic policy checks (`runGuardConformance`)
 - Scenario runtime behavior and lockfile determinism checks (`runScenarioConformance`)
 - Lane-aware progressive harness checks (`runLaneHarnessConformance`)
+- Deterministic artifact/envelope checks (`runDeterminismConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -84,6 +85,7 @@ console.log(report.passed, report.checks);
 - `runGuardConformance(input)`
 - `runScenarioConformance(input)`
 - `runLaneHarnessConformance(input)`
+- `runDeterminismConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -107,6 +109,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/guard`
 - `@gooi/conformance/scenario`
 - `@gooi/conformance/lane-harness`
+- `@gooi/conformance/determinism`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
@@ -121,6 +124,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/guard-contracts`
 - `@gooi/conformance/scenario-contracts`
 - `@gooi/conformance/lane-harness-contracts`
+- `@gooi/conformance/determinism-contracts`
 
 ## Development
 

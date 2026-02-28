@@ -31,6 +31,7 @@
 		"loc:check": "bun ./tools/loc/violations --exceptions=docs/engineering/loc-exceptions.json",
 		"facade:compat": "bun ./tools/facade/compatibility-check.ts",
 		"golden:governance": "bun ./tools/conformance/golden-governance-check.ts",
+		"conformance:determinism": "bun test products/quality/conformance/test/determinism-conformance.test.ts products/authoring/spec-compiler/test/artifact-determinism.test.ts products/quality/conformance/test/surface-transport-consistency-conformance.test.ts",
 		"dep:graph": "bun ./tools/dep-graph.ts",
 		"changeset": "changeset",
 		"changeset:status": "changeset status --verbose",

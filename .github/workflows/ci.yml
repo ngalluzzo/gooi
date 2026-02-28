@@ -43,6 +43,9 @@ jobs:
       - name: Golden governance checks
         run: bun run golden:governance
 
+      - name: Determinism conformance checks
+        run: bun run conformance:determinism
+
       - name: Test with coverage thresholds
         id: test_coverage
         continue-on-error: true

@@ -1,4 +1,4 @@
-import type { AuthoringDiagnosticsEnvelope } from "@gooi/authoring-contracts/envelopes/diagnostics";
+import type { AuthoringDiagnosticsEnvelope } from "@gooi/authoring-contracts/envelopes";
 import type {
 	AuthoringCodeLensListResult,
 	AuthoringCodeLensResolveResult,

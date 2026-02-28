@@ -4,8 +4,7 @@ import { join } from "node:path";
 
 import {
 	type AuthoringLockfile,
-	authoringRequiredArtifactIds,
-	createAuthoringLockfile,
+	lockfileContracts,
 } from "@gooi/authoring-contracts/lockfile";
 import { buildCapabilityIndexSnapshot } from "@gooi/capability-index";
 import type { BuildCapabilityIndexSnapshotInput } from "@gooi/capability-index/contracts";
@@ -19,23 +18,28 @@ const createLockfile = (input: {
 	symbolGraphHash: string;
 	catalogHash: string;
 }): AuthoringLockfile =>
-	createAuthoringLockfile({
+	lockfileContracts.createAuthoringLockfile({
 		artifactVersion: "1.0.0",
 		sourceHash: "4".repeat(64),
 		sourceKind: "workspace-local",
 		requiredArtifacts: {
 			compiledEntrypointBundle: {
-				artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds
+						.compiledEntrypointBundle,
 				artifactVersion: "1.0.0",
 				artifactHash: input.compiledEntrypointBundleHash,
 			},
 			capabilityIndexSnapshot: {
-				artifactId: authoringRequiredArtifactIds.capabilityIndexSnapshot,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds
+						.capabilityIndexSnapshot,
 				artifactVersion: "1.0.0",
 				artifactHash: input.capabilityIndexHash,
 			},
 			symbolGraphSnapshot: {
-				artifactId: authoringRequiredArtifactIds.symbolGraphSnapshot,
+				artifactId:
+					lockfileContracts.authoringRequiredArtifactIds.symbolGraphSnapshot,
 				artifactVersion: "1.0.0",
 				artifactHash: input.symbolGraphHash,
 			},
@@ -194,7 +198,8 @@ export const createAuthoringWorkspaceFixture = (): {
 	const capabilitySnapshot = buildCapabilityIndexSnapshot(capabilityInput);
 	const symbolSnapshot = buildSymbolGraphSnapshot(symbolInput);
 	const compiledEntrypointBundleIdentity = {
-		artifactId: authoringRequiredArtifactIds.compiledEntrypointBundle,
+		artifactId:
+			lockfileContracts.authoringRequiredArtifactIds.compiledEntrypointBundle,
 		artifactVersion: "1.0.0",
 		artifactHash: "5".repeat(64),
 	} as const;

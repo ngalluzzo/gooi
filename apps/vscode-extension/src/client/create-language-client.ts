@@ -1,7 +1,7 @@
 import {
 	type AuthoringDiagnosticsEnvelope,
-	parseAuthoringDiagnosticsEnvelope,
-} from "@gooi/authoring-contracts/envelopes/diagnostics";
+	envelopesContracts,
+} from "@gooi/authoring-contracts/envelopes";
 import {
 	authoringCodeLensListResultSchema,
 	authoringCodeLensResolveResultSchema,
@@ -90,7 +90,9 @@ export const createLanguageClient = (input: {
 			notify("textDocument/didChange", lifecyclePayload(document));
 		},
 		pullDiagnostics: (): AuthoringDiagnosticsEnvelope =>
-			parseAuthoringDiagnosticsEnvelope(request("gooi/pullDiagnostics", {})),
+			envelopesContracts.parseAuthoringDiagnosticsEnvelope(
+				request("gooi/pullDiagnostics", {}),
+			),
 		completion: (position) =>
 			authoringCompletionListSchema.parse(
 				request("textDocument/completion", positionPayload(position)),

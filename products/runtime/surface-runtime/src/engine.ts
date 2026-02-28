@@ -27,6 +27,14 @@ import {
 	dispatchSurfaceRequest as dispatchSurfaceRequestImpl,
 	type SurfaceDispatchSelection,
 } from "./dispatch/dispatch-surface-request";
+import {
+	type ValidateRendererAdapterCompatibilityInput,
+	validateRendererAdapterCompatibility as validateRendererAdapterCompatibilityImpl,
+} from "./render/adapter-compatibility";
+import {
+	type ResolveRenderRefreshLifecycleInput,
+	resolveRenderRefreshLifecycle as resolveRenderRefreshLifecycleImpl,
+} from "./render/refresh-lifecycle";
 
 export type {
 	BindSurfaceInputInput,
@@ -40,6 +48,8 @@ export type {
 	SurfaceAdapterNormalizedIngress,
 	SurfaceAdapterRegistry,
 	SurfaceDispatchSelection,
+	ResolveRenderRefreshLifecycleInput,
+	ValidateRendererAdapterCompatibilityInput,
 };
 
 export { createSurfaceAdapterRegistry, defaultSurfaceAdapters };
@@ -69,3 +79,17 @@ export const dispatchAndBindSurfaceInput = (
 export const dispatchAndBindSurfaceIngress = (
 	input: DispatchAndBindSurfaceIngressInput,
 ): DispatchAndBindSurfaceResult => dispatchAndBindSurfaceIngressImpl(input);
+
+/**
+ * Validates render IR against one renderer adapter capability declaration.
+ */
+export const validateRendererAdapterCompatibility = (
+	input: ValidateRendererAdapterCompatibilityInput,
+) => validateRendererAdapterCompatibilityImpl(input);
+
+/**
+ * Resolves deterministic screen/slot refresh artifacts from invalidation metadata.
+ */
+export const resolveRenderRefreshLifecycle = (
+	input: ResolveRenderRefreshLifecycleInput,
+) => resolveRenderRefreshLifecycleImpl(input);

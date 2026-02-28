@@ -20,6 +20,7 @@ export const buildCanonicalSpecModel = (
 	const mutationIds = spec.mutations.map((mutation) => mutation.id);
 	const routeIds = spec.routes.map((route) => route.id);
 	const screenIds = spec.views.screens.map((screen) => screen.id);
+	const viewNodeIds = spec.views.nodes.map((node) => node.id);
 	const actionIds = sortLexical(Object.keys(spec.domain.actions ?? {}));
 	const projectionIds = sortLexical(Object.keys(spec.domain.projections ?? {}));
 	const capabilityRefs = sortLexical(
@@ -47,6 +48,7 @@ export const buildCanonicalSpecModel = (
 			mutationIds,
 			routeIds,
 			screenIds,
+			viewNodeIds,
 			actionIds,
 			projectionIds,
 			capabilityRefs,

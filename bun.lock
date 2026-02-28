@@ -86,6 +86,7 @@
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
@@ -107,6 +108,7 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
         "@gooi/marketplace-contracts": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -192,6 +194,15 @@
         "zod": "^4.3.6",
       },
     },
+    "products/contracts/render-contracts": {
+      "name": "@gooi/render-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "products/contracts/scenario-contracts": {
       "name": "@gooi/scenario-contracts",
       "version": "0.1.0",
@@ -259,6 +270,7 @@
         "@gooi/projection-contracts": "workspace:*",
         "@gooi/projection-runtime": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/scenario-contracts": "workspace:*",
         "@gooi/scenario-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
@@ -328,6 +340,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
       },
     },
@@ -884,6 +897,8 @@
     "@gooi/projection-runtime": ["@gooi/projection-runtime@workspace:products/runtime/projection-runtime"],
 
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:products/runtime/provider-runtime"],
+
+    "@gooi/render-contracts": ["@gooi/render-contracts@workspace:products/contracts/render-contracts"],
 
     "@gooi/scenario-contracts": ["@gooi/scenario-contracts@workspace:products/contracts/scenario-contracts"],
 

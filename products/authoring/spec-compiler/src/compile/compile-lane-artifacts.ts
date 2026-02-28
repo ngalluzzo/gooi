@@ -13,6 +13,7 @@ import {
 	type CompiledArtifactManifest,
 	type CompiledLaneArtifact,
 } from "@gooi/artifact-model/manifest";
+import type { CompiledViewRenderIR } from "@gooi/render-contracts/ir";
 import type { CompiledSurfaceDispatchPlanSet } from "@gooi/surface-contracts/dispatch";
 
 interface CompileLaneArtifactsInput {
@@ -28,6 +29,7 @@ interface CompileLaneArtifactsInput {
 		Record<string, CompiledJsonSchemaArtifact>
 	>;
 	readonly bindingRequirementsArtifact: CompiledBindingRequirements;
+	readonly viewRenderIR: CompiledViewRenderIR;
 }
 
 interface CompileLaneArtifactsOutput {
@@ -71,6 +73,12 @@ export const compileLaneArtifacts = (
 				schemaArtifacts: input.schemaArtifacts,
 				sections: input.canonicalModel.sections,
 			},
+		}),
+		viewRenderIR: buildLaneArtifact({
+			artifactId: "CompiledViewRenderIR",
+			artifactVersion: "1.0.0",
+			lane: "runtime",
+			payload: input.viewRenderIR,
 		}),
 		qualityConformanceSeed: buildLaneArtifact({
 			artifactId: "CompiledQualityConformanceSeed",

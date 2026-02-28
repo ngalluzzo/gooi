@@ -4,6 +4,7 @@ import type {
 } from "@gooi/artifact-model/manifest";
 import type { HostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
 import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
+import type { CompiledViewRenderIR } from "@gooi/render-contracts/ir";
 import type { CompiledSurfaceDispatchPlanSet } from "@gooi/surface-contracts/dispatch";
 import { z } from "zod";
 import {
@@ -309,6 +310,8 @@ export interface CanonicalSpecModelReferenceIndex {
 	readonly actionIds: readonly string[];
 	/** Domain projection ids from `domain.projections`. */
 	readonly projectionIds: readonly string[];
+	/** View node ids from `views.nodes`. */
+	readonly viewNodeIds: readonly string[];
 	/** Capability references keyed by `<id>@<version>`. */
 	readonly capabilityRefs: readonly string[];
 	/** Persona ids from `personas`. */
@@ -371,6 +374,8 @@ export interface CompiledEntrypointBundle {
 	>;
 	/** Compiled access rules for policy gate enforcement. */
 	readonly accessPlan: CompiledAccessPlan;
+	/** Render IR consumed by render kernels. */
+	readonly viewRenderIR: CompiledViewRenderIR;
 	/** Generated input schema artifacts keyed by schemaArtifactKey. */
 	readonly schemaArtifacts: Readonly<
 		Record<string, CompiledJsonSchemaArtifact>

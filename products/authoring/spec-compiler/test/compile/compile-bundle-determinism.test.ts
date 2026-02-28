@@ -53,17 +53,23 @@ describe("spec-compiler compile", () => {
 		expect(
 			first.bundle.bindingRequirementsArtifact.compatibility.supportedModes,
 		).toEqual(["local", "delegated", "unreachable"]);
+		expect(Object.keys(first.bundle.viewRenderIR.screens)).toEqual(["home"]);
+		expect(Object.keys(first.bundle.viewRenderIR.nodes)).toEqual([
+			"messages_list",
+		]);
 		expect(Object.keys(first.bundle.laneArtifacts)).toEqual([
 			"authoringCanonicalModel",
 			"bindingRequirements",
 			"qualityConformanceSeed",
 			"runtimeEntrypointContracts",
+			"viewRenderIR",
 		]);
 		expect(Object.keys(first.bundle.artifactManifest.artifacts)).toEqual([
 			"authoringCanonicalModel",
 			"bindingRequirements",
 			"qualityConformanceSeed",
 			"runtimeEntrypointContracts",
+			"viewRenderIR",
 		]);
 
 		const bindingRequirementsRef =

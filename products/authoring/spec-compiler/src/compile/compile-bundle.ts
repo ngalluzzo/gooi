@@ -20,6 +20,7 @@ import { compileEntrypoints } from "./compile-entrypoints";
 import { compileLaneArtifacts } from "./compile-lane-artifacts";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
+import { compileViewRenderIR } from "./compile-view-render-ir";
 import { sortDiagnostics } from "./sort-diagnostics";
 import { validateCrossLinks } from "./validate-cross-links";
 
@@ -189,6 +190,7 @@ export const compileEntrypointBundle = (
 		spec,
 		entrypointOutput.entrypoints,
 	);
+	const viewRenderOutput = compileViewRenderIR(canonicalModel);
 	const diagnostics = sortDiagnostics([
 		...validateCrossLinks(canonicalModel),
 		...entrypointOutput.diagnostics,
@@ -196,6 +198,7 @@ export const compileEntrypointBundle = (
 		...dispatchOutput.diagnostics,
 		...reachabilityOutput.diagnostics,
 		...refreshOutput.diagnostics,
+		...viewRenderOutput.diagnostics,
 	]);
 
 	if (hasErrors(diagnostics)) {
@@ -216,6 +219,7 @@ export const compileEntrypointBundle = (
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,
+		viewRenderIR: viewRenderOutput.viewRenderIR,
 		bindingRequirementsArtifact,
 	});
 	const artifactManifest = laneArtifactOutput.artifactManifest;
@@ -231,6 +235,7 @@ export const compileEntrypointBundle = (
 		bindingRequirementsArtifact,
 		artifactManifest,
 		laneArtifacts: laneArtifactOutput.laneArtifacts,
+		viewRenderIR: viewRenderOutput.viewRenderIR,
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,

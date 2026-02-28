@@ -37,4 +37,5 @@ export const validateDuplicateIds = (
 	...duplicateIdDiagnostics(model.references.mutationIds, "mutations"),
 	...duplicateIdDiagnostics(model.references.routeIds, "routes"),
 	...duplicateIdDiagnostics(model.references.screenIds, "views.screens"),
+	...duplicateIdDiagnostics(model.references.viewNodeIds, "views.nodes"),
 ];

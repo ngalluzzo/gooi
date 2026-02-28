@@ -27,6 +27,8 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Projection/domain parity checks (`runProjectionConformance`)
 - Projection conformance includes history contract gates, rebuild workflow recovery,
   and signal migration-chain enforcement checks
+- Dispatch-to-render pipeline checks (`runDispatchRenderConformance`)
+- Surface extension readiness checks (`runSurfaceExtensionConformance`)
 - Guard matrix and semantic policy checks (`runGuardConformance`)
 - Scenario runtime behavior and lockfile determinism checks (`runScenarioConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
@@ -74,6 +76,8 @@ console.log(report.passed, report.checks);
 - `runAuthoringConformance(input)`
 - `runReachabilityParitySuite(input)`
 - `runProjectionConformance(input)`
+- `runDispatchRenderConformance(input)`
+- `runSurfaceExtensionConformance(input)`
 - `runGuardConformance(input)`
 - `runScenarioConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
@@ -93,6 +97,8 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/authoring`
 - `@gooi/conformance/reachability-parity`
 - `@gooi/conformance/projection`
+- `@gooi/conformance/dispatch-render`
+- `@gooi/conformance/surface-extension`
 - `@gooi/conformance/guard`
 - `@gooi/conformance/scenario`
 - `@gooi/conformance/host-port-conformance`
@@ -103,6 +109,8 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/authoring-contracts`
 - `@gooi/conformance/reachability-parity-contracts`
 - `@gooi/conformance/projection-contracts`
+- `@gooi/conformance/dispatch-render-contracts`
+- `@gooi/conformance/surface-extension-contracts`
 - `@gooi/conformance/guard-contracts`
 - `@gooi/conformance/scenario-contracts`
 

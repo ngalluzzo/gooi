@@ -270,6 +270,7 @@
         "@gooi/projection-contracts": "workspace:*",
         "@gooi/projection-runtime": "workspace:*",
         "@gooi/provider-runtime": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/scenario-contracts": "workspace:*",
         "@gooi/scenario-runtime": "workspace:*",
         "@gooi/spec-compiler": "workspace:*",
@@ -339,6 +340,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
       },
     },

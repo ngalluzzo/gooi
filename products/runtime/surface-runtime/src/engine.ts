@@ -27,6 +27,10 @@ import {
 	dispatchSurfaceRequest as dispatchSurfaceRequestImpl,
 	type SurfaceDispatchSelection,
 } from "./dispatch/dispatch-surface-request";
+import {
+	type ValidateRendererAdapterCompatibilityInput,
+	validateRendererAdapterCompatibility as validateRendererAdapterCompatibilityImpl,
+} from "./render/adapter-compatibility";
 
 export type {
 	BindSurfaceInputInput,
@@ -40,6 +44,7 @@ export type {
 	SurfaceAdapterNormalizedIngress,
 	SurfaceAdapterRegistry,
 	SurfaceDispatchSelection,
+	ValidateRendererAdapterCompatibilityInput,
 };
 
 export { createSurfaceAdapterRegistry, defaultSurfaceAdapters };
@@ -69,3 +74,10 @@ export const dispatchAndBindSurfaceInput = (
 export const dispatchAndBindSurfaceIngress = (
 	input: DispatchAndBindSurfaceIngressInput,
 ): DispatchAndBindSurfaceResult => dispatchAndBindSurfaceIngressImpl(input);
+
+/**
+ * Validates render IR against one renderer adapter capability declaration.
+ */
+export const validateRendererAdapterCompatibility = (
+	input: ValidateRendererAdapterCompatibilityInput,
+) => validateRendererAdapterCompatibilityImpl(input);

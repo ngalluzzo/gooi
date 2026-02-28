@@ -13,6 +13,7 @@ Contracts for view render IR, node plans, and render/runtime envelopes.
 - `@gooi/render-contracts/ir`
 - `@gooi/render-contracts/nodes`
 - `@gooi/render-contracts/envelopes`
+- `@gooi/render-contracts/adapter`
 
 ## Notes
 

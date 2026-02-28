@@ -72,6 +72,19 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/app-testing": {
+      "name": "@gooi/app-testing",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-testing-facade-contracts": "workspace:*",
+        "@gooi/conformance": "workspace:*",
+        "@gooi/guard-contracts": "workspace:*",
+        "@gooi/scenario-contracts": "workspace:*",
+        "@gooi/scenario-runtime": "workspace:*",
+        "@gooi/spec-compiler": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/artifact-model": {
       "name": "@gooi/artifact-model",
       "version": "0.1.0",
@@ -159,6 +172,15 @@
         "@gooi/render-contracts": "workspace:*",
         "@gooi/scenario-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/app-testing-facade-contracts": {
+      "name": "@gooi/app-testing-facade-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/conformance": "workspace:*",
+        "@gooi/scenario-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -917,6 +939,10 @@
     "@gooi/app-runtime-facade-contracts": ["@gooi/app-runtime-facade-contracts@workspace:products/contracts/app-runtime-facade-contracts"],
 
     "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:products/contracts/app-spec-contracts"],
+
+    "@gooi/app-testing": ["@gooi/app-testing@workspace:packages/app-testing"],
+
+    "@gooi/app-testing-facade-contracts": ["@gooi/app-testing-facade-contracts@workspace:products/contracts/app-testing-facade-contracts"],
 
     "@gooi/artifact-model": ["@gooi/artifact-model@workspace:packages/artifact-model"],
 

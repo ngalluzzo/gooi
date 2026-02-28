@@ -1,0 +1,31 @@
+{
+	"name": "@gooi/app-testing-facade-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./*": {
+			"types": "./src/*/contracts.ts",
+			"bun": "./src/*/contracts.ts",
+			"import": "./dist/*/contracts.js",
+			"default": "./dist/*/contracts.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/fixtures/contracts.ts --outfile ./dist/fixtures/contracts.js --external @gooi/* --external zod && bun build ./src/scenario-runner/contracts.ts --outfile ./dist/scenario-runner/contracts.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/conformance": "workspace:*",
+		"@gooi/scenario-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

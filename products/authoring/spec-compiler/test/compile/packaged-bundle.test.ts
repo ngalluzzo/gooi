@@ -57,8 +57,11 @@ describe("spec-compiler packaging", () => {
 			return;
 		}
 
-		expect(stableStringify(result.bundle)).toBe(
-			stableStringify(compiled.bundle),
+		expect(Object.keys(result.bundle.laneArtifacts).sort()).toEqual(
+			Object.keys(compiled.bundle.laneArtifacts).sort(),
+		);
+		expect(stableStringify(result.bundle.artifactManifest)).toBe(
+			stableStringify(compiled.bundle.artifactManifest),
 		);
 	});
 

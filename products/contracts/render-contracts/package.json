@@ -1,5 +1,5 @@
 {
-	"name": "@gooi/app-spec-contracts",
+	"name": "@gooi/render-contracts",
 	"version": "0.1.0",
 	"type": "module",
 	"exports": {
@@ -18,17 +18,13 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/compiled/contracts.ts --outfile ./dist/compiled/contracts.js --external @gooi/* --external zod && bun build ./src/diagnostics/contracts.ts --outfile ./dist/diagnostics/contracts.js --external @gooi/* --external zod && bun build ./src/spec/contracts.ts --outfile ./dist/spec/contracts.js --external @gooi/* --external zod",
+		"build": "bun build ./src/ir/contracts.ts --outfile ./dist/ir/contracts.js --external @gooi/* --external zod && bun build ./src/nodes/contracts.ts --outfile ./dist/nodes/contracts.js --external @gooi/* --external zod && bun build ./src/envelopes/contracts.ts --outfile ./dist/envelopes/contracts.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {
-		"@gooi/artifact-model": "workspace:*",
-		"@gooi/render-contracts": "workspace:*",
-		"@gooi/capability-contracts": "workspace:*",
 		"@gooi/contract-primitives": "workspace:*",
-		"@gooi/marketplace-contracts": "workspace:*",
 		"@gooi/surface-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}

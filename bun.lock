@@ -86,6 +86,7 @@
         "@gooi/artifact-model": "workspace:*",
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/stable-json": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
@@ -107,6 +108,7 @@
         "@gooi/capability-contracts": "workspace:*",
         "@gooi/contract-primitives": "workspace:*",
         "@gooi/marketplace-contracts": "workspace:*",
+        "@gooi/render-contracts": "workspace:*",
         "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
@@ -189,6 +191,15 @@
       "dependencies": {
         "@gooi/contract-primitives": "workspace:*",
         "@gooi/guard-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/render-contracts": {
+      "name": "@gooi/render-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/contract-primitives": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -884,6 +895,8 @@
     "@gooi/projection-runtime": ["@gooi/projection-runtime@workspace:products/runtime/projection-runtime"],
 
     "@gooi/provider-runtime": ["@gooi/provider-runtime@workspace:products/runtime/provider-runtime"],
+
+    "@gooi/render-contracts": ["@gooi/render-contracts@workspace:products/contracts/render-contracts"],
 
     "@gooi/scenario-contracts": ["@gooi/scenario-contracts@workspace:products/contracts/scenario-contracts"],
 

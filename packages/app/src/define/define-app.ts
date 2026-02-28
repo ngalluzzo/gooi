@@ -3,11 +3,10 @@ import {
 	type DefineAppResult,
 	defineContracts,
 } from "@gooi/app-facade-contracts/define";
-import { specContracts } from "@gooi/app-spec-contracts/spec";
 import { toFacadeDiagnostics } from "../shared/diagnostics";
 
-const { defineAppInputSchema } = defineContracts;
-const { gooiAppSpecSchema, parseGooiAppSpec } = specContracts;
+const { defineAppInputSchema, gooiAppSpecSchema, parseGooiAppSpec } =
+	defineContracts;
 
 export const defineApp = (input: DefineAppInput): DefineAppResult => {
 	const parsedInput = defineAppInputSchema.safeParse(input);

@@ -46,3 +46,5 @@ export const parseAppDefinition = (value: unknown): AppDefinition =>
 
 export const parseGooiAppSpec = (value: unknown): GooiAppSpec =>
 	specContracts.parseGooiAppSpec(value);
+
+export const gooiAppSpecSchema = specContracts.gooiAppSpecSchema;

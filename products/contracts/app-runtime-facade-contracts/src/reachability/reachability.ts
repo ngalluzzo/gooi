@@ -1,9 +1,19 @@
+import type { CompiledBindingRequirements } from "@gooi/app-spec-contracts/compiled";
 import type { ExecutionHost } from "@gooi/marketplace-contracts/binding-plan";
+import {
+	type BindingPlan,
+	bindingPlanContracts,
+	type CapabilityBindingResolution,
+} from "@gooi/marketplace-contracts/binding-plan";
 
 export interface AppRuntimeReachabilityQuery {
 	readonly portId: string;
 	readonly portVersion: string;
 }
+
+export type AppRuntimeBindingRequirements = CompiledBindingRequirements;
+export type AppRuntimeBindingPlan = BindingPlan;
+export type AppRuntimeBindingResolution = CapabilityBindingResolution;
 
 export type AppRuntimeReachabilityOutcome =
 	| {
@@ -31,3 +41,14 @@ export type AppRuntimeReachabilityOutcome =
 			readonly source: "requirements" | "binding_plan";
 			readonly reason?: string;
 	  };
+
+export const getCapabilityBindingResolution = (input: {
+	readonly bindingPlan: BindingPlan;
+	readonly query: AppRuntimeReachabilityQuery;
+}): CapabilityBindingResolution | null => {
+	return bindingPlanContracts.getCapabilityBindingResolution(
+		input.bindingPlan,
+		input.query.portId,
+		input.query.portVersion,
+	);
+};

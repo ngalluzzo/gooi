@@ -1,20 +1,18 @@
 import type {
+	AppRuntimeBindingPlan,
+	AppRuntimeBindingRequirements,
 	AppRuntimeReachabilityOutcome,
 	AppRuntimeReachabilityQuery,
 } from "@gooi/app-runtime-facade-contracts/reachability";
-import type { CompiledBindingRequirements } from "@gooi/app-spec-contracts/compiled";
-import {
-	type BindingPlan,
-	bindingPlanContracts,
-} from "@gooi/marketplace-contracts/binding-plan";
+import { reachabilityContracts } from "@gooi/app-runtime-facade-contracts/reachability";
 
 const requirementKey = (query: AppRuntimeReachabilityQuery): string =>
 	`${query.portId}@${query.portVersion}`;
 
 export const describeRuntimeReachability = (input: {
-	readonly requirements: CompiledBindingRequirements;
+	readonly requirements: AppRuntimeBindingRequirements;
 	readonly query: AppRuntimeReachabilityQuery;
-	readonly bindingPlan?: BindingPlan;
+	readonly bindingPlan?: AppRuntimeBindingPlan;
 }): AppRuntimeReachabilityOutcome => {
 	const requirement =
 		input.requirements.requirements[requirementKey(input.query)];
@@ -31,11 +29,10 @@ export const describeRuntimeReachability = (input: {
 	const resolution =
 		input.bindingPlan === undefined
 			? null
-			: bindingPlanContracts.getCapabilityBindingResolution(
-					input.bindingPlan,
-					input.query.portId,
-					input.query.portVersion,
-				);
+			: reachabilityContracts.getCapabilityBindingResolution({
+					bindingPlan: input.bindingPlan,
+					query: input.query,
+				});
 	if (resolution === null) {
 		if (requirement.mode === "delegated") {
 			return {

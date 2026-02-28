@@ -1,8 +1,9 @@
+import type { CompileAppFailure } from "@gooi/app-facade-contracts/compile";
 import type { AppFacadeDiagnostic } from "@gooi/app-facade-contracts/define";
-import type { CompileDiagnostic } from "@gooi/app-spec-contracts/compiled";
 import type { ZodIssue } from "zod";
 
 type AppFacadeDiagnosticCode = AppFacadeDiagnostic["code"];
+type CompileDiagnostic = CompileAppFailure["diagnostics"][number];
 
 const renderPath = (root: string, path: readonly PropertyKey[]): string => {
 	if (path.length === 0) {

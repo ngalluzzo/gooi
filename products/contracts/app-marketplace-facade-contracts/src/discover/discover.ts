@@ -23,3 +23,4 @@ export type DiscoverProvidersTrustTier = ProviderTrustTier;
 
 export const parseDiscoverProvidersInput =
 	discoveryContracts.parseProviderDiscoveryInput;
+export const discoverProviders = discoveryContracts.discoverProviders;

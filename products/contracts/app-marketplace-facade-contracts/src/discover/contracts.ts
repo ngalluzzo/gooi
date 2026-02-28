@@ -17,4 +17,5 @@ export type {
 
 export const discoverContracts = Object.freeze({
 	parseDiscoverProvidersInput: discover.parseDiscoverProvidersInput,
+	discoverProviders: discover.discoverProviders,
 });

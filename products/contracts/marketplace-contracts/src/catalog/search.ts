@@ -1,4 +1,5 @@
 import { sortListings } from "../listing/state";
+import { resolveCatalogProviderExecutionDescriptor } from "./descriptor";
 import { createCatalogError } from "./errors";
 import { type CatalogSearchResult, catalogSearchInputSchema } from "./model";
 
@@ -41,7 +42,7 @@ export const searchCatalog = (value: unknown): CatalogSearchResult => {
 		};
 	}
 
-	const { state, query } = parsedInput.data;
+	const { state, descriptorIndex, query } = parsedInput.data;
 	const filtered = sortListings(state.listings).filter((listing) => {
 		if (
 			query.providerNamespace !== undefined &&
@@ -66,7 +67,16 @@ export const searchCatalog = (value: unknown): CatalogSearchResult => {
 		result: {
 			query,
 			total: filtered.length,
-			items: filtered.slice(query.offset, query.offset + query.limit),
+			items: filtered
+				.slice(query.offset, query.offset + query.limit)
+				.map((listing) => ({
+					...listing,
+					executionDescriptor: resolveCatalogProviderExecutionDescriptor(
+						listing.providerId,
+						listing.providerVersion,
+						descriptorIndex,
+					),
+				})),
 		},
 	};
 };

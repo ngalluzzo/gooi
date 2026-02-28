@@ -167,6 +167,30 @@ describe("app-marketplace-facade-contracts", () => {
 		};
 		const result = catalogContracts.searchMarketplaceCatalog({
 			state,
+			descriptorIndex: {
+				"gooi.providers.memory@1.1.0": {
+					descriptorVersion: "1.0.0",
+					requiredHostApiVersion: "1.0.0",
+					supportedHosts: ["node"],
+					capabilities: [
+						{
+							portId: "ids.generate",
+							portVersion: "1.0.0",
+							mode: "delegated",
+							targetHost: "node",
+							delegateRouteId: "route-node-1",
+							delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+					delegationRoutes: [
+						{
+							routeId: "route-node-1",
+							targetHost: "node",
+							descriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+				},
+			},
 			query: {
 				providerNamespace: "gooi",
 			},
@@ -176,5 +200,8 @@ describe("app-marketplace-facade-contracts", () => {
 			return;
 		}
 		expect(result.result.items[0]?.providerId).toBe("gooi.providers.memory");
+		expect(
+			result.result.items[0]?.executionDescriptor?.delegationRoutes[0]?.routeId,
+		).toBe("route-node-1");
 	});
 });

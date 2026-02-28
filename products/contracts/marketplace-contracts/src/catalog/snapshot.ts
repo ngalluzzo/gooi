@@ -1,4 +1,5 @@
 import { sortListings } from "../listing/state";
+import { resolveCatalogProviderExecutionDescriptor } from "./descriptor";
 import { createCatalogError } from "./errors";
 import { hashCatalogValue } from "./hash";
 import {
@@ -25,11 +26,20 @@ export const exportCatalogSnapshot = (
 		};
 	}
 
-	const { state, mirrorId, exportVersion, includeDeprecated } =
+	const { state, descriptorIndex, mirrorId, exportVersion, includeDeprecated } =
 		parsedInput.data;
-	const listings = sortListings(state.listings).filter((listing) => {
-		return includeDeprecated || listing.status === "active";
-	});
+	const listings = sortListings(state.listings)
+		.filter((listing) => {
+			return includeDeprecated || listing.status === "active";
+		})
+		.map((listing) => ({
+			...listing,
+			executionDescriptor: resolveCatalogProviderExecutionDescriptor(
+				listing.providerId,
+				listing.providerVersion,
+				descriptorIndex,
+			),
+		}));
 	const snapshotValue = {
 		exportVersion,
 		listings,

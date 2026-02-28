@@ -71,11 +71,51 @@ const seedCatalogState = () => {
 	return deprecatedV1.state;
 };
 
+const descriptorIndex = {
+	"gooi.providers.memory@1.0.0": {
+		descriptorVersion: "1.0.0" as const,
+		requiredHostApiVersion: "1.0.0",
+		supportedHosts: ["node"] as const,
+		capabilities: [
+			{
+				portId: "notifications.send",
+				portVersion: "1.0.0",
+				mode: "local" as const,
+				targetHost: "node" as const,
+			},
+		],
+		delegationRoutes: [],
+	},
+	"gooi.providers.memory@1.1.0": {
+		descriptorVersion: "1.0.0" as const,
+		requiredHostApiVersion: "1.0.0",
+		supportedHosts: ["node"] as const,
+		capabilities: [
+			{
+				portId: "notifications.send",
+				portVersion: "1.0.0",
+				mode: "delegated" as const,
+				targetHost: "node" as const,
+				delegateRouteId: "route-node-1",
+				delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+			},
+		],
+		delegationRoutes: [
+			{
+				routeId: "route-node-1",
+				targetHost: "node" as const,
+				descriptor: "https://gooi.dev/delegation/route-node-1",
+			},
+		],
+	},
+};
+
 describe("catalog", () => {
 	test("searches catalog deterministically for fixed state", () => {
 		const state = seedCatalogState();
 		const result = catalogContracts.searchCatalog({
 			state,
+			descriptorIndex,
 			query: {
 				status: "active",
 				providerNamespace: "gooi",
@@ -89,9 +129,16 @@ describe("catalog", () => {
 		}
 		expect(result.result.total).toBe(1);
 		expect(result.result.items[0]?.providerVersion).toBe("1.1.0");
+		expect(result.result.items[0]?.executionDescriptor?.descriptorVersion).toBe(
+			"1.0.0",
+		);
+		expect(
+			result.result.items[0]?.executionDescriptor?.delegationRoutes[0]?.routeId,
+		).toBe("route-node-1");
 
 		const repeat = catalogContracts.searchCatalog({
 			state,
+			descriptorIndex,
 			query: {
 				status: "active",
 				providerNamespace: "gooi",
@@ -106,6 +153,7 @@ describe("catalog", () => {
 		const state = seedCatalogState();
 		const hit = catalogContracts.getCatalogDetail({
 			state,
+			descriptorIndex,
 			providerId: "gooi.providers.memory",
 			providerVersion: "1.1.0",
 		});
@@ -114,9 +162,13 @@ describe("catalog", () => {
 			return;
 		}
 		expect(hit.item.metadata.displayName).toBe("Memory Notifications v1.1");
+		expect(hit.item.executionDescriptor?.capabilities[0]?.mode).toBe(
+			"delegated",
+		);
 
 		const miss = catalogContracts.getCatalogDetail({
 			state,
+			descriptorIndex,
 			providerId: "gooi.providers.memory",
 			providerVersion: "9.9.9",
 		});
@@ -131,6 +183,7 @@ describe("catalog", () => {
 		const state = seedCatalogState();
 		const activeOnly = catalogContracts.exportCatalogSnapshot({
 			state,
+			descriptorIndex,
 			mirrorId: "enterprise-west",
 			includeDeprecated: false,
 		});
@@ -145,9 +198,11 @@ describe("catalog", () => {
 		expect(activeOnly.snapshot.snapshotId).toBe(
 			`enterprise-west:${activeOnly.snapshot.snapshotHash}`,
 		);
+		expect(activeOnly.snapshot.listings[0]?.executionDescriptor).toBeDefined();
 
 		const repeat = catalogContracts.exportCatalogSnapshot({
 			state,
+			descriptorIndex,
 			mirrorId: "enterprise-west",
 			includeDeprecated: false,
 		});
@@ -155,6 +210,7 @@ describe("catalog", () => {
 
 		const withDeprecated = catalogContracts.exportCatalogSnapshot({
 			state,
+			descriptorIndex,
 			mirrorId: "enterprise-west",
 			includeDeprecated: true,
 		});

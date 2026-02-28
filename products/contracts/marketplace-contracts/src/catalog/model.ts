@@ -5,9 +5,15 @@ import {
 	listingRegistryStateSchema,
 } from "../listing/model";
 import { hexHashSchema } from "../shared/hashes";
+import {
+	catalogProviderExecutionDescriptorIndexSchema,
+	catalogProviderExecutionDescriptorSchema,
+} from "./descriptor";
 import { catalogErrorSchema } from "./errors";
 
-export const catalogEntrySchema = listingRecordSchema;
+export const catalogEntrySchema = listingRecordSchema.extend({
+	executionDescriptor: catalogProviderExecutionDescriptorSchema.optional(),
+});
 
 export type CatalogEntry = z.infer<typeof catalogEntrySchema>;
 
@@ -24,6 +30,7 @@ export type CatalogSearchQuery = z.input<typeof catalogSearchQuerySchema>;
 
 export const catalogSearchInputSchema = z.object({
 	state: listingRegistryStateSchema,
+	descriptorIndex: catalogProviderExecutionDescriptorIndexSchema.optional(),
 	query: catalogSearchQuerySchema.default({ limit: 50, offset: 0 }),
 });
 
@@ -52,6 +59,7 @@ export type CatalogSearchResult = z.infer<typeof catalogSearchResultSchema>;
 
 export const catalogDetailInputSchema = z.object({
 	state: listingRegistryStateSchema,
+	descriptorIndex: catalogProviderExecutionDescriptorIndexSchema.optional(),
 	providerId: z.string().min(1),
 	providerVersion: z.string().min(1),
 });
@@ -77,6 +85,7 @@ export type CatalogDetailResult = z.infer<typeof catalogDetailResultSchema>;
 
 export const catalogSnapshotExportInputSchema = z.object({
 	state: listingRegistryStateSchema,
+	descriptorIndex: catalogProviderExecutionDescriptorIndexSchema.optional(),
 	mirrorId: z.string().min(1),
 	exportVersion: z.literal("1.0.0").default("1.0.0"),
 	includeDeprecated: z.boolean().default(true),

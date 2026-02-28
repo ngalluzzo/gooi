@@ -48,8 +48,34 @@ const catalogState = {
 
 describe("@gooi/app-marketplace catalog", () => {
 	test("maintains semantic parity for search, detail, and snapshot flows", () => {
+		const descriptorIndex =
+			catalogContracts.catalogProviderExecutionDescriptorIndexSchema.parse({
+				"gooi.providers.memory@1.1.0": {
+					descriptorVersion: "1.0.0",
+					requiredHostApiVersion: "1.0.0",
+					supportedHosts: ["node"],
+					capabilities: [
+						{
+							portId: "notifications.send",
+							portVersion: "1.0.0",
+							mode: "delegated",
+							targetHost: "node",
+							delegateRouteId: "route-node-1",
+							delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+					delegationRoutes: [
+						{
+							routeId: "route-node-1",
+							targetHost: "node",
+							descriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+				},
+			});
 		const searchInput = {
 			state: catalogState,
+			descriptorIndex,
 			query: {
 				providerNamespace: "gooi",
 			},
@@ -61,6 +87,9 @@ describe("@gooi/app-marketplace catalog", () => {
 		if (!facadeSearch.ok) {
 			return;
 		}
+		expect(
+			facadeSearch.result.items[0]?.executionDescriptor?.descriptorVersion,
+		).toBe("1.0.0");
 
 		const detailInput = {
 			state: catalogState,

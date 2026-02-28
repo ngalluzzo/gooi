@@ -1,3 +1,4 @@
+import { resolveCatalogProviderExecutionDescriptor } from "./descriptor";
 import { createCatalogError } from "./errors";
 import { type CatalogDetailResult, catalogDetailInputSchema } from "./model";
 
@@ -31,6 +32,13 @@ export const getCatalogDetail = (value: unknown): CatalogDetailResult => {
 	}
 	return {
 		ok: true,
-		item,
+		item: {
+			...item,
+			executionDescriptor: resolveCatalogProviderExecutionDescriptor(
+				item.providerId,
+				item.providerVersion,
+				parsedInput.data.descriptorIndex,
+			),
+		},
 	};
 };

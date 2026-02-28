@@ -18,7 +18,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/discover/contracts.ts --outfile ./dist/discover/contracts.js --external @gooi/* --external zod && bun build ./src/eligibility/contracts.ts --outfile ./dist/eligibility/contracts.js --external @gooi/* --external zod && bun build ./src/listing/contracts.ts --outfile ./dist/listing/contracts.js --external @gooi/* --external zod && bun build ./src/resolve/contracts.ts --outfile ./dist/resolve/contracts.js --external @gooi/* --external zod",
+		"build": "bun build ./src/catalog/contracts.ts --outfile ./dist/catalog/contracts.js --external @gooi/* --external zod && bun build ./src/discover/contracts.ts --outfile ./dist/discover/contracts.js --external @gooi/* --external zod && bun build ./src/eligibility/contracts.ts --outfile ./dist/eligibility/contracts.js --external @gooi/* --external zod && bun build ./src/listing/contracts.ts --outfile ./dist/listing/contracts.js --external @gooi/* --external zod && bun build ./src/resolve/contracts.ts --outfile ./dist/resolve/contracts.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

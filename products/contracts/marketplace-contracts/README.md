@@ -16,6 +16,7 @@ Contract package for marketplace-bound deployment artifacts and provider manifes
 - `@gooi/marketplace-contracts/reachability/contracts`
 - `@gooi/marketplace-contracts/reachability/policy`
 - `@gooi/marketplace-contracts/artifact-alignment/policy`
+- `@gooi/marketplace-contracts/catalog`
 - `@gooi/marketplace-contracts/discovery`
 - `@gooi/marketplace-contracts/eligibility`
 - `@gooi/marketplace-contracts/listing`

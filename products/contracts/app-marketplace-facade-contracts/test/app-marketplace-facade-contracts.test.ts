@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { catalogContracts } from "../src/catalog/contracts";
 import { discoverContracts } from "../src/discover/contracts";
 import { eligibilityContracts } from "../src/eligibility/contracts";
 import { listingContracts } from "../src/listing/contracts";
@@ -132,5 +133,48 @@ describe("app-marketplace-facade-contracts", () => {
 			return;
 		}
 		expect(published.listing.status).toBe("active");
+	});
+
+	test("exposes canonical catalog wrappers", () => {
+		const state = {
+			listings: [
+				{
+					providerNamespace: "gooi",
+					providerId: "gooi.providers.memory",
+					providerVersion: "1.1.0",
+					contentHash:
+						"fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
+					integrity:
+						"sha256:fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
+					capabilities: [
+						{
+							portId: "ids.generate",
+							portVersion: "1.0.0",
+							contractHash:
+								"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+						},
+					],
+					metadata: {
+						displayName: "Memory IDs",
+						tags: ["ids"],
+					},
+					status: "active" as const,
+					publishedAt: "2026-02-28T10:00:00.000Z",
+					updatedAt: "2026-02-28T10:00:00.000Z",
+				},
+			],
+			auditLog: [],
+		};
+		const result = catalogContracts.searchMarketplaceCatalog({
+			state,
+			query: {
+				providerNamespace: "gooi",
+			},
+		});
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.result.items[0]?.providerId).toBe("gooi.providers.memory");
 	});
 });

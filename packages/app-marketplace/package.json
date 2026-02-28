@@ -1,0 +1,31 @@
+{
+	"name": "@gooi/app-marketplace",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./discover": {
+			"types": "./src/discover/discover-providers.ts",
+			"bun": "./src/discover/discover-providers.ts",
+			"import": "./dist/discover/discover-providers.js",
+			"default": "./dist/discover/discover-providers.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/discover/discover-providers.ts --outfile ./dist/discover/discover-providers.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app-marketplace-facade-contracts": "workspace:*",
+		"@gooi/marketplace-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

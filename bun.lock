@@ -58,6 +58,15 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/app-marketplace": {
+      "name": "@gooi/app-marketplace",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-marketplace-facade-contracts": "workspace:*",
+        "@gooi/marketplace-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/app-runtime": {
       "name": "@gooi/app-runtime",
       "version": "0.1.0",
@@ -154,6 +163,14 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/app-marketplace-facade-contracts": {
+      "name": "@gooi/app-marketplace-facade-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/marketplace-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -943,6 +960,10 @@
     "@gooi/app": ["@gooi/app@workspace:packages/app"],
 
     "@gooi/app-facade-contracts": ["@gooi/app-facade-contracts@workspace:products/contracts/app-facade-contracts"],
+
+    "@gooi/app-marketplace": ["@gooi/app-marketplace@workspace:packages/app-marketplace"],
+
+    "@gooi/app-marketplace-facade-contracts": ["@gooi/app-marketplace-facade-contracts@workspace:products/contracts/app-marketplace-facade-contracts"],
 
     "@gooi/app-runtime": ["@gooi/app-runtime@workspace:packages/app-runtime"],
 

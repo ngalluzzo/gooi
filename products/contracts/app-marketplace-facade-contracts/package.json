@@ -1,0 +1,30 @@
+{
+	"name": "@gooi/app-marketplace-facade-contracts",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./*": {
+			"types": "./src/*/contracts.ts",
+			"bun": "./src/*/contracts.ts",
+			"import": "./dist/*/contracts.js",
+			"default": "./dist/*/contracts.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/discover/contracts.ts --outfile ./dist/discover/contracts.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/marketplace-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

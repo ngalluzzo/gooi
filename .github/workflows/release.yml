@@ -41,6 +41,24 @@ jobs:
       - name: Verify types
         run: bun run typecheck:pkg
 
+      - name: Verify golden governance
+        run: bun run golden:governance
+
+      - name: Verify determinism conformance
+        run: bun run conformance:determinism
+
+      - name: Verify marketplace control-plane conformance
+        run: bun run conformance:marketplace:control-plane
+
+      - name: Verify marketplace resolution conformance
+        run: bun run conformance:marketplace:resolution
+
+      - name: Verify marketplace trust conformance
+        run: bun run conformance:marketplace:trust
+
+      - name: Verify tiered full conformance gate
+        run: bun run conformance:tier:full
+
       - name: Create release PR or publish
         uses: changesets/action@v1
         with:

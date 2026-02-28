@@ -40,6 +40,24 @@ jobs:
       - name: Facade compatibility policy checks
         run: bun run facade:compat
 
+      - name: Golden governance checks
+        run: bun run golden:governance
+
+      - name: Determinism conformance checks
+        run: bun run conformance:determinism
+
+      - name: Marketplace control-plane conformance checks
+        run: bun run conformance:marketplace:control-plane
+
+      - name: Marketplace resolution conformance checks
+        run: bun run conformance:marketplace:resolution
+
+      - name: Marketplace trust conformance checks
+        run: bun run conformance:marketplace:trust
+
+      - name: Tiered conformance smoke gate
+        run: bun run conformance:tier:smoke
+
       - name: Test with coverage thresholds
         id: test_coverage
         continue-on-error: true

@@ -20,3 +20,15 @@ The format is based on Changesets.
   policy behavior checks.
 - Added scenario conformance suite for RFC-0020 trigger/expect/capture semantics,
   persona-generated input lockfile determinism, and typed failure traceability.
+- Added lane-harness conformance suite for L0/L1/L2/L3 matrix execution with
+  deterministic lane/check identifiers and baseline reproducibility digests.
+- Added determinism conformance suite for repeated artifact/envelope checks with
+  typed `conformance_determinism_error` diagnostics.
+- Added tiered suite strategy definitions (`smoke`, `full`, `expanded`) with
+  runtime/flaky threshold enforcement and gate-role metadata.
+- Added marketplace control-plane conformance suite covering listing/catalog/
+  certification behavior plus governance-report deterministic serialization.
+- Added marketplace resolution conformance suite covering deterministic outputs,
+  explainability mode contracts, policy/scoring enforcement, and delegated route checks.
+- Added marketplace trust conformance suite covering trust/certification coupling,
+  revocation propagation fail-closed behavior, and certified-release gate enforcement.

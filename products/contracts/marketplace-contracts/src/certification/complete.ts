@@ -6,8 +6,11 @@ import {
 import {
 	canTransitionCertification,
 	findCertificationRecordIndex,
+	isTrustedVerdictSatisfied,
 	missingRequiredEvidenceKinds,
+	missingRequiredTrustClaimIds,
 	sortCertificationEvidence,
+	trustDecisionMatchesRelease,
 } from "./policy";
 import type { CertificationMutationResult } from "./result";
 import {
@@ -40,6 +43,7 @@ export const completeCertification = (
 		policy,
 		evidence,
 		report,
+		trustDecision,
 	} = parsedInput.data;
 	if (!listingExists(listingState, providerId, providerVersion)) {
 		return {
@@ -112,6 +116,54 @@ export const completeCertification = (
 			),
 		};
 	}
+	if (policy.trust.required && trustDecision === undefined) {
+		return {
+			ok: false,
+			error: createCertificationError(
+				"certification_policy_error",
+				"Certification trust policy requires a trust decision report.",
+			),
+		};
+	}
+	if (
+		trustDecision !== undefined &&
+		!trustDecisionMatchesRelease(trustDecision, providerId, providerVersion)
+	) {
+		return {
+			ok: false,
+			error: createCertificationError(
+				"certification_policy_error",
+				"Trust decision subject must match certification provider release.",
+			),
+		};
+	}
+	if (
+		trustDecision !== undefined &&
+		!isTrustedVerdictSatisfied(policy.trust, trustDecision)
+	) {
+		return {
+			ok: false,
+			error: createCertificationError(
+				"certification_policy_error",
+				"Trust decision did not satisfy required trust verification verdict.",
+			),
+		};
+	}
+	if (trustDecision !== undefined) {
+		const missingClaimIds = missingRequiredTrustClaimIds(
+			policy.trust,
+			trustDecision,
+		);
+		if (missingClaimIds.length > 0) {
+			return {
+				ok: false,
+				error: createCertificationError(
+					"certification_policy_error",
+					"Trust decision is missing required verified trust claims.",
+				),
+			};
+		}
+	}
 
 	const record: CertificationRecord = {
 		...existing,
@@ -119,6 +171,7 @@ export const completeCertification = (
 		profileId: policy.profileId,
 		evidence: sortCertificationEvidence(evidence),
 		report,
+		...(trustDecision === undefined ? {} : { trustDecision }),
 		updatedAt: occurredAt,
 		updatedBy: actorId,
 		transitionCount: existing.transitionCount + 1,

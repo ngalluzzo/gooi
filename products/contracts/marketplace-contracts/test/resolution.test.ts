@@ -40,9 +40,10 @@ describe("resolution", () => {
 			"scoring",
 			"selection",
 		]);
-		expect(result.decision.explainability.delegatedCandidates).toBe(1);
-		expect(result.decision.explainability.localCandidates).toBe(1);
-		expect(result.decision.explainability.eligibilityDiagnostics).toEqual([]);
+		expect(result.decision.explainability.mode).toBe("summary");
+		expect(result.decision.explainability.summary.delegatedCandidates).toBe(1);
+		expect(result.decision.explainability.summary.localCandidates).toBe(1);
+		expect(result.decision.explainability.diagnostics).toBeUndefined();
 	});
 
 	test("fails with typed delegation error when delegated candidates miss route metadata", () => {
@@ -129,6 +130,7 @@ describe("resolution", () => {
 			report: eligibilityFixture.report,
 			maxResults: 1,
 			requireEligible: false,
+			explainabilityMode: "diagnostics",
 			policy: {
 				denyProviderIds: ["gooi.providers.http"],
 			},
@@ -141,15 +143,63 @@ describe("resolution", () => {
 		expect(result.decision.selected.map((item) => item.providerId)).toEqual([
 			"gooi.providers.memory",
 		]);
+		expect(result.decision.explainability.mode).toBe("diagnostics");
 		expect(
-			result.decision.explainability.eligibilityDiagnostics,
+			result.decision.explainability.diagnostics?.eligibilityDiagnostics,
 		).toContainEqual({
 			providerId: "gooi.providers.http",
 			providerVersion: "2.1.0",
 			code: "resolver_eligibility_denylisted",
 			message: "Provider is blocked by denyProviderIds policy.",
 		});
-		expect(result.decision.explainability.policyRejectedCandidates).toBe(1);
+		expect(
+			result.decision.explainability.diagnostics?.candidateScores.length,
+		).toBe(1);
+		expect(
+			result.decision.explainability.summary.policyRejectedCandidates,
+		).toBe(1);
+	});
+
+	test("returns full per-candidate score diagnostics only in diagnostics mode", () => {
+		expect(eligibilityFixture.ok).toBe(true);
+		if (!eligibilityFixture.ok) {
+			return;
+		}
+
+		const summaryResult = resolutionContracts.resolveTrustedProviders({
+			report: eligibilityFixture.report,
+			maxResults: 2,
+			requireEligible: false,
+		});
+		const diagnosticsResult = resolutionContracts.resolveTrustedProviders({
+			report: eligibilityFixture.report,
+			maxResults: 2,
+			requireEligible: false,
+			explainabilityMode: "diagnostics",
+		});
+
+		expect(summaryResult.ok).toBe(true);
+		expect(diagnosticsResult.ok).toBe(true);
+		if (!summaryResult.ok || !diagnosticsResult.ok) {
+			return;
+		}
+
+		expect(summaryResult.decision.explainability.mode).toBe("summary");
+		expect(summaryResult.decision.explainability.diagnostics).toBeUndefined();
+		expect(diagnosticsResult.decision.explainability.mode).toBe("diagnostics");
+		expect(
+			diagnosticsResult.decision.explainability.diagnostics?.candidateScores,
+		).toEqual(
+			diagnosticsResult.decision.selected
+				.concat(diagnosticsResult.decision.rejected)
+				.map((candidate) => ({
+					rank: candidate.rank,
+					providerId: candidate.providerId,
+					providerVersion: candidate.providerVersion,
+					totalScore: candidate.score.total,
+					scoreComponents: candidate.score.components,
+				})),
+		);
 	});
 
 	test("returns policy rejection when trust and certification policy removes all candidates", () => {

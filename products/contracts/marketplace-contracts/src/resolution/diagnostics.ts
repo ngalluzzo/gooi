@@ -1,5 +1,14 @@
 import type { ProviderEligibilityEntry } from "../eligibility/eligibility";
-import type { ResolverEligibilityDiagnostic } from "./model";
+import type {
+	ResolverCandidateScoreDiagnostic,
+	ResolverEligibilityDiagnostic,
+} from "./model";
+import type { RankedProvider } from "./ranking";
+
+export interface ToNoCandidatesErrorInput {
+	readonly providers: readonly ProviderEligibilityEntry[];
+	readonly diagnostics: readonly ResolverEligibilityDiagnostic[];
+}
 
 export const toProviderRef = (provider: {
 	providerId: string;
@@ -63,4 +72,16 @@ export const countPolicyRejectedCandidates = (input: {
 			.map((diagnostic) => toProviderRef(diagnostic)),
 	]);
 	return providerRefs.size;
+};
+
+export const toCandidateScoreDiagnostics = (
+	ranked: readonly RankedProvider[],
+): ResolverCandidateScoreDiagnostic[] => {
+	return ranked.map((candidate, index) => ({
+		rank: index + 1,
+		providerId: candidate.provider.providerId,
+		providerVersion: candidate.provider.providerVersion,
+		totalScore: candidate.score.total,
+		scoreComponents: candidate.score.components,
+	}));
 };

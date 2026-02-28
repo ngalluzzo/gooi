@@ -22,3 +22,4 @@ Contract package for marketplace-bound deployment artifacts and provider manifes
 - `@gooi/marketplace-contracts/eligibility`
 - `@gooi/marketplace-contracts/listing`
 - `@gooi/marketplace-contracts/resolution`
+- `@gooi/marketplace-contracts/trust`

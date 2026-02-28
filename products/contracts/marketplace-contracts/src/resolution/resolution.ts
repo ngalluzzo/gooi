@@ -1,13 +1,12 @@
-import type { ProviderEligibilityEntry } from "../eligibility/eligibility";
 import { createResolverError } from "../shared/resolver-errors";
 import {
 	countPolicyRejectedCandidates,
+	toCandidateScoreDiagnostics,
 	toDiagnosticIssues,
 	toTopRejectionReasons,
 } from "./diagnostics";
 import {
 	type ResolverEligibilityDiagnostic,
-	type ResolverSelection,
 	type ResolverStage,
 	type ResolveTrustedProvidersResult,
 	resolveTrustedProvidersInputSchema,
@@ -24,51 +23,10 @@ import {
 import {
 	findDelegationMetadataGap,
 	isPolicyRejection,
-	type RankedProvider,
 	scoreProvider,
 	sortRankedProviders,
 } from "./ranking";
-
-const toSelection = (
-	ranked: RankedProvider,
-	rank: number,
-): ResolverSelection => {
-	const { provider, score } = ranked;
-	return {
-		rank,
-		providerId: provider.providerId,
-		providerVersion: provider.providerVersion,
-		integrity: provider.integrity,
-		reachability: provider.reachability,
-		status: provider.status,
-		reasons: provider.reasons,
-		trustTier: provider.trust.tier,
-		certifications: provider.trust.certifications,
-		score,
-	};
-};
-
-const toNoCandidatesError = (input: {
-	readonly providers: readonly ProviderEligibilityEntry[];
-	readonly diagnostics: readonly ResolverEligibilityDiagnostic[];
-}) => {
-	const code =
-		input.diagnostics.some((diagnostic) =>
-			isPolicyDiagnostic(diagnostic.code),
-		) || input.providers.some((provider) => isPolicyRejection(provider))
-			? "resolver_policy_rejection_error"
-			: "resolver_no_candidate_error";
-	const message =
-		code === "resolver_policy_rejection_error"
-			? "All providers were rejected by trust or certification policy."
-			: "No providers met resolver candidate requirements.";
-
-	return createResolverError(
-		code,
-		message,
-		toDiagnosticIssues(input.providers, input.diagnostics),
-	);
-};
+import { createNoCandidatesError, toSelection } from "./result-helpers";
 
 export const resolveTrustedProviders = (
 	value: unknown,
@@ -112,7 +70,30 @@ export const resolveTrustedProviders = (
 	}
 
 	const diagnostics: ResolverEligibilityDiagnostic[] = [];
-	const policy = normalizeResolverPolicy(parsedInput.data.policy);
+	if (parsedInput.data.revocation !== undefined) {
+		const ageMs =
+			Date.parse(parsedInput.data.revocation.evaluatedAt) -
+			Date.parse(parsedInput.data.revocation.lastSyncedAt);
+		if (ageMs > parsedInput.data.revocation.maxStalenessSeconds * 1_000) {
+			return {
+				ok: false,
+				error: createResolverError(
+					"resolver_policy_rejection_error",
+					"Revocation state is stale beyond configured freshness guarantees.",
+					[
+						{
+							path: ["revocation", "lastSyncedAt"],
+							message: `Revocation state age ${Math.floor(ageMs / 1_000)}s exceeded maxStalenessSeconds=${parsedInput.data.revocation.maxStalenessSeconds}.`,
+						},
+					],
+				),
+			};
+		}
+	}
+	const policy = normalizeResolverPolicy({
+		...parsedInput.data.policy,
+		revokedProviderRefs: parsedInput.data.revocation?.revokedProviderRefs ?? [],
+	});
 	const filterStage = applyFilterStage({
 		providers,
 		requireEligible: parsedInput.data.requireEligible,
@@ -131,7 +112,7 @@ export const resolveTrustedProviders = (
 	if (filterStage.candidates.length === 0) {
 		return {
 			ok: false,
-			error: toNoCandidatesError({ providers, diagnostics }),
+			error: createNoCandidatesError({ providers, diagnostics }),
 		};
 	}
 
@@ -224,20 +205,30 @@ export const resolveTrustedProviders = (
 			),
 			stages,
 			explainability: {
-				policyRejectedCandidates: countPolicyRejectedCandidates({
-					providers,
-					diagnostics,
-					isPolicyDiagnostic,
-					isPolicyRejection,
-				}),
-				delegatedCandidates: ranked.filter(
-					(candidate) => candidate.provider.reachability.mode === "delegated",
-				).length,
-				localCandidates: ranked.filter(
-					(candidate) => candidate.provider.reachability.mode === "local",
-				).length,
-				topRejectionReasons: toTopRejectionReasons(providers, diagnostics),
-				eligibilityDiagnostics: diagnostics,
+				mode: parsedInput.data.explainabilityMode,
+				summary: {
+					policyRejectedCandidates: countPolicyRejectedCandidates({
+						providers,
+						diagnostics,
+						isPolicyDiagnostic,
+						isPolicyRejection,
+					}),
+					delegatedCandidates: ranked.filter(
+						(candidate) => candidate.provider.reachability.mode === "delegated",
+					).length,
+					localCandidates: ranked.filter(
+						(candidate) => candidate.provider.reachability.mode === "local",
+					).length,
+					topRejectionReasons: toTopRejectionReasons(providers, diagnostics),
+				},
+				...(parsedInput.data.explainabilityMode === "diagnostics"
+					? {
+							diagnostics: {
+								eligibilityDiagnostics: diagnostics,
+								candidateScores: toCandidateScoreDiagnostics(ranked),
+							},
+						}
+					: {}),
 			},
 		},
 	};

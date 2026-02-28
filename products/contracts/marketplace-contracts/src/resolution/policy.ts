@@ -30,12 +30,14 @@ const POLICY_DIAGNOSTIC_CODES = new Set<ResolverEligibilityDiagnostic["code"]>([
 	"resolver_eligibility_allowlist_miss",
 	"resolver_eligibility_trust_below_policy",
 	"resolver_eligibility_certification_missing",
+	"resolver_eligibility_revoked",
 ]);
 
 export interface NormalizedResolverPolicy {
 	readonly allowProviderIds: readonly string[];
 	readonly denyProviderIds: readonly string[];
 	readonly requiredCertifications: readonly string[];
+	readonly revokedProviderRefs: readonly string[];
 	readonly minTrustTier?: ProviderEligibilityEntry["trust"]["tier"];
 }
 
@@ -95,6 +97,7 @@ export const normalizeResolverPolicy = (
 				allowProviderIds?: readonly string[];
 				denyProviderIds?: readonly string[];
 				requiredCertifications?: readonly string[];
+				revokedProviderRefs?: readonly string[];
 				minTrustTier?: ProviderEligibilityEntry["trust"]["tier"] | undefined;
 		  }
 		| null
@@ -103,6 +106,7 @@ export const normalizeResolverPolicy = (
 	allowProviderIds: policy?.allowProviderIds ?? [],
 	denyProviderIds: policy?.denyProviderIds ?? [],
 	requiredCertifications: policy?.requiredCertifications ?? [],
+	revokedProviderRefs: policy?.revokedProviderRefs ?? [],
 	...(policy?.minTrustTier === undefined
 		? {}
 		: { minTrustTier: policy.minTrustTier }),
@@ -116,6 +120,7 @@ export const applyFilterStage = (input: {
 }): { candidates: ProviderEligibilityEntry[]; notes: string[] } => {
 	const allowSet = new Set(input.policy.allowProviderIds);
 	const denySet = new Set(input.policy.denyProviderIds);
+	const revokedSet = new Set(input.policy.revokedProviderRefs);
 	const candidates = input.providers.filter((provider) => {
 		let rejected = false;
 		if (input.requireEligible && provider.status !== "eligible") {
@@ -145,6 +150,16 @@ export const applyFilterStage = (input: {
 				"Provider is not included in allowProviderIds policy.",
 			);
 		}
+		const providerRef = `${provider.providerId}@${provider.providerVersion}`;
+		if (revokedSet.has(providerRef)) {
+			rejected = true;
+			appendDiagnostic(
+				input.diagnostics,
+				provider,
+				"resolver_eligibility_revoked",
+				"Provider release is revoked by trust revocation policy.",
+			);
+		}
 		return !rejected;
 	});
 
@@ -161,6 +176,11 @@ export const applyFilterStage = (input: {
 	if (denySet.size > 0) {
 		notes.push(
 			`Applied denyProviderIds filter (${input.policy.denyProviderIds.length}).`,
+		);
+	}
+	if (revokedSet.size > 0) {
+		notes.push(
+			`Applied revocation filter (${input.policy.revokedProviderRefs.length}).`,
 		);
 	}
 

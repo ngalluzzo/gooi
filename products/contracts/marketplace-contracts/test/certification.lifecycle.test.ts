@@ -1,50 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { certificationContracts } from "../src/certification/contracts";
-import { listingContracts } from "../src/listing/contracts";
+import {
+	createTrustDecision,
+	emptyCertificationState,
+	seedListingState,
+} from "./fixtures/certification.fixture";
 
-const seedListingState = () => {
-	const published = listingContracts.publishListing({
-		state: {
-			listings: [],
-			auditLog: [],
-		},
-		actorId: "publisher:alice",
-		occurredAt: "2026-02-28T10:00:00.000Z",
-		namespaceApprovals: ["gooi"],
-		release: {
-			providerNamespace: "gooi",
-			providerId: "gooi.providers.memory",
-			providerVersion: "1.0.0",
-			contentHash:
-				"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
-			integrity:
-				"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
-			capabilities: [
-				{
-					portId: "notifications.send",
-					portVersion: "1.0.0",
-					contractHash:
-						"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
-				},
-			],
-			metadata: {
-				displayName: "Memory Notifications",
-				tags: ["memory"],
-			},
-		},
-	});
-	if (!published.ok) {
-		throw new Error("Failed to seed listing state");
-	}
-	return published.state;
-};
-
-const emptyCertificationState = {
-	records: [],
-	auditLog: [],
-};
-
-describe("certification", () => {
+describe("certification lifecycle", () => {
 	test("starts certification only for existing listing releases", () => {
 		const listingState = seedListingState();
 		const started = certificationContracts.startCertification({
@@ -93,6 +55,7 @@ describe("certification", () => {
 				profileId: "baseline-1.0.0",
 				requiredEvidenceKinds: ["conformance_report", "security_scan"],
 			},
+			trustDecision: createTrustDecision(),
 			evidence: [
 				{
 					kind: "security_scan",
@@ -150,6 +113,7 @@ describe("certification", () => {
 				profileId: "baseline-1.0.0",
 				requiredEvidenceKinds: ["conformance_report"],
 			},
+			trustDecision: createTrustDecision(),
 			evidence: [
 				{
 					kind: "conformance_report",
@@ -176,5 +140,6 @@ describe("certification", () => {
 		}
 		expect(completed.record.status).toBe("rejected");
 		expect(completed.record.report?.failures[0]?.code).toBe("security_failure");
+		expect(completed.record.trustDecision?.verdict).toBe("trusted");
 	});
 });

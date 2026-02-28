@@ -1,0 +1,24 @@
+import { createHash } from "node:crypto";
+
+const canonicalize = (value: unknown): unknown => {
+	if (Array.isArray(value)) {
+		return value.map((item) => canonicalize(item));
+	}
+	if (
+		value !== null &&
+		typeof value === "object" &&
+		Object.prototype.toString.call(value) === "[object Object]"
+	) {
+		return Object.fromEntries(
+			Object.entries(value as Record<string, unknown>)
+				.sort(([left], [right]) => left.localeCompare(right))
+				.map(([key, item]) => [key, canonicalize(item)]),
+		);
+	}
+	return value;
+};
+
+export const hashCatalogValue = (value: unknown): string => {
+	const payload = JSON.stringify(canonicalize(value));
+	return createHash("sha256").update(payload).digest("hex");
+};

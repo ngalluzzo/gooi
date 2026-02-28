@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { catalogContracts } from "../src/catalog/contracts";
 import { discoverContracts } from "../src/discover/contracts";
 import { eligibilityContracts } from "../src/eligibility/contracts";
+import { listingContracts } from "../src/listing/contracts";
 import { resolveContracts } from "../src/resolve/contracts";
 
 describe("app-marketplace-facade-contracts", () => {
@@ -93,5 +95,113 @@ describe("app-marketplace-facade-contracts", () => {
 		expect(resolution.decision.selected[0]?.providerId).toBe(
 			"gooi.providers.memory",
 		);
+	});
+
+	test("exposes canonical listing lifecycle wrappers", () => {
+		const published = listingContracts.publishMarketplaceListing({
+			state: {
+				listings: [],
+				auditLog: [],
+			},
+			actorId: "publisher:alice",
+			occurredAt: "2026-02-28T10:00:00.000Z",
+			namespaceApprovals: ["gooi"],
+			release: {
+				providerNamespace: "gooi",
+				providerId: "gooi.providers.memory",
+				providerVersion: "1.0.0",
+				contentHash:
+					"6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+				integrity:
+					"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+				capabilities: [
+					{
+						portId: "ids.generate",
+						portVersion: "1.0.0",
+						contractHash:
+							"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+					},
+				],
+				metadata: {
+					displayName: "Memory IDs",
+					tags: ["ids"],
+				},
+			},
+		});
+		expect(published.ok).toBe(true);
+		if (!published.ok) {
+			return;
+		}
+		expect(published.listing.status).toBe("active");
+	});
+
+	test("exposes canonical catalog wrappers", () => {
+		const state = {
+			listings: [
+				{
+					providerNamespace: "gooi",
+					providerId: "gooi.providers.memory",
+					providerVersion: "1.1.0",
+					contentHash:
+						"fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
+					integrity:
+						"sha256:fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
+					capabilities: [
+						{
+							portId: "ids.generate",
+							portVersion: "1.0.0",
+							contractHash:
+								"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
+						},
+					],
+					metadata: {
+						displayName: "Memory IDs",
+						tags: ["ids"],
+					},
+					status: "active" as const,
+					publishedAt: "2026-02-28T10:00:00.000Z",
+					updatedAt: "2026-02-28T10:00:00.000Z",
+				},
+			],
+			auditLog: [],
+		};
+		const result = catalogContracts.searchMarketplaceCatalog({
+			state,
+			descriptorIndex: {
+				"gooi.providers.memory@1.1.0": {
+					descriptorVersion: "1.0.0",
+					requiredHostApiVersion: "1.0.0",
+					supportedHosts: ["node"],
+					capabilities: [
+						{
+							portId: "ids.generate",
+							portVersion: "1.0.0",
+							mode: "delegated",
+							targetHost: "node",
+							delegateRouteId: "route-node-1",
+							delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+					delegationRoutes: [
+						{
+							routeId: "route-node-1",
+							targetHost: "node",
+							descriptor: "https://gooi.dev/delegation/route-node-1",
+						},
+					],
+				},
+			},
+			query: {
+				providerNamespace: "gooi",
+			},
+		});
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.result.items[0]?.providerId).toBe("gooi.providers.memory");
+		expect(
+			result.result.items[0]?.executionDescriptor?.delegationRoutes[0]?.routeId,
+		).toBe("route-node-1");
 	});
 });

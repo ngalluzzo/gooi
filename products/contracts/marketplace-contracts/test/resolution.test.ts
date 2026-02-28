@@ -1,76 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { discoveryContracts } from "../src/discovery/contracts";
 import { eligibilityContracts } from "../src/eligibility/contracts";
 import { resolutionContracts } from "../src/resolution/contracts";
-
-const discoveryFixture = discoveryContracts.discoverProviders({
-	lockfile: {
-		appId: "chat-assistant",
-		environment: "dev",
-		hostApiVersion: "1.0.0",
-		providers: [
-			{
-				providerId: "gooi.providers.memory",
-				providerVersion: "1.2.3",
-				integrity:
-					"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
-				capabilities: [
-					{
-						portId: "notifications.send",
-						portVersion: "1.0.0",
-						contractHash:
-							"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
-					},
-				],
-			},
-			{
-				providerId: "gooi.providers.http",
-				providerVersion: "2.1.0",
-				integrity:
-					"sha256:fb0e8c460935d98d0e4045afe65c123ec9de42fb0a5d2d3f7ac7a7491229f00a",
-				capabilities: [
-					{
-						portId: "notifications.send",
-						portVersion: "1.0.0",
-						contractHash:
-							"0f8f7ea8a9d837f76f16fdb5bf8f95d727ec4fdd6d8f45f0c6bf3d9c7d17d2cf",
-					},
-				],
-			},
-		],
-	},
-	query: {
-		portId: "notifications.send",
-		portVersion: "1.0.0",
-	},
-	trustIndex: {
-		"gooi.providers.memory@1.2.3": {
-			tier: "trusted",
-			certifications: ["soc2"],
-		},
-		"gooi.providers.http@2.1.0": {
-			tier: "review",
-			certifications: ["soc2"],
-		},
-	},
-	reachabilityIndex: {
-		"gooi.providers.memory@1.2.3": {
-			mode: "local",
-			targetHost: "node",
-		},
-		"gooi.providers.http@2.1.0": {
-			mode: "delegated",
-			targetHost: "node",
-			delegateRouteId: "route-node-1",
-			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
-		},
-	},
-});
-
-const eligibilityFixture = eligibilityContracts.explainProviderEligibility({
-	catalog: discoveryFixture,
-	requiredCertifications: ["soc2"],
-});
+import {
+	discoveryFixture,
+	eligibilityFixture,
+} from "./fixtures/resolution.fixture";
 
 describe("resolution", () => {
 	test("selects providers deterministically with explainable ranking", () => {
@@ -99,6 +33,16 @@ describe("resolution", () => {
 		});
 		expect(result.decision.selected[0]?.rank).toBe(1);
 		expect(result.decision.rejected[0]?.rank).toBe(2);
+		expect(result.decision.selected[0]?.score.total).toBeGreaterThan(0);
+		expect(result.decision.stages.map((stage) => stage.stage)).toEqual([
+			"filter",
+			"eligibility",
+			"scoring",
+			"selection",
+		]);
+		expect(result.decision.explainability.delegatedCandidates).toBe(1);
+		expect(result.decision.explainability.localCandidates).toBe(1);
+		expect(result.decision.explainability.eligibilityDiagnostics).toEqual([]);
 	});
 
 	test("fails with typed delegation error when delegated candidates miss route metadata", () => {
@@ -152,6 +96,94 @@ describe("resolution", () => {
 			return;
 		}
 		expect(result.error.code).toBe("resolver_policy_rejection_error");
+	});
+
+	test("enforces global scoring profile baseline for 1.0.0", () => {
+		expect(eligibilityFixture.ok).toBe(true);
+		if (!eligibilityFixture.ok) {
+			return;
+		}
+
+		const result = resolutionContracts.resolveTrustedProviders({
+			report: eligibilityFixture.report,
+			maxResults: 1,
+			scoringProfile: {
+				profileId: "tenant-1.0.0",
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (result.ok) {
+			return;
+		}
+		expect(result.error.code).toBe("resolver_scoring_profile_error");
+	});
+
+	test("surfaces typed eligibility diagnostics for policy-filtered candidates", () => {
+		expect(eligibilityFixture.ok).toBe(true);
+		if (!eligibilityFixture.ok) {
+			return;
+		}
+
+		const result = resolutionContracts.resolveTrustedProviders({
+			report: eligibilityFixture.report,
+			maxResults: 1,
+			requireEligible: false,
+			policy: {
+				denyProviderIds: ["gooi.providers.http"],
+			},
+		});
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.decision.selected.map((item) => item.providerId)).toEqual([
+			"gooi.providers.memory",
+		]);
+		expect(
+			result.decision.explainability.eligibilityDiagnostics,
+		).toContainEqual({
+			providerId: "gooi.providers.http",
+			providerVersion: "2.1.0",
+			code: "resolver_eligibility_denylisted",
+			message: "Provider is blocked by denyProviderIds policy.",
+		});
+		expect(result.decision.explainability.policyRejectedCandidates).toBe(1);
+	});
+
+	test("returns policy rejection when trust and certification policy removes all candidates", () => {
+		expect(eligibilityFixture.ok).toBe(true);
+		if (!eligibilityFixture.ok) {
+			return;
+		}
+
+		const result = resolutionContracts.resolveTrustedProviders({
+			report: eligibilityFixture.report,
+			maxResults: 1,
+			requireEligible: false,
+			policy: {
+				minTrustTier: "trusted",
+				requiredCertifications: ["fips"],
+			},
+		});
+
+		expect(result.ok).toBe(false);
+		if (result.ok) {
+			return;
+		}
+		expect(result.error.code).toBe("resolver_policy_rejection_error");
+		expect(result.error.issues?.length).toBeGreaterThan(0);
+		expect(
+			result.error.issues?.some((issue) =>
+				issue.message.includes("resolver_eligibility_trust_below_policy"),
+			),
+		).toBe(true);
+		expect(
+			result.error.issues?.some((issue) =>
+				issue.message.includes("resolver_eligibility_certification_missing"),
+			),
+		).toBe(true);
 	});
 
 	test("returns canonical request-schema errors for invalid inputs", () => {

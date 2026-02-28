@@ -3,6 +3,18 @@
 	"version": "0.1.0",
 	"type": "module",
 	"exports": {
+		"./catalog": {
+			"types": "./src/catalog/catalog.ts",
+			"bun": "./src/catalog/catalog.ts",
+			"import": "./dist/catalog/catalog.js",
+			"default": "./dist/catalog/catalog.js"
+		},
+		"./certification": {
+			"types": "./src/certification/certification.ts",
+			"bun": "./src/certification/certification.ts",
+			"import": "./dist/certification/certification.js",
+			"default": "./dist/certification/certification.js"
+		},
 		"./discover": {
 			"types": "./src/discover/discover-providers.ts",
 			"bun": "./src/discover/discover-providers.ts",
@@ -14,6 +26,12 @@
 			"bun": "./src/eligibility/explain-provider-eligibility.ts",
 			"import": "./dist/eligibility/explain-provider-eligibility.js",
 			"default": "./dist/eligibility/explain-provider-eligibility.js"
+		},
+		"./listing": {
+			"types": "./src/listing/manage-listing.ts",
+			"bun": "./src/listing/manage-listing.ts",
+			"import": "./dist/listing/manage-listing.js",
+			"default": "./dist/listing/manage-listing.js"
 		},
 		"./resolve": {
 			"types": "./src/resolve/resolve-trusted-providers.ts",
@@ -30,7 +48,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/discover/discover-providers.ts --outfile ./dist/discover/discover-providers.js --external @gooi/* --external zod && bun build ./src/eligibility/explain-provider-eligibility.ts --outfile ./dist/eligibility/explain-provider-eligibility.js --external @gooi/* --external zod && bun build ./src/resolve/resolve-trusted-providers.ts --outfile ./dist/resolve/resolve-trusted-providers.js --external @gooi/* --external zod",
+		"build": "bun build ./src/catalog/catalog.ts --outfile ./dist/catalog/catalog.js --external @gooi/* --external zod && bun build ./src/certification/certification.ts --outfile ./dist/certification/certification.js --external @gooi/* --external zod && bun build ./src/discover/discover-providers.ts --outfile ./dist/discover/discover-providers.js --external @gooi/* --external zod && bun build ./src/eligibility/explain-provider-eligibility.ts --outfile ./dist/eligibility/explain-provider-eligibility.js --external @gooi/* --external zod && bun build ./src/listing/manage-listing.ts --outfile ./dist/listing/manage-listing.js --external @gooi/* --external zod && bun build ./src/resolve/resolve-trusted-providers.ts --outfile ./dist/resolve/resolve-trusted-providers.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

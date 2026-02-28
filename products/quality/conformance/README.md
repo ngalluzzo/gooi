@@ -35,6 +35,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Lane-aware progressive harness checks (`runLaneHarnessConformance`)
 - Deterministic artifact/envelope checks (`runDeterminismConformance`)
 - Tiered suite strategy checks (`runTieredConformance`)
+- Marketplace control-plane checks (`runMarketplaceControlPlaneConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -88,6 +89,7 @@ console.log(report.passed, report.checks);
 - `runLaneHarnessConformance(input)`
 - `runDeterminismConformance(input)`
 - `runTieredConformance(input)`
+- `runMarketplaceControlPlaneConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -113,6 +115,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/lane-harness`
 - `@gooi/conformance/determinism`
 - `@gooi/conformance/tiered`
+- `@gooi/conformance/marketplace-control-plane`
 - `@gooi/conformance/tiered-conformance-definitions`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
@@ -130,6 +133,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/lane-harness-contracts`
 - `@gooi/conformance/determinism-contracts`
 - `@gooi/conformance/tiered-contracts`
+- `@gooi/conformance/marketplace-control-plane-contracts`
 
 ## Development
 

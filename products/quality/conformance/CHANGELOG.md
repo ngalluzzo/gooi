@@ -26,3 +26,5 @@ The format is based on Changesets.
   typed `conformance_determinism_error` diagnostics.
 - Added tiered suite strategy definitions (`smoke`, `full`, `expanded`) with
   runtime/flaky threshold enforcement and gate-role metadata.
+- Added marketplace control-plane conformance suite covering listing/catalog/
+  certification behavior plus governance-report deterministic serialization.

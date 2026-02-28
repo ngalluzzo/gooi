@@ -35,6 +35,7 @@
 		"conformance:tier:smoke": "bun ./tools/conformance/tiered-conformance-check.ts --tier=smoke",
 		"conformance:tier:full": "bun ./tools/conformance/tiered-conformance-check.ts --tier=full",
 		"conformance:tier:expanded": "bun ./tools/conformance/tiered-conformance-check.ts --tier=expanded",
+		"conformance:marketplace:control-plane": "bun test products/quality/conformance/test/marketplace-control-plane-conformance.test.ts",
 		"dep:graph": "bun ./tools/dep-graph.ts",
 		"changeset": "changeset",
 		"changeset:status": "changeset status --verbose",

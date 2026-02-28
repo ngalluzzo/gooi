@@ -36,7 +36,9 @@
 		"format": "biome format . --write"
 	},
 	"dependencies": {
+		"@gooi/app": "workspace:*",
 		"@gooi/app-marketplace-facade-contracts": "workspace:*",
+		"@gooi/app-runtime": "workspace:*",
 		"@gooi/marketplace-contracts": "workspace:*",
 		"zod": "^4.3.6"
 	}

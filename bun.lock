@@ -62,7 +62,9 @@
       "name": "@gooi/app-marketplace",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/app": "workspace:*",
         "@gooi/app-marketplace-facade-contracts": "workspace:*",
+        "@gooi/app-runtime": "workspace:*",
         "@gooi/marketplace-contracts": "workspace:*",
         "zod": "^4.3.6",
       },

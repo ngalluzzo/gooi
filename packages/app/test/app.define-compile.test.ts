@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { specContracts } from "@gooi/app-spec-contracts/spec";
 import { compileEntrypointBundle } from "@gooi/spec-compiler";
 import { compileApp } from "../src/compile/compile-app";
 import { defineApp } from "../src/define/define-app";
@@ -63,6 +64,19 @@ describe("@gooi/app facade", () => {
 				code: "facade_configuration_error",
 				path: "input.compilerVersion",
 			}),
+		);
+	});
+
+	test("matches low-level canonical parse path for define", () => {
+		const spec = createAppSpecFixture();
+		const defined = defineApp({ spec });
+		expect(defined.ok).toBe(true);
+		if (!defined.ok) {
+			return;
+		}
+		const lowLevel = specContracts.parseGooiAppSpec(spec);
+		expect(JSON.stringify(defined.definition.spec)).toBe(
+			JSON.stringify(lowLevel),
 		);
 	});
 });

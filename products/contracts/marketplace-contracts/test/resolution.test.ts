@@ -99,6 +99,15 @@ describe("resolution", () => {
 		});
 		expect(result.decision.selected[0]?.rank).toBe(1);
 		expect(result.decision.rejected[0]?.rank).toBe(2);
+		expect(result.decision.selected[0]?.score.total).toBeGreaterThan(0);
+		expect(result.decision.stages.map((stage) => stage.stage)).toEqual([
+			"filter",
+			"eligibility",
+			"scoring",
+			"selection",
+		]);
+		expect(result.decision.explainability.delegatedCandidates).toBe(1);
+		expect(result.decision.explainability.localCandidates).toBe(1);
 	});
 
 	test("fails with typed delegation error when delegated candidates miss route metadata", () => {

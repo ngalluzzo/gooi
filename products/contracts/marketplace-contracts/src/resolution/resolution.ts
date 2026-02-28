@@ -1,109 +1,24 @@
-import { z } from "zod";
-import { providerTrustTierSchema } from "../discovery/discovery";
-import { providerReachabilitySchema } from "../discovery/reachability";
+import type { ProviderEligibilityEntry } from "../eligibility/eligibility";
+import { createResolverError } from "../shared/resolver-errors";
 import {
-	type ProviderEligibilityEntry,
-	providerEligibilityReportSchema,
-} from "../eligibility/eligibility";
+	type ResolverSelection,
+	type ResolverStage,
+	type ResolveTrustedProvidersResult,
+	resolveTrustedProvidersInputSchema,
+} from "./model";
 import {
-	createResolverError,
-	resolverErrorSchema,
-} from "../shared/resolver-errors";
-
-const trustTierRank = {
-	blocked: 0,
-	unknown: 1,
-	review: 2,
-	trusted: 3,
-} as const;
-
-const parseSemver = (value: string): readonly [number, number, number] => {
-	const [major, minor, patch] = value.split(".").map((part) => Number(part));
-	return [major ?? 0, minor ?? 0, patch ?? 0];
-};
-
-const compareSemverDesc = (left: string, right: string): number => {
-	const leftSemver = parseSemver(left);
-	const rightSemver = parseSemver(right);
-	if (leftSemver[0] !== rightSemver[0]) {
-		return rightSemver[0] - leftSemver[0];
-	}
-	if (leftSemver[1] !== rightSemver[1]) {
-		return rightSemver[1] - leftSemver[1];
-	}
-	return rightSemver[2] - leftSemver[2];
-};
-
-const isPolicyRejection = (provider: ProviderEligibilityEntry): boolean => {
-	return provider.reasons.some((reason) => {
-		return (
-			reason === "trust_tier_below_minimum" ||
-			reason === "certification_missing"
-		);
-	});
-};
-
-export const resolverStrategySchema = z.enum(["trust_then_version"]);
-
-export type ResolverStrategy = z.infer<typeof resolverStrategySchema>;
-
-export const resolveTrustedProvidersInputSchema = z.object({
-	report: providerEligibilityReportSchema,
-	maxResults: z.number().int().positive().default(1),
-	requireEligible: z.boolean().default(true),
-	strategy: resolverStrategySchema.default("trust_then_version"),
-});
-
-export type ResolveTrustedProvidersInput = z.input<
-	typeof resolveTrustedProvidersInputSchema
->;
-
-export const resolverSelectionSchema = z.object({
-	rank: z.number().int().positive(),
-	providerId: z.string().min(1),
-	providerVersion: z.string().min(1),
-	integrity: z.string().min(1),
-	reachability: providerReachabilitySchema,
-	status: z.enum(["eligible", "ineligible"]),
-	reasons: z.array(z.string().min(1)),
-	trustTier: providerTrustTierSchema,
-	certifications: z.array(z.string().min(1)),
-});
-
-export type ResolverSelection = z.infer<typeof resolverSelectionSchema>;
-
-export const resolverDecisionSchema = z.object({
-	strategy: resolverStrategySchema,
-	totalCandidates: z.number().int().nonnegative(),
-	selected: z.array(resolverSelectionSchema),
-	rejected: z.array(resolverSelectionSchema),
-});
-
-export type ResolverDecision = z.infer<typeof resolverDecisionSchema>;
-
-export const resolveTrustedProvidersSuccessSchema = z.object({
-	ok: z.literal(true),
-	decision: resolverDecisionSchema,
-});
-
-export const resolveTrustedProvidersFailureSchema = z.object({
-	ok: z.literal(false),
-	error: resolverErrorSchema,
-});
-
-export const resolveTrustedProvidersResultSchema = z.discriminatedUnion("ok", [
-	resolveTrustedProvidersSuccessSchema,
-	resolveTrustedProvidersFailureSchema,
-]);
-
-export type ResolveTrustedProvidersResult = z.infer<
-	typeof resolveTrustedProvidersResultSchema
->;
+	findDelegationMetadataGap,
+	isPolicyRejection,
+	type RankedProvider,
+	scoreProvider,
+	sortRankedProviders,
+} from "./ranking";
 
 const toSelection = (
-	provider: ProviderEligibilityEntry,
+	ranked: RankedProvider,
 	rank: number,
 ): ResolverSelection => {
+	const { provider, score } = ranked;
 	return {
 		rank,
 		providerId: provider.providerId,
@@ -114,46 +29,24 @@ const toSelection = (
 		reasons: provider.reasons,
 		trustTier: provider.trust.tier,
 		certifications: provider.trust.certifications,
+		score,
 	};
 };
 
-const findDelegationMetadataGap = (
+const toTopRejectionReasons = (
 	providers: readonly ProviderEligibilityEntry[],
-): { index: number; provider: ProviderEligibilityEntry } | null => {
-	for (const [index, provider] of providers.entries()) {
-		if (
-			provider.reachability.mode === "delegated" &&
-			provider.reachability.delegateRouteId === undefined
-		) {
-			return { index, provider };
+): string[] => {
+	const counts = new Map<string, number>();
+	for (const provider of providers) {
+		for (const reason of provider.reasons) {
+			counts.set(reason, (counts.get(reason) ?? 0) + 1);
 		}
 	}
-	return null;
-};
-
-const sortProviders = (
-	providers: readonly ProviderEligibilityEntry[],
-): ProviderEligibilityEntry[] => {
-	return [...providers].sort((left, right) => {
-		const trustRank =
-			trustTierRank[right.trust.tier] - trustTierRank[left.trust.tier];
-		if (trustRank !== 0) {
-			return trustRank;
-		}
-		const certRank =
-			right.trust.certifications.length - left.trust.certifications.length;
-		if (certRank !== 0) {
-			return certRank;
-		}
-		const semverRank = compareSemverDesc(
-			left.providerVersion,
-			right.providerVersion,
-		);
-		if (semverRank !== 0) {
-			return semverRank;
-		}
-		return left.providerId.localeCompare(right.providerId);
-	});
+	return [...counts.entries()]
+		.sort(
+			(left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
+		)
+		.map(([reason]) => reason);
 };
 
 export const resolveTrustedProviders = (
@@ -182,11 +75,21 @@ export const resolveTrustedProviders = (
 		};
 	}
 
-	const candidates = parsedInput.data.requireEligible
+	const filtered = parsedInput.data.requireEligible
 		? providers.filter((provider) => provider.status === "eligible")
 		: providers;
-
-	if (candidates.length === 0) {
+	const stages: ResolverStage[] = [
+		{
+			stage: "filter",
+			inputCandidates: providers.length,
+			outputCandidates: filtered.length,
+			droppedCandidates: providers.length - filtered.length,
+			notes: parsedInput.data.requireEligible
+				? ["Applied requireEligible candidate filter."]
+				: ["Skipped requireEligible candidate filter."],
+		},
+	];
+	if (filtered.length === 0) {
 		const code = providers.some((provider) => isPolicyRejection(provider))
 			? "resolver_policy_rejection_error"
 			: "resolver_no_candidate_error";
@@ -194,13 +97,10 @@ export const resolveTrustedProviders = (
 			code === "resolver_policy_rejection_error"
 				? "All providers were rejected by trust or certification policy."
 				: "No providers met resolver candidate requirements.";
-		return {
-			ok: false,
-			error: createResolverError(code, message),
-		};
+		return { ok: false, error: createResolverError(code, message) };
 	}
 
-	const delegationGap = findDelegationMetadataGap(candidates);
+	const delegationGap = findDelegationMetadataGap(filtered);
 	if (delegationGap !== null) {
 		return {
 			ok: false,
@@ -223,21 +123,61 @@ export const resolveTrustedProviders = (
 		};
 	}
 
-	const sortedCandidates = sortProviders(candidates);
-	const selected = sortedCandidates.slice(0, parsedInput.data.maxResults);
-	const rejected = sortedCandidates.slice(parsedInput.data.maxResults);
+	stages.push({
+		stage: "eligibility",
+		inputCandidates: filtered.length,
+		outputCandidates: filtered.length,
+		droppedCandidates: 0,
+		notes: ["Eligibility outcomes consumed from deterministic report inputs."],
+	});
+
+	const ranked = sortRankedProviders(
+		filtered.map((provider) => ({ provider, score: scoreProvider(provider) })),
+	);
+	stages.push({
+		stage: "scoring",
+		inputCandidates: filtered.length,
+		outputCandidates: ranked.length,
+		droppedCandidates: 0,
+		notes: [
+			"Scored candidates using trust, certification, semver, reachability.",
+		],
+	});
+
+	const selected = ranked.slice(0, parsedInput.data.maxResults);
+	const rejected = ranked.slice(parsedInput.data.maxResults);
+	stages.push({
+		stage: "selection",
+		inputCandidates: ranked.length,
+		outputCandidates: selected.length,
+		droppedCandidates: rejected.length,
+		notes: ["Applied deterministic ranked top-N final selection."],
+	});
 
 	return {
 		ok: true,
 		decision: {
 			strategy: parsedInput.data.strategy,
-			totalCandidates: sortedCandidates.length,
+			totalCandidates: ranked.length,
 			selected: selected.map((provider, index) =>
 				toSelection(provider, index + 1),
 			),
-			rejected: rejected.map((provider, index) => {
-				return toSelection(provider, selected.length + index + 1);
-			}),
+			rejected: rejected.map((provider, index) =>
+				toSelection(provider, selected.length + index + 1),
+			),
+			stages,
+			explainability: {
+				policyRejectedCandidates: providers.filter((provider) =>
+					isPolicyRejection(provider),
+				).length,
+				delegatedCandidates: ranked.filter(
+					(candidate) => candidate.provider.reachability.mode === "delegated",
+				).length,
+				localCandidates: ranked.filter(
+					(candidate) => candidate.provider.reachability.mode === "local",
+				).length,
+				topRejectionReasons: toTopRejectionReasons(providers),
+			},
 		},
 	};
 };

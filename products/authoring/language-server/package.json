@@ -155,6 +155,12 @@
 			"import": "./dist/features/protocol/create-authoring-protocol-server.js",
 			"default": "./dist/features/protocol/create-authoring-protocol-server.js"
 		},
+		"./features/cli/execute": {
+			"types": "./src/features/cli/execute-authoring-cli-envelope.ts",
+			"bun": "./src/features/cli/execute-authoring-cli-envelope.ts",
+			"import": "./dist/features/cli/execute-authoring-cli-envelope.js",
+			"default": "./dist/features/cli/execute-authoring-cli-envelope.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -164,7 +170,11 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/app-spec-contracts/diagnostics --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
+		"build": "bun build ./src/contracts/*.ts ./src/features/actions/*.ts ./src/features/cli/*.ts ./src/features/completion/*.ts ./src/features/diagnostics/*.ts ./src/features/navigation/*.ts ./src/features/protocol/*.ts ./src/features/rename/*.ts ./src/features/session/*.ts ./src/internal/*.ts --outdir ./dist --external zod --external @gooi/app-spec-contracts/diagnostics --external @gooi/authoring-contracts --external @gooi/capability-index --external @gooi/symbol-graph",
+		"authoring:diagnose": "bun ./src/features/cli/run-authoring-cli-command.ts diagnose",
+		"authoring:complete": "bun ./src/features/cli/run-authoring-cli-command.ts complete",
+		"authoring:rename": "bun ./src/features/cli/run-authoring-cli-command.ts rename",
+		"authoring:index": "bun ./src/features/cli/run-authoring-cli-command.ts index.build",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

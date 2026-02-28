@@ -78,6 +78,10 @@ export const capabilityIndexEntrySchema = z.object({
 	lastVerifiedAt: z.iso.datetime().nullable(),
 });
 
+const buildCapabilityIndexEntryInputSchema = capabilityIndexEntrySchema.omit({
+	provenance: true,
+});
+
 const catalogIdentitySchema = z.object({
 	catalogSource: z.string().min(1),
 	catalogVersion: z.string().min(1),
@@ -96,6 +100,16 @@ export const capabilityIndexSnapshotSchema = z.object({
 });
 
 /**
+ * Input payload for capability index snapshot creation.
+ */
+export const buildCapabilityIndexSnapshotInputSchema = z.object({
+	sourceHash: z.string().regex(/^[a-f0-9]{64}$/),
+	catalogIdentity: catalogIdentitySchema,
+	localCapabilities: z.array(buildCapabilityIndexEntryInputSchema),
+	catalogCapabilities: z.array(buildCapabilityIndexEntryInputSchema),
+});
+
+/**
  * Parsed capability index entry.
  */
 export type CapabilityIndexEntry = z.infer<typeof capabilityIndexEntrySchema>;
@@ -110,19 +124,6 @@ export type CapabilityIndexSnapshot = z.infer<
 /**
  * Input payload for capability index snapshot creation.
  */
-export interface BuildCapabilityIndexSnapshotInput {
-	/** Content hash of source artifacts used to build the snapshot. */
-	readonly sourceHash: string;
-	/** Catalog identity associated with this snapshot. */
-	readonly catalogIdentity: z.infer<typeof catalogIdentitySchema>;
-	/** Local spec-defined capabilities. */
-	readonly localCapabilities: readonly Omit<
-		CapabilityIndexEntry,
-		"provenance"
-	>[];
-	/** Catalog-defined capabilities. */
-	readonly catalogCapabilities: readonly Omit<
-		CapabilityIndexEntry,
-		"provenance"
-	>[];
-}
+export type BuildCapabilityIndexSnapshotInput = z.infer<
+	typeof buildCapabilityIndexSnapshotInputSchema
+>;

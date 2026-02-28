@@ -1,10 +1,13 @@
+import { envelopesContracts } from "@gooi/authoring-contracts/envelopes";
 import { listAuthoringCodeLenses } from "@gooi/language-server/features/actions/list";
 import { resolveAuthoringCodeLens } from "@gooi/language-server/features/actions/resolve";
+import { executeAuthoringCliEnvelope } from "@gooi/language-server/features/cli/execute";
 import { listAuthoringCompletionItems } from "@gooi/language-server/features/completion/list";
 import { publishAuthoringDiagnostics } from "@gooi/language-server/features/diagnostics/publish";
 import { getAuthoringDefinition } from "@gooi/language-server/features/navigation/definition";
 import { applyAuthoringRename } from "@gooi/language-server/features/rename/apply";
 import { prepareAuthoringRename } from "@gooi/language-server/features/rename/prepare";
+import { stableStringify } from "@gooi/stable-json";
 
 import {
 	type AuthoringConformanceCheck,
@@ -17,6 +20,19 @@ import {
 const makeCheck = (
 	value: AuthoringConformanceCheck,
 ): AuthoringConformanceCheck => authoringConformanceCheckSchema.parse(value);
+const { parseAuthoringResultEnvelope } = envelopesContracts;
+
+const makeCliEnvelope = (input: {
+	readonly requestId: string;
+	readonly operation: "diagnose" | "complete";
+	readonly payload: unknown;
+}) => ({
+	envelopeVersion: "1.0.0" as const,
+	requestId: input.requestId,
+	requestedAt: "2026-02-28T00:00:00.000Z",
+	operation: input.operation,
+	payload: input.payload,
+});
 
 /**
  * Runs the RFC-0003 authoring conformance check suite.
@@ -55,10 +71,62 @@ export const runAuthoringConformance = (
 
 	const diagnosticsMatched = publishAuthoringDiagnostics({
 		context: input.context,
+		generatedAt: "2026-02-28T00:00:00.000Z",
 	});
 	const diagnosticsMismatch = publishAuthoringDiagnostics({
 		context: { ...input.context, lockfile: input.staleLockfile },
+		generatedAt: "2026-02-28T00:00:00.000Z",
 	});
+
+	const cliDiagnoseMatched = executeAuthoringCliEnvelope(
+		makeCliEnvelope({
+			requestId: "conformance-cli-diagnose-matched",
+			operation: "diagnose",
+			payload: {
+				context: input.context,
+				generatedAt: "2026-02-28T00:00:00.000Z",
+			},
+		}),
+	);
+	const cliDiagnoseMismatch = executeAuthoringCliEnvelope(
+		makeCliEnvelope({
+			requestId: "conformance-cli-diagnose-mismatch",
+			operation: "diagnose",
+			payload: {
+				context: { ...input.context, lockfile: input.staleLockfile },
+				generatedAt: "2026-02-28T00:00:00.000Z",
+			},
+		}),
+	);
+	const cliCompletion = executeAuthoringCliEnvelope(
+		makeCliEnvelope({
+			requestId: "conformance-cli-complete",
+			operation: "complete",
+			payload: {
+				context: input.context,
+				position: input.positions.capabilityCompletion,
+			},
+		}),
+	);
+	const cliParityPassed =
+		cliDiagnoseMatched.ok &&
+		cliDiagnoseMismatch.ok &&
+		cliCompletion.ok &&
+		stableStringify(parseAuthoringResultEnvelope(cliDiagnoseMatched).result) ===
+			stableStringify(diagnosticsMatched) &&
+		stableStringify(
+			parseAuthoringResultEnvelope(cliDiagnoseMismatch).result,
+		) === stableStringify(diagnosticsMismatch) &&
+		stableStringify(parseAuthoringResultEnvelope(cliCompletion).result) ===
+			stableStringify(capabilityCompletion);
+	checks.push(
+		makeCheck({
+			id: "cli_lsp_parity",
+			passed: cliParityPassed,
+			detail:
+				"CLI diagnose/complete envelopes remain equivalent to language-server outputs in matched and mismatch states.",
+		}),
+	);
 	checks.push(
 		makeCheck({
 			id: "diagnostics_parity",

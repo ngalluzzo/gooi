@@ -10,6 +10,7 @@ import { z } from "zod";
  */
 export const authoringConformanceCheckIdSchema = z.enum([
 	"completion_correctness",
+	"cli_lsp_parity",
 	"diagnostics_parity",
 	"reachability_diagnostics",
 	"guard_scenario_diagnostics",

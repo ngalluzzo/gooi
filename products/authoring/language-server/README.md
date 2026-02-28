@@ -29,6 +29,7 @@ The package is deterministic and artifact-driven. It consumes:
 - Stateful session helpers for `didOpen` / `didChange` integration loops
 - Protocol test server for LSP-style message routing in E2E fixture tests
 - CLI envelope executor for `diagnose`, `complete`, `rename`, and `index.build`
+- Cross-client deviation catalog contract with deterministic mitigation guidance
 - Latency threshold tests enforcing RFC-0003 p95 targets in the test suite
 
 ## Installation
@@ -67,6 +68,7 @@ console.log(result.parity.status, result.items.map((item) => item.label));
 - `createAuthoringSession(value)`
 - `createAuthoringProtocolServer(value)`
 - `executeAuthoringCliEnvelope(value)`
+- `authoringClientDeviationCatalog`
 
 ## CLI Commands
 

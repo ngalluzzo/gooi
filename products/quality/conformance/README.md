@@ -23,6 +23,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Replay-store host provider checks (`runReplayStoreConformance`)
 - Default test runner baseline includes host + replay-store conformance suites
 - Authoring checks (`runAuthoringConformance`)
+- Cross-client readiness baseline checks (`runCrossClientReadinessConformance`)
 - Reachability parity checks (`runReachabilityParitySuite`)
 - Projection/domain parity checks (`runProjectionConformance`)
 - Projection conformance includes history contract gates, rebuild workflow recovery,
@@ -74,6 +75,7 @@ console.log(report.passed, report.checks);
 - `runHostConformance(input)`
 - `runReplayStoreConformance(input)`
 - `runAuthoringConformance(input)`
+- `runCrossClientReadinessConformance(input)`
 - `runReachabilityParitySuite(input)`
 - `runProjectionConformance(input)`
 - `runDispatchRenderConformance(input)`
@@ -95,6 +97,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/host`
 - `@gooi/conformance/replay-store`
 - `@gooi/conformance/authoring`
+- `@gooi/conformance/cross-client-readiness`
 - `@gooi/conformance/reachability-parity`
 - `@gooi/conformance/projection`
 - `@gooi/conformance/dispatch-render`
@@ -107,6 +110,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/host-contracts`
 - `@gooi/conformance/replay-store-contracts`
 - `@gooi/conformance/authoring-contracts`
+- `@gooi/conformance/cross-client-readiness-contracts`
 - `@gooi/conformance/reachability-parity-contracts`
 - `@gooi/conformance/projection-contracts`
 - `@gooi/conformance/dispatch-render-contracts`

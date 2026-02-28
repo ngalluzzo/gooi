@@ -71,6 +71,12 @@
 			"import": "./dist/contracts/protocol-contracts.js",
 			"default": "./dist/contracts/protocol-contracts.js"
 		},
+		"./contracts/client-readiness": {
+			"types": "./src/contracts/client-readiness-contracts.ts",
+			"bun": "./src/contracts/client-readiness-contracts.ts",
+			"import": "./dist/contracts/client-readiness-contracts.js",
+			"default": "./dist/contracts/client-readiness-contracts.js"
+		},
 		"./features/actions/list": {
 			"types": "./src/features/actions/list-authoring-code-lenses.ts",
 			"bun": "./src/features/actions/list-authoring-code-lenses.ts",

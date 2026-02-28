@@ -2,6 +2,7 @@
  * Canonical provider discovery contract API.
  */
 import * as discovery from "./discovery";
+import * as reachability from "./reachability";
 
 export type {
 	ProviderCatalogEntry,
@@ -14,12 +15,18 @@ export type {
 	ProviderTrustMetadata,
 	ProviderTrustTier,
 } from "./discovery";
+export type {
+	ProviderReachability,
+	ProviderReachabilityIndex,
+} from "./reachability";
 
 export const discoveryContracts = Object.freeze({
 	providerTrustTierSchema: discovery.providerTrustTierSchema,
 	providerTrustMetadataSchema: discovery.providerTrustMetadataSchema,
 	providerDiscoveryQuerySchema: discovery.providerDiscoveryQuerySchema,
 	providerDiscoveryInputSchema: discovery.providerDiscoveryInputSchema,
+	providerReachabilitySchema: reachability.providerReachabilitySchema,
+	providerReachabilityIndexSchema: reachability.providerReachabilityIndexSchema,
 	providerDiscoveryCompatibilitySchema:
 		discovery.providerDiscoveryCompatibilitySchema,
 	providerDiscoverySelectionSchema: discovery.providerDiscoverySelectionSchema,

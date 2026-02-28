@@ -58,6 +58,18 @@ describe("discovery", () => {
 					certifications: ["self-attested"],
 				},
 			},
+			reachabilityIndex: {
+				"gooi.providers.memory@1.2.3": {
+					mode: "local",
+					targetHost: "node",
+				},
+				"gooi.providers.http@2.0.0": {
+					mode: "delegated",
+					targetHost: "node",
+					delegateRouteId: "route-node-1",
+					delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+				},
+			},
 		});
 
 		expect(result.providers).toHaveLength(2);
@@ -66,6 +78,10 @@ describe("discovery", () => {
 			providerVersion: "1.2.3",
 			integrity:
 				"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+			reachability: {
+				mode: "local",
+				targetHost: "node",
+			},
 			compatibility: {
 				requiredHostApiVersion: "1.0.0",
 				actualHostApiVersion: "1.0.0",
@@ -88,6 +104,12 @@ describe("discovery", () => {
 		expect(result.providers[1]?.selection.reasons).toContain(
 			"capability_contract_mismatch",
 		);
+		expect(result.providers[1]?.reachability).toEqual({
+			mode: "delegated",
+			targetHost: "node",
+			delegateRouteId: "route-node-1",
+			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+		});
 	});
 
 	test("does not hide incompatible providers and reports explicit reasons", () => {

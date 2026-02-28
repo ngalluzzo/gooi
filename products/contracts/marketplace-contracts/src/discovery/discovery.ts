@@ -5,6 +5,12 @@ import {
 } from "../lockfile/contracts";
 import { hexHashSchema } from "../shared/hashes";
 import { semverSchema } from "../shared/semver";
+import {
+	type ProviderReachabilityIndex,
+	providerReachabilityIndexSchema,
+	providerReachabilitySchema,
+	resolveProviderReachability,
+} from "./reachability";
 
 const providerRef = (providerId: string, providerVersion: string): string =>
 	`${providerId}@${providerVersion}`;
@@ -58,6 +64,7 @@ export const providerDiscoveryInputSchema = z.object({
 	lockfile: deploymentLockfileSchema,
 	query: providerDiscoveryQuerySchema,
 	trustIndex: providerTrustIndexSchema.optional(),
+	reachabilityIndex: providerReachabilityIndexSchema.optional(),
 });
 
 export type ProviderDiscoveryInput = z.infer<
@@ -98,6 +105,7 @@ export const providerCatalogEntrySchema = z.object({
 	providerId: z.string().min(1),
 	providerVersion: semverSchema,
 	integrity: z.string().min(1),
+	reachability: providerReachabilitySchema,
 	compatibility: providerDiscoveryCompatibilitySchema,
 	trust: providerDiscoveryTrustSchema,
 	selection: providerDiscoverySelectionSchema,
@@ -134,6 +142,7 @@ const toCatalogEntry = (
 	provider: DeploymentLockfile["providers"][number],
 	query: ProviderDiscoveryQuery & { hostApiVersion: string },
 	trustIndex: Record<string, ProviderTrustMetadata> | undefined,
+	reachabilityIndex: ProviderReachabilityIndex | undefined,
 ): ProviderCatalogEntry | null => {
 	const capability = provider.capabilities.find(
 		(item) =>
@@ -153,6 +162,11 @@ const toCatalogEntry = (
 		provider.providerId,
 		provider.providerVersion,
 		trustIndex,
+	);
+	const reachability = resolveProviderReachability(
+		provider.providerId,
+		provider.providerVersion,
+		reachabilityIndex,
 	);
 	const meetsMinimumTier =
 		query.minTrustTier === undefined
@@ -174,6 +188,7 @@ const toCatalogEntry = (
 		providerId: provider.providerId,
 		providerVersion: provider.providerVersion,
 		integrity: provider.integrity,
+		reachability,
 		compatibility: {
 			requiredHostApiVersion: query.hostApiVersion,
 			actualHostApiVersion: lockfile.hostApiVersion,
@@ -211,7 +226,13 @@ export const discoverProviders = (
 	};
 	const providers = parsed.lockfile.providers
 		.map((provider) =>
-			toCatalogEntry(parsed.lockfile, provider, query, parsed.trustIndex),
+			toCatalogEntry(
+				parsed.lockfile,
+				provider,
+				query,
+				parsed.trustIndex,
+				parsed.reachabilityIndex,
+			),
 		)
 		.filter((provider): provider is ProviderCatalogEntry => provider !== null);
 

@@ -53,4 +53,16 @@ export const createDiscoveryInputFixture = (): DiscoverProvidersInput => ({
 			certifications: ["self-attested"],
 		},
 	},
+	reachabilityIndex: {
+		"gooi.providers.memory@1.2.3": {
+			mode: "local",
+			targetHost: "node",
+		},
+		"gooi.providers.http@2.0.0": {
+			mode: "delegated",
+			targetHost: "node",
+			delegateRouteId: "route-node-1",
+			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+		},
+	},
 });

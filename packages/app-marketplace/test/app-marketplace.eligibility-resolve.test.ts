@@ -29,15 +29,27 @@ describe("@gooi/app-marketplace eligibility and resolve", () => {
 
 		const facadeResolution = resolveTrustedProviders({
 			report: facadeEligibility.report,
-			maxResults: 1,
+			maxResults: 2,
+			requireEligible: false,
 		});
 		const baselineResolution = resolutionContracts.resolveTrustedProviders({
 			report: facadeEligibility.report,
-			maxResults: 1,
+			maxResults: 2,
+			requireEligible: false,
 		});
 		expect(JSON.stringify(facadeResolution)).toBe(
 			JSON.stringify(baselineResolution),
 		);
+		expect(facadeResolution.ok).toBe(true);
+		if (!facadeResolution.ok) {
+			return;
+		}
+		expect(facadeResolution.decision.selected[1]?.reachability).toEqual({
+			mode: "delegated",
+			targetHost: "node",
+			delegateRouteId: "route-node-1",
+			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+		});
 	});
 
 	test("preserves canonical resolver taxonomy for failure responses", () => {
@@ -50,5 +62,50 @@ describe("@gooi/app-marketplace eligibility and resolve", () => {
 			return;
 		}
 		expect(result.error.code).toBe("resolver_request_schema_error");
+	});
+
+	test("fails with typed delegation errors when delegated metadata is incomplete", () => {
+		const catalog = discoverProviders(createDiscoveryInputFixture());
+		const eligibility = explainProviderEligibility({
+			catalog,
+			requiredCertifications: [],
+		});
+		expect(eligibility.ok).toBe(true);
+		if (!eligibility.ok) {
+			return;
+		}
+
+		const report = {
+			...eligibility.report,
+			providers: eligibility.report.providers.map((provider) => {
+				if (provider.providerId === "gooi.providers.http") {
+					return {
+						...provider,
+						reachability: {
+							mode: "delegated" as const,
+							targetHost: "node" as const,
+						},
+					};
+				}
+				return provider;
+			}),
+		};
+		const facade = resolveTrustedProviders({
+			report,
+			maxResults: 2,
+			requireEligible: false,
+		});
+		const baseline = resolutionContracts.resolveTrustedProviders({
+			report,
+			maxResults: 2,
+			requireEligible: false,
+		});
+
+		expect(JSON.stringify(facade)).toBe(JSON.stringify(baseline));
+		expect(facade.ok).toBe(false);
+		if (facade.ok) {
+			return;
+		}
+		expect(facade.error.code).toBe("resolver_delegation_unavailable_error");
 	});
 });

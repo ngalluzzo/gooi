@@ -52,6 +52,9 @@ describe("app-marketplace-facade-contracts", () => {
 					providerVersion: "1.2.3",
 					integrity:
 						"sha256:6a6f9c2f84fcb56af6dcaaf7af66c74d4d2e7070f951e8fbcf48f7cb13f12777",
+					reachability: {
+						mode: "local",
+					},
 					compatibility: {
 						requiredHostApiVersion: "1.0.0",
 						actualHostApiVersion: "1.0.0",

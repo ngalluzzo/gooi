@@ -53,6 +53,18 @@ const discoveryFixture = discoveryContracts.discoverProviders({
 			certifications: ["soc2"],
 		},
 	},
+	reachabilityIndex: {
+		"gooi.providers.memory@1.2.3": {
+			mode: "local",
+			targetHost: "node",
+		},
+		"gooi.providers.http@2.1.0": {
+			mode: "delegated",
+			targetHost: "node",
+			delegateRouteId: "route-node-1",
+			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+		},
+	},
 });
 
 const eligibilityFixture = eligibilityContracts.explainProviderEligibility({
@@ -79,8 +91,46 @@ describe("resolution", () => {
 			"gooi.providers.memory",
 		);
 		expect(result.decision.rejected[0]?.providerId).toBe("gooi.providers.http");
+		expect(result.decision.rejected[0]?.reachability).toEqual({
+			mode: "delegated",
+			targetHost: "node",
+			delegateRouteId: "route-node-1",
+			delegateDescriptor: "https://gooi.dev/delegation/route-node-1",
+		});
 		expect(result.decision.selected[0]?.rank).toBe(1);
 		expect(result.decision.rejected[0]?.rank).toBe(2);
+	});
+
+	test("fails with typed delegation error when delegated candidates miss route metadata", () => {
+		expect(eligibilityFixture.ok).toBe(true);
+		if (!eligibilityFixture.ok) {
+			return;
+		}
+		const report = {
+			...eligibilityFixture.report,
+			providers: eligibilityFixture.report.providers.map((provider) => {
+				if (provider.providerId === "gooi.providers.http") {
+					return {
+						...provider,
+						reachability: {
+							mode: "delegated" as const,
+							targetHost: "node" as const,
+						},
+					};
+				}
+				return provider;
+			}),
+		};
+		const result = resolutionContracts.resolveTrustedProviders({
+			report,
+			maxResults: 1,
+		});
+
+		expect(result.ok).toBe(false);
+		if (result.ok) {
+			return;
+		}
+		expect(result.error.code).toBe("resolver_delegation_unavailable_error");
 	});
 
 	test("returns policy-rejection errors when trust or certification filters remove all candidates", () => {

@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { providerTrustTierSchema } from "../discovery/discovery";
+import { providerReachabilitySchema } from "../discovery/reachability";
 import {
 	type ProviderEligibilityEntry,
 	providerEligibilityReportSchema,
 } from "../eligibility/eligibility";
 import {
 	createResolverError,
-	type ResolverError,
 	resolverErrorSchema,
 } from "../shared/resolver-errors";
 
@@ -63,6 +63,7 @@ export const resolverSelectionSchema = z.object({
 	providerId: z.string().min(1),
 	providerVersion: z.string().min(1),
 	integrity: z.string().min(1),
+	reachability: providerReachabilitySchema,
 	status: z.enum(["eligible", "ineligible"]),
 	reasons: z.array(z.string().min(1)),
 	trustTier: providerTrustTierSchema,
@@ -99,16 +100,6 @@ export type ResolveTrustedProvidersResult = z.infer<
 	typeof resolveTrustedProvidersResultSchema
 >;
 
-const toRequestError = (
-	issues: readonly { path: readonly PropertyKey[]; message: string }[],
-): ResolverError => {
-	return createResolverError(
-		"resolver_request_schema_error",
-		"Resolution input failed schema validation.",
-		issues,
-	);
-};
-
 const toSelection = (
 	provider: ProviderEligibilityEntry,
 	rank: number,
@@ -118,11 +109,26 @@ const toSelection = (
 		providerId: provider.providerId,
 		providerVersion: provider.providerVersion,
 		integrity: provider.integrity,
+		reachability: provider.reachability,
 		status: provider.status,
 		reasons: provider.reasons,
 		trustTier: provider.trust.tier,
 		certifications: provider.trust.certifications,
 	};
+};
+
+const findDelegationMetadataGap = (
+	providers: readonly ProviderEligibilityEntry[],
+): { index: number; provider: ProviderEligibilityEntry } | null => {
+	for (const [index, provider] of providers.entries()) {
+		if (
+			provider.reachability.mode === "delegated" &&
+			provider.reachability.delegateRouteId === undefined
+		) {
+			return { index, provider };
+		}
+	}
+	return null;
 };
 
 const sortProviders = (
@@ -157,7 +163,11 @@ export const resolveTrustedProviders = (
 	if (!parsedInput.success) {
 		return {
 			ok: false,
-			error: toRequestError(parsedInput.error.issues),
+			error: createResolverError(
+				"resolver_request_schema_error",
+				"Resolution input failed schema validation.",
+				parsedInput.error.issues,
+			),
 		};
 	}
 
@@ -187,6 +197,29 @@ export const resolveTrustedProviders = (
 		return {
 			ok: false,
 			error: createResolverError(code, message),
+		};
+	}
+
+	const delegationGap = findDelegationMetadataGap(candidates);
+	if (delegationGap !== null) {
+		return {
+			ok: false,
+			error: createResolverError(
+				"resolver_delegation_unavailable_error",
+				"Delegated provider candidate is missing delegation route metadata.",
+				[
+					{
+						path: [
+							"report",
+							"providers",
+							delegationGap.index,
+							"reachability",
+							"delegateRouteId",
+						],
+						message: `Missing delegateRouteId for delegated provider ${delegationGap.provider.providerId}@${delegationGap.provider.providerVersion}.`,
+					},
+				],
+			),
 		};
 	}
 

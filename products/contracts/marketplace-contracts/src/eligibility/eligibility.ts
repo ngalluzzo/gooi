@@ -5,6 +5,7 @@ import {
 	providerDiscoveryCompatibilitySchema,
 	providerDiscoveryTrustSchema,
 } from "../discovery/discovery";
+import { providerReachabilitySchema } from "../discovery/reachability";
 import {
 	createResolverError,
 	type ResolverError,
@@ -33,6 +34,7 @@ export const providerEligibilityEntrySchema = z.object({
 	providerId: z.string().min(1),
 	providerVersion: z.string().min(1),
 	integrity: z.string().min(1),
+	reachability: providerReachabilitySchema,
 	status: providerEligibilityStatusSchema,
 	reasons: z.array(z.string().min(1)),
 	missingCertifications: z.array(z.string().min(1)),
@@ -109,6 +111,7 @@ const toEligibilityEntry = (
 		providerId: provider.providerId,
 		providerVersion: provider.providerVersion,
 		integrity: provider.integrity,
+		reachability: provider.reachability,
 		status,
 		reasons,
 		missingCertifications,

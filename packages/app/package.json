@@ -1,0 +1,38 @@
+{
+	"name": "@gooi/app",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./define": {
+			"types": "./src/define/define-app.ts",
+			"bun": "./src/define/define-app.ts",
+			"import": "./dist/define/define-app.js",
+			"default": "./dist/define/define-app.js"
+		},
+		"./compile": {
+			"types": "./src/compile/compile-app.ts",
+			"bun": "./src/compile/compile-app.ts",
+			"import": "./dist/compile/compile-app.js",
+			"default": "./dist/compile/compile-app.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/define/define-app.ts --outfile ./dist/define/define-app.js --external @gooi/* --external zod && bun build ./src/compile/compile-app.ts --outfile ./dist/compile/compile-app.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/spec-compiler": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

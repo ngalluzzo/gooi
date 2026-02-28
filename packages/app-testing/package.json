@@ -1,0 +1,49 @@
+{
+	"name": "@gooi/app-testing",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./fixtures": {
+			"types": "./src/fixtures/create-scenario-fixture.ts",
+			"bun": "./src/fixtures/create-scenario-fixture.ts",
+			"import": "./dist/fixtures/create-scenario-fixture.js",
+			"default": "./dist/fixtures/create-scenario-fixture.js"
+		},
+		"./scenario-runner": {
+			"types": "./src/scenario-runner/run-app-scenario-conformance.ts",
+			"bun": "./src/scenario-runner/run-app-scenario-conformance.ts",
+			"import": "./dist/scenario-runner/run-app-scenario-conformance.js",
+			"default": "./dist/scenario-runner/run-app-scenario-conformance.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/fixtures/create-scenario-fixture.ts --outfile ./dist/fixtures/create-scenario-fixture.js --external @gooi/* --external zod && bun build ./src/scenario-runner/run-app-scenario-conformance.ts --outfile ./dist/scenario-runner/run-app-scenario-conformance.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app": "workspace:*",
+		"@gooi/app-runtime": "workspace:*",
+		"@gooi/app-runtime-facade-contracts": "workspace:*",
+		"@gooi/app-testing-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/conformance": "workspace:*",
+		"@gooi/execution-kernel": "workspace:*",
+		"@gooi/guard-contracts": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
+		"@gooi/scenario-contracts": "workspace:*",
+		"@gooi/scenario-runtime": "workspace:*",
+		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

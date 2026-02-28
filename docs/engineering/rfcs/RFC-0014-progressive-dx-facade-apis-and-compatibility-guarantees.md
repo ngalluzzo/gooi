@@ -8,7 +8,7 @@
 - Owners: `Developer Experience`, `Product Platform`
 - Reviewers: `Runtime Platform`, `Quality`, `Marketplace`
 - Created: `2026-02-26`
-- Updated: `2026-02-26`
+- Updated: `2026-02-28`
 - Target release: `DX Milestone D1`
 - Related:
   - North star: [RFC-0007-north-star-platform-shape-and-progressive-dx-api.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0007-north-star-platform-shape-and-progressive-dx-api.md)
@@ -17,6 +17,7 @@
   - Marketplace architecture: [RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0016-marketplace-product-architecture-control-plane-and-consumer-experience.md)
   - Marketplace resolution: [RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0017-marketplace-resolution-and-ranking-engine-at-10k-plus-scale.md)
   - Marketplace trust: [RFC-0018-marketplace-trust-certification-and-supply-chain-security.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0018-marketplace-trust-certification-and-supply-chain-security.md)
+  - Contract centralization: [RFC-0021-contract-centralization-and-referential-hardening-before-ga.md](/Users/ngalluzzo/repos/gooi/docs/engineering/rfcs/RFC-0021-contract-centralization-and-referential-hardening-before-ga.md)
   - Standards: [commit-and-tsdoc-standards.md](/Users/ngalluzzo/repos/gooi/docs/engineering/commit-and-tsdoc-standards.md)
 
 ## Problem and context
@@ -178,6 +179,8 @@ sequenceDiagram
   - own ergonomic composition and guardrails.
 - Core packages:
   - own canonical behavior and contracts.
+- Contract packages (`products/contracts/*`):
+  - own shared/public contract authorities consumed by facades and lanes.
 - Runtime lane:
   - owns execution semantics.
 - Quality lane:
@@ -189,11 +192,14 @@ Must-not-cross constraints:
 2. Facades must not block direct core package usage.
 3. Facades must not redefine runtime semantics.
 4. Facades must not become mandatory for any mode.
+5. Facades must not become shared contract authorities.
+6. Shared/public facade-consumed contracts must resolve to `products/contracts/*`.
 
 ## Contracts and typing
 
 - Boundary schema authority:
-  - facade input/output contracts in Zod where validation is required.
+  - facade-local argument validation may use local schemas;
+    shared/public cross-facade contracts must come from `products/contracts/*`.
 - Authoring format:
   - unchanged; facades compose existing formats.
 - Generated runtime artifact format:
@@ -238,7 +244,6 @@ Feature-oriented module layout:
 1. `packages/app`
    - `src/define/define-app.ts`
    - `src/compile/compile-app.ts`
-   - `src/contracts/app-facade-contracts.ts`
 2. `packages/app-runtime`
    - `src/create/create-app-runtime.ts`
    - `src/run/run-app.ts`
@@ -248,6 +253,8 @@ Feature-oriented module layout:
    - `src/discovery/discover-providers.ts`
    - `src/eligibility/explain-provider-eligibility.ts`
    - `src/resolution/resolve-trusted-providers.ts`
+5. shared contract authorities for facade-consumed public schemas
+   - `products/contracts/*` packages (no facade-local shared contracts module).
 
 Public APIs via `package.json` exports:
 
@@ -280,6 +287,7 @@ Single entry per feature:
   - app teams adopting Gooi progressively.
 - Coupling expectations:
   - facades depend on stable core package entrypoints only.
+  - facades depend on canonical contract packages under `products/contracts/*` for shared/public schema authority.
   - facades must not depend on app-specific adapters.
 - Why this is not a better fit in another boundary:
   - placing in one lane would bias API semantics and reduce reuse.
@@ -294,6 +302,7 @@ Phase 1: declarative facade
   - RFC approved.
 - Exit criteria:
   - `@gooi/app` define+compile path with parity tests.
+  - no facade-local shared contract authority introduced.
 - Deliverables:
   - package, docs, examples.
 
@@ -334,9 +343,11 @@ Phase 4: compatibility and migration tooling
    - facade outputs match low-level baseline fixtures.
 4. Conformance:
    - facade parity suite mandatory in CI.
-5. Migration tests:
+5. Boundary checks:
+   - CI rejects facade-local shared contract authorities and enforces `products/contracts/*` ownership.
+6. Migration tests:
    - deprecated facade APIs emit deterministic guidance and map cleanly.
-6. Marketplace facade parity:
+7. Marketplace facade parity:
    - discovery/eligibility/resolution facade flows remain semantically equivalent to marketplace contract primitives.
 
 Definition of done:
@@ -345,6 +356,7 @@ Definition of done:
 2. parity gates prevent divergence from low-level behavior.
 3. migration guarantees documented and test-backed.
 4. marketplace facade parity remains contract-equivalent with marketplace primitives.
+5. shared/public contract ownership remains centralized in `products/contracts/*`.
 
 ## Operational readiness
 
@@ -386,3 +398,4 @@ None.
 - `2026-02-26` - Confirmed declarative-first `@gooi/app` with separate execution-helper boundary and strict facade parity policy.
 - `2026-02-26` - Resolved scaffolding boundary: scaffold generators remain in separate CLI tooling, not `@gooi/app`.
 - `2026-02-26` - Resolved migration tooling boundary: compatibility codemods ship in dedicated `@gooi/migrate` package.
+- `2026-02-28` - Aligned facade boundary rule with contract centralization: shared/public contracts remain in `products/contracts/*`; facades remain composition-only wrappers.

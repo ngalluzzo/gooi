@@ -29,6 +29,7 @@
 		"loc:tree": "bun ./tools/loc/tree",
 		"loc:diff": "bun ./tools/loc/diff",
 		"loc:check": "bun ./tools/loc/violations --exceptions=docs/engineering/loc-exceptions.json",
+		"facade:compat": "bun ./tools/facade/compatibility-check.ts",
 		"dep:graph": "bun ./tools/dep-graph.ts",
 		"changeset": "changeset",
 		"changeset:status": "changeset status --verbose",

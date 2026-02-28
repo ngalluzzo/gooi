@@ -79,6 +79,7 @@ Acceptance criteria:
 1. Adding a new surface requires adapter work only, not runtime semantic changes.
 2. Extension contract checklist is documented and test-backed.
 3. New-surface conformance template is available and reusable.
+Reference: [Surface Extension Checklist](/Users/ngalluzzo/repos/gooi/docs/engineering/surfaces/surface-extension-checklist.md)
 
 ## Sequence Exit Criteria
 

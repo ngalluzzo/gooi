@@ -10,6 +10,11 @@ import type {
 import { parseDispatchRequest } from "@gooi/surface-contracts/dispatch";
 import { matchPathTemplate } from "./path-template";
 
+const isUnsafePathSegment = (segment: string): boolean =>
+	segment === "__proto__" ||
+	segment === "prototype" ||
+	segment === "constructor";
+
 const readRecordPath = (
 	record: Readonly<Record<string, unknown>>,
 	path: string,
@@ -17,10 +22,17 @@ const readRecordPath = (
 	const segments = path.split(".");
 	let cursor: unknown = record;
 	for (const segment of segments) {
+		if (isUnsafePathSegment(segment)) {
+			return undefined;
+		}
 		if (cursor === null || typeof cursor !== "object") {
 			return undefined;
 		}
-		cursor = (cursor as Readonly<Record<string, unknown>>)[segment];
+		const current = cursor as Readonly<Record<string, unknown>>;
+		if (!Object.hasOwn(current, segment)) {
+			return undefined;
+		}
+		cursor = current[segment];
 	}
 	return cursor;
 };

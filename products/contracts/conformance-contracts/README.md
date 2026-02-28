@@ -1,3 +1,4 @@
 # @gooi/conformance-contracts
 
-Shared contract primitives for conformance check identifiers, check results, suite reports, and diagnostics.
+Shared contract primitives for conformance fixtures, check identifiers/results,
+suite reports, diagnostics, and version compatibility handling.

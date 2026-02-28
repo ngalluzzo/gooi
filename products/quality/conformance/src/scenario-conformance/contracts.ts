@@ -1,14 +1,14 @@
 import type { ConformanceCheckResultBase } from "@gooi/conformance-contracts/checks";
 import type { ConformanceSuiteReportBase } from "@gooi/conformance-contracts/reports";
-import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
+import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes";
 import type {
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import type {
 	PersonaCoverageReport,
 	ScenarioSuiteReport,
-} from "@gooi/scenario-contracts/reports/scenario-reports";
+} from "@gooi/scenario-contracts/reports";
 
 export type ScenarioConformanceCheckId =
 	| "trigger_expect_capture_semantics"

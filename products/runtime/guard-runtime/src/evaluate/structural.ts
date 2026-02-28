@@ -1,7 +1,7 @@
 import type {
 	CompiledStructuralGuardDefinition,
 	GuardOperand,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import { stableStringify } from "@gooi/stable-json";
 import { readPathValue } from "../shared/path";
 

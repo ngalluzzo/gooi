@@ -1,6 +1,8 @@
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
-import type { TimelineAccumulationState } from "@gooi/projection-contracts/plans/timeline-history-policy";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
+import type {
+	ProjectionSourceRef,
+	TimelineAccumulationState,
+} from "@gooi/projection-contracts/plans";
 
 /**
  * Applies accumulation hash drift gating for timeline projections.
@@ -12,7 +14,7 @@ export const applyTimelineRebuildGate = (
 	| { readonly ok: true }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  } => {
 	if (state === undefined) {
 		return { ok: true };
@@ -25,7 +27,7 @@ export const applyTimelineRebuildGate = (
 	}
 	return {
 		ok: false,
-		error: createProjectionError(
+		error: errorsContracts.createProjectionError(
 			"projection_rebuild_required_error",
 			"Timeline accumulation hash drift detected; rebuild is required.",
 			sourceRef,

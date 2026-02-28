@@ -1,11 +1,11 @@
 import type {
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import {
+	reportsContracts,
 	type ScenarioSuiteReport,
-	scenarioSuiteReportVersion,
-} from "@gooi/scenario-contracts/reports/scenario-reports";
+} from "@gooi/scenario-contracts/reports";
 import type {
 	RunScenarioInput,
 	ScenarioExecutionProfile,
@@ -32,7 +32,7 @@ const selectScenarioIds = (
 		if (scenario === undefined) {
 			return false;
 		}
-		return scenario.tags.some((tag) => required.has(tag));
+		return scenario.tags.some((tag: string) => required.has(tag));
 	});
 };
 
@@ -72,7 +72,7 @@ export const runScenarioSuite = async (input: {
 	}
 
 	return {
-		reportVersion: scenarioSuiteReportVersion,
+		reportVersion: reportsContracts.scenarioSuiteReportVersion,
 		ok: runs.every((run) => run.ok),
 		selectedScenarioIds,
 		runs,

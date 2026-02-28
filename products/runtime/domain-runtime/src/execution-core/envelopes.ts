@@ -1,5 +1,5 @@
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
-import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
+import type { SignalEnvelope } from "@gooi/surface-contracts/envelope";
 import type { DomainRuntimeTypedError } from "./errors";
 
 /**

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import type { HostCapabilityDelegationPort } from "@gooi/host-contracts/delegation";
 import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import { activateProvider } from "../src/activation/activation";
 import { invokeCapability } from "../src/invocation/invocation";
@@ -38,7 +39,11 @@ describe("provider-runtime reachability", () => {
 					assertHostVersionAligned: () => hostOk(undefined),
 				},
 				capabilityDelegation: {
-					invokeDelegated: async (input) => {
+					invokeDelegated: async (
+						input: Parameters<
+							HostCapabilityDelegationPort["invokeDelegated"]
+						>[0],
+					) => {
 						delegatedCalls.push(input.routeId);
 						return hostOk({
 							ok: true,
@@ -145,7 +150,11 @@ describe("provider-runtime reachability", () => {
 					assertHostVersionAligned: () => hostOk(undefined),
 				},
 				capabilityDelegation: {
-					invokeDelegated: async () =>
+					invokeDelegated: async (
+						_input: Parameters<
+							HostCapabilityDelegationPort["invokeDelegated"]
+						>[0],
+					) =>
 						hostFail(
 							"delegation_route_unavailable",
 							"Delegation route is unavailable.",

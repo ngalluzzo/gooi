@@ -3,7 +3,7 @@ import {
 	jsonObjectSchema,
 } from "@gooi/contract-primitives/json";
 import { z } from "zod";
-import { surfaceEnvelopeVersionSchema } from "../envelope-version/envelope-version";
+import { surfaceEnvelopeVersionSchema } from "./envelope-version";
 
 /**
  * Runtime schema for emitted signal envelopes.

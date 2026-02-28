@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { HistoryPort } from "@gooi/projection-contracts/ports/history-port-contract";
+import type { HistoryPort } from "@gooi/projection-contracts/ports";
 import { createProjectionRuntime } from "../src/execute/execute-projection";
 import {
 	createCollectionReaderFixture,

@@ -3,9 +3,11 @@ import type {
 	EffectKind,
 } from "@gooi/capability-contracts/capability-port";
 import type { ProviderManifest } from "@gooi/capability-contracts/provider-manifest";
-import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
-import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
-import type { CapabilityBindingResolution } from "@gooi/marketplace-contracts/reachability/contracts";
+import type {
+	BindingPlan,
+	CapabilityBindingResolution,
+	DeploymentLockfile,
+} from "@gooi/marketplace-contracts/binding-plan";
 import type { ProviderRuntimeHostPorts } from "../host";
 
 /**

@@ -1,3 +1,4 @@
+import type { CapabilityBindingResolution } from "@gooi/marketplace-contracts/binding-plan";
 import { isHostApiCompatible } from "../compatibility/compatibility";
 import {
 	getMissingProviderRuntimeHostPortMembers,
@@ -118,7 +119,7 @@ export const activateProvider = async (
 			return bindingValidation;
 		}
 		const lockfileEntry = input.lockfile.providers.find(
-			(provider) =>
+			(provider: (typeof input.lockfile.providers)[number]) =>
 				provider.providerId === manifest.providerId &&
 				provider.providerVersion === manifest.providerVersion,
 		);
@@ -174,19 +175,25 @@ export const activateProvider = async (
 	}
 
 	const contracts = new Map<string, (typeof input.contracts)[number]>(
-		input.contracts.map((contract) => [
+		input.contracts.map((contract: (typeof input.contracts)[number]) => [
 			capabilityKey(contract.id, contract.version),
 			contract,
 		]),
 	);
-	const bindingResolutions =
+	const bindingResolutions:
+		| ReadonlyMap<string, CapabilityBindingResolution>
+		| undefined =
 		input.bindingPlan === undefined
 			? undefined
 			: new Map(
-					input.bindingPlan.capabilityBindings.map((binding) => [
-						capabilityKey(binding.portId, binding.portVersion),
-						binding.resolution,
-					]),
+					input.bindingPlan.capabilityBindings.map(
+						(
+							binding: (typeof input.bindingPlan.capabilityBindings)[number],
+						) => [
+							capabilityKey(binding.portId, binding.portVersion),
+							binding.resolution,
+						],
+					),
 				);
 
 	return ok({

@@ -1,4 +1,8 @@
+/**
+ * Canonical boundary contract API.
+ */
 import { z } from "zod";
+import * as policy from "./policy";
 
 export const executionHostSchema = z.enum([
 	"browser",
@@ -37,21 +41,20 @@ export const capabilityBindingResolutionSchema = z.discriminatedUnion("mode", [
 	unreachableCapabilityBindingResolutionSchema,
 ]);
 
-/**
- * Supported execution host value in binding artifacts.
- */
 export type ExecutionHost = z.infer<typeof executionHostSchema>;
-
-/**
- * Reachability mode for required capability bindings.
- */
 export type CapabilityReachabilityMode = z.infer<
 	typeof capabilityReachabilityModeSchema
 >;
-
-/**
- * One required capability reachability classification.
- */
 export type CapabilityBindingResolution = z.infer<
 	typeof capabilityBindingResolutionSchema
 >;
+
+export const reachabilityContracts = Object.freeze({
+	executionHostSchema,
+	capabilityReachabilityModeSchema,
+	localCapabilityBindingResolutionSchema,
+	delegatedCapabilityBindingResolutionSchema,
+	unreachableCapabilityBindingResolutionSchema,
+	capabilityBindingResolutionSchema,
+	isCapabilityReachable: policy.isCapabilityReachable,
+});

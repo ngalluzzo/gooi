@@ -1,13 +1,11 @@
-import {
-	HostPortSetValidationError,
-	parseHostPortSet,
-} from "@gooi/host-contracts/portset";
+import { portsetContracts } from "@gooi/host-contracts/portset";
 import type {
 	KernelRuntime,
 	CreateKernelRuntimeInput as SharedCreateKernelRuntimeInput,
 } from "@gooi/kernel-contracts/runtime";
 import { createKernelTraceEnvelope } from "../trace/trace";
 export type CreateKernelRuntimeInput = SharedCreateKernelRuntimeInput;
+const { HostPortSetValidationError, parseHostPortSet } = portsetContracts;
 
 const defaultNowIso = (): string => new Date().toISOString();
 

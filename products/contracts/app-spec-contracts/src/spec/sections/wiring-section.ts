@@ -1,5 +1,6 @@
-import { capabilityReachabilityModeSchema } from "@gooi/marketplace-contracts/reachability/contracts";
-import { surfaceBindMapSchema } from "@gooi/surface-contracts/binding";
+import { jsonValueSchema } from "@gooi/contract-primitives/json";
+import { capabilityReachabilityModeSchema } from "@gooi/marketplace-contracts/reachability";
+import { binding } from "@gooi/surface-contracts/binding";
 import { z } from "zod";
 import { strictObjectWithExtensions } from "../schema-utils";
 
@@ -21,7 +22,24 @@ export const reachabilityRequirementSchema = strictObjectWithExtensions({
 
 const wiringBindingSchema = strictObjectWithExtensions({
 	/** Map of surface input keys to entrypoint input field names. Wires adapter-layer inputs to the compiled entrypoint contract at dispatch time. */
-	bind: surfaceBindMapSchema,
+	bind: binding.surfaceBindMapSchema,
+	/** Optional HTTP/webhook method matcher (`GET`, `POST`, etc.). */
+	method: z.string().min(1).optional(),
+	/** Optional HTTP/web/webhook path matcher. Supports named params using `:name` segments. */
+	path: z.string().min(1).optional(),
+	/** Optional web-route matcher id used by web surface dispatch. */
+	route: z.string().min(1).optional(),
+	/** Optional webhook source id matcher. */
+	source: z.string().min(1).optional(),
+	/** Optional CLI command matcher. */
+	command: strictObjectWithExtensions({
+		/** Space-delimited command path (for example `messages list`). */
+		path: z.string().min(1),
+		/** Optional CLI flag predicates required for this handler to match. */
+		when: strictObjectWithExtensions({
+			flags: z.record(z.string(), jsonValueSchema).optional(),
+		}).optional(),
+	}).optional(),
 });
 
 const surfaceSchema = strictObjectWithExtensions({

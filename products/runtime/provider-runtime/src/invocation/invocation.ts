@@ -1,4 +1,4 @@
-import { effectKindSchema } from "@gooi/capability-contracts/capability-port";
+import { capabilityPortContracts } from "@gooi/capability-contracts/capability-port";
 import { jsonValueSchema } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 import { ensureObservedEffectsDeclared } from "../effects/effects";
@@ -15,7 +15,7 @@ const capabilityResultSchema = z.object({
 	ok: z.boolean(),
 	output: jsonValueSchema.optional(),
 	error: jsonValueSchema.optional(),
-	observedEffects: z.array(effectKindSchema),
+	observedEffects: z.array(capabilityPortContracts.effectKindSchema),
 });
 
 const unreachableError = (

@@ -1,6 +1,8 @@
 import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
+import {
+	envelope,
+	type InvocationEnvelope,
+} from "@gooi/surface-contracts/envelope";
 import type { HostPortSet, RunEntrypointInput } from "../entrypoint/types";
 
 /**
@@ -11,7 +13,7 @@ export const buildInvocationEnvelope = (
 	startedAt: string,
 	hostPorts: HostPortSet,
 ): InvocationEnvelope<Readonly<Record<string, unknown>>> => ({
-	envelopeVersion: surfaceEnvelopeVersion,
+	envelopeVersion: envelope.surfaceEnvelopeVersion,
 	traceId: input.traceId ?? hostPorts.identity.newTraceId(),
 	invocationId: input.invocationId ?? hostPorts.identity.newInvocationId(),
 	entrypointId: input.binding.entrypointId,

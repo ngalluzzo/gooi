@@ -1,12 +1,5 @@
 {
-	"entryPoints": [
-		"./src/surface-request/surface-request.ts",
-		"./src/binding/binding.ts",
-		"./src/envelope-version/envelope-version.ts",
-		"./src/invocation-envelope/invocation-envelope.ts",
-		"./src/signal-envelope/signal-envelope.ts",
-		"./src/result-envelope/result-envelope.ts"
-	],
+	"entryPoints": ["./src/surface-contracts.ts"],
 	"tsconfig": "tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown"],
 	"readme": "none",

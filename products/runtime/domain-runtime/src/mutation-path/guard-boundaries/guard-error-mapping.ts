@@ -1,7 +1,7 @@
 import type {
 	GuardErrorCode,
 	GuardTypedError,
-} from "@gooi/guard-contracts/errors/guard-errors";
+} from "@gooi/guard-contracts/errors";
 import type { DomainRuntimeErrorCode } from "../../execution-core/errors";
 import { createDomainRuntimeError } from "../../execution-core/errors";
 

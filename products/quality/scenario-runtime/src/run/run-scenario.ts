@@ -1,8 +1,6 @@
-import {
-	type ScenarioRunEnvelope,
-	scenarioRunEnvelopeVersion,
-} from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
-import type { CompiledPersonaDefinition } from "@gooi/scenario-contracts/plans/scenario-plan";
+import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes";
+import { envelopesContracts } from "@gooi/scenario-contracts/envelopes";
+import type { CompiledPersonaDefinition } from "@gooi/scenario-contracts/plans";
 import { generateTriggerInput } from "../persona/generate-trigger-input";
 import {
 	emptyLockSnapshot,
@@ -42,7 +40,7 @@ export const runScenario = async (
 	});
 	if (!policy.ok) {
 		return {
-			envelopeVersion: scenarioRunEnvelopeVersion,
+			envelopeVersion: envelopesContracts.scenarioRunEnvelopeVersion,
 			scenarioId: input.scenario.scenarioId,
 			ok: false,
 			stepResults: [],
@@ -101,7 +99,7 @@ export const runScenario = async (
 		stepResults.push(result.stepResult);
 		if (!result.ok) {
 			return {
-				envelopeVersion: scenarioRunEnvelopeVersion,
+				envelopeVersion: envelopesContracts.scenarioRunEnvelopeVersion,
 				scenarioId: input.scenario.scenarioId,
 				ok: false,
 				stepResults,
@@ -113,7 +111,7 @@ export const runScenario = async (
 	}
 
 	return {
-		envelopeVersion: scenarioRunEnvelopeVersion,
+		envelopeVersion: envelopesContracts.scenarioRunEnvelopeVersion,
 		scenarioId: input.scenario.scenarioId,
 		ok: true,
 		stepResults,

@@ -1,5 +1,5 @@
-import type { ProjectionSortRule } from "@gooi/projection-contracts/plans/projection-plan";
-import type { HistoryRecord } from "@gooi/projection-contracts/ports/history-port-contract";
+import type { ProjectionSortRule } from "@gooi/projection-contracts/plans";
+import type { HistoryRecord } from "@gooi/projection-contracts/ports";
 import { stableStringify } from "@gooi/stable-json";
 import { readFieldPath } from "../shared/field-path";
 

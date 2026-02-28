@@ -1,6 +1,8 @@
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
-import type { SignalMigrationOperation } from "@gooi/projection-contracts/plans/signal-migration-plan";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
+import type {
+	ProjectionSourceRef,
+	SignalMigrationOperation,
+} from "@gooi/projection-contracts/plans";
 import { readFieldPath } from "../shared/field-path";
 
 const unsafePathSegments = new Set(["__proto__", "prototype", "constructor"]);
@@ -124,7 +126,7 @@ export const buildSignalMigrationError = (
 	message: string,
 	details?: Readonly<Record<string, unknown>>,
 ) =>
-	createProjectionError(
+	errorsContracts.createProjectionError(
 		"projection_signal_migration_error",
 		message,
 		sourceRef,
@@ -144,7 +146,7 @@ export const applySignalMigrationOperation = (
 	| { readonly ok: true }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  } => {
 	if (operation.op === "set") {
 		if (

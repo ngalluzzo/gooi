@@ -1,4 +1,4 @@
-import type { CompiledFromCollectionProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import type { CompiledFromCollectionProjectionPlan } from "@gooi/projection-contracts/plans";
 import { projectionGuard } from "./guard-definitions.fixture";
 
 export const projectionPlan: CompiledFromCollectionProjectionPlan = {

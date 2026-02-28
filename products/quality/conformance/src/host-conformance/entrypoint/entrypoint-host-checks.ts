@@ -1,4 +1,4 @@
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type { ResultEnvelope } from "@gooi/surface-contracts/envelope";
 import {
 	createDefaultConformanceHostPorts,
 	runEntrypoint,

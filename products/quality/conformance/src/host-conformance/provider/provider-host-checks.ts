@@ -1,4 +1,4 @@
-import { createFailingCapabilityDelegationPort } from "@gooi/host-contracts/delegation";
+import { delegationContracts } from "@gooi/host-contracts/delegation";
 import { hostFail, hostOk } from "@gooi/host-contracts/result";
 import {
 	createProviderRuntime,
@@ -61,7 +61,8 @@ export const runProviderHostChecks = async (
 		activationPolicy: {
 			assertHostVersionAligned: () => hostOk(undefined),
 		},
-		capabilityDelegation: createFailingCapabilityDelegationPort(),
+		capabilityDelegation:
+			delegationContracts.createFailingCapabilityDelegationPort(),
 		moduleLoader: {
 			loadModule: async (specifier: string) => {
 				if (specifier !== providerSpecifier) {

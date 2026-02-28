@@ -52,3 +52,11 @@ export const parseJsonValue = (value: unknown): JsonValue =>
  */
 export const parseJsonObject = (value: unknown): JsonObject =>
 	jsonObjectSchema.parse(value);
+
+export const json = Object.freeze({
+	jsonValueSchema: jsonValueSchema,
+	jsonObjectSchema: jsonObjectSchema,
+	jsonArraySchema: jsonArraySchema,
+	parseJsonValue: parseJsonValue,
+	parseJsonObject: parseJsonObject,
+});

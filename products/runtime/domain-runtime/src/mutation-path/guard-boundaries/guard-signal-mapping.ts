@@ -1,7 +1,9 @@
-import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals/guard-violation-signal";
+import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals";
 import { sha256, stableStringify } from "@gooi/stable-json";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
+import {
+	envelope,
+	type SignalEnvelope,
+} from "@gooi/surface-contracts/envelope";
 
 /**
  * Converts guard-runtime violation signal envelopes into canonical surface signals.
@@ -22,7 +24,7 @@ export const toSurfaceGuardSignals = (
 			sourceRef: signal.sourceRef,
 		} satisfies Readonly<Record<string, unknown>>;
 		return {
-			envelopeVersion: surfaceEnvelopeVersion,
+			envelopeVersion: envelope.surfaceEnvelopeVersion,
 			signalId: signal.signalId,
 			signalVersion: 1,
 			payload,

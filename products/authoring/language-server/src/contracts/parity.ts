@@ -1,7 +1,8 @@
-import { diagnosticRecordSchema } from "@gooi/app-spec-contracts/diagnostics";
+import { diagnosticsContracts } from "@gooi/app-spec-contracts/diagnostics";
 import { z } from "zod";
 
 const hashSchema = z.string().regex(/^[a-f0-9]{64}$/);
+const { diagnosticRecordSchema } = diagnosticsContracts;
 
 /**
  * Lockfile parity issue code used during read-path degraded mode.

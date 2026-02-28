@@ -2,12 +2,12 @@ import {
 	type GuardViolationRecord,
 	type InvariantEvaluationEnvelope,
 	invariantEvaluationEnvelopeVersion,
-} from "@gooi/guard-contracts/envelopes/guard-envelopes";
+} from "@gooi/guard-contracts/envelopes";
 import {
 	createGuardError,
 	type GuardTypedError,
-} from "@gooi/guard-contracts/errors/guard-errors";
-import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/errors";
+import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans";
 import { applyInvariantPolicy } from "./apply-guard-policy";
 import { evaluateStructuralRule } from "./structural";
 

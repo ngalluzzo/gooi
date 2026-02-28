@@ -1,9 +1,9 @@
-import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import { reportPersonaCoverage } from "@gooi/scenario-runtime/coverage";
 import { runScenario } from "@gooi/scenario-runtime/run";
 import { runScenarioSuite } from "@gooi/scenario-runtime/suite";

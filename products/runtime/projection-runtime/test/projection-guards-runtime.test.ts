@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans";
 import { createProjectionRuntime } from "../src/execute/execute-projection";
 import {
 	createCollectionReaderFixture,

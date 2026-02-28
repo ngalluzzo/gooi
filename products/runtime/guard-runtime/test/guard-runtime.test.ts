@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type { GuardTypedError } from "@gooi/guard-contracts/errors";
+import type { CompiledGuardDefinition } from "@gooi/guard-contracts/plans";
 import {
 	evaluateGuard,
 	evaluateInvariant,
@@ -88,7 +89,8 @@ describe("guard-runtime layered matrix", () => {
 		expect(production.ok).toBe(true);
 		expect(
 			production.diagnostics.some(
-				(diagnostic) => diagnostic.code === "semantic_guard_unavailable_error",
+				(diagnostic: GuardTypedError) =>
+					diagnostic.code === "semantic_guard_unavailable_error",
 			),
 		).toBe(true);
 

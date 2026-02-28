@@ -1,6 +1,6 @@
 import {
-	createHostIdentityProvider,
 	type HostIdentityPort,
+	identityContracts,
 } from "@gooi/host-contracts/identity";
 
 /**
@@ -38,11 +38,12 @@ export const createMemoryIdentityPort = (
 /**
  * Reference identity provider for marketplace contributor implementations.
  */
-export const memoryIdentityProvider = createHostIdentityProvider({
-	manifest: {
-		providerId: "gooi.marketplace.memory",
-		providerVersion: "1.0.0",
-		hostApiRange: "^1.0.0",
-	},
-	createPort: createMemoryIdentityPort,
-});
+export const memoryIdentityProvider =
+	identityContracts.createHostIdentityProvider({
+		manifest: {
+			providerId: "gooi.marketplace.memory",
+			providerVersion: "1.0.0",
+			hostApiRange: "^1.0.0",
+		},
+		createPort: createMemoryIdentityPort,
+	});

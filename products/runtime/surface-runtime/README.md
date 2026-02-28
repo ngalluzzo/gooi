@@ -21,4 +21,4 @@ if (!result.ok) {
 ## Public API
 
 - `bindSurfaceInput(input)`
-- Surface contracts are published from `@gooi/surface-contracts/*`
+- Surface contracts are published from `@gooi/surface-contracts` via `surfaceContracts`

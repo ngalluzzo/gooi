@@ -1,12 +1,5 @@
 {
-	"entryPoints": [
-		"./src/plans/projection-plan.ts",
-		"./src/plans/timeline-history-policy.ts",
-		"./src/plans/signal-migration-plan.ts",
-		"./src/ports/history-port-contract.ts",
-		"./src/envelopes/projection-result-envelope.ts",
-		"./src/errors/projection-errors.ts"
-	],
+	"entryPoints": ["./src/projection-contracts.ts"],
 	"entryFileName": "index",
 	"outputFileStrategy": "members",
 	"parametersFormat": "table",

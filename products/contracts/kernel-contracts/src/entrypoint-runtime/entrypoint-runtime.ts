@@ -6,7 +6,7 @@ import type { HostPortSet } from "@gooi/host-contracts/portset";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { HostReplayStorePort } from "@gooi/host-contracts/replay";
 import type { KernelSemanticRuntimePort } from "@gooi/kernel-contracts/semantic-engine";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type { ResultEnvelope } from "@gooi/surface-contracts/envelope";
 
 export interface RunEntrypointThroughKernelRuntimeInput {
 	readonly bundle: CompiledEntrypointBundle;

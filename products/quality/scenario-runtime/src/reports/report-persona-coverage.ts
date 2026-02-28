@@ -1,9 +1,9 @@
-import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
-import type { CompiledScenarioPlanSet } from "@gooi/scenario-contracts/plans/scenario-plan";
+import type { ScenarioRunEnvelope } from "@gooi/scenario-contracts/envelopes";
+import type { CompiledScenarioPlanSet } from "@gooi/scenario-contracts/plans";
 import {
 	type PersonaCoverageReport,
-	personaCoverageReportVersion,
-} from "@gooi/scenario-contracts/reports/scenario-reports";
+	reportsContracts,
+} from "@gooi/scenario-contracts/reports";
 
 const findScenarioRun = (
 	runs: readonly ScenarioRunEnvelope[],
@@ -37,7 +37,7 @@ export const reportPersonaCoverage = (input: {
 		});
 
 	return {
-		reportVersion: personaCoverageReportVersion,
+		reportVersion: reportsContracts.personaCoverageReportVersion,
 		rows,
 	};
 };

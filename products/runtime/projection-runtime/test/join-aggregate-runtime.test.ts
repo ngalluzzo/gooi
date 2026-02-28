@@ -19,7 +19,9 @@ describe("projection-runtime join and aggregate semantics", () => {
 		if (!result.ok) {
 			return;
 		}
-		expect(result.rows?.map((row) => row.id)).toEqual(["m1", "m2", "m3"]);
+		expect(
+			result.rows?.map((row) => (row as { readonly id: string }).id),
+		).toEqual(["m1", "m2", "m3"]);
 		expect(result.pagination.totalRows).toBe(3);
 	});
 

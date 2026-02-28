@@ -1,7 +1,7 @@
 import { evaluateInvariant } from "@gooi/guard-runtime/evaluate";
 import type { ProjectionSemanticGuardMeta } from "@gooi/kernel-contracts/projection-semantic";
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { CompiledProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
+import type { CompiledProjectionPlan } from "@gooi/projection-contracts/plans";
 
 interface ApplyProjectionGuardsInput {
 	readonly plan: CompiledProjectionPlan;
@@ -18,7 +18,7 @@ export type ApplyProjectionGuardsResult =
 	  }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  };
 
 /**
@@ -62,7 +62,7 @@ export const applyProjectionGuards = (
 		}
 		return {
 			ok: false,
-			error: createProjectionError(
+			error: errorsContracts.createProjectionError(
 				"projection_guard_error",
 				"Projection row guard/invariant blocked response assembly.",
 				input.plan.sourceRef,

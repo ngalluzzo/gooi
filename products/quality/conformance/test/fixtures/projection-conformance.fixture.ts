@@ -1,11 +1,11 @@
 import type {
 	CompiledAggregateProjectionPlan,
 	CompiledTimelineProjectionPlan,
-} from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/plans";
 import type {
 	HistoryPort,
 	HistoryRecord,
-} from "@gooi/projection-contracts/ports/history-port-contract";
+} from "@gooi/projection-contracts/ports";
 import { createProjectionRuntime } from "@gooi/projection-runtime";
 import type { ProjectionRefreshSubscriptions } from "@gooi/projection-runtime/refresh";
 import {
@@ -76,13 +76,26 @@ const history: readonly HistoryRecord[] = [
 
 const historyPort: HistoryPort = {
 	append: async () => undefined,
-	scan: async (input) => ({
+	scan: async (input: {
+		readonly signals: readonly string[];
+		readonly orderBy: {
+			readonly field: string;
+			readonly direction: "asc" | "desc";
+		};
+	}) => ({
 		records: history.filter((record) =>
 			input.signals.includes(record.signalName),
 		),
 		historyComplete: true,
 	}),
-	scanAsOf: async (input) => ({
+	scanAsOf: async (input: {
+		readonly signals: readonly string[];
+		readonly orderBy: {
+			readonly field: string;
+			readonly direction: "asc" | "desc";
+		};
+		readonly asOf: string;
+	}) => ({
 		records: history.filter(
 			(record) =>
 				input.signals.includes(record.signalName) &&
@@ -104,7 +117,14 @@ const historyPortWithoutAsOf: Omit<HistoryPort, "scanAsOf"> = {
 const historyPortWithoutPersist: Omit<HistoryPort, "persist"> = {
 	append: historyPort.append,
 	scan: historyPort.scan,
-	scanAsOf: async (input) => {
+	scanAsOf: async (input: {
+		readonly signals: readonly string[];
+		readonly orderBy: {
+			readonly field: string;
+			readonly direction: "asc" | "desc";
+		};
+		readonly asOf: string;
+	}) => {
 		if (historyPort.scanAsOf === undefined) {
 			return { records: [], historyComplete: false };
 		}

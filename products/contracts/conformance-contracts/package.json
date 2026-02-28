@@ -2,26 +2,12 @@
 	"name": "@gooi/conformance-contracts",
 	"version": "0.1.0",
 	"type": "module",
-	"main": "./dist/reports/reports.js",
-	"types": "./src/reports/reports.ts",
 	"exports": {
-		"./checks": {
-			"types": "./src/checks/checks.ts",
-			"bun": "./src/checks/checks.ts",
-			"import": "./dist/checks/checks.js",
-			"default": "./dist/checks/checks.js"
-		},
-		"./reports": {
-			"types": "./src/reports/reports.ts",
-			"bun": "./src/reports/reports.ts",
-			"import": "./dist/reports/reports.js",
-			"default": "./dist/reports/reports.js"
-		},
-		"./diagnostics": {
-			"types": "./src/diagnostics/diagnostics.ts",
-			"bun": "./src/diagnostics/diagnostics.ts",
-			"import": "./dist/diagnostics/diagnostics.js",
-			"default": "./dist/diagnostics/diagnostics.js"
+		"./*": {
+			"types": "./src/*/contracts.ts",
+			"bun": "./src/*/contracts.ts",
+			"import": "./dist/*/contracts.js",
+			"default": "./dist/*/contracts.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -32,7 +18,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/checks/checks.ts --outfile ./dist/checks/checks.js --external zod && bun build ./src/reports/reports.ts --outfile ./dist/reports/reports.js --external zod && bun build ./src/diagnostics/diagnostics.ts --outfile ./dist/diagnostics/diagnostics.js --external zod --external @gooi/app-spec-contracts/diagnostics",
+		"build": "bun build ./src/checks/contracts.ts --outfile ./dist/checks/contracts.js --external @gooi/* --external zod && bun build ./src/diagnostics/contracts.ts --outfile ./dist/diagnostics/contracts.js --external @gooi/* --external zod && bun build ./src/reports/contracts.ts --outfile ./dist/reports/contracts.js --external @gooi/* --external zod",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

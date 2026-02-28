@@ -12,13 +12,13 @@ import { z } from "zod";
 import {
 	type SurfaceEnvelopeVersion,
 	surfaceEnvelopeVersionSchema,
-} from "../envelope-version/envelope-version";
+} from "./envelope-version";
 import {
 	type RefreshTrigger,
 	refreshTriggerSchema,
 	type SignalEnvelope,
 	signalEnvelopeSchema,
-} from "../signal-envelope/signal-envelope";
+} from "./signal-envelope";
 
 /**
  * Runtime schema for typed execution errors embedded in failed result envelopes.

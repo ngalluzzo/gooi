@@ -7,7 +7,7 @@ import { z } from "zod";
 import {
 	type SurfaceEnvelopeVersion,
 	surfaceEnvelopeVersionSchema,
-} from "../envelope-version/envelope-version";
+} from "./envelope-version";
 
 /**
  * Runtime schema for invocation envelopes.

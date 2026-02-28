@@ -1,15 +1,14 @@
 import type { CapabilityPortContract } from "@gooi/capability-contracts/capability-port";
-import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
+import { capabilityPortContracts } from "@gooi/capability-contracts/capability-port";
 import {
 	type ProviderManifest,
-	safeParseProviderManifest,
+	providerManifestContracts,
 } from "@gooi/capability-contracts/provider-manifest";
-import { areBindingArtifactsAligned } from "@gooi/marketplace-contracts/artifact-alignment/policy";
-import type { BindingPlan } from "@gooi/marketplace-contracts/binding-plan/contracts";
-import { getCapabilityBinding } from "@gooi/marketplace-contracts/binding-plan/lookup";
-import type { DeploymentLockfile } from "@gooi/marketplace-contracts/lockfile/contracts";
-import { isLockedProviderIntegrity } from "@gooi/marketplace-contracts/lockfile/integrity";
-import { getLockedProvider } from "@gooi/marketplace-contracts/lockfile/lookup";
+import type {
+	BindingPlan,
+	DeploymentLockfile,
+} from "@gooi/marketplace-contracts/binding-plan";
+import { bindingPlanContracts } from "@gooi/marketplace-contracts/binding-plan";
 import { fail, ok } from "../shared/result";
 import type { RuntimeResult } from "../shared/types";
 
@@ -19,7 +18,7 @@ export const validateContractSchemaProfiles = (
 	for (const contract of contracts) {
 		for (const boundary of ["input", "output", "error"] as const) {
 			const target = contract.artifacts[boundary].target;
-			if (target !== hostProviderSchemaProfile) {
+			if (target !== capabilityPortContracts.hostProviderSchemaProfile) {
 				return fail(
 					"compatibility_error",
 					"Capability contract schema profile is incompatible with host/provider profile.",
@@ -28,7 +27,8 @@ export const validateContractSchemaProfiles = (
 						portId: contract.id,
 						portVersion: contract.version,
 						boundary,
-						expectedSchemaProfile: hostProviderSchemaProfile,
+						expectedSchemaProfile:
+							capabilityPortContracts.hostProviderSchemaProfile,
 						actualSchemaProfile: target,
 					},
 				);
@@ -45,14 +45,14 @@ export const validateBindingRequirements = (
 	bindingPlan: BindingPlan,
 	lockfile: DeploymentLockfile,
 ): RuntimeResult<void> => {
-	if (!areBindingArtifactsAligned(bindingPlan, lockfile)) {
+	if (!bindingPlanContracts.areBindingArtifactsAligned(bindingPlan, lockfile)) {
 		return fail(
 			"activation_error",
 			"Binding plan and lockfile are not aligned for app/environment/host API.",
 		);
 	}
 
-	const lockEntry = getLockedProvider(
+	const lockEntry = bindingPlanContracts.getLockedProvider(
 		lockfile,
 		manifest.providerId,
 		manifest.providerVersion,
@@ -65,7 +65,7 @@ export const validateBindingRequirements = (
 		});
 	}
 
-	if (!isLockedProviderIntegrity(lockEntry.integrity)) {
+	if (!bindingPlanContracts.isLockedProviderIntegrity(lockEntry.integrity)) {
 		return fail(
 			"activation_error",
 			"Lockfile provider integrity is invalid; expected sha256 checksum format.",
@@ -78,7 +78,7 @@ export const validateBindingRequirements = (
 	}
 
 	for (const contract of contracts) {
-		const binding = getCapabilityBinding(
+		const binding = bindingPlanContracts.getCapabilityBinding(
 			bindingPlan,
 			contract.id,
 			contract.version,
@@ -173,7 +173,7 @@ export const validateBindingRequirements = (
 export const providerManifestSafeParse = (
 	manifest: unknown,
 ): RuntimeResult<ProviderManifest> => {
-	const parsed = safeParseProviderManifest(manifest);
+	const parsed = providerManifestContracts.safeParseProviderManifest(manifest);
 	if (!parsed.success) {
 		return fail("validation_error", "Invalid provider manifest.", {
 			issues: parsed.error.issues,

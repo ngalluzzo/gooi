@@ -1,8 +1,8 @@
 import {
-	createProjectionError,
+	errorsContracts,
 	type ProjectionTypedError,
-} from "@gooi/projection-contracts/errors/projection-errors";
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/errors";
+import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans";
 
 /**
  * Creates a projection plan error with source reference.
@@ -12,7 +12,12 @@ export const createPlanError = (
 	sourceRef: ProjectionSourceRef,
 	details?: Readonly<Record<string, unknown>>,
 ): ProjectionTypedError =>
-	createProjectionError("projection_plan_error", message, sourceRef, details);
+	errorsContracts.createProjectionError(
+		"projection_plan_error",
+		message,
+		sourceRef,
+		details,
+	);
 
 /**
  * Creates a projection pagination error with source reference.
@@ -22,7 +27,7 @@ export const createPaginationError = (
 	sourceRef: ProjectionSourceRef,
 	details?: Readonly<Record<string, unknown>>,
 ): ProjectionTypedError =>
-	createProjectionError(
+	errorsContracts.createProjectionError(
 		"projection_pagination_error",
 		message,
 		sourceRef,
@@ -37,7 +42,7 @@ export const createProviderError = (
 	sourceRef: ProjectionSourceRef,
 	details?: Readonly<Record<string, unknown>>,
 ): ProjectionTypedError =>
-	createProjectionError(
+	errorsContracts.createProjectionError(
 		"projection_provider_error",
 		message,
 		sourceRef,

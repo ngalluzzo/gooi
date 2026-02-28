@@ -1,7 +1,7 @@
-import type { ScenarioStepResultEnvelope } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
-import { scenarioRunEnvelopeVersion } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
-import type { ScenarioTypedError } from "@gooi/scenario-contracts/errors/scenario-errors";
-import type { CompiledScenarioStep } from "@gooi/scenario-contracts/plans/scenario-plan";
+import type { ScenarioStepResultEnvelope } from "@gooi/scenario-contracts/envelopes";
+import { envelopesContracts } from "@gooi/scenario-contracts/envelopes";
+import type { ScenarioTypedError } from "@gooi/scenario-contracts/errors";
+import type { CompiledScenarioStep } from "@gooi/scenario-contracts/plans";
 
 export const makeStepResult = (input: {
 	readonly scenarioId: string;
@@ -13,7 +13,7 @@ export const makeStepResult = (input: {
 	readonly ok: boolean;
 	readonly error?: ScenarioTypedError;
 }): ScenarioStepResultEnvelope => ({
-	envelopeVersion: scenarioRunEnvelopeVersion,
+	envelopeVersion: envelopesContracts.scenarioRunEnvelopeVersion,
 	scenarioId: input.scenarioId,
 	stepIndex: input.stepIndex,
 	step: input.step,

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
-import { parseExtensionPayload } from "../src/extensions/extensions";
-import { parseJsonObject, parseJsonValue } from "../src/json/json";
+import { parseExtensionPayload } from "../src/extensions/contracts";
+import { parseJsonObject, parseJsonValue } from "../src/json/contracts";
 
 describe("contract-primitives", () => {
 	test("parses recursive json values", () => {

@@ -1,7 +1,7 @@
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import { evaluateGuard, evaluateInvariant } from "@gooi/guard-runtime/evaluate";
 import { evaluateGuardConformanceBoundaryMatrix } from "./guard-conformance/domain-runtime-conformance.fixture";
 import {

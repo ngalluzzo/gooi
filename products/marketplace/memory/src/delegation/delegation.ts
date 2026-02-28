@@ -1,10 +1,10 @@
 import {
-	createHostCapabilityDelegationProvider,
 	type DelegatedCapabilityInvocationInput,
 	type DelegatedCapabilityResult,
+	delegationContracts,
 	type HostCapabilityDelegationPort,
 } from "@gooi/host-contracts/delegation";
-import { hostFail, hostOk } from "@gooi/host-contracts/result";
+import { resultContracts } from "@gooi/host-contracts/result";
 
 /**
  * In-memory delegated route handler.
@@ -29,10 +29,10 @@ export const createMemoryCapabilityDelegationPort = (
 ): HostCapabilityDelegationPort => {
 	const routes = input?.routes ?? {};
 	return {
-		invokeDelegated: async (invocation) => {
+		invokeDelegated: async (invocation: DelegatedCapabilityInvocationInput) => {
 			const route = routes[invocation.routeId];
 			if (route === undefined) {
-				return hostFail(
+				return resultContracts.hostFail(
 					"capability_delegation_error",
 					"Delegation route is not configured in memory provider.",
 					{
@@ -42,7 +42,7 @@ export const createMemoryCapabilityDelegationPort = (
 					},
 				);
 			}
-			return hostOk(await route(invocation));
+			return resultContracts.hostOk(await route(invocation));
 		},
 	};
 };
@@ -51,7 +51,7 @@ export const createMemoryCapabilityDelegationPort = (
  * Reference capability-delegation provider for marketplace contributor implementations.
  */
 export const memoryCapabilityDelegationProvider =
-	createHostCapabilityDelegationProvider({
+	delegationContracts.createHostCapabilityDelegationProvider({
 		manifest: {
 			providerId: "gooi.marketplace.memory",
 			providerVersion: "1.0.0",

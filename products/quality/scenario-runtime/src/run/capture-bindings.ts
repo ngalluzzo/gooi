@@ -1,7 +1,7 @@
 import type {
 	CompiledScenarioCaptureBinding,
 	CompiledScenarioPlan,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import { readPathValue } from "../shared/path";
 import type { RuntimeState } from "./contracts";
 

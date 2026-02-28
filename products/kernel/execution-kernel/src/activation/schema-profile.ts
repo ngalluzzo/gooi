@@ -3,8 +3,10 @@ import type {
 	CompiledEntrypointBundle,
 } from "@gooi/app-spec-contracts/compiled";
 import { hostProviderSchemaProfile } from "@gooi/capability-contracts/capability-port";
-import type { InvocationEnvelope } from "@gooi/surface-contracts/invocation-envelope";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
+import type {
+	InvocationEnvelope,
+	ResultEnvelope,
+} from "@gooi/surface-contracts/envelope";
 import { errorEnvelope, errorResult } from "../errors/errors";
 
 interface ValidateSchemaProfileInput {

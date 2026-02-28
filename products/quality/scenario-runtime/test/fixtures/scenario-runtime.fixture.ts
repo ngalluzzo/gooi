@@ -1,12 +1,12 @@
 import type {
 	CompiledGuardDefinition,
 	GuardRuntimeEnvironment,
-} from "@gooi/guard-contracts/plans/guard-plan";
+} from "@gooi/guard-contracts/plans";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlanSet,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import type { ScenarioExecutionProfile } from "../../src/run/contracts";
 
 const signalExpectationGuard: CompiledGuardDefinition = {

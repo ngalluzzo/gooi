@@ -1,5 +1,5 @@
-import { createScenarioError } from "@gooi/scenario-contracts/errors/scenario-errors";
-import type { CompiledScenarioPlan } from "@gooi/scenario-contracts/plans/scenario-plan";
+import { errorsContracts } from "@gooi/scenario-contracts/errors";
+import type { CompiledScenarioPlan } from "@gooi/scenario-contracts/plans";
 import { applyCaptureBindings } from "../capture-bindings";
 import type {
 	RunScenarioInput,
@@ -25,7 +25,7 @@ export const executeCaptureStep = (input: {
 		context: input.scenario.context,
 	});
 	if (!capture.ok) {
-		const error = createScenarioError(
+		const error = errorsContracts.createScenarioError(
 			"scenario_capture_error",
 			"Scenario capture step failed.",
 			input.scenario.scenarioId,

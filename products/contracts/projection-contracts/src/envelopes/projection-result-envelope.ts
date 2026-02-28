@@ -1,7 +1,7 @@
 import type { JsonObject } from "@gooi/contract-primitives/json";
-import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes/guard-envelopes";
-import type { GuardTypedError } from "@gooi/guard-contracts/errors/guard-errors";
-import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals/guard-violation-signal";
+import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes";
+import type { GuardTypedError } from "@gooi/guard-contracts/errors";
+import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals";
 import type { ProjectionTypedError } from "../errors/projection-errors";
 import type { ProjectionStrategy } from "../plans/projection-plan";
 

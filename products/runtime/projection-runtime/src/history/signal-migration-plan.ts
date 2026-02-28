@@ -1,8 +1,8 @@
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
 import type {
+	ProjectionSourceRef,
 	SignalMigrationStepPlan,
 	SignalReplayPlan,
-} from "@gooi/projection-contracts/plans/signal-migration-plan";
+} from "@gooi/projection-contracts/plans";
 import { buildSignalMigrationError } from "./signal-migration-operation";
 
 export interface PreparedReplayPlan {

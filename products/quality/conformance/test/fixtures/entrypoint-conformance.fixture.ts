@@ -54,9 +54,19 @@ export const createEntrypointConformanceFixture = () => {
 			wiring: {
 				surfaces: {
 					http: {
-						queries: { list_messages: { bind: { page: "query.page" } } },
+						queries: {
+							list_messages: {
+								method: "GET",
+								path: "/messages",
+								bind: { page: "query.page" },
+							},
+						},
 						mutations: {
-							submit_message: { bind: { message: "body.message" } },
+							submit_message: {
+								method: "POST",
+								path: "/messages",
+								bind: { message: "body.message" },
+							},
 						},
 					},
 				},

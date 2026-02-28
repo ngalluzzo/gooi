@@ -1,6 +1,6 @@
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
-import type { HistoryPort } from "@gooi/projection-contracts/ports/history-port-contract";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
+import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans";
+import type { HistoryPort } from "@gooi/projection-contracts/ports";
 
 type HistoryCapabilityId =
 	| "history.append"
@@ -43,12 +43,12 @@ export const enforceHistoryContractGate = (input: {
 	| { readonly ok: true }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  } => {
 	if (input.historyPort === undefined) {
 		return {
 			ok: false,
-			error: createProjectionError(
+			error: errorsContracts.createProjectionError(
 				"projection_history_capability_error",
 				"Timeline projection requires a bound history port.",
 				input.sourceRef,
@@ -80,7 +80,7 @@ export const enforceHistoryContractGate = (input: {
 
 	return {
 		ok: false,
-		error: createProjectionError(
+		error: errorsContracts.createProjectionError(
 			"projection_history_capability_error",
 			"Timeline projection is missing required history operations.",
 			input.sourceRef,

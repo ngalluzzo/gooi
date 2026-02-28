@@ -4,18 +4,16 @@ import {
 } from "@gooi/contract-primitives/json";
 import { z } from "zod";
 
-const requestBucketSchema = jsonObjectSchema;
-
 /**
  * Runtime schema for native surface request payload buckets.
  */
 export const surfaceRequestPayloadSchema = z
 	.object({
-		path: requestBucketSchema.optional(),
-		query: requestBucketSchema.optional(),
-		body: requestBucketSchema.optional(),
-		args: requestBucketSchema.optional(),
-		flags: requestBucketSchema.optional(),
+		path: jsonObjectSchema.optional(),
+		query: jsonObjectSchema.optional(),
+		body: jsonObjectSchema.optional(),
+		args: jsonObjectSchema.optional(),
+		flags: jsonObjectSchema.optional(),
 	})
 	.strict();
 

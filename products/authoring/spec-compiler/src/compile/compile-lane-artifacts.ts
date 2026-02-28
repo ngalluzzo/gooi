@@ -13,11 +13,13 @@ import {
 	type CompiledArtifactManifest,
 	type CompiledLaneArtifact,
 } from "@gooi/artifact-model/manifest";
+import type { CompiledSurfaceDispatchPlanSet } from "@gooi/surface-contracts/dispatch";
 
 interface CompileLaneArtifactsInput {
 	readonly canonicalModel: CanonicalSpecModel;
 	readonly entrypoints: Readonly<Record<string, CompiledEntrypoint>>;
 	readonly bindings: Readonly<Record<string, CompiledSurfaceBinding>>;
+	readonly dispatchPlans: CompiledSurfaceDispatchPlanSet;
 	readonly refreshSubscriptions: Readonly<
 		Record<string, CompiledRefreshSubscription>
 	>;
@@ -63,6 +65,7 @@ export const compileLaneArtifacts = (
 			payload: {
 				entrypoints: input.entrypoints,
 				bindings: input.bindings,
+				dispatchPlans: input.dispatchPlans,
 				refreshSubscriptions: input.refreshSubscriptions,
 				accessPlan: input.accessPlan,
 				schemaArtifacts: input.schemaArtifacts,

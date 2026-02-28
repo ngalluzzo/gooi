@@ -1,7 +1,7 @@
 import type {
 	CompiledAggregateProjectionPlan,
 	ProjectionAggregateMetricPlan,
-} from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/plans";
 import { stableStringify } from "@gooi/stable-json";
 import type {
 	ExecuteProjectionContext,

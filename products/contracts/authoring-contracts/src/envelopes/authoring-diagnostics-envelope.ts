@@ -2,7 +2,7 @@ import {
 	type DiagnosticSeverity,
 	diagnosticRecordSchema,
 	diagnosticSeveritySchema,
-} from "@gooi/app-spec-contracts/diagnostics";
+} from "@gooi/app-spec-contracts/compiled";
 import { z } from "zod";
 
 import {

@@ -1,9 +1,9 @@
 import type { ProjectionSemanticPageMeta } from "@gooi/kernel-contracts/projection-semantic";
-import type { ProjectionTypedError } from "@gooi/projection-contracts/errors/projection-errors";
+import type { ProjectionTypedError } from "@gooi/projection-contracts/errors";
 import type {
 	ProjectionPaginationPlan,
 	ProjectionSourceRef,
-} from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/plans";
 import { createPaginationError } from "./errors";
 
 interface PaginationInput {

@@ -1,5 +1,5 @@
 import type { JsonObject, JsonValue } from "@gooi/contract-primitives/json";
-import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans/guard-plan";
+import type { CompiledInvariantDefinition } from "@gooi/guard-contracts/plans";
 import type { CompiledSignalReplayPolicy } from "./signal-migration-plan";
 import type { CompiledTimelineHistoryPolicy } from "./timeline-history-policy";
 

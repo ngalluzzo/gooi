@@ -1,9 +1,9 @@
 import type { ProjectionSemanticExecutionResult } from "@gooi/kernel-contracts/projection-semantic";
 import {
+	envelopesContracts,
 	type ProjectionResultEnvelope,
-	projectionResultEnvelopeVersion,
-} from "@gooi/projection-contracts/envelopes/projection-result-envelope";
-import type { CompiledProjectionPlan } from "@gooi/projection-contracts/plans/projection-plan";
+} from "@gooi/projection-contracts/envelopes";
+import type { CompiledProjectionPlan } from "@gooi/projection-contracts/plans";
 
 export interface ShapeProjectionQueryOutputInput {
 	readonly plan: CompiledProjectionPlan;
@@ -19,14 +19,14 @@ export const shapeProjectionQueryOutput = (
 ): ProjectionResultEnvelope => {
 	if (!input.result.ok) {
 		return {
-			envelopeVersion: projectionResultEnvelopeVersion,
+			envelopeVersion: envelopesContracts.projectionResultEnvelopeVersion,
 			ok: false,
 			error: input.result.error,
 		};
 	}
 
 	return {
-		envelopeVersion: projectionResultEnvelopeVersion,
+		envelopeVersion: envelopesContracts.projectionResultEnvelopeVersion,
 		ok: true,
 		rows: input.result.rows,
 		meta: {

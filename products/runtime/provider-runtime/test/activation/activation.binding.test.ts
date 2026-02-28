@@ -97,6 +97,10 @@ describe("provider-runtime activation bindings", () => {
 						runtimeHostApiVersion,
 						bindingPlanHostApiVersion,
 						lockfileHostApiVersion,
+					}: {
+						runtimeHostApiVersion: string;
+						bindingPlanHostApiVersion: string;
+						lockfileHostApiVersion: string;
 					}) =>
 						runtimeHostApiVersion === bindingPlanHostApiVersion &&
 						runtimeHostApiVersion === lockfileHostApiVersion

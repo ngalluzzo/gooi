@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type JsonValue, jsonValueSchema } from "../json/json";
+import { type JsonValue, jsonValueSchema } from "../json/contracts";
 
 /**
  * Explicit extension-point payload wrapper.
@@ -33,3 +33,8 @@ export const parseExtensionPayload = <TPolicy extends string>(
 	policySchema: z.ZodType<TPolicy>,
 ): ExtensionPayload<TPolicy> =>
 	extensionPayloadSchema(policySchema).parse(value);
+
+export const extensions = Object.freeze({
+	extensionPayloadSchema: extensionPayloadSchema,
+	parseExtensionPayload: parseExtensionPayload,
+});

@@ -1,8 +1,8 @@
 import type { JsonObject } from "@gooi/contract-primitives/json";
-import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes/guard-envelopes";
-import type { GuardTypedError } from "@gooi/guard-contracts/errors/guard-errors";
-import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals/guard-violation-signal";
-import type { ProjectionTypedError } from "@gooi/projection-contracts/errors/projection-errors";
+import type { GuardViolationRecord } from "@gooi/guard-contracts/envelopes";
+import type { GuardTypedError } from "@gooi/guard-contracts/errors";
+import type { GuardViolationSignalEnvelope } from "@gooi/guard-contracts/signals";
+import type { ProjectionTypedError } from "@gooi/projection-contracts/errors";
 
 /**
  * Canonical page metadata emitted by projection semantic execution.

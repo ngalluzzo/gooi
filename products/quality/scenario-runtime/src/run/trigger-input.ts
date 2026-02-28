@@ -3,7 +3,7 @@ import type {
 	CompiledScenarioPlan,
 	CompiledScenarioTriggerPlan,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import type { generateTriggerInput } from "../persona/generate-trigger-input";
 
 export const resolveTriggerInput = (input: {

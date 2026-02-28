@@ -1,12 +1,6 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": [
-		"./src/lockfile/authoring-lockfile.ts",
-		"./src/envelopes/authoring-request-envelope.ts",
-		"./src/envelopes/authoring-result-envelope.ts",
-		"./src/envelopes/authoring-error-envelope.ts",
-		"./src/envelopes/authoring-diagnostics-envelope.ts"
-	],
+	"entryPoints": ["./src/authoring-contracts.ts"],
 	"entryPointStrategy": "resolve",
 	"excludePrivate": true,
 	"excludeProtected": true,

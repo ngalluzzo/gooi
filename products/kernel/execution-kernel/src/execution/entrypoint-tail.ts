@@ -1,9 +1,11 @@
 import type { CompiledEntrypoint } from "@gooi/app-spec-contracts/compiled";
 import type { EffectKind } from "@gooi/capability-contracts/capability-port";
 import type { PrincipalContext } from "@gooi/host-contracts/principal";
-import { surfaceEnvelopeVersion } from "@gooi/surface-contracts/envelope-version";
-import type { ResultEnvelope } from "@gooi/surface-contracts/result-envelope";
-import type { SignalEnvelope } from "@gooi/surface-contracts/signal-envelope";
+import {
+	envelope,
+	type ResultEnvelope,
+	type SignalEnvelope,
+} from "@gooi/surface-contracts/envelope";
 import type { DomainRuntimePort } from "../entrypoint/types";
 import {
 	buildRefreshTriggers,
@@ -11,7 +13,7 @@ import {
 } from "../refresh/refresh";
 import { calculateIsoDurationMs } from "../time/duration";
 
-const envelopeVersion = surfaceEnvelopeVersion;
+const envelopeVersion = envelope.surfaceEnvelopeVersion;
 
 interface ExecuteTailInput {
 	readonly entrypoint: CompiledEntrypoint;

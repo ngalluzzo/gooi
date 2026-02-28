@@ -4,12 +4,12 @@ import type { JsonObject } from "@gooi/contract-primitives/json";
 import type {
 	GuardEvaluationEnvelope,
 	InvariantEvaluationEnvelope,
-} from "@gooi/guard-contracts/envelopes/guard-envelopes";
+} from "@gooi/guard-contracts/envelopes";
 import type {
 	CompiledGuardDefinition,
 	CompiledInvariantDefinition,
-} from "@gooi/guard-contracts/plans/guard-plan";
-import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
+} from "@gooi/guard-contracts/plans";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports";
 
 export type GuardConformanceCheckId =
 	| "layered_matrix_enforced"

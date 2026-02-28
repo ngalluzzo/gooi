@@ -1,22 +1,21 @@
 import {
-	createHostPrincipalPort,
-	createHostPrincipalProvider,
 	type HostPrincipalPort,
 	type PrincipalContext,
 	principalContextSchema,
+	principalContracts,
 } from "@gooi/host-contracts/principal";
-import { hostFail, hostOk } from "@gooi/host-contracts/result";
+import { resultContracts } from "@gooi/host-contracts/result";
 
 /**
  * Creates an in-memory principal port with deterministic validation.
  */
 export const createMemoryPrincipalPort =
 	(): HostPrincipalPort<PrincipalContext> =>
-		createHostPrincipalPort({
-			validatePrincipal: (value) => {
+		principalContracts.createHostPrincipalPort({
+			validatePrincipal: (value: unknown) => {
 				const parsed = principalContextSchema.safeParse(value);
 				if (!parsed.success) {
-					return hostFail(
+					return resultContracts.hostFail(
 						"principal_validation_error",
 						"Invalid principal context.",
 						{
@@ -24,18 +23,19 @@ export const createMemoryPrincipalPort =
 						},
 					);
 				}
-				return hostOk(parsed.data);
+				return resultContracts.hostOk(parsed.data);
 			},
 		});
 
 /**
  * Reference principal provider for marketplace contributor implementations.
  */
-export const memoryPrincipalProvider = createHostPrincipalProvider({
-	manifest: {
-		providerId: "gooi.marketplace.memory",
-		providerVersion: "1.0.0",
-		hostApiRange: "^1.0.0",
-	},
-	createPort: createMemoryPrincipalPort,
-});
+export const memoryPrincipalProvider =
+	principalContracts.createHostPrincipalProvider({
+		manifest: {
+			providerId: "gooi.marketplace.memory",
+			providerVersion: "1.0.0",
+			hostApiRange: "^1.0.0",
+		},
+		createPort: createMemoryPrincipalPort,
+	});

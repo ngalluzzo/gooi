@@ -1,12 +1,12 @@
-import type { GuardRuntimeEnvironment } from "@gooi/guard-contracts/plans/guard-plan";
-import type { SemanticJudgePort } from "@gooi/guard-contracts/ports/semantic-judge-port";
-import type { ScenarioStepResultEnvelope } from "@gooi/scenario-contracts/envelopes/scenario-envelopes";
-import type { ScenarioTypedError } from "@gooi/scenario-contracts/errors/scenario-errors";
+import type { GuardRuntimeEnvironment } from "@gooi/guard-contracts/plans";
+import type { SemanticJudgePort } from "@gooi/guard-contracts/ports";
+import type { ScenarioStepResultEnvelope } from "@gooi/scenario-contracts/envelopes";
+import type { ScenarioTypedError } from "@gooi/scenario-contracts/errors";
 import type {
 	CompiledPersonaDefinition,
 	CompiledScenarioPlan,
 	ScenarioGeneratedInputLockSnapshot,
-} from "@gooi/scenario-contracts/plans/scenario-plan";
+} from "@gooi/scenario-contracts/plans";
 import type { generateTriggerInput } from "../persona/generate-trigger-input";
 
 export type ScenarioExecutionProfile =

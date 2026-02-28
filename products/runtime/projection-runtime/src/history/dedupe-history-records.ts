@@ -1,6 +1,6 @@
-import { createProjectionError } from "@gooi/projection-contracts/errors/projection-errors";
-import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans/projection-plan";
-import type { HistoryRecord } from "@gooi/projection-contracts/ports/history-port-contract";
+import { errorsContracts } from "@gooi/projection-contracts/errors";
+import type { ProjectionSourceRef } from "@gooi/projection-contracts/plans";
+import type { HistoryRecord } from "@gooi/projection-contracts/ports";
 import { stableStringify } from "@gooi/stable-json";
 
 /**
@@ -13,7 +13,7 @@ export const dedupeHistoryRecords = (
 	| { readonly ok: true; readonly records: readonly HistoryRecord[] }
 	| {
 			readonly ok: false;
-			readonly error: ReturnType<typeof createProjectionError>;
+			readonly error: ReturnType<typeof errorsContracts.createProjectionError>;
 	  } => {
 	const byEventKey = new Map<string, HistoryRecord>();
 	for (const record of records) {
@@ -27,7 +27,7 @@ export const dedupeHistoryRecords = (
 		if (existingDigest !== incomingDigest) {
 			return {
 				ok: false,
-				error: createProjectionError(
+				error: errorsContracts.createProjectionError(
 					"projection_history_gap_error",
 					"History provider returned conflicting records for the same event key.",
 					sourceRef,

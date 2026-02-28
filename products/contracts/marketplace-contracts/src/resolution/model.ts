@@ -3,6 +3,7 @@ import { providerTrustTierSchema } from "../discovery/discovery";
 import { providerReachabilitySchema } from "../discovery/reachability";
 import { providerEligibilityReportSchema } from "../eligibility/eligibility";
 import { resolverErrorSchema } from "../shared/resolver-errors";
+import { resolverRevocationStateSchema } from "../trust/revocation-model";
 
 export const resolverStrategySchema = z.enum(["trust_then_version"]);
 
@@ -61,6 +62,7 @@ export const resolveTrustedProvidersInputSchema = z.object({
 			denyProviderIds: [],
 			requiredCertifications: [],
 		}),
+	revocation: resolverRevocationStateSchema.optional(),
 });
 
 export type ResolveTrustedProvidersInput = z.input<
@@ -73,6 +75,7 @@ export const resolverEligibilityDiagnosticCodeSchema = z.enum([
 	"resolver_eligibility_allowlist_miss",
 	"resolver_eligibility_trust_below_policy",
 	"resolver_eligibility_certification_missing",
+	"resolver_eligibility_revoked",
 ]);
 
 export type ResolverEligibilityDiagnosticCode = z.infer<

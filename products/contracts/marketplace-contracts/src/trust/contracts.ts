@@ -4,6 +4,8 @@
 import * as errors from "./errors";
 import * as model from "./model";
 import * as result from "./result";
+import * as revocation from "./revocation";
+import * as revocationModel from "./revocation-model";
 import * as verification from "./verification";
 
 export type { TrustError, TrustErrorCode, TrustErrorIssue } from "./errors";
@@ -22,6 +24,16 @@ export type {
 	VerifyReleaseTrustInput,
 } from "./model";
 export type { VerifyReleaseTrustResult } from "./result";
+export type {
+	PublishTrustRevocationInput,
+	PublishTrustRevocationResult,
+	PullTrustRevocationFeedInput,
+	PullTrustRevocationFeedResult,
+	ResolverRevocationState,
+	TrustRevocationAction,
+	TrustRevocationEvent,
+	TrustRevocationLedger,
+} from "./revocation-model";
 
 export const trustContracts = Object.freeze({
 	trustSubjectTypeSchema: model.trustSubjectTypeSchema,
@@ -36,6 +48,22 @@ export const trustContracts = Object.freeze({
 	trustDecisionVerdictSchema: model.trustDecisionVerdictSchema,
 	trustDecisionReportSchema: model.trustDecisionReportSchema,
 	verifyReleaseTrustInputSchema: model.verifyReleaseTrustInputSchema,
+	trustRevocationActionSchema: revocationModel.trustRevocationActionSchema,
+	trustRevocationEventSchema: revocationModel.trustRevocationEventSchema,
+	trustRevocationLedgerSchema: revocationModel.trustRevocationLedgerSchema,
+	publishTrustRevocationInputSchema:
+		revocationModel.publishTrustRevocationInputSchema,
+	publishTrustRevocationSuccessSchema:
+		revocationModel.publishTrustRevocationSuccessSchema,
+	publishTrustRevocationFailureSchema:
+		revocationModel.publishTrustRevocationFailureSchema,
+	publishTrustRevocationResultSchema:
+		revocationModel.publishTrustRevocationResultSchema,
+	pullTrustRevocationFeedInputSchema:
+		revocationModel.pullTrustRevocationFeedInputSchema,
+	pullTrustRevocationFeedResultSchema:
+		revocationModel.pullTrustRevocationFeedResultSchema,
+	resolverRevocationStateSchema: revocationModel.resolverRevocationStateSchema,
 	trustErrorCodeSchema: errors.trustErrorCodeSchema,
 	trustErrorIssueSchema: errors.trustErrorIssueSchema,
 	trustErrorSchema: errors.trustErrorSchema,
@@ -44,4 +72,7 @@ export const trustContracts = Object.freeze({
 	verifyReleaseTrustResultSchema: result.verifyReleaseTrustResultSchema,
 	createTrustError: errors.createTrustError,
 	verifyReleaseTrust: verification.verifyReleaseTrust,
+	publishTrustRevocation: revocation.publishTrustRevocation,
+	pullTrustRevocationFeed: revocation.pullTrustRevocationFeed,
+	deriveRevokedProviderRefs: revocation.deriveRevokedProviderRefs,
 });

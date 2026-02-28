@@ -5,6 +5,11 @@ import type {
 } from "./model";
 import type { RankedProvider } from "./ranking";
 
+export interface ToNoCandidatesErrorInput {
+	readonly providers: readonly ProviderEligibilityEntry[];
+	readonly diagnostics: readonly ResolverEligibilityDiagnostic[];
+}
+
 export const toProviderRef = (provider: {
 	providerId: string;
 	providerVersion: string;

@@ -18,8 +18,8 @@ import {
 	localCapabilityBindingResolutionSchema,
 	unreachableCapabilityBindingResolutionSchema,
 } from "../reachability/contracts";
+import { isCapabilityReachable as isCapabilityReachableFn } from "../reachability/policy";
 import { semverSchema } from "../shared/semver";
-import { isCapabilityReachable as isCapabilityReachableFn } from "./binding-plan";
 import * as lookup from "./lookup";
 import { parseBindingPlan } from "./parse";
 

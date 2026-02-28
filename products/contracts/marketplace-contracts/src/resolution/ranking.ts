@@ -19,6 +19,13 @@ export interface ResolverScore {
 	readonly components: ResolverScoreComponents;
 }
 
+export interface ResolverScoringWeights {
+	readonly trust: number;
+	readonly certifications: number;
+	readonly semver: number;
+	readonly reachability: number;
+}
+
 export interface RankedProvider {
 	readonly provider: ProviderEligibilityEntry;
 	readonly score: ResolverScore;
@@ -48,12 +55,15 @@ const toSemverScore = (value: string): number => {
 
 export const scoreProvider = (
 	provider: ProviderEligibilityEntry,
+	weights: ResolverScoringWeights,
 ): ResolverScore => {
 	const components: ResolverScoreComponents = {
-		trust: trustTierRank[provider.trust.tier] * 100_000_000,
-		certifications: provider.trust.certifications.length * 1_000_000,
-		semver: toSemverScore(provider.providerVersion),
-		reachability: provider.reachability.mode === "local" ? 100 : 0,
+		trust: trustTierRank[provider.trust.tier] * weights.trust,
+		certifications:
+			provider.trust.certifications.length * weights.certifications,
+		semver: toSemverScore(provider.providerVersion) * weights.semver,
+		reachability:
+			(provider.reachability.mode === "local" ? 1 : 0) * weights.reachability,
 	};
 	return {
 		components,

@@ -13,10 +13,71 @@ export const resolveTrustedProvidersInputSchema = z.object({
 	maxResults: z.number().int().positive().default(1),
 	requireEligible: z.boolean().default(true),
 	strategy: resolverStrategySchema.default("trust_then_version"),
+	scoringProfile: z
+		.object({
+			profileId: z.string().min(1).default("global-1.0.0"),
+			weights: z
+				.object({
+					trust: z.number().int().positive().default(100_000_000),
+					certifications: z.number().int().positive().default(1_000_000),
+					semver: z.number().int().positive().default(1),
+					reachability: z.number().int().positive().default(100),
+				})
+				.default({
+					trust: 100_000_000,
+					certifications: 1_000_000,
+					semver: 1,
+					reachability: 100,
+				}),
+		})
+		.default({
+			profileId: "global-1.0.0",
+			weights: {
+				trust: 100_000_000,
+				certifications: 1_000_000,
+				semver: 1,
+				reachability: 100,
+			},
+		}),
+	policy: z
+		.object({
+			allowProviderIds: z.array(z.string().min(1)).default([]),
+			denyProviderIds: z.array(z.string().min(1)).default([]),
+			requiredCertifications: z.array(z.string().min(1)).default([]),
+			minTrustTier: providerTrustTierSchema.optional(),
+		})
+		.default({
+			allowProviderIds: [],
+			denyProviderIds: [],
+			requiredCertifications: [],
+		}),
 });
 
 export type ResolveTrustedProvidersInput = z.input<
 	typeof resolveTrustedProvidersInputSchema
+>;
+
+export const resolverEligibilityDiagnosticCodeSchema = z.enum([
+	"resolver_eligibility_ineligible",
+	"resolver_eligibility_denylisted",
+	"resolver_eligibility_allowlist_miss",
+	"resolver_eligibility_trust_below_policy",
+	"resolver_eligibility_certification_missing",
+]);
+
+export type ResolverEligibilityDiagnosticCode = z.infer<
+	typeof resolverEligibilityDiagnosticCodeSchema
+>;
+
+export const resolverEligibilityDiagnosticSchema = z.object({
+	providerId: z.string().min(1),
+	providerVersion: z.string().min(1),
+	code: resolverEligibilityDiagnosticCodeSchema,
+	message: z.string().min(1),
+});
+
+export type ResolverEligibilityDiagnostic = z.infer<
+	typeof resolverEligibilityDiagnosticSchema
 >;
 
 export const resolverScoreComponentsSchema = z.object({
@@ -76,6 +137,7 @@ export const resolverExplainabilitySchema = z.object({
 	delegatedCandidates: z.number().int().nonnegative(),
 	localCandidates: z.number().int().nonnegative(),
 	topRejectionReasons: z.array(z.string().min(1)),
+	eligibilityDiagnostics: z.array(resolverEligibilityDiagnosticSchema),
 });
 
 export type ResolverExplainability = z.infer<

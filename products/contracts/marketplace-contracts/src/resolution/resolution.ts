@@ -1,11 +1,26 @@
 import type { ProviderEligibilityEntry } from "../eligibility/eligibility";
 import { createResolverError } from "../shared/resolver-errors";
 import {
+	countPolicyRejectedCandidates,
+	toDiagnosticIssues,
+	toTopRejectionReasons,
+} from "./diagnostics";
+import {
+	type ResolverEligibilityDiagnostic,
 	type ResolverSelection,
 	type ResolverStage,
 	type ResolveTrustedProvidersResult,
 	resolveTrustedProvidersInputSchema,
 } from "./model";
+import {
+	applyEligibilityStage,
+	applyFilterStage,
+	BASELINE_SCORING_PROFILE_ID,
+	isPolicyDiagnostic,
+	normalizeResolverPolicy,
+	normalizeScoringWeights,
+	toScoringProfileIssues,
+} from "./policy";
 import {
 	findDelegationMetadataGap,
 	isPolicyRejection,
@@ -33,20 +48,26 @@ const toSelection = (
 	};
 };
 
-const toTopRejectionReasons = (
-	providers: readonly ProviderEligibilityEntry[],
-): string[] => {
-	const counts = new Map<string, number>();
-	for (const provider of providers) {
-		for (const reason of provider.reasons) {
-			counts.set(reason, (counts.get(reason) ?? 0) + 1);
-		}
-	}
-	return [...counts.entries()]
-		.sort(
-			(left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
-		)
-		.map(([reason]) => reason);
+const toNoCandidatesError = (input: {
+	readonly providers: readonly ProviderEligibilityEntry[];
+	readonly diagnostics: readonly ResolverEligibilityDiagnostic[];
+}) => {
+	const code =
+		input.diagnostics.some((diagnostic) =>
+			isPolicyDiagnostic(diagnostic.code),
+		) || input.providers.some((provider) => isPolicyRejection(provider))
+			? "resolver_policy_rejection_error"
+			: "resolver_no_candidate_error";
+	const message =
+		code === "resolver_policy_rejection_error"
+			? "All providers were rejected by trust or certification policy."
+			: "No providers met resolver candidate requirements.";
+
+	return createResolverError(
+		code,
+		message,
+		toDiagnosticIssues(input.providers, input.diagnostics),
+	);
 };
 
 export const resolveTrustedProviders = (
@@ -64,6 +85,21 @@ export const resolveTrustedProviders = (
 		};
 	}
 
+	const scoringProfileIssues = toScoringProfileIssues(
+		parsedInput.data.scoringProfile?.profileId,
+		parsedInput.data.scoringProfile?.weights,
+	);
+	if (scoringProfileIssues.length > 0) {
+		return {
+			ok: false,
+			error: createResolverError(
+				"resolver_scoring_profile_error",
+				`Resolver only supports scoring profile ${BASELINE_SCORING_PROFILE_ID} for baseline 1.0.0.`,
+				scoringProfileIssues,
+			),
+		};
+	}
+
 	const providers = parsedInput.data.report.providers;
 	if (providers.length === 0) {
 		return {
@@ -75,32 +111,55 @@ export const resolveTrustedProviders = (
 		};
 	}
 
-	const filtered = parsedInput.data.requireEligible
-		? providers.filter((provider) => provider.status === "eligible")
-		: providers;
+	const diagnostics: ResolverEligibilityDiagnostic[] = [];
+	const policy = normalizeResolverPolicy(parsedInput.data.policy);
+	const filterStage = applyFilterStage({
+		providers,
+		requireEligible: parsedInput.data.requireEligible,
+		policy,
+		diagnostics,
+	});
 	const stages: ResolverStage[] = [
 		{
 			stage: "filter",
 			inputCandidates: providers.length,
-			outputCandidates: filtered.length,
-			droppedCandidates: providers.length - filtered.length,
-			notes: parsedInput.data.requireEligible
-				? ["Applied requireEligible candidate filter."]
-				: ["Skipped requireEligible candidate filter."],
+			outputCandidates: filterStage.candidates.length,
+			droppedCandidates: providers.length - filterStage.candidates.length,
+			notes: filterStage.notes,
 		},
 	];
-	if (filtered.length === 0) {
-		const code = providers.some((provider) => isPolicyRejection(provider))
-			? "resolver_policy_rejection_error"
-			: "resolver_no_candidate_error";
-		const message =
-			code === "resolver_policy_rejection_error"
-				? "All providers were rejected by trust or certification policy."
-				: "No providers met resolver candidate requirements.";
-		return { ok: false, error: createResolverError(code, message) };
+	if (filterStage.candidates.length === 0) {
+		return {
+			ok: false,
+			error: toNoCandidatesError({ providers, diagnostics }),
+		};
 	}
 
-	const delegationGap = findDelegationMetadataGap(filtered);
+	const eligibilityStage = applyEligibilityStage({
+		providers: filterStage.candidates,
+		policy,
+		diagnostics,
+	});
+	stages.push({
+		stage: "eligibility",
+		inputCandidates: filterStage.candidates.length,
+		outputCandidates: eligibilityStage.candidates.length,
+		droppedCandidates:
+			filterStage.candidates.length - eligibilityStage.candidates.length,
+		notes: eligibilityStage.notes,
+	});
+	if (eligibilityStage.candidates.length === 0) {
+		return {
+			ok: false,
+			error: createResolverError(
+				"resolver_policy_rejection_error",
+				"All providers were rejected by trust or certification policy.",
+				toDiagnosticIssues(providers, diagnostics),
+			),
+		};
+	}
+
+	const delegationGap = findDelegationMetadataGap(eligibilityStage.candidates);
 	if (delegationGap !== null) {
 		return {
 			ok: false,
@@ -123,20 +182,18 @@ export const resolveTrustedProviders = (
 		};
 	}
 
-	stages.push({
-		stage: "eligibility",
-		inputCandidates: filtered.length,
-		outputCandidates: filtered.length,
-		droppedCandidates: 0,
-		notes: ["Eligibility outcomes consumed from deterministic report inputs."],
-	});
-
+	const scoringWeights = normalizeScoringWeights(
+		parsedInput.data.scoringProfile?.weights,
+	);
 	const ranked = sortRankedProviders(
-		filtered.map((provider) => ({ provider, score: scoreProvider(provider) })),
+		eligibilityStage.candidates.map((provider) => ({
+			provider,
+			score: scoreProvider(provider, scoringWeights),
+		})),
 	);
 	stages.push({
 		stage: "scoring",
-		inputCandidates: filtered.length,
+		inputCandidates: eligibilityStage.candidates.length,
 		outputCandidates: ranked.length,
 		droppedCandidates: 0,
 		notes: [
@@ -167,16 +224,20 @@ export const resolveTrustedProviders = (
 			),
 			stages,
 			explainability: {
-				policyRejectedCandidates: providers.filter((provider) =>
-					isPolicyRejection(provider),
-				).length,
+				policyRejectedCandidates: countPolicyRejectedCandidates({
+					providers,
+					diagnostics,
+					isPolicyDiagnostic,
+					isPolicyRejection,
+				}),
 				delegatedCandidates: ranked.filter(
 					(candidate) => candidate.provider.reachability.mode === "delegated",
 				).length,
 				localCandidates: ranked.filter(
 					(candidate) => candidate.provider.reachability.mode === "local",
 				).length,
-				topRejectionReasons: toTopRejectionReasons(providers),
+				topRejectionReasons: toTopRejectionReasons(providers, diagnostics),
+				eligibilityDiagnostics: diagnostics,
 			},
 		},
 	};

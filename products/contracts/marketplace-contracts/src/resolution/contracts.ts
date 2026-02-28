@@ -6,6 +6,8 @@ import * as resolution from "./resolution";
 
 export type {
 	ResolverDecision,
+	ResolverEligibilityDiagnostic,
+	ResolverEligibilityDiagnosticCode,
 	ResolverExplainability,
 	ResolverScore,
 	ResolverScoreComponents,
@@ -20,6 +22,10 @@ export type {
 export const resolutionContracts = Object.freeze({
 	resolverStrategySchema: model.resolverStrategySchema,
 	resolveTrustedProvidersInputSchema: model.resolveTrustedProvidersInputSchema,
+	resolverEligibilityDiagnosticCodeSchema:
+		model.resolverEligibilityDiagnosticCodeSchema,
+	resolverEligibilityDiagnosticSchema:
+		model.resolverEligibilityDiagnosticSchema,
 	resolverScoreComponentsSchema: model.resolverScoreComponentsSchema,
 	resolverScoreSchema: model.resolverScoreSchema,
 	resolverSelectionSchema: model.resolverSelectionSchema,

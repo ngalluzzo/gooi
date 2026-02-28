@@ -51,20 +51,34 @@ const resolveBaseRef = (): string => {
 };
 
 const changedFilesSince = (baseRef: string): string[] => {
+	const parseChangedFiles = (raw: string): string[] =>
+		raw
+			.split("\n")
+			.map((entry) => entry.trim())
+			.filter((entry) => entry.length > 0);
+
 	try {
 		const raw = runGit(["diff", "--name-only", `${baseRef}...HEAD`]);
-		return raw
-			.split("\n")
-			.map((entry) => entry.trim())
-			.filter((entry) => entry.length > 0);
+		return parseChangedFiles(raw);
 	} catch {
-		// Shallow CI checkouts may not include HEAD~1/base ancestry. Fall back to
-		// the current commit file list so governance checks still run deterministically.
-		const raw = runGit(["show", "--pretty=format:", "--name-only", "HEAD"]);
-		return raw
-			.split("\n")
+		const parentRefs = runGit(["show", "-s", "--pretty=%P", "HEAD"])
+			.split(" ")
 			.map((entry) => entry.trim())
 			.filter((entry) => entry.length > 0);
+
+		// Merge commits in shallow CI can include unrelated base-branch changes in
+		// `git show` output. If ancestry diff is unavailable, skip rather than emit
+		// false governance failures.
+		if (parentRefs.length > 1) {
+			console.warn(
+				`Golden governance check warning: unable to diff against ${baseRef} in shallow merge checkout; skipping changed-file detection.`,
+			);
+			return [];
+		}
+
+		// Non-merge commit fallback still preserves deterministic changed-file checks.
+		const raw = runGit(["show", "--pretty=format:", "--name-only", "HEAD"]);
+		return parseChangedFiles(raw);
 	}
 };
 

@@ -52,6 +52,10 @@ describe("lsp completion and diagnostics", () => {
 
 		expect(resolved.parity.status).toBe("matched");
 		expect(resolved.item.detail).toContain("local-spec");
+		expect(resolved.item.detail).toContain("uncertified/unknown");
+		expect(resolved.item.documentation).toContain("certification: uncertified");
+		expect(resolved.item.documentation).toContain("trust tier: unknown");
+		expect(resolved.item.documentation).toContain("last verified at: unknown");
 		expect(resolved.item.documentation).toContain("schema://local");
 	});
 

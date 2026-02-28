@@ -115,4 +115,84 @@ describe("lsp protocol e2e", () => {
 		expect(response.result).toBeUndefined();
 		expect(response.error?.message).toContain("Invalid string");
 	});
+
+	test("cancels requests that were cancelled before execution", () => {
+		const server = createAuthoringProtocolServer({
+			context: authoringActionAndRenameFixture,
+		});
+		const cancel = server.handleMessage({
+			id: null,
+			method: "$/cancelRequest",
+			params: { id: 11 },
+		});
+		expect(cancel.error).toBeUndefined();
+
+		const response = server.handleMessage({
+			id: 11,
+			method: "textDocument/completion",
+			params: { position: { line: 3, character: 10 } },
+		});
+
+		expect(response.result).toBeUndefined();
+		expect(response.error?.message).toBe("Request cancelled by client.");
+	});
+
+	test("cancels requests that are cancelled during resolution", () => {
+		const server = createAuthoringProtocolServer({
+			context: authoringActionAndRenameFixture,
+			hooks: {
+				onRequestResolved: ({ request, cancel }) => {
+					if (
+						request.id !== null &&
+						request.method === "textDocument/completion"
+					) {
+						cancel(request.id);
+					}
+				},
+			},
+		});
+
+		const response = server.handleMessage({
+			id: 12,
+			method: "textDocument/completion",
+			params: { position: { line: 3, character: 10 } },
+		});
+
+		expect(response.result).toBeUndefined();
+		expect(response.error?.message).toBe("Request cancelled by client.");
+	});
+
+	test("drops stale responses when a newer didChange version arrives", () => {
+		let protocolServer: ReturnType<typeof createAuthoringProtocolServer>;
+		protocolServer = createAuthoringProtocolServer({
+			context: authoringActionAndRenameFixture,
+			initialVersion: 1,
+			hooks: {
+				onRequestStart: ({ request }) => {
+					if (request.method !== "textDocument/completion") {
+						return;
+					}
+					protocolServer.handleMessage({
+						id: null,
+						method: "textDocument/didChange",
+						params: {
+							version: 2,
+							documentText: authoringActionAndRenameFixture.documentText,
+						},
+					});
+				},
+			},
+		});
+
+		const response = protocolServer.handleMessage({
+			id: 13,
+			method: "textDocument/completion",
+			params: { position: { line: 3, character: 10 } },
+		});
+
+		expect(response.result).toBeUndefined();
+		expect(response.error?.message).toContain(
+			"Request superseded by newer document version '2'.",
+		);
+	});
 });

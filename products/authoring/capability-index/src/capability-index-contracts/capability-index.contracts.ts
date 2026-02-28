@@ -13,6 +13,27 @@ export const capabilityIndexArtifactVersionSchema = z.literal("1.0.0");
 export const capabilityProvenanceSchema = z.enum(["local-spec", "catalog"]);
 
 /**
+ * Certification lifecycle state for a capability entry.
+ */
+export const capabilityCertificationStateSchema = z.enum([
+	"uncertified",
+	"pending",
+	"certified",
+	"rejected",
+	"revoked",
+]);
+
+/**
+ * Trust posture tier for capability resolution and diagnostics.
+ */
+export const capabilityTrustTierSchema = z.enum([
+	"unknown",
+	"community",
+	"verified",
+	"trusted",
+]);
+
+/**
  * One provider availability record for a capability.
  */
 export const capabilityProviderAvailabilitySchema = z.object({
@@ -52,6 +73,9 @@ export const capabilityIndexEntrySchema = z.object({
 	examples: capabilityExamplePayloadsSchema,
 	providerAvailability: z.array(capabilityProviderAvailabilitySchema),
 	provenance: capabilityProvenanceSchema,
+	certificationState: capabilityCertificationStateSchema,
+	trustTier: capabilityTrustTierSchema,
+	lastVerifiedAt: z.iso.datetime().nullable(),
 });
 
 const catalogIdentitySchema = z.object({

@@ -41,6 +41,9 @@ export const getAuthoringHover = (value: unknown) => {
 				contents: [
 					`capability ${capability.capabilityId}@${capability.capabilityVersion}`,
 					`provenance: ${capability.provenance}`,
+					`certification: ${capability.certificationState}`,
+					`trust tier: ${capability.trustTier}`,
+					`last verified at: ${capability.lastVerifiedAt ?? "unknown"}`,
 					`effects: ${capability.declaredEffects.join(", ")}`,
 				].join("\n"),
 				range: {

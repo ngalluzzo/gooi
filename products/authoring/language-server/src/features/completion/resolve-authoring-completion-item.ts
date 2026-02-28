@@ -26,9 +26,12 @@ const withCapabilityMetadata = (input: {
 		return input.item;
 	}
 
-	const detail = `${capability.capabilityVersion} (${capability.provenance})`;
+	const detail = `${capability.capabilityVersion} (${capability.provenance}, ${capability.certificationState}/${capability.trustTier})`;
 	const documentation = [
 		`effects: ${capability.declaredEffects.join(", ")}`,
+		`certification: ${capability.certificationState}`,
+		`trust tier: ${capability.trustTier}`,
+		`last verified at: ${capability.lastVerifiedAt ?? "unknown"}`,
 		`input: ${capability.ioSchemaRefs.inputSchemaRef}`,
 		`output: ${capability.ioSchemaRefs.outputSchemaRef}`,
 		`error: ${capability.ioSchemaRefs.errorSchemaRef}`,

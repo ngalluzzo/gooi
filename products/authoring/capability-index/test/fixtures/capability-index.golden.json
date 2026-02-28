@@ -1,7 +1,7 @@
 {
 	"artifactVersion": "1.0.0",
 	"sourceHash": "1111111111111111111111111111111111111111111111111111111111111111",
-	"artifactHash": "40eb3c1912430e8595827d82a9172343122ee8d0b53e021acaf67e92bb891e40",
+	"artifactHash": "4da0ae89219ec471884b80b93aaad283c7abd0aac4839a08b5bc63b9bfac20e7",
 	"catalogIdentity": {
 		"catalogSource": "demo-catalog",
 		"catalogVersion": "2026-02-26",
@@ -35,7 +35,10 @@
 					"status": "available"
 				}
 			],
-			"provenance": "catalog"
+			"provenance": "catalog",
+			"certificationState": "certified",
+			"trustTier": "trusted",
+			"lastVerifiedAt": "2026-02-26T00:00:00.000Z"
 		},
 		{
 			"capabilityId": "message.is_allowed",
@@ -58,7 +61,10 @@
 				}
 			},
 			"providerAvailability": [],
-			"provenance": "local-spec"
+			"provenance": "local-spec",
+			"certificationState": "uncertified",
+			"trustTier": "unknown",
+			"lastVerifiedAt": null
 		}
 	]
 }

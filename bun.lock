@@ -48,6 +48,16 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/app": {
+      "name": "@gooi/app",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-facade-contracts": "workspace:*",
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/spec-compiler": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/artifact-model": {
       "name": "@gooi/artifact-model",
       "version": "0.1.0",
@@ -100,6 +110,14 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/stable-json": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/app-facade-contracts": {
+      "name": "@gooi/app-facade-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -864,6 +882,10 @@
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
 
     "@gooi-marketplace/memory": ["@gooi-marketplace/memory@workspace:products/marketplace/memory"],
+
+    "@gooi/app": ["@gooi/app@workspace:packages/app"],
+
+    "@gooi/app-facade-contracts": ["@gooi/app-facade-contracts@workspace:products/contracts/app-facade-contracts"],
 
     "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:products/contracts/app-spec-contracts"],
 

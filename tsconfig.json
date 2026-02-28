@@ -3,7 +3,9 @@
 	"references": [
 		{ "path": "./apps/vscode-extension" },
 		{ "path": "./packages/artifact-model" },
+		{ "path": "./packages/app" },
 		{ "path": "./products/contracts/contract-primitives" },
+		{ "path": "./products/contracts/app-facade-contracts" },
 		{ "path": "./products/contracts/marketplace-contracts" },
 		{ "path": "./products/contracts/capability-contracts" },
 		{ "path": "./products/contracts/app-spec-contracts" },

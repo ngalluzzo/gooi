@@ -51,11 +51,21 @@ const resolveBaseRef = (): string => {
 };
 
 const changedFilesSince = (baseRef: string): string[] => {
-	const raw = runGit(["diff", "--name-only", `${baseRef}...HEAD`]);
-	return raw
-		.split("\n")
-		.map((entry) => entry.trim())
-		.filter((entry) => entry.length > 0);
+	try {
+		const raw = runGit(["diff", "--name-only", `${baseRef}...HEAD`]);
+		return raw
+			.split("\n")
+			.map((entry) => entry.trim())
+			.filter((entry) => entry.length > 0);
+	} catch {
+		// Shallow CI checkouts may not include HEAD~1/base ancestry. Fall back to
+		// the current commit file list so governance checks still run deterministically.
+		const raw = runGit(["show", "--pretty=format:", "--name-only", "HEAD"]);
+		return raw
+			.split("\n")
+			.map((entry) => entry.trim())
+			.filter((entry) => entry.length > 0);
+	}
 };
 
 const isGoldenFile = (path: string): boolean =>

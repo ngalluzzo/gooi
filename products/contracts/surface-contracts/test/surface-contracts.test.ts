@@ -64,6 +64,14 @@ describe("surface-contracts", () => {
 				method: "get",
 				path: "/messages",
 			},
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "session",
+			},
 		});
 		const trace = parseDispatchTraceEnvelope({
 			surfaceId: "http",
@@ -79,6 +87,8 @@ describe("surface-contracts", () => {
 		});
 
 		expect(request.attributes.method).toBe("get");
+		expect(request.principal?.subject).toBe("user_1");
+		expect(request.authContext?.provider).toBe("session");
 		expect(trace.selectedHandlerId).toBe("http:query:list_messages");
 	});
 

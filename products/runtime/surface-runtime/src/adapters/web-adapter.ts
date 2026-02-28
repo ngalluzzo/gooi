@@ -1,4 +1,5 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
+import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asTrimmedString } from "./ingress-record";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
@@ -46,6 +47,13 @@ export const webSurfaceAdapter: SurfaceAdapter = {
 				}),
 			};
 		}
+		const authContext = resolveSurfaceAuthContext(record);
+		if (!authContext.ok) {
+			return {
+				ok: false,
+				error: authContext.error,
+			};
+		}
 
 		return {
 			ok: true,
@@ -56,6 +64,7 @@ export const webSurfaceAdapter: SurfaceAdapter = {
 					...(path === undefined ? {} : { path }),
 				},
 				payload: normalizeWebPayload(record),
+				...authContext.value,
 			},
 		};
 	},

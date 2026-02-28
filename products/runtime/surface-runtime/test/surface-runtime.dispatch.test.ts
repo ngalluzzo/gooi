@@ -94,4 +94,22 @@ describe("surface-runtime dispatch", () => {
 			expect(missingBinding.error.code).toBe("dispatch_transport_error");
 		}
 	});
+
+	test("returns typed transport error when dispatch request contract is malformed", () => {
+		const malformed = dispatchSurfaceRequest({
+			dispatchPlans: createDispatchPlanFixture(),
+			request: {
+				surfaceId: "",
+				surfaceType: "http",
+				attributes: {
+					method: "GET",
+					path: "/messages",
+				},
+			} as never,
+		});
+		expect(malformed.ok).toBe(false);
+		if (!malformed.ok) {
+			expect(malformed.error.code).toBe("dispatch_transport_error");
+		}
+	});
 });

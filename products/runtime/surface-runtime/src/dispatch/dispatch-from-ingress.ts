@@ -84,6 +84,12 @@ export const dispatchAndBindSurfaceIngress = (
 			...(normalized.value.payload === undefined
 				? {}
 				: { payload: normalized.value.payload }),
+			...(normalized.value.principal === undefined
+				? {}
+				: { principal: normalized.value.principal }),
+			...(normalized.value.authContext === undefined
+				? {}
+				: { authContext: normalized.value.authContext }),
 		},
 	});
 };

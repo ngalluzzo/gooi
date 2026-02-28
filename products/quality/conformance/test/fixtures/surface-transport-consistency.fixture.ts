@@ -174,10 +174,15 @@ export const createSurfaceTransportConsistencyFixture = () => {
 	return {
 		bundle: compiled.bundle,
 		domainRuntime,
-		principal: {
+		authorizedPrincipal: {
 			subject: "user_1",
 			claims: {},
 			tags: ["authenticated"],
+		},
+		unauthorizedPrincipal: {
+			subject: null,
+			claims: {},
+			tags: [],
 		},
 		queryIngressBySurface: {
 			http: {

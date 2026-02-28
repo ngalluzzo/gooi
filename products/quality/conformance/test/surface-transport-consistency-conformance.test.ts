@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { runEntrypointThroughKernel } from "@gooi/execution-kernel/entrypoint";
+import type { PrincipalContext } from "@gooi/host-contracts/principal";
 import type { ResultEnvelope } from "@gooi/surface-contracts/envelope";
 import { dispatchAndBindSurfaceIngress } from "@gooi/surface-runtime";
 import {
@@ -30,6 +31,17 @@ const buildHostPorts = (): EntrypointHostPortSet => {
 	};
 };
 
+const withAuthContext = (input: {
+	readonly ingress: unknown;
+	readonly principal: PrincipalContext;
+}): Readonly<Record<string, unknown>> => ({
+	...(input.ingress as Readonly<Record<string, unknown>>),
+	principal: input.principal,
+	authContext: {
+		provider: "conformance-fixture",
+	},
+});
+
 describe("surface transport consistency conformance", () => {
 	test("produces equivalent query outcomes for equivalent web/http/cli/webhook invocations", async () => {
 		const fixture = createSurfaceTransportConsistencyFixture();
@@ -41,7 +53,10 @@ describe("surface transport consistency conformance", () => {
 		)) {
 			const dispatch = dispatchAndBindSurfaceIngress({
 				surfaceId,
-				ingress,
+				ingress: withAuthContext({
+					ingress,
+					principal: fixture.authorizedPrincipal,
+				}),
 				dispatchPlans: fixture.bundle.dispatchPlans,
 				entrypoints: fixture.bundle.entrypoints,
 				bindings: fixture.bundle.bindings,
@@ -57,7 +72,7 @@ describe("surface transport consistency conformance", () => {
 				bundle: fixture.bundle,
 				binding: dispatch.binding,
 				payload: dispatch.boundInput,
-				principal: fixture.principal,
+				principal: dispatch.principal ?? fixture.authorizedPrincipal,
 				domainRuntime: fixture.domainRuntime,
 				hostPorts,
 				traceId: `trace_${surfaceId}_query`,
@@ -88,7 +103,10 @@ describe("surface transport consistency conformance", () => {
 		)) {
 			const dispatch = dispatchAndBindSurfaceIngress({
 				surfaceId,
-				ingress,
+				ingress: withAuthContext({
+					ingress,
+					principal: fixture.authorizedPrincipal,
+				}),
 				dispatchPlans: fixture.bundle.dispatchPlans,
 				entrypoints: fixture.bundle.entrypoints,
 				bindings: fixture.bundle.bindings,
@@ -104,13 +122,65 @@ describe("surface transport consistency conformance", () => {
 				bundle: fixture.bundle,
 				binding: dispatch.binding,
 				payload: dispatch.boundInput,
-				principal: fixture.principal,
+				principal: dispatch.principal ?? fixture.authorizedPrincipal,
 				domainRuntime: fixture.domainRuntime,
 				hostPorts,
 				traceId: `trace_${surfaceId}_mutation`,
 				invocationId: `inv_${surfaceId}_mutation`,
 				now: "2026-02-26T00:00:00.000Z",
 			});
+			outputs.push(toComparableEnvelope(result));
+		}
+
+		expect(outputs.length).toBe(4);
+		const baseline = outputs[0];
+		expect(baseline).toBeDefined();
+		if (baseline === undefined) {
+			return;
+		}
+		for (const output of outputs) {
+			expect(output).toEqual(baseline);
+		}
+	});
+
+	test("returns deterministic typed unauthorized envelopes across surfaces", async () => {
+		const fixture = createSurfaceTransportConsistencyFixture();
+		const hostPorts = buildHostPorts();
+		const outputs: Array<ReturnType<typeof toComparableEnvelope>> = [];
+
+		for (const [surfaceId, ingress] of Object.entries(
+			fixture.queryIngressBySurface,
+		)) {
+			const dispatch = dispatchAndBindSurfaceIngress({
+				surfaceId,
+				ingress: withAuthContext({
+					ingress,
+					principal: fixture.unauthorizedPrincipal,
+				}),
+				dispatchPlans: fixture.bundle.dispatchPlans,
+				entrypoints: fixture.bundle.entrypoints,
+				bindings: fixture.bundle.bindings,
+			});
+			expect(dispatch.ok).toBe(true);
+			if (!dispatch.ok || dispatch.binding === undefined) {
+				continue;
+			}
+
+			const result = await runEntrypointThroughKernel({
+				bundle: fixture.bundle,
+				binding: dispatch.binding,
+				payload: dispatch.boundInput,
+				principal: dispatch.principal ?? fixture.unauthorizedPrincipal,
+				domainRuntime: fixture.domainRuntime,
+				hostPorts,
+				traceId: `trace_${surfaceId}_unauthorized`,
+				invocationId: `inv_${surfaceId}_unauthorized`,
+				now: "2026-02-26T00:00:00.000Z",
+			});
+			expect(result.ok).toBe(false);
+			if (!result.ok) {
+				expect(result.error?.code).toBe("access_denied_error");
+			}
 			outputs.push(toComparableEnvelope(result));
 		}
 

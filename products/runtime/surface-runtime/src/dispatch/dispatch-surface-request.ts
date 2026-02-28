@@ -90,6 +90,14 @@ const buildDispatchError = (
 	},
 });
 
+const resolveTraceSurfaceId = (value: unknown): string => {
+	if (typeof value !== "string") {
+		return "unknown_surface";
+	}
+	const normalized = value.trim();
+	return normalized.length === 0 ? "unknown_surface" : normalized;
+};
+
 export interface SurfaceDispatchSelection {
 	readonly handlerId: string;
 	readonly surfaceId: string;
@@ -101,6 +109,7 @@ export interface SurfaceDispatchSelection {
 export type DispatchSurfaceRequestResult =
 	| {
 			readonly ok: true;
+			readonly request: DispatchRequest;
 			readonly selection: SurfaceDispatchSelection;
 			readonly trace: DispatchTraceEnvelope;
 	  }
@@ -121,7 +130,34 @@ export interface DispatchSurfaceRequestInput {
 export const dispatchSurfaceRequest = (
 	input: DispatchSurfaceRequestInput,
 ): DispatchSurfaceRequestResult => {
-	const request = parseDispatchRequest(input.request);
+	let request: DispatchRequest;
+	try {
+		request = parseDispatchRequest(input.request);
+	} catch {
+		const surfaceId = resolveTraceSurfaceId(
+			(input.request as { surfaceId?: unknown }).surfaceId,
+		);
+		return buildDispatchError(
+			{
+				code: "dispatch_transport_error",
+				message: "Dispatch request failed contract validation.",
+				details: {
+					surfaceId,
+				},
+			},
+			{
+				surfaceId,
+				candidates: [],
+				steps: [
+					{
+						handlerId: "request",
+						decision: "candidate_rejected",
+						reason: "Dispatch request failed contract validation.",
+					},
+				],
+			},
+		);
+	}
 	const plan = input.dispatchPlans.plans[request.surfaceId];
 	const candidates = sortHandlers(plan?.handlers ?? []);
 	const steps: DispatchTraceStep[] = [];
@@ -224,6 +260,7 @@ export const dispatchSurfaceRequest = (
 	});
 	return {
 		ok: true,
+		request,
 		selection: {
 			handlerId: winner.handlerId,
 			surfaceId: winner.surfaceId,

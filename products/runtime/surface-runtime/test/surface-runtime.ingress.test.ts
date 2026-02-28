@@ -40,6 +40,8 @@ describe("surface-runtime ingress adapters", () => {
 			expect(result.boundInput).toEqual(expected);
 			expect(result.dispatch.entrypointKind).toBe("query");
 			expect(result.dispatch.entrypointId).toBe("list_messages");
+			expect(result.principal?.subject).toBe("user_1");
+			expect(result.authContext?.provider).toBe("fixture");
 		}
 	});
 
@@ -68,6 +70,48 @@ describe("surface-runtime ingress adapters", () => {
 		const result = dispatchAndBindSurfaceIngress({
 			surfaceId: "custom",
 			ingress: {},
+			dispatchPlans: createSurfaceIngressDispatchPlansFixture(),
+			entrypoints: surfaceIngressEntrypointsFixture,
+			bindings: surfaceIngressBindingsFixture,
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("dispatch_transport_error");
+		}
+	});
+
+	test("returns typed transport error when auth context is malformed", () => {
+		const result = dispatchAndBindSurfaceIngress({
+			surfaceId: "http",
+			ingress: {
+				method: "GET",
+				path: "/messages",
+				query: { page: "2", q: "hello" },
+				principal: "invalid",
+			},
+			dispatchPlans: createSurfaceIngressDispatchPlansFixture(),
+			entrypoints: surfaceIngressEntrypointsFixture,
+			bindings: surfaceIngressBindingsFixture,
+		});
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("dispatch_transport_error");
+		}
+	});
+
+	test("returns typed transport error when principal fails dispatch contract validation", () => {
+		const result = dispatchAndBindSurfaceIngress({
+			surfaceId: "http",
+			ingress: {
+				method: "GET",
+				path: "/messages",
+				query: { page: "2", q: "hello" },
+				principal: {
+					subject: "user_1",
+				},
+			},
 			dispatchPlans: createSurfaceIngressDispatchPlansFixture(),
 			entrypoints: surfaceIngressEntrypointsFixture,
 			bindings: surfaceIngressBindingsFixture,

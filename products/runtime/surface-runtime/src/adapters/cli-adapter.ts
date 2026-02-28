@@ -1,4 +1,5 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
+import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asString, asTrimmedString } from "./ingress-record";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
@@ -68,6 +69,13 @@ export const cliSurfaceAdapter: SurfaceAdapter = {
 				}),
 			};
 		}
+		const authContext = resolveSurfaceAuthContext(record);
+		if (!authContext.ok) {
+			return {
+				ok: false,
+				error: authContext.error,
+			};
+		}
 
 		return {
 			ok: true,
@@ -80,6 +88,7 @@ export const cliSurfaceAdapter: SurfaceAdapter = {
 						: { flags: normalizeFlagAttributes(record.flags) }),
 				},
 				payload: normalizeCliPayload(record),
+				...authContext.value,
 			},
 		};
 	},

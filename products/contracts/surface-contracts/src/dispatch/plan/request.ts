@@ -2,6 +2,7 @@ import {
 	type JsonObject,
 	jsonObjectSchema,
 } from "@gooi/contract-primitives/json";
+import { principalContextSchema } from "@gooi/host-contracts/principal";
 import { z } from "zod";
 
 /**
@@ -13,6 +14,8 @@ export const dispatchRequestSchema = z
 		surfaceType: z.string().min(1),
 		attributes: jsonObjectSchema,
 		payload: jsonObjectSchema.optional(),
+		principal: principalContextSchema.optional(),
+		authContext: jsonObjectSchema.optional(),
 	})
 	.strict();
 
@@ -21,8 +24,12 @@ type ParsedDispatchRequest = z.infer<typeof dispatchRequestSchema>;
 /**
  * One dispatch request payload.
  */
-export type DispatchRequest = Omit<ParsedDispatchRequest, "payload"> & {
+export type DispatchRequest = Omit<
+	ParsedDispatchRequest,
+	"payload" | "authContext"
+> & {
 	readonly payload?: JsonObject | undefined;
+	readonly authContext?: JsonObject | undefined;
 };
 
 /**

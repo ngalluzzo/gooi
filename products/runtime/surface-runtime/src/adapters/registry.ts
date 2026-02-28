@@ -1,4 +1,7 @@
-import type { DispatchError } from "@gooi/surface-contracts/dispatch";
+import type {
+	DispatchError,
+	DispatchRequest,
+} from "@gooi/surface-contracts/dispatch";
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
 import { cliSurfaceAdapter } from "./cli-adapter";
 import { httpSurfaceAdapter } from "./http-adapter";
@@ -9,6 +12,8 @@ export interface SurfaceAdapterNormalizedIngress {
 	readonly surfaceType: string;
 	readonly attributes: Readonly<Record<string, unknown>>;
 	readonly payload?: SurfaceRequestPayload;
+	readonly principal?: DispatchRequest["principal"];
+	readonly authContext?: DispatchRequest["authContext"];
 }
 
 export type SurfaceAdapterNormalizeResult =

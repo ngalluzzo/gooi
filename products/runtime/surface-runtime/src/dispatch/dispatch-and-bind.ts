@@ -68,6 +68,8 @@ export type DispatchAndBindSurfaceResult =
 			readonly trace: import("@gooi/surface-contracts/dispatch").DispatchTraceEnvelope;
 			readonly entrypoint?: CompiledEntrypoint;
 			readonly binding?: CompiledSurfaceBinding;
+			readonly principal?: DispatchRequest["principal"];
+			readonly authContext?: DispatchRequest["authContext"];
 	  }
 	| {
 			readonly ok: false;
@@ -116,6 +118,12 @@ export const dispatchAndBindSurfaceInput = (
 				selection: dispatch.selection,
 			}),
 			trace: dispatch.trace,
+			...(dispatch.request.principal === undefined
+				? {}
+				: { principal: dispatch.request.principal }),
+			...(dispatch.request.authContext === undefined
+				? {}
+				: { authContext: dispatch.request.authContext }),
 		};
 	}
 
@@ -187,5 +195,11 @@ export const dispatchAndBindSurfaceInput = (
 		trace: dispatch.trace,
 		entrypoint,
 		binding,
+		...(dispatch.request.principal === undefined
+			? {}
+			: { principal: dispatch.request.principal }),
+		...(dispatch.request.authContext === undefined
+			? {}
+			: { authContext: dispatch.request.authContext }),
 	};
 };

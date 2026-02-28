@@ -31,6 +31,13 @@ const buildHostPorts = (): EntrypointHostPortSet => {
 	};
 };
 
+const expectedInvocationHostBySurface = {
+	http: "node",
+	web: "browser",
+	cli: "node",
+	webhook: "node",
+} as const;
+
 const withAuthContext = (input: {
 	readonly ingress: unknown;
 	readonly principal: PrincipalContext;
@@ -65,6 +72,12 @@ describe("surface transport consistency conformance", () => {
 			if (!dispatch.ok || dispatch.binding === undefined) {
 				continue;
 			}
+			expect(dispatch.surfaceId).toBe(surfaceId);
+			const expectedHost =
+				expectedInvocationHostBySurface[
+					surfaceId as keyof typeof expectedInvocationHostBySurface
+				];
+			expect(dispatch.invocationHost).toBe(expectedHost);
 			expect(dispatch.dispatch.entrypointId).toBe("list_messages");
 			expect(dispatch.boundInput).toEqual({ page: 2 });
 
@@ -115,6 +128,12 @@ describe("surface transport consistency conformance", () => {
 			if (!dispatch.ok || dispatch.binding === undefined) {
 				continue;
 			}
+			expect(dispatch.surfaceId).toBe(surfaceId);
+			const expectedHost =
+				expectedInvocationHostBySurface[
+					surfaceId as keyof typeof expectedInvocationHostBySurface
+				];
+			expect(dispatch.invocationHost).toBe(expectedHost);
 			expect(dispatch.dispatch.entrypointId).toBe("submit_message");
 			expect(dispatch.boundInput).toEqual({ message: "hello" });
 
@@ -165,6 +184,12 @@ describe("surface transport consistency conformance", () => {
 			if (!dispatch.ok || dispatch.binding === undefined) {
 				continue;
 			}
+			expect(dispatch.surfaceId).toBe(surfaceId);
+			const expectedHost =
+				expectedInvocationHostBySurface[
+					surfaceId as keyof typeof expectedInvocationHostBySurface
+				];
+			expect(dispatch.invocationHost).toBe(expectedHost);
 
 			const result = await runEntrypointThroughKernel({
 				bundle: fixture.bundle,

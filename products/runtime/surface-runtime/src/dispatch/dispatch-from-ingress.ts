@@ -80,6 +80,7 @@ export const dispatchAndBindSurfaceIngress = (
 		request: {
 			surfaceId: input.surfaceId,
 			surfaceType: normalized.value.surfaceType,
+			invocationHost: normalized.value.invocationHost,
 			attributes: normalized.value.attributes,
 			...(normalized.value.payload === undefined
 				? {}

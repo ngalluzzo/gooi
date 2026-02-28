@@ -1,6 +1,7 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
 import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asTrimmedString } from "./ingress-record";
+import { resolveSurfaceInvocationHost } from "./invocation-host";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
 
@@ -62,11 +63,22 @@ export const webhookSurfaceAdapter: SurfaceAdapter = {
 				error: authContext.error,
 			};
 		}
+		const invocationHost = resolveSurfaceInvocationHost({
+			ingress: record,
+			defaultInvocationHost: "node",
+		});
+		if (!invocationHost.ok) {
+			return {
+				ok: false,
+				error: invocationHost.error,
+			};
+		}
 
 		return {
 			ok: true,
 			value: {
 				surfaceType: "webhook",
+				invocationHost: invocationHost.value,
 				attributes: {
 					sourceId,
 					method: method.toUpperCase(),

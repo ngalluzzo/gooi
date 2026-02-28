@@ -22,6 +22,8 @@ describe("surface-runtime dispatch", () => {
 		if (!result.ok) {
 			return;
 		}
+		expect(result.surfaceId).toBe("http");
+		expect(result.invocationHost).toBe("node");
 		expect(result.selection.handlerId).toBe("http:query:list_messages");
 		expect(result.trace.selectedHandlerId).toBe("http:query:list_messages");
 	});
@@ -56,6 +58,8 @@ describe("surface-runtime dispatch", () => {
 		if (!result.ok) {
 			return;
 		}
+		expect(result.surfaceId).toBe("http");
+		expect(result.invocationHost).toBe("node");
 		expect(result.dispatch.entrypointKind).toBe("query");
 		expect(result.dispatch.entrypointId).toBe("list_messages");
 		expect(result.boundInput).toEqual({

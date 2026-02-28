@@ -23,6 +23,8 @@ export interface DispatchAndBindSurfaceInput
 export type DispatchAndBindSurfaceResult =
 	| {
 			readonly ok: true;
+			readonly surfaceId: string;
+			readonly invocationHost: DispatchRequest["invocationHost"];
 			readonly dispatch: SurfaceDispatchSelection;
 			readonly boundInput: Readonly<Record<string, unknown>>;
 			readonly trace: import("@gooi/surface-contracts/dispatch").DispatchTraceEnvelope;
@@ -64,6 +66,8 @@ export const dispatchAndBindSurfaceInput = (
 
 	return {
 		ok: true,
+		surfaceId: dispatch.request.surfaceId,
+		invocationHost: dispatch.request.invocationHost,
 		dispatch: dispatch.selection,
 		boundInput: bound.boundInput,
 		trace: dispatch.trace,

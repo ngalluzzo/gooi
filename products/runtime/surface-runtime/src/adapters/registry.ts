@@ -12,6 +12,7 @@ export interface SurfaceAdapterNormalizedIngress {
 	readonly surfaceType: string;
 	readonly attributes: Readonly<Record<string, unknown>>;
 	readonly payload?: SurfaceRequestPayload;
+	readonly invocationHost: DispatchRequest["invocationHost"];
 	readonly principal?: DispatchRequest["principal"];
 	readonly authContext?: DispatchRequest["authContext"];
 }

@@ -19,6 +19,8 @@ export interface SurfaceDispatchSelection {
 export type DispatchSurfaceRequestResult =
 	| {
 			readonly ok: true;
+			readonly surfaceId: string;
+			readonly invocationHost: DispatchRequest["invocationHost"];
 			readonly request: DispatchRequest;
 			readonly selection: SurfaceDispatchSelection;
 			readonly trace: DispatchTraceEnvelope;
@@ -63,6 +65,8 @@ export const dispatchSurfaceRequest = (
 
 	return {
 		ok: true,
+		surfaceId: gate.request.surfaceId,
+		invocationHost: gate.request.invocationHost,
 		request: gate.request,
 		selection: {
 			handlerId: selection.winner.handlerId,

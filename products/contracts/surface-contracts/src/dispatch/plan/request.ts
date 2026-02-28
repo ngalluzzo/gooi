@@ -4,6 +4,7 @@ import {
 } from "@gooi/contract-primitives/json";
 import { principalContextSchema } from "@gooi/host-contracts/principal";
 import { z } from "zod";
+import { dispatchInvocationHostSchema } from "../context/dispatch-context";
 
 /**
  * Runtime schema for one dispatch request.
@@ -12,6 +13,7 @@ export const dispatchRequestSchema = z
 	.object({
 		surfaceId: z.string().min(1),
 		surfaceType: z.string().min(1),
+		invocationHost: dispatchInvocationHostSchema,
 		attributes: jsonObjectSchema,
 		payload: jsonObjectSchema.optional(),
 		principal: principalContextSchema.optional(),

@@ -2,6 +2,12 @@
  * Canonical dispatch contract API.
  */
 import {
+	dispatchContextSchema,
+	dispatchInvocationHostSchema,
+	parseDispatchContext,
+	parseDispatchInvocationHost,
+} from "./context/dispatch-context";
+import {
 	dispatchErrorCodeSchema,
 	dispatchErrorSchema,
 	parseDispatchError,
@@ -39,18 +45,26 @@ export {
 	dispatchClauseOperatorSchema,
 	dispatchClauseSchema,
 	dispatchEntrypointKindSchema,
+	dispatchContextSchema,
 	dispatchErrorCodeSchema,
 	dispatchErrorSchema,
+	dispatchInvocationHostSchema,
 	dispatchMatcherSchema,
 	dispatchRequestSchema,
 	dispatchTraceDecisionSchema,
 	dispatchTraceEnvelopeSchema,
 	dispatchTraceStepSchema,
 	parseCompiledSurfaceDispatchPlanSet,
+	parseDispatchContext,
 	parseDispatchError,
+	parseDispatchInvocationHost,
 	parseDispatchRequest,
 	parseDispatchTraceEnvelope,
 };
+export type {
+	DispatchContext,
+	DispatchInvocationHost,
+} from "./context/dispatch-context";
 export type { DispatchError, DispatchErrorCode } from "./error/contracts";
 export type {
 	DispatchClause,
@@ -78,6 +92,8 @@ export const dispatch = Object.freeze({
 	dispatchClauseOperatorSchema,
 	dispatchClauseSchema,
 	dispatchMatcherSchema,
+	dispatchContextSchema,
+	dispatchInvocationHostSchema,
 	compiledDispatchHandlerSchema,
 	compiledSurfaceDispatchPlanSchema,
 	compiledSurfaceDispatchPlanVersionSchema,
@@ -88,6 +104,8 @@ export const dispatch = Object.freeze({
 	dispatchErrorCodeSchema,
 	dispatchErrorSchema,
 	parseDispatchError,
+	parseDispatchInvocationHost,
+	parseDispatchContext,
 	dispatchTraceDecisionSchema,
 	dispatchTraceStepSchema,
 	dispatchTraceEnvelopeSchema,

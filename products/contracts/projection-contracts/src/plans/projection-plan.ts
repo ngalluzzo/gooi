@@ -63,6 +63,11 @@ export interface ProjectionFieldSelection {
 }
 
 /**
+ * Version identifier for compiled projection IR artifacts.
+ */
+export const compiledProjectionIRVersion = "1.0.0" as const;
+
+/**
  * Projection plan for `from_collection` strategy.
  */
 export interface CompiledFromCollectionProjectionPlan {
@@ -205,4 +210,13 @@ export interface CompiledQueryProjectionPlan {
 		readonly queryId: string;
 		readonly path: string;
 	};
+}
+
+/**
+ * Canonical compiled projection IR consumed by runtime query orchestration.
+ */
+export interface CompiledProjectionIR {
+	readonly artifactVersion: typeof compiledProjectionIRVersion;
+	readonly projections: Readonly<Record<string, CompiledProjectionPlan>>;
+	readonly queries: Readonly<Record<string, CompiledQueryProjectionPlan>>;
 }

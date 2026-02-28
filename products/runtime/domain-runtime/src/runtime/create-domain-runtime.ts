@@ -7,12 +7,15 @@ import {
 import { runMutationPath } from "../mutation-path/run-mutation-path";
 import { runQueryPath } from "../query-path/run-query-path";
 import {
+	assertSessionIRContracts,
+	buildQueryNotFoundEnvelope,
 	type CreateDomainRuntimeInput,
 	type DomainRuntimeConformanceHarness,
 	mapActionResolveFailureToCore,
 	mapActionResolveFailureToPreparation,
 	mapMutationEnvelopeToDomainResult,
 	mapQueryEnvelopeToDomainResult,
+	resolveCompiledQueryPlan,
 	resolveMutationAction,
 	toQueryExecution,
 	toRunMutationInput,
@@ -27,11 +30,12 @@ export type { CreateDomainRuntimeInput, DomainRuntimeConformanceHarness };
 export const createDomainRuntimeConformanceHarness = (
 	input: CreateDomainRuntimeInput,
 ): DomainRuntimeConformanceHarness => {
+	assertSessionIRContracts(input.sessionIR);
+
 	const executeMutationEnvelope: DomainRuntimeConformanceHarness["executeMutationEnvelope"] =
 		async (execution) => {
 			const resolved = resolveMutationAction({
-				mutationEntrypointActionMap: input.mutationEntrypointActionMap,
-				actions: input.actions,
+				domainRuntimeIR: input.domainRuntimeIR,
 				execution,
 			});
 			if (!resolved.ok) {
@@ -42,6 +46,7 @@ export const createDomainRuntimeConformanceHarness = (
 				toRunMutationInput(
 					execution,
 					resolved.action,
+					resolved.mutationPlan,
 					input.guards,
 					input.capabilities,
 				),
@@ -49,11 +54,22 @@ export const createDomainRuntimeConformanceHarness = (
 		};
 
 	const executeQueryEnvelope: DomainRuntimeConformanceHarness["executeQueryEnvelope"] =
-		async (execution) =>
-			runQueryPath({
-				execution: toQueryExecution(execution),
-				...(input.queries === undefined ? {} : { queries: input.queries }),
+		async (execution) => {
+			const queryPlan = resolveCompiledQueryPlan({
+				domainRuntimeIR: input.domainRuntimeIR,
+				execution,
 			});
+			if (queryPlan === undefined) {
+				return buildQueryNotFoundEnvelope(execution);
+			}
+			return runQueryPath({
+				execution: toQueryExecution(execution),
+				queryPlan,
+				...(input.queryHandlers === undefined
+					? {}
+					: { queryHandlers: input.queryHandlers }),
+			});
+		};
 
 	const semanticRuntime: KernelSemanticRuntimePort = {
 		executeQuery: async (queryInput) =>
@@ -67,8 +83,7 @@ export const createDomainRuntimeConformanceHarness = (
 		prepareMutation: async (mutationInput) => {
 			const execution = toRuntimeExecutionInput(mutationInput);
 			const resolved = resolveMutationAction({
-				mutationEntrypointActionMap: input.mutationEntrypointActionMap,
-				actions: input.actions,
+				domainRuntimeIR: input.domainRuntimeIR,
 				execution,
 			});
 			if (!resolved.ok) {
@@ -78,6 +93,7 @@ export const createDomainRuntimeConformanceHarness = (
 				toRunMutationInput(
 					execution,
 					resolved.action,
+					resolved.mutationPlan,
 					input.guards,
 					input.capabilities,
 				),
@@ -86,8 +102,7 @@ export const createDomainRuntimeConformanceHarness = (
 		executeMutationCore: async (mutationInput) => {
 			const execution = toRuntimeExecutionInput(mutationInput);
 			const resolved = resolveMutationAction({
-				mutationEntrypointActionMap: input.mutationEntrypointActionMap,
-				actions: input.actions,
+				domainRuntimeIR: input.domainRuntimeIR,
 				execution,
 			});
 			if (!resolved.ok) {
@@ -97,6 +112,7 @@ export const createDomainRuntimeConformanceHarness = (
 				toRunMutationInput(
 					execution,
 					resolved.action,
+					resolved.mutationPlan,
 					input.guards,
 					input.capabilities,
 				),

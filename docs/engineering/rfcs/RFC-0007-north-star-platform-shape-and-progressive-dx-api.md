@@ -263,6 +263,32 @@ Developers choose one mode per use case, and can mix modes in the same repo.
 
 No mode supersedes another. Modes are composable, not mandatory steps.
 
+### IR-first execution rule
+
+Cross-lane executable semantics must be compiler-emitted IR artifacts and must
+be consumed from compiled artifacts at runtime.
+
+Rules:
+
+1. If behavior is executed in runtime/kernel and consumed by more than one lane,
+   it must have a versioned compiled IR contract (`artifactVersion` + hash).
+2. Runtime/kernel must consume compiled IR and must not execute from raw spec
+   section payloads or injected handler maps as canonical behavior.
+3. Raw-spec section snapshots remain useful for authoring visibility, but are
+   not executable contracts.
+4. Any exception must be explicitly temporary, documented, and tracked as a
+   migration gap with deletion criteria.
+
+Current IR treatment matrix:
+
+1. Landed:
+   - `dispatchPlans` (`CompiledSurfaceDispatchPlanSet`)
+   - `viewRenderIR` (`CompiledViewRenderIR`)
+   - `projectionIR` (`CompiledProjectionIR`)
+   - `domainRuntimeIR` (compiled actions/flows/session outcome semantics)
+   - `sessionIR` (compiled session field/default semantic contract)
+   - `scenarioIR` (`CompiledScenarioPlanSet` emitted by compiler, not fixture-only)
+
 ### Ultimate DX API shape
 
 The end-state API must be "thin where possible, deep when needed."
@@ -392,6 +418,13 @@ Must-not-cross constraints:
   - `SymbolGraphSnapshot@1.0.0`
   - `AuthoringLockfile@1.0.0`
   - `CapabilityBindingResolutionPlan@1.0.0` (deployment artifact contract).
+  - Executable IR artifacts in runtime lane:
+    - `CompiledSurfaceDispatchPlanSet@1.0.0`
+    - `CompiledViewRenderIR@1.0.0`
+    - `CompiledProjectionIR@1.0.0`
+    - `CompiledDomainRuntimeIR@1.0.0`
+    - `CompiledSessionIR@1.0.0`
+    - `CompiledScenarioPlanSet@1.0.0`
   - Future full-platform compiled artifacts must follow the same version/hash policy.
 - Artifact version field and hash policy:
   - artifact hash is computed from normalized artifact payload excluding hash field itself.
@@ -596,3 +629,4 @@ None.
 - `2026-02-27` - Added `kernel` as a dedicated product lane in the north-star architecture map.
 - `2026-02-27` - Clarified kernel as runtime-core product line; runtime packages consume kernel orchestration without old/new coexistence paths.
 - `2026-02-27` - Clarified cross-lane binding ownership: runtime adapters own transport input binding, marketplace resolves deployment bindings, kernel enforces binding artifacts, and quality verifies deterministic behavior end-to-end.
+- `2026-02-28` - Adopted IR-first execution rule: cross-lane executable semantics must be emitted as versioned compiled IR artifacts and consumed from artifact contracts at runtime.

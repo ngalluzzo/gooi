@@ -1,37 +1,45 @@
 import { describe, expect, test } from "bun:test";
 import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
+import {
+	createDomainRuntimeIRFixture,
+	createSessionIRFixture,
+} from "./runtime-ir.fixture";
 
 describe("domain-runtime action/capability semantics", () => {
 	test("applies deterministic defaults and preserves explicit nulls", async () => {
 		const calls: Array<Readonly<Record<string, unknown>>> = [];
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "moderation",
-							capabilityId: "moderation.check",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-									channel: { kind: "input", path: "channel" },
-								},
-								defaults: {
-									channel: "direct",
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "moderation",
+						capabilityId: "moderation.check",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
+								channel: { kind: "input", path: "channel" },
+							},
+							defaults: {
+								channel: "direct",
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"moderation.check": {
 					capabilityId: "moderation.check",
@@ -89,31 +97,35 @@ describe("domain-runtime action/capability semantics", () => {
 
 	test("validates capability contract before invocation side effects", async () => {
 		let invokeCalls = 0;
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "moderation",
-							capabilityId: "moderation.check",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-									unexpected: { kind: "literal", value: "x" },
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "moderation",
+						capabilityId: "moderation.check",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
+								unexpected: { kind: "literal", value: "x" },
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"moderation.check": {
 					capabilityId: "moderation.check",
@@ -151,30 +163,34 @@ describe("domain-runtime action/capability semantics", () => {
 	});
 
 	test("returns stable typed runtime error taxonomy codes", async () => {
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.write",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "persist",
+						capabilityId: "collections.write",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"collections.write": {
 					capabilityId: "collections.write",

@@ -2,6 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { sha256, stableStringify } from "@gooi/stable-json";
 import { createDomainRuntimeConformanceHarness } from "../../src/runtime/create-domain-runtime";
 import {
+	createDomainRuntimeIRFixture,
+	createSessionIRFixture,
+} from "../runtime-ir.fixture";
+import {
 	collectionInvariant,
 	createActionGuard,
 } from "./guard-boundaries.fixture";
@@ -9,97 +13,101 @@ import {
 describe("domain-runtime guard boundaries", () => {
 	test("enforces collection/action/signal/flow boundaries in deterministic order", async () => {
 		let invokeCalls = 0;
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					guards: {
-						pre: createActionGuard({
-							guardId: "action.pre.exists",
-							description: "message exists pre-step",
-							onFail: "abort",
-							path: "domain.actions.guestbook.submit.guards.pre",
-						}),
-						post: {
-							sourceRef: {
-								primitiveKind: "action",
-								primitiveId: "guestbook.submit",
-								path: "domain.actions.guestbook.submit.guards.post",
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				guards: {
+					pre: createActionGuard({
+						guardId: "action.pre.exists",
+						description: "message exists pre-step",
+						onFail: "abort",
+						path: "domain.actions.guestbook.submit.guards.pre",
+					}),
+					post: {
+						sourceRef: {
+							primitiveKind: "action",
+							primitiveId: "guestbook.submit",
+							path: "domain.actions.guestbook.submit.guards.post",
+						},
+						onFail: "abort",
+						structural: [
+							{
+								guardId: "action.post.step_output",
+								description: "persist output id exists",
+								operator: "exists",
+								left: { kind: "path", path: "steps.persist.id" },
 							},
-							onFail: "abort",
+						],
+					},
+				},
+				steps: [
+					{
+						stepId: "persist",
+						capabilityId: "collections.write",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
+							},
+						},
+						invariants: [collectionInvariant],
+					},
+				],
+				signalGuards: [
+					{
+						signalId: "message.rejected",
+						definition: {
+							sourceRef: {
+								primitiveKind: "signal",
+								primitiveId: "message.rejected",
+								path: "domain.signals.custom.message.rejected.guards",
+							},
+							onFail: "emit_violation",
 							structural: [
 								{
-									guardId: "action.post.step_output",
-									description: "persist output id exists",
+									guardId: "signal.reason.exists",
+									description: "reason exists",
+									operator: "exists",
+									left: { kind: "path", path: "payload.reason" },
+								},
+							],
+						},
+					},
+				],
+				flowGuards: [
+					{
+						flowId: "rejection_followup",
+						definition: {
+							sourceRef: {
+								primitiveKind: "flow",
+								primitiveId: "rejection_followup",
+								path: "domain.flows.rejection_followup.guards",
+							},
+							onFail: "log_and_continue",
+							structural: [
+								{
+									guardId: "flow.steps.persist.exists",
+									description: "persist step output exists",
 									operator: "exists",
 									left: { kind: "path", path: "steps.persist.id" },
 								},
 							],
 						},
 					},
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.write",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
-							},
-							invariants: [collectionInvariant],
-						},
-					],
-					signalGuards: [
-						{
-							signalId: "message.rejected",
-							definition: {
-								sourceRef: {
-									primitiveKind: "signal",
-									primitiveId: "message.rejected",
-									path: "domain.signals.custom.message.rejected.guards",
-								},
-								onFail: "emit_violation",
-								structural: [
-									{
-										guardId: "signal.reason.exists",
-										description: "reason exists",
-										operator: "exists",
-										left: { kind: "path", path: "payload.reason" },
-									},
-								],
-							},
-						},
-					],
-					flowGuards: [
-						{
-							flowId: "rejection_followup",
-							definition: {
-								sourceRef: {
-									primitiveKind: "flow",
-									primitiveId: "rejection_followup",
-									path: "domain.flows.rejection_followup.guards",
-								},
-								onFail: "log_and_continue",
-								structural: [
-									{
-										guardId: "flow.steps.persist.exists",
-										description: "persist step output exists",
-										operator: "exists",
-										left: { kind: "path", path: "steps.persist.id" },
-									},
-								],
-							},
-						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
-					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"collections.write": {
 					capabilityId: "collections.write",

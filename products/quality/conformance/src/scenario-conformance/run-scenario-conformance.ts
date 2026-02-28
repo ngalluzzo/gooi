@@ -16,6 +16,20 @@ export const runScenarioConformance = async (
 	input: RunScenarioConformanceInput,
 ): Promise<ScenarioConformanceReport> => {
 	const checks: Array<ScenarioConformanceReport["checks"][number]> = [];
+	checks.push(
+		buildCheck(
+			"compiled_artifact_parity",
+			input.planSet.artifactVersion === "1.0.0" &&
+				typeof input.planSet.artifactHash === "string" &&
+				input.planSet.artifactHash.length > 0 &&
+				typeof input.planSet.sectionHash === "string" &&
+				input.planSet.sectionHash.length > 0,
+			input.planSet.artifactVersion === "1.0.0" &&
+				input.planSet.artifactHash.length > 0
+				? "Scenario conformance executes compiler-emitted scenario artifacts."
+				: "Scenario conformance did not receive a valid compiled scenario artifact set.",
+		),
+	);
 
 	const happy = await input.runScenario({
 		scenarioId: "happy_path",

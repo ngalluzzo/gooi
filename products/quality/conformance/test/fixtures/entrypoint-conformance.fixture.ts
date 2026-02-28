@@ -18,7 +18,20 @@ export const createEntrypointConformanceFixture = () => {
 					"guestbook.submit": {},
 				},
 				projections: {
-					latest_messages: {},
+					latest_messages: {
+						strategy: "from_collection",
+						collectionId: "messages",
+						fields: [{ source: "id", as: "id" }],
+						sort: [{ field: "id", direction: "asc" as const }],
+						pagination: {
+							mode: "page" as const,
+							pageArg: "page",
+							pageSizeArg: "page_size",
+							defaultPage: 1,
+							defaultPageSize: 10,
+							maxPageSize: 50,
+						},
+					},
 				},
 			},
 			session: {

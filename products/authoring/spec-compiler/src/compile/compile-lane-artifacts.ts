@@ -2,9 +2,12 @@ import type {
 	CanonicalSpecModel,
 	CompiledAccessPlan,
 	CompiledBindingRequirements,
+	CompiledDomainRuntimeIR,
 	CompiledEntrypoint,
 	CompiledJsonSchemaArtifact,
+	CompiledProjectionIR,
 	CompiledRefreshSubscription,
+	CompiledSessionIR,
 	CompiledSurfaceBinding,
 } from "@gooi/app-spec-contracts/compiled";
 import {
@@ -14,6 +17,7 @@ import {
 	type CompiledLaneArtifact,
 } from "@gooi/artifact-model/manifest";
 import type { CompiledViewRenderIR } from "@gooi/render-contracts/ir";
+import type { CompiledScenarioPlanSet } from "@gooi/scenario-contracts/plans";
 import type { CompiledSurfaceDispatchPlanSet } from "@gooi/surface-contracts/dispatch";
 
 interface CompileLaneArtifactsInput {
@@ -29,7 +33,11 @@ interface CompileLaneArtifactsInput {
 		Record<string, CompiledJsonSchemaArtifact>
 	>;
 	readonly bindingRequirementsArtifact: CompiledBindingRequirements;
+	readonly projectionIR: CompiledProjectionIR;
 	readonly viewRenderIR: CompiledViewRenderIR;
+	readonly domainRuntimeIR: CompiledDomainRuntimeIR;
+	readonly sessionIR: CompiledSessionIR;
+	readonly scenarioIR: CompiledScenarioPlanSet;
 }
 
 interface CompileLaneArtifactsOutput {
@@ -71,7 +79,10 @@ export const compileLaneArtifacts = (
 				refreshSubscriptions: input.refreshSubscriptions,
 				accessPlan: input.accessPlan,
 				schemaArtifacts: input.schemaArtifacts,
-				sections: input.canonicalModel.sections,
+				projectionIR: input.projectionIR,
+				viewRenderIR: input.viewRenderIR,
+				domainRuntimeIR: input.domainRuntimeIR,
+				sessionIR: input.sessionIR,
 			},
 		}),
 		viewRenderIR: buildLaneArtifact({
@@ -79,6 +90,30 @@ export const compileLaneArtifacts = (
 			artifactVersion: "1.0.0",
 			lane: "runtime",
 			payload: input.viewRenderIR,
+		}),
+		projectionIR: buildLaneArtifact({
+			artifactId: "CompiledProjectionIR",
+			artifactVersion: input.projectionIR.artifactVersion,
+			lane: "runtime",
+			payload: input.projectionIR,
+		}),
+		domainRuntimeIR: buildLaneArtifact({
+			artifactId: "CompiledDomainRuntimeIR",
+			artifactVersion: input.domainRuntimeIR.artifactVersion,
+			lane: "runtime",
+			payload: input.domainRuntimeIR,
+		}),
+		sessionIR: buildLaneArtifact({
+			artifactId: "CompiledSessionIR",
+			artifactVersion: input.sessionIR.artifactVersion,
+			lane: "runtime",
+			payload: input.sessionIR,
+		}),
+		scenarioIR: buildLaneArtifact({
+			artifactId: "CompiledScenarioPlanSet",
+			artifactVersion: input.scenarioIR.artifactVersion,
+			lane: "quality",
+			payload: input.scenarioIR,
 		}),
 		qualityConformanceSeed: buildLaneArtifact({
 			artifactId: "CompiledQualityConformanceSeed",

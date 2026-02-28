@@ -27,9 +27,23 @@ const buildQueryTrace = (execution: QueryPathExecutionInput) => ({
  */
 export const runQueryPath = async (input: {
 	readonly execution: QueryPathExecutionInput;
-	readonly queries?: Readonly<Record<string, DomainQueryHandler>>;
+	readonly queryPlan?: { readonly queryId: string };
+	readonly queryHandlers?: Readonly<Record<string, DomainQueryHandler>>;
 }): Promise<DomainQueryEnvelope> => {
-	const handler = input.queries?.[input.execution.entrypointId];
+	if (input.queryPlan === undefined) {
+		return buildQueryFailureEnvelope({
+			mode: input.execution.ctx.mode,
+			entrypointId: input.execution.entrypointId,
+			error: createDomainRuntimeError(
+				"query_not_found_error",
+				"No compiled query runtime plan exists for this entrypoint.",
+				{ entrypointId: input.execution.entrypointId },
+			),
+			trace: buildQueryTrace(input.execution),
+			observedEffects: [],
+		});
+	}
+	const handler = input.queryHandlers?.[input.queryPlan.queryId];
 	const trace = buildQueryTrace(input.execution);
 	if (handler === undefined) {
 		return buildQueryFailureEnvelope({
@@ -37,8 +51,11 @@ export const runQueryPath = async (input: {
 			entrypointId: input.execution.entrypointId,
 			error: createDomainRuntimeError(
 				"query_not_found_error",
-				"No query handler exists for this entrypoint.",
-				{ entrypointId: input.execution.entrypointId },
+				"No query handler exists for the compiled query runtime plan.",
+				{
+					entrypointId: input.execution.entrypointId,
+					queryId: input.queryPlan.queryId,
+				},
 			),
 			trace,
 			observedEffects: [],

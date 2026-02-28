@@ -1,34 +1,42 @@
 import { describe, expect, test } from "bun:test";
 import { createDomainRuntimeConformanceHarness } from "../src/runtime/create-domain-runtime";
+import {
+	createDomainRuntimeIRFixture,
+	createSessionIRFixture,
+} from "./runtime-ir.fixture";
 
 describe("domain-runtime simulation and traceability", () => {
 	test("runs deterministic simulation paths without live side effects", async () => {
 		let liveInvokeCount = 0;
 		let simulateInvokeCount = 0;
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "persist",
-							capabilityId: "collections.write",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "persist",
+						capabilityId: "collections.write",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"collections.write": {
 					capabilityId: "collections.write",
@@ -74,30 +82,34 @@ describe("domain-runtime simulation and traceability", () => {
 	});
 
 	test("includes action and capability step identifiers in runtime traces", async () => {
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "moderation",
-							capabilityId: "moderation.check",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "moderation",
+						capabilityId: "moderation.check",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"moderation.check": {
 					capabilityId: "moderation.check",
@@ -138,30 +150,34 @@ describe("domain-runtime simulation and traceability", () => {
 	});
 
 	test("compares simulation envelopes against live envelopes by deterministic trace shape", async () => {
-		const runtime = createDomainRuntimeConformanceHarness({
-			mutationEntrypointActionMap: {
-				submit_message: "guestbook.submit",
-			},
-			actions: {
-				"guestbook.submit": {
-					actionId: "guestbook.submit",
-					steps: [
-						{
-							stepId: "moderation",
-							capabilityId: "moderation.check",
-							input: {
-								fields: {
-									message: { kind: "input", path: "message" },
-								},
+		const actions = {
+			"guestbook.submit": {
+				actionId: "guestbook.submit",
+				steps: [
+					{
+						stepId: "moderation",
+						capabilityId: "moderation.check",
+						input: {
+							fields: {
+								message: { kind: "input", path: "message" },
 							},
 						},
-					],
-					session: {
-						onSuccess: "clear",
-						onFailure: "preserve",
 					},
+				],
+				session: {
+					onSuccess: "clear",
+					onFailure: "preserve",
 				},
 			},
+		} as const;
+		const runtime = createDomainRuntimeConformanceHarness({
+			domainRuntimeIR: createDomainRuntimeIRFixture({
+				mutationEntrypointActionMap: {
+					submit_message: "guestbook.submit",
+				},
+				actions,
+			}),
+			sessionIR: createSessionIRFixture(),
 			capabilities: {
 				"moderation.check": {
 					capabilityId: "moderation.check",

@@ -84,6 +84,45 @@ Acceptance criteria:
 2. Lint boundary rules and import-layer constraints flag orchestration logic introduced outside kernel ownership.
 3. Runtime ownership docs and package exports reflect final post-reset architecture.
 
+### Epic 7: Runtime IR Canonicalization (IR-first closure)
+
+#### Story 7.1: Compile and emit Domain Runtime IR
+Acceptance criteria:
+1. `domain.actions` and `domain.flows` compile into deterministic `CompiledDomainRuntimeIR@1.0.0`.
+2. `CompiledEntrypointBundle` exposes `domainRuntimeIR` as a first-class artifact field.
+3. Runtime lane artifacts include `CompiledDomainRuntimeIR` with manifest references and hash validation.
+
+#### Story 7.2: Compile and emit Session IR
+Acceptance criteria:
+1. `session.fields/defaults` compile into deterministic `CompiledSessionIR@1.0.0`.
+2. Domain runtime session-outcome engine consumes `sessionIR`, not raw spec section payloads.
+3. Session schema/default diagnostics are deterministic and test-backed.
+
+#### Story 7.3: Compile and emit Scenario IR
+Acceptance criteria:
+1. Compiler emits `CompiledScenarioPlanSet@1.0.0` from `personas/scenarios`.
+2. Scenario runtime consumes compiler-emitted scenario IR and no longer depends on fixture-only plan sources as canonical path.
+3. Scenario conformance includes compile-to-run parity checks against emitted scenario artifacts.
+
+#### Story 7.4: Remove handler-map fallback execution paths
+Acceptance criteria:
+1. Domain runtime query/mutation execution is driven by compiled IR lookups, not injected handler/action maps as canonical runtime path.
+2. Temporary compatibility adapters (if any) are explicitly marked and tracked for deletion.
+3. Kernel/runtime conformance gates fail on raw-spec/injected-map execution regressions.
+
+#### Story 7.5: IR-first boundary lint and conformance gates
+Acceptance criteria:
+1. Boundary lint rules detect runtime execution modules importing raw authoring section payloads as executable source of truth.
+2. Conformance suite includes an artifact-only execution mode that forbids fixture-local semantic plan injection.
+3. CI release gates require all executable semantics to resolve from compiled IR artifacts.
+
+Execution order:
+1. Story 7.1
+2. Story 7.2
+3. Story 7.3
+4. Story 7.4
+5. Story 7.5
+
 ## Issue Mapping (RFC-0022/RFC-0023 Slice)
 
 1. Story 5.1: [#162](https://github.com/ngalluzzo/gooi/issues/162)
@@ -96,6 +135,11 @@ Acceptance criteria:
 8. Story 6.4: [#169](https://github.com/ngalluzzo/gooi/issues/169)
 9. Story 6.5: [#170](https://github.com/ngalluzzo/gooi/issues/170)
 10. Story 6.6: [#171](https://github.com/ngalluzzo/gooi/issues/171)
+11. Story 7.1: issue pending (compiled domain runtime IR)
+12. Story 7.2: issue pending (compiled session IR)
+13. Story 7.3: issue pending (compiled scenario IR emission)
+14. Story 7.4: issue pending (handler-map fallback removal)
+15. Story 7.5: issue pending (IR-first boundary lint and conformance gates)
 
 ## Epic 1: Entrypoint Runtime Core Semantics
 

@@ -16,10 +16,14 @@ import { compileBindingRequirementsArtifact } from "./compile-binding-requiremen
 import { compileBindings } from "./compile-bindings";
 import { buildCanonicalSpecModel } from "./compile-canonical-model";
 import { compileDispatchPlans } from "./compile-dispatch-plans";
+import { compileDomainRuntimeIR } from "./compile-domain-runtime-ir";
 import { compileEntrypoints } from "./compile-entrypoints";
 import { compileLaneArtifacts } from "./compile-lane-artifacts";
+import { compileProjectionIR } from "./compile-projection-ir";
 import { compileReachabilityRequirements } from "./compile-reachability-requirements";
 import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
+import { compileScenarioIR } from "./compile-scenario-ir";
+import { compileSessionIR } from "./compile-session-ir";
 import { compileViewRenderIR } from "./compile-view-render-ir";
 import { sortDiagnostics } from "./sort-diagnostics";
 import { validateCrossLinks } from "./validate-cross-links";
@@ -190,7 +194,20 @@ export const compileEntrypointBundle = (
 		spec,
 		entrypointOutput.entrypoints,
 	);
+	const projectionOutput = compileProjectionIR({
+		model: canonicalModel,
+		entrypoints: entrypointOutput.entrypoints,
+	});
 	const viewRenderOutput = compileViewRenderIR(canonicalModel);
+	const domainRuntimeOutput = compileDomainRuntimeIR({
+		model: canonicalModel,
+	});
+	const sessionOutput = compileSessionIR({
+		model: canonicalModel,
+	});
+	const scenarioOutput = compileScenarioIR({
+		model: canonicalModel,
+	});
 	const diagnostics = sortDiagnostics([
 		...validateCrossLinks(canonicalModel),
 		...entrypointOutput.diagnostics,
@@ -198,7 +215,11 @@ export const compileEntrypointBundle = (
 		...dispatchOutput.diagnostics,
 		...reachabilityOutput.diagnostics,
 		...refreshOutput.diagnostics,
+		...projectionOutput.diagnostics,
 		...viewRenderOutput.diagnostics,
+		...domainRuntimeOutput.diagnostics,
+		...sessionOutput.diagnostics,
+		...scenarioOutput.diagnostics,
 	]);
 
 	if (hasErrors(diagnostics)) {
@@ -219,7 +240,11 @@ export const compileEntrypointBundle = (
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,
+		projectionIR: projectionOutput.projectionIR,
 		viewRenderIR: viewRenderOutput.viewRenderIR,
+		domainRuntimeIR: domainRuntimeOutput.domainRuntimeIR,
+		sessionIR: sessionOutput.sessionIR,
+		scenarioIR: scenarioOutput.scenarioIR,
 		bindingRequirementsArtifact,
 	});
 	const artifactManifest = laneArtifactOutput.artifactManifest;
@@ -235,7 +260,11 @@ export const compileEntrypointBundle = (
 		bindingRequirementsArtifact,
 		artifactManifest,
 		laneArtifacts: laneArtifactOutput.laneArtifacts,
+		projectionIR: projectionOutput.projectionIR,
 		viewRenderIR: viewRenderOutput.viewRenderIR,
+		domainRuntimeIR: domainRuntimeOutput.domainRuntimeIR,
+		sessionIR: sessionOutput.sessionIR,
+		scenarioIR: scenarioOutput.scenarioIR,
 		refreshSubscriptions: refreshOutput.subscriptions,
 		accessPlan,
 		schemaArtifacts: entrypointOutput.schemaArtifacts,

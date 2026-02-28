@@ -25,8 +25,40 @@ export const createComposableEntrypointSpecFixture = () => ({
 			rejection_followup: {},
 		},
 		projections: {
-			latest_messages: {},
-			messages_with_authors: {},
+			latest_messages: {
+				strategy: "from_collection",
+				collectionId: "messages",
+				fields: [
+					{ source: "id", as: "id" },
+					{ source: "message", as: "message" },
+				],
+				sort: [{ field: "created_at", direction: "desc" as const }],
+				pagination: {
+					mode: "page" as const,
+					pageArg: "page",
+					pageSizeArg: "page_size",
+					defaultPage: 1,
+					defaultPageSize: 10,
+					maxPageSize: 50,
+				},
+			},
+			messages_with_authors: {
+				strategy: "from_collection",
+				collectionId: "messages",
+				fields: [
+					{ source: "id", as: "id" },
+					{ source: "author_name", as: "author_name" },
+				],
+				sort: [{ field: "author_name", direction: "asc" as const }],
+				pagination: {
+					mode: "page" as const,
+					pageArg: "page",
+					pageSizeArg: "page_size",
+					defaultPage: 1,
+					defaultPageSize: 10,
+					maxPageSize: 50,
+				},
+			},
 		},
 	},
 	session: {

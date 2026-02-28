@@ -66,6 +66,16 @@ const changedFilesSince = (baseRef: string): string[] => {
 			.map((entry) => entry.trim())
 			.filter((entry) => entry.length > 0);
 
+		if (parentRefs.length === 0) {
+			const subject = runGit(["show", "-s", "--pretty=%s", "HEAD"]);
+			if (subject.startsWith("Merge ")) {
+				console.warn(
+					`Golden governance check warning: unable to inspect merge ancestry in shallow checkout; skipping changed-file detection.`,
+				);
+				return [];
+			}
+		}
+
 		// Merge commits in shallow CI can include unrelated base-branch changes in
 		// `git show` output. If ancestry diff is unavailable, skip rather than emit
 		// false governance failures.

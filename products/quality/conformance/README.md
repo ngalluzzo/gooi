@@ -37,6 +37,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Tiered suite strategy checks (`runTieredConformance`)
 - Marketplace control-plane checks (`runMarketplaceControlPlaneConformance`)
 - Marketplace resolution checks (`runMarketplaceResolutionConformance`)
+- Marketplace trust/revocation checks (`runMarketplaceTrustConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -92,6 +93,7 @@ console.log(report.passed, report.checks);
 - `runTieredConformance(input)`
 - `runMarketplaceControlPlaneConformance(input)`
 - `runMarketplaceResolutionConformance(input)`
+- `runMarketplaceTrustConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -119,6 +121,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/tiered`
 - `@gooi/conformance/marketplace-control-plane`
 - `@gooi/conformance/marketplace-resolution`
+- `@gooi/conformance/marketplace-trust`
 - `@gooi/conformance/tiered-conformance-definitions`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
@@ -138,6 +141,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/tiered-contracts`
 - `@gooi/conformance/marketplace-control-plane-contracts`
 - `@gooi/conformance/marketplace-resolution-contracts`
+- `@gooi/conformance/marketplace-trust-contracts`
 
 ## Development
 

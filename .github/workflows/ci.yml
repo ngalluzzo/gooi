@@ -52,6 +52,9 @@ jobs:
       - name: Marketplace resolution conformance checks
         run: bun run conformance:marketplace:resolution
 
+      - name: Marketplace trust conformance checks
+        run: bun run conformance:marketplace:trust
+
       - name: Tiered conformance smoke gate
         run: bun run conformance:tier:smoke
 

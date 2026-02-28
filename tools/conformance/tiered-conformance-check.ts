@@ -59,6 +59,7 @@ const suiteCommands: Readonly<Record<string, string[]>> = Object.freeze({
 		"conformance:marketplace:control-plane",
 	],
 	marketplace_resolution: ["bun", "run", "conformance:marketplace:resolution"],
+	marketplace_trust: ["bun", "run", "conformance:marketplace:trust"],
 });
 
 const parseTier = (): "smoke" | "full" | "expanded" => {

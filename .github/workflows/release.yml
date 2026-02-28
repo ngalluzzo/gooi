@@ -53,6 +53,9 @@ jobs:
       - name: Verify marketplace resolution conformance
         run: bun run conformance:marketplace:resolution
 
+      - name: Verify marketplace trust conformance
+        run: bun run conformance:marketplace:trust
+
       - name: Verify tiered full conformance gate
         run: bun run conformance:tier:full
 

@@ -30,3 +30,5 @@ The format is based on Changesets.
   certification behavior plus governance-report deterministic serialization.
 - Added marketplace resolution conformance suite covering deterministic outputs,
   explainability mode contracts, policy/scoring enforcement, and delegated route checks.
+- Added marketplace trust conformance suite covering trust/certification coupling,
+  revocation propagation fail-closed behavior, and certified-release gate enforcement.

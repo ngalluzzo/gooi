@@ -79,6 +79,12 @@ export const tieredConformanceDefinitions: Readonly<
 				maxFlakyRate: 0,
 				required: true,
 			},
+			{
+				suiteId: "marketplace_trust",
+				maxRuntimeMs: 90_000,
+				maxFlakyRate: 0,
+				required: true,
+			},
 		],
 	},
 	expanded: {
@@ -124,6 +130,12 @@ export const tieredConformanceDefinitions: Readonly<
 			},
 			{
 				suiteId: "marketplace_resolution",
+				maxRuntimeMs: 90_000,
+				maxFlakyRate: 0,
+				required: true,
+			},
+			{
+				suiteId: "marketplace_trust",
 				maxRuntimeMs: 90_000,
 				maxFlakyRate: 0,
 				required: true,

@@ -58,6 +58,20 @@
         "zod": "^4.3.6",
       },
     },
+    "packages/app-runtime": {
+      "name": "@gooi/app-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-runtime-facade-contracts": "workspace:*",
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/execution-kernel": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
+        "@gooi/spec-compiler": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "packages/artifact-model": {
       "name": "@gooi/artifact-model",
       "version": "0.1.0",
@@ -118,6 +132,17 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/app-spec-contracts": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
+    "products/contracts/app-runtime-facade-contracts": {
+      "name": "@gooi/app-runtime-facade-contracts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/kernel-contracts": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -886,6 +911,10 @@
     "@gooi/app": ["@gooi/app@workspace:packages/app"],
 
     "@gooi/app-facade-contracts": ["@gooi/app-facade-contracts@workspace:products/contracts/app-facade-contracts"],
+
+    "@gooi/app-runtime": ["@gooi/app-runtime@workspace:packages/app-runtime"],
+
+    "@gooi/app-runtime-facade-contracts": ["@gooi/app-runtime-facade-contracts@workspace:products/contracts/app-runtime-facade-contracts"],
 
     "@gooi/app-spec-contracts": ["@gooi/app-spec-contracts@workspace:products/contracts/app-spec-contracts"],
 

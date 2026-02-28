@@ -1,0 +1,42 @@
+{
+	"name": "@gooi/app-runtime",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./create": {
+			"types": "./src/create/create-app-runtime.ts",
+			"bun": "./src/create/create-app-runtime.ts",
+			"import": "./dist/create/create-app-runtime.js",
+			"default": "./dist/create/create-app-runtime.js"
+		},
+		"./run": {
+			"types": "./src/run/run-app.ts",
+			"bun": "./src/run/run-app.ts",
+			"import": "./dist/run/run-app.js",
+			"default": "./dist/run/run-app.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/create/create-app-runtime.ts --outfile ./dist/create/create-app-runtime.js --external @gooi/* --external zod && bun build ./src/run/run-app.ts --outfile ./dist/run/run-app.js --external @gooi/* --external zod",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app-runtime-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/execution-kernel": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/kernel-contracts": "workspace:*",
+		"@gooi/spec-compiler": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"zod": "^4.3.6"
+	}
+}

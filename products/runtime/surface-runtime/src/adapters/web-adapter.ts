@@ -1,5 +1,7 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
+import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asTrimmedString } from "./ingress-record";
+import { resolveSurfaceInvocationHost } from "./invocation-host";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
 
@@ -46,16 +48,35 @@ export const webSurfaceAdapter: SurfaceAdapter = {
 				}),
 			};
 		}
+		const authContext = resolveSurfaceAuthContext(record);
+		if (!authContext.ok) {
+			return {
+				ok: false,
+				error: authContext.error,
+			};
+		}
+		const invocationHost = resolveSurfaceInvocationHost({
+			ingress: record,
+			defaultInvocationHost: "browser",
+		});
+		if (!invocationHost.ok) {
+			return {
+				ok: false,
+				error: invocationHost.error,
+			};
+		}
 
 		return {
 			ok: true,
 			value: {
 				surfaceType: "web",
+				invocationHost: invocationHost.value,
 				attributes: {
 					...(routeId === undefined ? {} : { routeId }),
 					...(path === undefined ? {} : { path }),
 				},
 				payload: normalizeWebPayload(record),
+				...authContext.value,
 			},
 		};
 	},

@@ -1,5 +1,7 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
+import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asTrimmedString } from "./ingress-record";
+import { resolveSurfaceInvocationHost } from "./invocation-host";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
 
@@ -50,16 +52,35 @@ export const httpSurfaceAdapter: SurfaceAdapter = {
 				}),
 			};
 		}
+		const authContext = resolveSurfaceAuthContext(record);
+		if (!authContext.ok) {
+			return {
+				ok: false,
+				error: authContext.error,
+			};
+		}
+		const invocationHost = resolveSurfaceInvocationHost({
+			ingress: record,
+			defaultInvocationHost: "node",
+		});
+		if (!invocationHost.ok) {
+			return {
+				ok: false,
+				error: invocationHost.error,
+			};
+		}
 
 		return {
 			ok: true,
 			value: {
 				surfaceType: "http",
+				invocationHost: invocationHost.value,
 				attributes: {
 					method: method.toUpperCase(),
 					path,
 				},
 				payload: normalizeHttpPayload(record),
+				...authContext.value,
 			},
 		};
 	},

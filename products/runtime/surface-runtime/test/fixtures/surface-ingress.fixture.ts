@@ -157,15 +157,39 @@ export const surfaceIngressFixtureBySurface: Readonly<Record<string, unknown>> =
 			method: "GET",
 			path: "/messages",
 			query: { page: "2", q: "hello" },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "fixture",
+			},
 		},
 		web: {
 			routeId: "messages_list",
 			query: { page: "2", q: "hello" },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "fixture",
+			},
 		},
 		cli: {
 			command: "messages list",
 			flags: { scope: "all" },
 			args: { page: "2", q: "hello" },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "fixture",
+			},
 		},
 		webhook: {
 			verified: true,
@@ -173,5 +197,13 @@ export const surfaceIngressFixtureBySurface: Readonly<Record<string, unknown>> =
 			method: "POST",
 			path: "/messages/hooks",
 			body: { page: "2", q: "hello" },
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "fixture",
+			},
 		},
 	};

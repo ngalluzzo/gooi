@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
 	parseCompiledSurfaceDispatchPlanSet,
+	parseDispatchContext,
 	parseDispatchRequest,
 } from "../src/dispatch/contracts";
 import { parseDispatchError } from "../src/dispatch/error/contracts";
@@ -60,10 +61,23 @@ describe("surface-contracts", () => {
 		const request = parseDispatchRequest({
 			surfaceType: "http",
 			surfaceId: "http",
+			invocationHost: "node",
 			attributes: {
 				method: "get",
 				path: "/messages",
 			},
+			principal: {
+				subject: "user_1",
+				claims: {},
+				tags: ["authenticated"],
+			},
+			authContext: {
+				provider: "session",
+			},
+		});
+		const context = parseDispatchContext({
+			surfaceId: "http",
+			invocationHost: "node",
 		});
 		const trace = parseDispatchTraceEnvelope({
 			surfaceId: "http",
@@ -79,6 +93,9 @@ describe("surface-contracts", () => {
 		});
 
 		expect(request.attributes.method).toBe("get");
+		expect(request.principal?.subject).toBe("user_1");
+		expect(request.authContext?.provider).toBe("session");
+		expect(context.invocationHost).toBe("node");
 		expect(trace.selectedHandlerId).toBe("http:query:list_messages");
 	});
 

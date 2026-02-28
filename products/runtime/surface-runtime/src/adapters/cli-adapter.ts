@@ -1,5 +1,7 @@
 import type { SurfaceRequestPayload } from "@gooi/surface-contracts/request";
+import { resolveSurfaceAuthContext } from "./auth-context";
 import { asRecord, asString, asTrimmedString } from "./ingress-record";
+import { resolveSurfaceInvocationHost } from "./invocation-host";
 import type { SurfaceAdapter, SurfaceAdapterNormalizeResult } from "./registry";
 import { adapterTransportError } from "./transport-error";
 
@@ -68,11 +70,29 @@ export const cliSurfaceAdapter: SurfaceAdapter = {
 				}),
 			};
 		}
+		const authContext = resolveSurfaceAuthContext(record);
+		if (!authContext.ok) {
+			return {
+				ok: false,
+				error: authContext.error,
+			};
+		}
+		const invocationHost = resolveSurfaceInvocationHost({
+			ingress: record,
+			defaultInvocationHost: "node",
+		});
+		if (!invocationHost.ok) {
+			return {
+				ok: false,
+				error: invocationHost.error,
+			};
+		}
 
 		return {
 			ok: true,
 			value: {
 				surfaceType: "cli",
+				invocationHost: invocationHost.value,
 				attributes: {
 					command: { path: commandPath },
 					...(normalizeFlagAttributes(record.flags) === undefined
@@ -80,6 +100,7 @@ export const cliSurfaceAdapter: SurfaceAdapter = {
 						: { flags: normalizeFlagAttributes(record.flags) }),
 				},
 				payload: normalizeCliPayload(record),
+				...authContext.value,
 			},
 		};
 	},

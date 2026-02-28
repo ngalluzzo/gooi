@@ -22,6 +22,8 @@ describe("surface-runtime dispatch", () => {
 		if (!result.ok) {
 			return;
 		}
+		expect(result.surfaceId).toBe("http");
+		expect(result.invocationHost).toBe("node");
 		expect(result.selection.handlerId).toBe("http:query:list_messages");
 		expect(result.trace.selectedHandlerId).toBe("http:query:list_messages");
 	});
@@ -56,6 +58,8 @@ describe("surface-runtime dispatch", () => {
 		if (!result.ok) {
 			return;
 		}
+		expect(result.surfaceId).toBe("http");
+		expect(result.invocationHost).toBe("node");
 		expect(result.dispatch.entrypointKind).toBe("query");
 		expect(result.dispatch.entrypointId).toBe("list_messages");
 		expect(result.boundInput).toEqual({
@@ -92,6 +96,24 @@ describe("surface-runtime dispatch", () => {
 		expect(missingBinding.ok).toBe(false);
 		if (!missingBinding.ok) {
 			expect(missingBinding.error.code).toBe("dispatch_transport_error");
+		}
+	});
+
+	test("returns typed transport error when dispatch request contract is malformed", () => {
+		const malformed = dispatchSurfaceRequest({
+			dispatchPlans: createDispatchPlanFixture(),
+			request: {
+				surfaceId: "",
+				surfaceType: "http",
+				attributes: {
+					method: "GET",
+					path: "/messages",
+				},
+			} as never,
+		});
+		expect(malformed.ok).toBe(false);
+		if (!malformed.ok) {
+			expect(malformed.error.code).toBe("dispatch_transport_error");
 		}
 	});
 });

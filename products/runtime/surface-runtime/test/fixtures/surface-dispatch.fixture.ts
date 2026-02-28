@@ -51,6 +51,7 @@ const genericMessagesHandler: CompiledDispatchHandler = {
 export const dispatchRequestFixture = {
 	surfaceId: "http",
 	surfaceType: "http",
+	invocationHost: "node",
 	attributes: {
 		method: "GET",
 		path: "/messages",

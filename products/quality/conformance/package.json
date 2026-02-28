@@ -137,6 +137,12 @@
 			"import": "./dist/scenario-conformance/run-scenario-conformance.js",
 			"default": "./dist/scenario-conformance/run-scenario-conformance.js"
 		},
+		"./lane-harness": {
+			"types": "./src/lane-harness-conformance/run-lane-harness-conformance.ts",
+			"bun": "./src/lane-harness-conformance/run-lane-harness-conformance.ts",
+			"import": "./dist/lane-harness-conformance/run-lane-harness-conformance.js",
+			"default": "./dist/lane-harness-conformance/run-lane-harness-conformance.js"
+		},
 		"./reachability-parity-contracts": {
 			"types": "./src/reachability-parity/contracts.ts",
 			"bun": "./src/reachability-parity/contracts.ts",
@@ -185,6 +191,12 @@
 			"import": "./dist/scenario-conformance/contracts.js",
 			"default": "./dist/scenario-conformance/contracts.js"
 		},
+		"./lane-harness-contracts": {
+			"types": "./src/lane-harness-conformance/contracts.ts",
+			"bun": "./src/lane-harness-conformance/contracts.ts",
+			"import": "./dist/lane-harness-conformance/contracts.js",
+			"default": "./dist/lane-harness-conformance/contracts.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -194,7 +206,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "bun test",
-		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/cross-client-readiness-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts ./src/render-adapter-conformance/*.ts ./src/render-refresh-conformance/*.ts ./src/dispatch-render-conformance/*.ts ./src/surface-extension-conformance/*.ts ./src/guard-conformance/*.ts ./src/scenario-conformance/*.ts --outdir ./dist --external zod --external @gooi/conformance-contracts/checks --external @gooi/conformance-contracts/reports --external @gooi/conformance-contracts/diagnostics --external @gooi/execution-kernel/projection --external @gooi/execution-kernel/entrypoint --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/result --external @gooi/kernel-contracts/semantic-engine --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh --external @gooi/render-contracts --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-runtime/evaluate --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-runtime/run --external @gooi/scenario-runtime/suite --external @gooi/scenario-runtime/coverage --external @gooi/surface-contracts --external @gooi/surface-runtime",
+		"build": "bun build ./src/provider-conformance/*.ts ./src/entrypoint-conformance/*.ts ./src/authoring-conformance/*.ts ./src/cross-client-readiness-conformance/*.ts ./src/host-conformance/*.ts ./src/host-port-conformance/*.ts ./src/replay-store-conformance/*.ts ./src/reachability-parity/*.ts ./src/projection-conformance/*.ts ./src/render-adapter-conformance/*.ts ./src/render-refresh-conformance/*.ts ./src/dispatch-render-conformance/*.ts ./src/surface-extension-conformance/*.ts ./src/guard-conformance/*.ts ./src/scenario-conformance/*.ts ./src/lane-harness-conformance/*.ts --outdir ./dist --external zod --external @gooi/conformance-contracts/checks --external @gooi/conformance-contracts/reports --external @gooi/conformance-contracts/diagnostics --external @gooi/conformance-contracts/fixtures --external @gooi/conformance-contracts/version --external @gooi/execution-kernel/projection --external @gooi/execution-kernel/entrypoint --external @gooi/host-contracts/clock --external @gooi/host-contracts/delegation --external @gooi/host-contracts/identity --external @gooi/host-contracts/principal --external @gooi/host-contracts/result --external @gooi/kernel-contracts/semantic-engine --external @gooi/language-server --external @gooi/projection-contracts/plans/projection-plan --external @gooi/projection-contracts/ports/history-port-contract --external @gooi/projection-contracts/envelopes/projection-result-envelope --external @gooi/projection-runtime --external @gooi/projection-runtime/refresh --external @gooi/render-contracts --external @gooi/guard-contracts/plans/guard-plan --external @gooi/guard-contracts/envelopes/guard-envelopes --external @gooi/guard-contracts/ports/semantic-judge-port --external @gooi/guard-runtime/evaluate --external @gooi/scenario-contracts/plans/scenario-plan --external @gooi/scenario-contracts/envelopes/scenario-envelopes --external @gooi/scenario-contracts/reports/scenario-reports --external @gooi/scenario-runtime/run --external @gooi/scenario-runtime/suite --external @gooi/scenario-runtime/coverage --external @gooi/surface-contracts --external @gooi/surface-runtime",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write"

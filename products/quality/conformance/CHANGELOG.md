@@ -20,3 +20,5 @@ The format is based on Changesets.
   policy behavior checks.
 - Added scenario conformance suite for RFC-0020 trigger/expect/capture semantics,
   persona-generated input lockfile determinism, and typed failure traceability.
+- Added lane-harness conformance suite for L0/L1/L2/L3 matrix execution with
+  deterministic lane/check identifiers and baseline reproducibility digests.

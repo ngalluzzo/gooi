@@ -32,6 +32,7 @@ provider checks, authoring intelligence checks, guard checks, and scenario check
 - Surface extension readiness checks (`runSurfaceExtensionConformance`)
 - Guard matrix and semantic policy checks (`runGuardConformance`)
 - Scenario runtime behavior and lockfile determinism checks (`runScenarioConformance`)
+- Lane-aware progressive harness checks (`runLaneHarnessConformance`)
 - Shared host-port check helpers (`buildHostPortConformanceCheck`)
 - Named check IDs with machine-readable reports
 - Optional binding-plan and lockfile enforcement for provider checks
@@ -82,6 +83,7 @@ console.log(report.passed, report.checks);
 - `runSurfaceExtensionConformance(input)`
 - `runGuardConformance(input)`
 - `runScenarioConformance(input)`
+- `runLaneHarnessConformance(input)`
 - `buildHostPortConformanceCheck(id, passed, detail)`
 - `ProviderConformanceReport`
 - `EntrypointConformanceReport`
@@ -104,6 +106,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/surface-extension`
 - `@gooi/conformance/guard`
 - `@gooi/conformance/scenario`
+- `@gooi/conformance/lane-harness`
 - `@gooi/conformance/host-port-conformance`
 - `@gooi/conformance/provider-contracts`
 - `@gooi/conformance/entrypoint-contracts`
@@ -117,6 +120,7 @@ console.log(report.passed, report.checks);
 - `@gooi/conformance/surface-extension-contracts`
 - `@gooi/conformance/guard-contracts`
 - `@gooi/conformance/scenario-contracts`
+- `@gooi/conformance/lane-harness-contracts`
 
 ## Development
 

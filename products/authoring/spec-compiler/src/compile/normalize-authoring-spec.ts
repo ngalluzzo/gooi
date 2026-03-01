@@ -95,6 +95,8 @@ const normalizeProjectionAliases = (
 	next = withAlias(next, "orderBy", ["order_by"]);
 	next = withAlias(next, "joins", ["join"]);
 	next = withAlias(next, "reducers", ["when"]);
+	next = withAlias(next, "signalReplay", ["rebuild"]);
+	next = withAlias(next, "history", ["persist"]);
 
 	const pagination = normalizePaginationAliases(next.pagination);
 	const primary = normalizePrimaryAliases(next.primary);

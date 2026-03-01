@@ -38,8 +38,9 @@ export const compileJoinProjectionPlan = (
 		strategy: "join",
 		sourceRef: toSourceRef(projectionId, "join"),
 		primary: {
-			collectionId: asString(primary?.collectionId) ?? "",
-			alias: asString(primary?.alias) ?? "",
+			collectionId:
+				asString(primary?.collectionId) ?? asString(primary?.collection) ?? "",
+			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
 			record.joins,
@@ -83,8 +84,9 @@ export const compileAggregateProjectionPlan = (
 		strategy: "aggregate",
 		sourceRef: toSourceRef(projectionId, "aggregate"),
 		primary: {
-			collectionId: asString(primary?.collectionId) ?? "",
-			alias: asString(primary?.alias) ?? "",
+			collectionId:
+				asString(primary?.collectionId) ?? asString(primary?.collection) ?? "",
+			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
 			record.joins,
@@ -117,6 +119,12 @@ export const compileTimelineProjectionPlan = (
 		return null;
 	}
 	const orderBy = asRecord(record.orderBy);
+	const groupBy = Array.isArray(record.groupBy) ? record.groupBy : undefined;
+	const groupByField =
+		record.groupByField === null
+			? null
+			: (asString(record.groupByField) ??
+				(typeof groupBy?.[0] === "string" ? groupBy[0] : null));
 	const guard = record.guard as
 		| CompiledTimelineProjectionPlan["guard"]
 		| undefined;
@@ -129,10 +137,7 @@ export const compileTimelineProjectionPlan = (
 					(entry): entry is string => typeof entry === "string",
 				)
 			: [],
-		groupByField:
-			record.groupByField === null
-				? null
-				: (asString(record.groupByField) ?? null),
+		groupByField,
 		orderBy: {
 			field: asString(orderBy?.field) ?? "emitted_at",
 			direction: asString(orderBy?.direction) === "desc" ? "desc" : "asc",

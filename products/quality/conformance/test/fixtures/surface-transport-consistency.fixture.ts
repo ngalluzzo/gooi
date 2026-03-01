@@ -14,22 +14,30 @@ export const createSurfaceTransportConsistencyFixture = () => {
 				tz: "UTC",
 			},
 			domain: {
+				collections: {
+					messages: {
+						fields: {
+							id: "id!",
+						},
+					},
+				},
 				actions: {
 					"guestbook.submit": {},
 				},
 				projections: {
 					latest_messages: {
 						strategy: "from_collection",
-						collectionId: "messages",
-						fields: [{ source: "id", as: "id" }],
-						sort: [{ field: "id", direction: "asc" as const }],
+						collection: "messages",
+						sort: {
+							default_by: "id",
+							default_order: "asc" as const,
+						},
 						pagination: {
 							mode: "page" as const,
-							pageArg: "page",
-							pageSizeArg: "page_size",
-							defaultPage: 1,
-							defaultPageSize: 10,
-							maxPageSize: 50,
+							page_arg: "page",
+							page_size_arg: "page_size",
+							default_page_size: 10,
+							max_page_size: 50,
 						},
 					},
 				},
@@ -91,7 +99,6 @@ export const createSurfaceTransportConsistencyFixture = () => {
 						},
 						mutations: {
 							submit_message: {
-								route: "messages.submit",
 								bind: { message: "body.message" },
 							},
 						},
@@ -145,6 +152,9 @@ export const createSurfaceTransportConsistencyFixture = () => {
 							messages: {
 								query: "list_messages",
 								refresh_on_signals: ["message.created"],
+								args: {
+									page: { $expr: { var: "session.page" } },
+								},
 							},
 						},
 					},
@@ -227,7 +237,7 @@ export const createSurfaceTransportConsistencyFixture = () => {
 				body: { message: "hello" },
 			},
 			web: {
-				routeId: "messages.submit",
+				intent: "submit_message",
 				body: { message: "hello" },
 			},
 			cli: {

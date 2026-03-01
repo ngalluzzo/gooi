@@ -1,0 +1,36 @@
+{
+	"name": "@gooi/cli",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"gooi": "./dist/main.js"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"dev": "bun run build --watch",
+		"build": "bun build ./src/main.ts --outfile ./dist/main.js --target node",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app": "workspace:*",
+		"@gooi/app-marketplace": "workspace:*",
+		"@gooi/app-runtime": "workspace:*",
+		"@gooi/app-runtime-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/domain-runtime": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/language-server": "workspace:*",
+		"@gooi/marketplace-contracts": "workspace:*",
+		"@gooi/stable-json": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"yaml": "^2.8.1"
+	}
+}

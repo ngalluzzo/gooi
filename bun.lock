@@ -36,6 +36,27 @@
         "@docusaurus/types": "^3.9.2",
       },
     },
+    "apps/gooi-cli": {
+      "name": "@gooi/cli",
+      "version": "0.1.0",
+      "bin": {
+        "gooi": "./dist/main.js",
+      },
+      "dependencies": {
+        "@gooi/app": "workspace:*",
+        "@gooi/app-marketplace": "workspace:*",
+        "@gooi/app-runtime": "workspace:*",
+        "@gooi/app-runtime-facade-contracts": "workspace:*",
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/domain-runtime": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/language-server": "workspace:*",
+        "@gooi/marketplace-contracts": "workspace:*",
+        "@gooi/stable-json": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+        "yaml": "^2.8.1",
+      },
+    },
     "apps/vscode-extension": {
       "name": "@gooi/vscode-extension",
       "version": "0.1.0",
@@ -984,6 +1005,8 @@
     "@gooi/capability-contracts": ["@gooi/capability-contracts@workspace:products/contracts/capability-contracts"],
 
     "@gooi/capability-index": ["@gooi/capability-index@workspace:products/authoring/capability-index"],
+
+    "@gooi/cli": ["@gooi/cli@workspace:apps/gooi-cli"],
 
     "@gooi/conformance": ["@gooi/conformance@workspace:products/quality/conformance"],
 

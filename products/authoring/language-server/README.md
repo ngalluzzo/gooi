@@ -72,18 +72,18 @@ console.log(result.parity.status, result.items.map((item) => item.label));
 
 ## CLI Commands
 
-Commands read JSON payload from stdin and emit authoring result/error envelopes:
+Use the official `gooi` CLI authoring command family with JSON payload input:
 
 ```bash
-bun run authoring:diagnose < payload.json
-bun run authoring:complete < payload.json
-bun run authoring:rename < payload.json
-bun run authoring:index < payload.json
+gooi authoring diagnose --input payload.json
+gooi authoring complete --input payload.json
+gooi authoring rename --input payload.json
+gooi authoring index build --input payload.json
 ```
 
 CLI stability policy:
 - Command behavior is contract-bound to authoring envelope schemas (`AuthoringRequestEnvelope`, `AuthoringResultEnvelope`, `AuthoringErrorEnvelope`).
-- CLI handlers share language-server feature handlers to prevent payload-shape drift between CLI and LSP/protocol paths.
+- `@gooi/cli` delegates authoring command execution to `executeAuthoringCliEnvelope` to keep CLI and LSP/protocol behavior aligned.
 
 ## Development
 

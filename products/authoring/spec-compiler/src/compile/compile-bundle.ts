@@ -24,6 +24,7 @@ import { compileRefreshSubscriptions } from "./compile-refresh-subscriptions";
 import { compileScenarioIR } from "./compile-scenario-ir";
 import { compileSessionIR } from "./compile-session-ir";
 import { compileViewRenderIR } from "./compile-view-render-ir";
+import { normalizeAuthoringSpec } from "./normalize-authoring-spec";
 import { sortDiagnostics } from "./sort-diagnostics";
 import { validateCrossLinks } from "./validate-cross-links";
 
@@ -100,7 +101,9 @@ export const compileEntrypointBundle = (
 		};
 	}
 
-	const spec = parseAuthoringEntrypointSpec(parsed.data);
+	const spec = normalizeAuthoringSpec(
+		parseAuthoringEntrypointSpec(parsed.data),
+	);
 	const canonicalModel = buildCanonicalSpecModel(spec);
 	const entrypointOutput = compileEntrypoints(spec);
 	const bindingOutput = compileBindings(spec, entrypointOutput.entrypoints);

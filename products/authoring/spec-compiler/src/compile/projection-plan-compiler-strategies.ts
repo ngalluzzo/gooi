@@ -43,7 +43,7 @@ export const compileJoinProjectionPlan = (
 			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
-			record.joins,
+			record.joins ?? record.join,
 			`domain.projections.${projectionId}.joins`,
 			diagnostics,
 		),
@@ -89,11 +89,11 @@ export const compileAggregateProjectionPlan = (
 			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
-			record.joins,
+			record.joins ?? record.join,
 			`domain.projections.${projectionId}.joins`,
 			diagnostics,
 		),
-		groupBy: parseGroupBy(record.groupBy),
+		groupBy: parseGroupBy(record.groupBy ?? record.group_by),
 		metrics: parseMetrics(record.metrics),
 		sort: parseSortRules(
 			record.sort,
@@ -118,8 +118,9 @@ export const compileTimelineProjectionPlan = (
 	if (pagination === null) {
 		return null;
 	}
-	const orderBy = asRecord(record.orderBy);
-	const groupBy = Array.isArray(record.groupBy) ? record.groupBy : undefined;
+	const orderBy = asRecord(record.orderBy ?? record.order_by);
+	const groupByValue = record.groupBy ?? record.group_by;
+	const groupBy = Array.isArray(groupByValue) ? groupByValue : undefined;
 	const groupByField =
 		record.groupByField === null
 			? null
@@ -144,14 +145,14 @@ export const compileTimelineProjectionPlan = (
 		},
 		start: record.start === null ? null : (asRecord(record.start) ?? {}),
 		reducers: parseTimelineReducers(
-			record.reducers,
+			record.reducers ?? record.when,
 			`domain.projections.${projectionId}.reducers`,
 			diagnostics,
 		),
-		signalReplay: (asRecord(record.signalReplay) ??
+		signalReplay: (asRecord(record.signalReplay ?? record.rebuild) ??
 			{}) as unknown as CompiledTimelineProjectionPlan["signalReplay"],
 		pagination,
-		history: (asRecord(record.history) ??
+		history: (asRecord(record.history ?? record.persist) ??
 			{}) as unknown as CompiledTimelineProjectionPlan["history"],
 		...(guard === undefined ? {} : { guard }),
 	};

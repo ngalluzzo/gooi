@@ -32,7 +32,8 @@ const compileFromCollection = (
 	domain: Readonly<Record<string, unknown>>,
 	diagnostics: CompileDiagnostic[],
 ): CompiledFromCollectionProjectionPlan | null => {
-	const collectionId = asString(record.collectionId);
+	const collectionId =
+		asString(record.collectionId) ?? asString(record.collection);
 	const pagination = parsePagination(
 		record.pagination,
 		`domain.projections.${projectionId}.pagination`,

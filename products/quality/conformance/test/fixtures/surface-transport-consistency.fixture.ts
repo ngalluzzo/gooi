@@ -14,13 +14,7 @@ export const createSurfaceTransportConsistencyFixture = () => {
 				tz: "UTC",
 			},
 			domain: {
-				collections: {
-					messages: {
-						fields: {
-							id: "id!",
-						},
-					},
-				},
+				collections: { messages: { fields: { id: "id!" } } },
 				actions: {
 					"guestbook.submit": {},
 				},
@@ -152,9 +146,7 @@ export const createSurfaceTransportConsistencyFixture = () => {
 							messages: {
 								query: "list_messages",
 								refresh_on_signals: ["message.created"],
-								args: {
-									page: { $expr: { var: "session.page" } },
-								},
+								args: { page: { $expr: { var: "session.page" } } },
 							},
 						},
 					},
@@ -202,11 +194,7 @@ export const createSurfaceTransportConsistencyFixture = () => {
 			claims: {},
 			tags: ["authenticated"],
 		},
-		unauthorizedPrincipal: {
-			subject: null,
-			claims: {},
-			tags: [],
-		},
+		unauthorizedPrincipal: { subject: null, claims: {}, tags: [] },
 		queryIngressBySurface: {
 			http: {
 				method: "GET",

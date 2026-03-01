@@ -11,6 +11,16 @@ export const parseGroupBy = (
 	Array.isArray(value)
 		? value
 				.map((entry) => {
+					if (typeof entry === "string") {
+						const leaf = entry.split(".").at(-1);
+						if (leaf === undefined || leaf.length === 0) {
+							return null;
+						}
+						return {
+							field: entry,
+							as: leaf,
+						};
+					}
 					const record = asRecord(entry);
 					const field = asString(record?.field);
 					const as = asString(record?.as);
@@ -26,7 +36,7 @@ export const parseMetrics = (
 		? value
 				.map((entry) => {
 					const record = asRecord(entry);
-					const metricId = asString(record?.metricId);
+					const metricId = asString(record?.metricId) ?? asString(record?.id);
 					const op = asString(record?.op);
 					const field = asString(record?.field);
 					if (

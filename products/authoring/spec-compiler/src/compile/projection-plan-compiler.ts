@@ -20,6 +20,7 @@ import {
 interface CompileProjectionPlanInput {
 	readonly projectionId: string;
 	readonly value: unknown;
+	readonly domain: Readonly<Record<string, unknown>>;
 }
 interface CompileProjectionPlanResult {
 	readonly diagnostics: readonly CompileDiagnostic[];
@@ -28,9 +29,11 @@ interface CompileProjectionPlanResult {
 const compileFromCollection = (
 	projectionId: string,
 	record: Readonly<Record<string, unknown>>,
+	domain: Readonly<Record<string, unknown>>,
 	diagnostics: CompileDiagnostic[],
 ): CompiledFromCollectionProjectionPlan | null => {
-	const collectionId = asString(record.collectionId);
+	const collectionId =
+		asString(record.collectionId) ?? asString(record.collection);
 	const pagination = parsePagination(
 		record.pagination,
 		`domain.projections.${projectionId}.pagination`,
@@ -48,16 +51,30 @@ const compileFromCollection = (
 	const guard = record.guard as
 		| CompiledFromCollectionProjectionPlan["guard"]
 		| undefined;
+	const authoredFields = Array.isArray(record.fields)
+		? parseFieldSelections(
+				record.fields,
+				`domain.projections.${projectionId}.fields`,
+				diagnostics,
+			)
+		: [];
+	const inferredFields =
+		authoredFields.length > 0
+			? authoredFields
+			: Object.keys(
+					asRecord(asRecord(domain.collections)?.[collectionId])?.fields ?? {},
+				)
+					.sort((left, right) => left.localeCompare(right))
+					.map((field) => ({
+						source: field,
+						as: field,
+					}));
 	return {
 		projectionId,
 		strategy: "from_collection",
 		sourceRef: toSourceRef(projectionId, "from_collection"),
 		collectionId,
-		fields: parseFieldSelections(
-			record.fields,
-			`domain.projections.${projectionId}.fields`,
-			diagnostics,
-		),
+		fields: inferredFields,
 		sort: parseSortRules(
 			record.sort,
 			`domain.projections.${projectionId}.sort`,
@@ -91,7 +108,12 @@ export const compileProjectionPlan = (
 	if (strategy === "from_collection") {
 		return toCompileResult(
 			diagnostics,
-			compileFromCollection(input.projectionId, record, diagnostics),
+			compileFromCollection(
+				input.projectionId,
+				record,
+				input.domain,
+				diagnostics,
+			),
 		);
 	}
 	if (strategy === "join") {

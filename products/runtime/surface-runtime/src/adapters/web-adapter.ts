@@ -40,11 +40,12 @@ export const webSurfaceAdapter: SurfaceAdapter = {
 
 		const routeId = asTrimmedString(record.routeId);
 		const path = asTrimmedString(record.path);
-		if (routeId === undefined && path === undefined) {
+		const intent = asTrimmedString(record.intent);
+		if (routeId === undefined && path === undefined && intent === undefined) {
 			return {
 				ok: false,
 				error: adapterTransportError({
-					message: "Web ingress requires at least one of routeId or path.",
+					message: "Web ingress requires routeId, path, or intent.",
 				}),
 			};
 		}
@@ -74,6 +75,7 @@ export const webSurfaceAdapter: SurfaceAdapter = {
 				attributes: {
 					...(routeId === undefined ? {} : { routeId }),
 					...(path === undefined ? {} : { path }),
+					...(intent === undefined ? {} : { intent }),
 				},
 				payload: normalizeWebPayload(record),
 				...authContext.value,

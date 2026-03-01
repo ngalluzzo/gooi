@@ -45,6 +45,20 @@ const safeJsonRecord = (
 	return output;
 };
 
+const safeJsonValueRecord = (
+	value: unknown,
+): Readonly<Record<string, JsonValue>> => {
+	const record = asRecord(value);
+	if (record === undefined) {
+		return {};
+	}
+	return Object.fromEntries(
+		Object.entries(record)
+			.sort(([left], [right]) => left.localeCompare(right))
+			.map(([key, entryValue]) => [key, entryValue as JsonValue]),
+	);
+};
+
 const compileViewNodes = (
 	model: CanonicalSpecModel,
 ): {
@@ -98,6 +112,9 @@ const compileViewScreen = (
 		screenData[slotId] = {
 			queryId,
 			refreshOnSignals: toStringArray(slotRecord?.refresh_on_signals),
+			...(asRecord(slotRecord?.args) === undefined
+				? {}
+				: { args: safeJsonValueRecord(slotRecord?.args) }),
 		};
 	}
 

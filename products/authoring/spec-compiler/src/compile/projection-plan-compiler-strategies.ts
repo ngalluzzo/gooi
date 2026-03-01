@@ -38,11 +38,12 @@ export const compileJoinProjectionPlan = (
 		strategy: "join",
 		sourceRef: toSourceRef(projectionId, "join"),
 		primary: {
-			collectionId: asString(primary?.collectionId) ?? "",
-			alias: asString(primary?.alias) ?? "",
+			collectionId:
+				asString(primary?.collectionId) ?? asString(primary?.collection) ?? "",
+			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
-			record.joins,
+			record.joins ?? record.join,
 			`domain.projections.${projectionId}.joins`,
 			diagnostics,
 		),
@@ -83,15 +84,16 @@ export const compileAggregateProjectionPlan = (
 		strategy: "aggregate",
 		sourceRef: toSourceRef(projectionId, "aggregate"),
 		primary: {
-			collectionId: asString(primary?.collectionId) ?? "",
-			alias: asString(primary?.alias) ?? "",
+			collectionId:
+				asString(primary?.collectionId) ?? asString(primary?.collection) ?? "",
+			alias: asString(primary?.alias) ?? asString(primary?.as) ?? "",
 		},
 		joins: parseJoinEdges(
-			record.joins,
+			record.joins ?? record.join,
 			`domain.projections.${projectionId}.joins`,
 			diagnostics,
 		),
-		groupBy: parseGroupBy(record.groupBy),
+		groupBy: parseGroupBy(record.groupBy ?? record.group_by),
 		metrics: parseMetrics(record.metrics),
 		sort: parseSortRules(
 			record.sort,
@@ -116,7 +118,14 @@ export const compileTimelineProjectionPlan = (
 	if (pagination === null) {
 		return null;
 	}
-	const orderBy = asRecord(record.orderBy);
+	const orderBy = asRecord(record.orderBy ?? record.order_by);
+	const groupByValue = record.groupBy ?? record.group_by;
+	const groupBy = Array.isArray(groupByValue) ? groupByValue : undefined;
+	const groupByField =
+		record.groupByField === null
+			? null
+			: (asString(record.groupByField) ??
+				(typeof groupBy?.[0] === "string" ? groupBy[0] : null));
 	const guard = record.guard as
 		| CompiledTimelineProjectionPlan["guard"]
 		| undefined;
@@ -129,24 +138,21 @@ export const compileTimelineProjectionPlan = (
 					(entry): entry is string => typeof entry === "string",
 				)
 			: [],
-		groupByField:
-			record.groupByField === null
-				? null
-				: (asString(record.groupByField) ?? null),
+		groupByField,
 		orderBy: {
 			field: asString(orderBy?.field) ?? "emitted_at",
 			direction: asString(orderBy?.direction) === "desc" ? "desc" : "asc",
 		},
 		start: record.start === null ? null : (asRecord(record.start) ?? {}),
 		reducers: parseTimelineReducers(
-			record.reducers,
+			record.reducers ?? record.when,
 			`domain.projections.${projectionId}.reducers`,
 			diagnostics,
 		),
-		signalReplay: (asRecord(record.signalReplay) ??
+		signalReplay: (asRecord(record.signalReplay ?? record.rebuild) ??
 			{}) as unknown as CompiledTimelineProjectionPlan["signalReplay"],
 		pagination,
-		history: (asRecord(record.history) ??
+		history: (asRecord(record.history ?? record.persist) ??
 			{}) as unknown as CompiledTimelineProjectionPlan["history"],
 		...(guard === undefined ? {} : { guard }),
 	};

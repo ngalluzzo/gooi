@@ -7,6 +7,12 @@ import type {
 	TimelineReducerOperation,
 } from "@gooi/projection-contracts/plans";
 import { asRecord, asString } from "./cross-links/shared";
+import {
+	parseFieldSelectionString,
+	parseJoinOnExpression,
+	parseSortRuleObject,
+	parseTimelineReducerObject,
+} from "./projection-plan-compiler-north-star";
 
 export const projectionError = (
 	path: string,
@@ -28,11 +34,15 @@ export const parsePagination = (
 ): ProjectionPaginationPlan | null => {
 	const record = asRecord(value);
 	const mode = asString(record?.mode);
-	const pageArg = asString(record?.pageArg);
-	const pageSizeArg = asString(record?.pageSizeArg);
-	const defaultPage = asNumber(record?.defaultPage);
-	const defaultPageSize = asNumber(record?.defaultPageSize);
-	const maxPageSize = asNumber(record?.maxPageSize);
+	const pageArg = asString(record?.pageArg) ?? asString(record?.page_arg);
+	const pageSizeArg =
+		asString(record?.pageSizeArg) ?? asString(record?.page_size_arg);
+	const defaultPage =
+		asNumber(record?.defaultPage) ?? asNumber(record?.default_page) ?? 1;
+	const defaultPageSize =
+		asNumber(record?.defaultPageSize) ?? asNumber(record?.default_page_size);
+	const maxPageSize =
+		asNumber(record?.maxPageSize) ?? asNumber(record?.max_page_size);
 	if (
 		mode !== "page" ||
 		pageArg === undefined ||
@@ -65,8 +75,15 @@ export const parseSortRules = (
 	diagnostics: CompileDiagnostic[],
 ): readonly ProjectionSortRule[] => {
 	if (!Array.isArray(value)) {
+		const normalizedSort = parseSortRuleObject(value);
+		if (normalizedSort !== undefined) {
+			return normalizedSort;
+		}
 		diagnostics.push(
-			projectionError(path, "Projection sort must be an array of sort rules."),
+			projectionError(
+				path,
+				"Projection sort must be an array or include default_by/default_order.",
+			),
 		);
 		return [];
 	}
@@ -104,6 +121,11 @@ export const parseFieldSelections = (
 	}
 	const selections: ProjectionFieldSelection[] = [];
 	for (let index = 0; index < value.length; index += 1) {
+		const parsedString = parseFieldSelectionString(value[index]);
+		if (parsedString !== undefined) {
+			selections.push(parsedString);
+			continue;
+		}
 		const record = asRecord(value[index]);
 		const source = asString(record?.source);
 		const as = asString(record?.as);
@@ -135,12 +157,13 @@ export const parseJoinEdges = (
 	const edges: ProjectionJoinEdgePlan[] = [];
 	for (let index = 0; index < value.length; index += 1) {
 		const record = asRecord(value[index]);
-		const collectionId = asString(record?.collectionId);
-		const alias = asString(record?.alias);
+		const collectionId =
+			asString(record?.collectionId) ?? asString(record?.collection);
+		const alias = asString(record?.alias) ?? asString(record?.as);
 		const type = asString(record?.type);
-		const on = asRecord(record?.on);
-		const leftField = asString(on?.leftField);
-		const rightField = asString(on?.rightField);
+		const on = parseJoinOnExpression(record?.on);
+		const leftField = on?.leftField;
+		const rightField = on?.rightField;
 		if (
 			collectionId === undefined ||
 			alias === undefined ||
@@ -173,6 +196,9 @@ export const parseTimelineReducers = (
 	path: string,
 	diagnostics: CompileDiagnostic[],
 ): Readonly<Record<string, readonly TimelineReducerOperation[]>> => {
+	if (value === undefined || value === null) {
+		return {};
+	}
 	const reducers = asRecord(value);
 	if (reducers === undefined) {
 		diagnostics.push(
@@ -186,10 +212,15 @@ export const parseTimelineReducers = (
 	const output: Record<string, readonly TimelineReducerOperation[]> = {};
 	for (const [signalId, operations] of Object.entries(reducers)) {
 		if (!Array.isArray(operations)) {
+			const parsedObject = parseTimelineReducerObject(operations);
+			if (parsedObject !== undefined) {
+				output[signalId] = parsedObject;
+				continue;
+			}
 			diagnostics.push(
 				projectionError(
 					`${path}.${signalId}`,
-					"Timeline reducer operations must be an array.",
+					"Timeline reducer operations must be an array or reducer object.",
 				),
 			);
 			continue;

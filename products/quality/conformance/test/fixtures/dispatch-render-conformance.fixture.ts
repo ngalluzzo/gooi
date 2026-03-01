@@ -79,6 +79,7 @@ export const createDispatchRenderConformanceFixture =
 								messages: {
 									query: "list_messages",
 									refresh_on_signals: [],
+									args: { page: 1 },
 								},
 							},
 						},

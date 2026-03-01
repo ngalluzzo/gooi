@@ -7,9 +7,40 @@ describe("app-spec-contracts scaffold", () => {
 	test("parses app spec", () => {
 		const parsed = parseGooiAppSpec({
 			app: { id: "demo", name: "Demo", tz: "UTC" },
-			domain: {},
+			domain: {
+				capabilities: {
+					"message.is_allowed": {
+						in: { message: "text!" },
+						out: { allowed: "bool!" },
+						do: [],
+						return: { allowed: { $expr: { var: "allowed" } } },
+					},
+				},
+			},
 			session: { fields: {} },
-			views: { nodes: [], screens: [] },
+			views: {
+				nodes: [
+					{
+						id: "message_input",
+						type: "field.input.text",
+						props: { label: "Message" },
+						children: [],
+					},
+				],
+				screens: [
+					{
+						id: "home",
+						data: {
+							messages: {
+								query: "list_messages",
+								args: { page: 1 },
+								refresh_on_signals: ["message.created"],
+							},
+						},
+						root_nodes: ["message_input"],
+					},
+				],
+			},
 			queries: [],
 			mutations: [],
 			routes: [],
@@ -19,6 +50,10 @@ describe("app-spec-contracts scaffold", () => {
 			access: { default_policy: "deny", roles: {} },
 		});
 		expect(parsed.app.id).toBe("demo");
+		expect(parsed.domain.capabilities?.["message.is_allowed"]?.in).toEqual({
+			message: "text!",
+		});
+		expect(parsed.views.screens[0]?.root_nodes).toEqual(["message_input"]);
 	});
 
 	test("parses compiled section snapshot", () => {

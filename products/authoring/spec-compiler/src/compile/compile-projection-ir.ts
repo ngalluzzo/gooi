@@ -92,6 +92,7 @@ export const compileProjectionIR = (input: {
 		const result = compileProjectionPlan({
 			projectionId,
 			value: authoredProjections[projectionId],
+			domain: domainRecord,
 		});
 		diagnostics.push(...result.diagnostics);
 		if (result.plan !== undefined) {

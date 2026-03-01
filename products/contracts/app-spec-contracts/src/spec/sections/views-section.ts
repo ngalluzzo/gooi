@@ -6,6 +6,8 @@ const screenDataQuerySchema = strictObjectWithExtensions({
 	query: z.string().min(1),
 	/** Optional list of signal IDs that trigger a data refresh for this slot when emitted during a mutation. Must reference declared signals. */
 	refresh_on_signals: z.array(z.string().min(1)).optional(),
+	/** Optional argument map forwarded to the bound query when this screen slot is resolved. */
+	args: z.record(z.string(), z.unknown()).optional(),
 });
 
 const screenSchema = strictObjectWithExtensions({
@@ -13,6 +15,8 @@ const screenSchema = strictObjectWithExtensions({
 	id: z.string().min(1),
 	/** Optional map of named data slots bound to query entrypoints, keyed by slot name. Each slot is refreshed independently when its signals fire. */
 	data: z.record(z.string(), screenDataQuerySchema).optional(),
+	/** Optional root node ids rendered for this screen in declared order. */
+	root_nodes: z.array(z.string().min(1)).optional(),
 });
 
 const viewNodeSchema = strictObjectWithExtensions({
@@ -20,6 +24,10 @@ const viewNodeSchema = strictObjectWithExtensions({
 	id: z.string().min(1),
 	/** Renderer-registered node type key used by the renderer adapter to resolve the concrete component at runtime. */
 	type: z.string().min(1),
+	/** Optional node property bag forwarded to render IR for adapter interpretation. */
+	props: z.record(z.string(), z.unknown()).optional(),
+	/** Optional ordered child node ids rendered beneath this node. */
+	children: z.array(z.string().min(1)).optional(),
 });
 
 /**

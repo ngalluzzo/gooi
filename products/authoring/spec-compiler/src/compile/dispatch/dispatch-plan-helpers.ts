@@ -179,6 +179,14 @@ export const matcherFromSurfaceBinding = (
 		});
 	}
 
+	if (clauses.length === 0 && surfaceId === "web" && kind !== "route") {
+		clauses.push({
+			key: "intent",
+			op: "eq",
+			value: entrypointId,
+		});
+	}
+
 	if (clauses.length === 0 && kind === "route") {
 		clauses.push({ key: "routeId", op: "eq", value: entrypointId });
 	}

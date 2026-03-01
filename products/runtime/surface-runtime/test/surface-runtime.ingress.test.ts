@@ -58,6 +58,65 @@ describe("surface-runtime ingress adapters", () => {
 		expect(results.every((result) => result.ok)).toBe(true);
 	});
 
+	test("supports intent-only web ingress for derived web matcher policies", () => {
+		const result = dispatchAndBindSurfaceIngress({
+			surfaceId: "web",
+			ingress: {
+				intent: "list_messages",
+				query: { page: "2", q: "hello" },
+				principal: {
+					subject: "user_1",
+					claims: {},
+					tags: ["authenticated"],
+				},
+				authContext: {
+					provider: "fixture",
+				},
+			},
+			dispatchPlans: {
+				artifactVersion: "1.0.0",
+				plans: {
+					web: {
+						surfaceId: "web",
+						handlers: [
+							{
+								handlerId: "web:query:list_messages",
+								surfaceId: "web",
+								matcher: {
+									surfaceType: "web",
+									clauses: [
+										{ key: "intent", op: "eq", value: "list_messages" },
+									],
+								},
+								specificity: 100,
+								target: {
+									entrypointKind: "query",
+									entrypointId: "list_messages",
+									fieldBindings: {},
+								},
+							},
+						],
+					},
+				},
+			},
+			entrypoints: surfaceIngressEntrypointsFixture,
+			bindings: surfaceIngressBindingsFixture,
+		});
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) {
+			return;
+		}
+		expect(result.dispatch.entrypointKind).toBe("query");
+		expect(result.dispatch.entrypointId).toBe("list_messages");
+		expect(result.boundInput).toEqual({
+			page: 2,
+			page_size: 10,
+			q: "hello",
+			show_deleted: false,
+		});
+	});
+
 	test("returns typed transport error when webhook verification fails", () => {
 		const result = dispatchAndBindSurfaceIngress({
 			surfaceId: "webhook",

@@ -8,6 +8,14 @@ const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/, {
 const capabilitySchema = strictObjectWithExtensions({
 	/** Semver version of the capability contract this app declares as a dependency. Must follow `MAJOR.MINOR.PATCH` format. Defaults to latest when omitted. */
 	version: semverSchema.optional(),
+	/** Optional typed input field map for authored domain capability logic. */
+	in: z.record(z.string(), z.unknown()).optional(),
+	/** Optional typed output field map for authored domain capability logic. */
+	out: z.record(z.string(), z.unknown()).optional(),
+	/** Optional ordered capability step list for authored capability execution. */
+	do: z.array(z.unknown()).optional(),
+	/** Optional capability return mapping for authored capability execution. */
+	return: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

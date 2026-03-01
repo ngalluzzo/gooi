@@ -1,3 +1,4 @@
+import type { JsonValue } from "@gooi/contract-primitives/json";
 import type {
 	CompiledInteractionIntentPlan,
 	CompiledViewRenderNode,
@@ -19,6 +20,7 @@ export type CompiledViewRenderIRVersion = typeof compiledViewRenderIRVersion;
 export interface CompiledScreenDataBinding {
 	readonly queryId: string;
 	readonly refreshOnSignals: readonly string[];
+	readonly args?: Readonly<Record<string, JsonValue>>;
 }
 
 /**

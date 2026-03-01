@@ -370,6 +370,17 @@
         "@gooi/conformance": "workspace:*",
       },
     },
+    "products/marketplace/surface-adapters": {
+      "name": "@gooi-marketplace/surface-adapters",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/app-runtime-facade-contracts": "workspace:*",
+        "@gooi/app-spec-contracts": "workspace:*",
+        "@gooi/host-contracts": "workspace:*",
+        "@gooi/surface-contracts": "workspace:*",
+        "@gooi/surface-runtime": "workspace:*",
+      },
+    },
     "products/quality/conformance": {
       "name": "@gooi/conformance",
       "version": "0.1.0",
@@ -979,6 +990,8 @@
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
 
     "@gooi-marketplace/memory": ["@gooi-marketplace/memory@workspace:products/marketplace/memory"],
+
+    "@gooi-marketplace/surface-adapters": ["@gooi-marketplace/surface-adapters@workspace:products/marketplace/surface-adapters"],
 
     "@gooi/app": ["@gooi/app@workspace:packages/app"],
 

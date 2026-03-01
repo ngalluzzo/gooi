@@ -1,0 +1,53 @@
+{
+	"name": "@gooi-marketplace/surface-adapters",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./dist/http/http.js",
+	"types": "./src/http/http.ts",
+	"exports": {
+		"./http": {
+			"types": "./src/http/http.ts",
+			"bun": "./src/http/http.ts",
+			"import": "./dist/http/http.js",
+			"default": "./dist/http/http.js"
+		},
+		"./cli": {
+			"types": "./src/cli/cli.ts",
+			"bun": "./src/cli/cli.ts",
+			"import": "./dist/cli/cli.js",
+			"default": "./dist/cli/cli.js"
+		},
+		"./web": {
+			"types": "./src/web/web.ts",
+			"bun": "./src/web/web.ts",
+			"import": "./dist/web/web.js",
+			"default": "./dist/web/web.js"
+		},
+		"./webhook": {
+			"types": "./src/webhook/webhook.ts",
+			"bun": "./src/webhook/webhook.ts",
+			"import": "./dist/webhook/webhook.js",
+			"default": "./dist/webhook/webhook.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "bun test",
+		"build": "bun build ./src/http/http.ts --outfile ./dist/http/http.js --external @gooi/app-spec-contracts/compiled --external @gooi/app-runtime-facade-contracts/create --external @gooi/host-contracts/principal --external @gooi/surface-contracts --external @gooi/surface-runtime && bun build ./src/cli/cli.ts --outfile ./dist/cli/cli.js --external @gooi/app-spec-contracts/compiled --external @gooi/app-runtime-facade-contracts/create --external @gooi/host-contracts/principal --external @gooi/surface-contracts --external @gooi/surface-runtime && bun build ./src/web/web.ts --outfile ./dist/web/web.js --external @gooi/app-spec-contracts/compiled --external @gooi/app-runtime-facade-contracts/create --external @gooi/host-contracts/principal --external @gooi/surface-contracts --external @gooi/surface-runtime && bun build ./src/webhook/webhook.ts --outfile ./dist/webhook/webhook.js --external @gooi/app-spec-contracts/compiled --external @gooi/app-runtime-facade-contracts/create --external @gooi/host-contracts/principal --external @gooi/surface-contracts --external @gooi/surface-runtime",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"dependencies": {
+		"@gooi/app-runtime-facade-contracts": "workspace:*",
+		"@gooi/app-spec-contracts": "workspace:*",
+		"@gooi/host-contracts": "workspace:*",
+		"@gooi/surface-contracts": "workspace:*",
+		"@gooi/surface-runtime": "workspace:*"
+	}
+}

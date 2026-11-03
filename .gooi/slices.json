@@ -1,5 +1,10 @@
 {
-  "open": null,
+  "open": {
+    "number": 7,
+    "title": "Agent conversations on a swappable log",
+    "detail": "Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.",
+    "done": "the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change."
+  },
   "done": [
     {
       "number": 1,

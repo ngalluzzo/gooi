@@ -20,6 +20,11 @@ that exposes any edge, written once, with no per-app code. Backings aren't eithe
 a backing is host-chosen code behind an edge, such as the model in `backings/`,
 and provider code lives only there. Swapping one never changes the app.
 
+Storage is a backing too. Apps store through two interfaces with no domain
+meaning: records (named documents with compare-and-set) and logs (append-only
+streams with an expected length). Every storage backing passes one law suite,
+and the interfaces never gain queries.
+
 ## Rules
 
 - A change may add an artifact contract, an edge, or a surface adapter. Anything
@@ -47,7 +52,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**7. Agent conversations on a swappable log**
+
+Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.
+
+Done when: the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change.
 
 ## Done
 

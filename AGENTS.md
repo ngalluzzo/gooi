@@ -22,6 +22,10 @@ that exposes any edge, written once, with no per-app code.
 
 - A change may add an artifact contract, an edge, or a surface adapter. Anything
   else needs a written reason on this page, approved by the owner, first.
+- Gooi owns the envelope (`{contract, value}`) and the edge. It never owns meaning.
+  Every IR is an existing standard adopted by its contract ID, or a small local
+  dialect owned by the one package that needs it. A dialect becomes shared only
+  by being used twice, never by being designed to be shared.
 - One open slice at a time. Agents work only on the open slice and stop when its
   done condition is met. Agents never open or choose the next slice.
 - Done means used: the owner used it for something real, recorded under Done.

@@ -45,14 +45,15 @@ the task page (`bun run serve`) are generated: after changing
 
 ## Open slice
 
-**4. See tasks in a browser**
+**5. Task page in shadcn**
 
-The tasks app renders its listing to HTML through an HTML syntax tree, printed and parsed back. A compiled server runs the task list then render path on each request; titles are text, never markup.
+A shadcn mapping lowers the task page's HTML syntax tree to TSX using shadcn components, printed and parsed back, and the server renders it to HTML with Tailwind. renderTasks does not change.
 
-Done when: the owner keeps the task page open while working and it shows current tasks, including hand edits and agent changes.
+Done when: the owner keeps the shadcn task page open instead of the plain one, and renderTasks is unchanged.
 
 ## Done
 
+- **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
 - **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
 - **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
 - **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project

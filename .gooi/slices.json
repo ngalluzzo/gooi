@@ -1,9 +1,9 @@
 {
   "open": {
-    "number": 4,
-    "title": "See tasks in a browser",
-    "detail": "The tasks app renders its listing to HTML through an HTML syntax tree, printed and parsed back. A compiled server runs the task list then render path on each request; titles are text, never markup.",
-    "done": "the owner keeps the task page open while working and it shows current tasks, including hand edits and agent changes."
+    "number": 5,
+    "title": "Task page in shadcn",
+    "detail": "A shadcn mapping lowers the task page's HTML syntax tree to TSX using shadcn components, printed and parsed back, and the server renders it to HTML with Tailwind. renderTasks does not change.",
+    "done": "the owner keeps the shadcn task page open instead of the plain one, and renderTasks is unchanged."
   },
   "done": [
     {
@@ -28,6 +28,14 @@
       "detail": "Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.",
       "done": "the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it.",
       "used": "to close this task",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 4,
+      "title": "See tasks in a browser",
+      "detail": "The tasks app renders its listing to HTML through an HTML syntax tree, printed and parsed back. A compiled server runs the task list then render path on each request; titles are text, never markup.",
+      "done": "the owner keeps the task page open while working and it shows current tasks, including hand edits and agent changes.",
+      "used": "monitor the task list as it updates live",
       "closed": "2026-11-03"
     }
   ]

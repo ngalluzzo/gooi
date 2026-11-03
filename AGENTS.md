@@ -16,7 +16,9 @@ tools that already exist), and reuse pieces of one app in another.
    back only when an app needs retries or replay.
 
 Surfaces (CLI, MCP, HTTP, UI) are not a fourth thing. Each is one generic adapter
-that exposes any edge, written once, with no per-app code.
+that exposes any edge, written once, with no per-app code. Backings aren't either:
+a backing is host-chosen code behind an edge, such as the model in `backings/`,
+and provider code lives only there. Swapping one never changes the app.
 
 ## Rules
 

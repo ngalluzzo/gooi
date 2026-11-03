@@ -9,11 +9,27 @@
         "typescript": "^7.0.2",
       },
     },
+    "apps/gooi": {
+      "name": "@gooi/gooi",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/cli": "workspace:*",
+        "@gooi/slices": "workspace:*",
+        "@gooi/tasks": "workspace:*",
+      },
+    },
     "apps/slices": {
       "name": "@gooi/slices",
       "version": "0.1.0",
       "dependencies": {
-        "@gooi/cli": "workspace:*",
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+      },
+    },
+    "apps/tasks": {
+      "name": "@gooi/tasks",
+      "version": "0.1.0",
+      "dependencies": {
         "@gooi/exchange": "workspace:*",
         "@gooi/kernel": "workspace:*",
       },
@@ -49,9 +65,13 @@
 
     "@gooi/exchange": ["@gooi/exchange@workspace:core/exchange"],
 
+    "@gooi/gooi": ["@gooi/gooi@workspace:apps/gooi"],
+
     "@gooi/kernel": ["@gooi/kernel@workspace:core/kernel"],
 
     "@gooi/slices": ["@gooi/slices@workspace:apps/slices"],
+
+    "@gooi/tasks": ["@gooi/tasks@workspace:apps/tasks"],
 
     "@noble/hashes": ["@noble/hashes@2.4.0", "", {}, "sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA=="],
 

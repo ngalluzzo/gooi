@@ -27,7 +27,6 @@
     "test": "bun test ./src"
   },
   "dependencies": {
-    "@gooi/cli": "workspace:*",
     "@gooi/exchange": "workspace:*",
     "@gooi/kernel": "workspace:*"
   }

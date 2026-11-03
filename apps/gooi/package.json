@@ -1,0 +1,15 @@
+{
+  "name": "@gooi/gooi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "This repo's own gooi command: slices and tasks behind one CLI",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@gooi/cli": "workspace:*",
+    "@gooi/slices": "workspace:*",
+    "@gooi/tasks": "workspace:*"
+  }
+}

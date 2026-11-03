@@ -45,7 +45,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**6. Tell an agent, get a task**
+
+An agent edge takes an ACP prompt and returns the turn's ACP session updates. Its toolbox of task edges becomes tools built from their JSON Schemas, and every tool call runs through invoke. Backings are host wiring: gooi's loop over Claude, then over the local model in OMLx, with no change to edges, toolbox or instructions. gooi agent tell exposes it.
+
+Done when: the owner turns a real rant into tasks with gooi agent tell on Claude and on the local model in OMLx, with the same app code.
 
 ## Done
 

@@ -13,9 +13,14 @@
       "name": "@gooi/gooi",
       "version": "0.1.0",
       "dependencies": {
-        "@gooi/cli": "workspace:*",
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
         "@gooi/slices": "workspace:*",
         "@gooi/tasks": "workspace:*",
+        "commander": "^15.0.0",
+      },
+      "devDependencies": {
+        "@gooi/commander": "workspace:*",
       },
     },
     "apps/slices": {
@@ -135,6 +140,8 @@
     "bun-types": ["bun-types@1.4.4", "", { "dependencies": { "@types/node": "*", "undici-types": "*" } }, "sha512-yjrJh5oGX7mMPKGd19YXyIjmEuj4G4zNC30bs7PM9Az7NQ3ndF3j6hbeRdvJTRQEhJ/FYQwW0a2moweEi2hMxQ=="],
 
     "canonicalize": ["canonicalize@4.0.0", "", { "bin": { "canonicalize": "bin/canonicalize.js" } }, "sha512-FEdXzwWs+N3rZqEqpqleiY9M1A6IAf9oo1zHFABnLW9FcJ/jzsu+G/Ks3Hq3FglmPKe80GeGBw8ZXLEnwPB0vQ=="],
+
+    "commander": ["commander@15.0.0", "", {}, "sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg=="],
 
     "fast-deep-equal": ["fast-deep-equal@3.1.3", "", {}, "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="],
 

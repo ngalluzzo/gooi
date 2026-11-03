@@ -2,14 +2,19 @@
   "name": "@gooi/gooi",
   "version": "0.1.0",
   "private": true,
-  "description": "This repo's own gooi command: slices and tasks behind one CLI",
+  "description": "This repo's own gooi command, compiled from commands.ts to a Commander CLI",
   "type": "module",
   "scripts": {
     "typecheck": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@gooi/cli": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*",
     "@gooi/slices": "workspace:*",
-    "@gooi/tasks": "workspace:*"
+    "@gooi/tasks": "workspace:*",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@gooi/commander": "workspace:*"
   }
 }

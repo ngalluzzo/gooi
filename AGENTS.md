@@ -42,7 +42,11 @@ from `.gooi/slices.json`. Don't edit them by hand.
 <!-- gooi:slices:start -->
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**3. Compile the gooi command into a Commander CLI**
+
+Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.
+
+Done when: the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it.
 
 ## Done
 

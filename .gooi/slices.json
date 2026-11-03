@@ -1,5 +1,10 @@
 {
-  "open": null,
+  "open": {
+    "number": 3,
+    "title": "Compile the gooi command into a Commander CLI",
+    "detail": "Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.",
+    "done": "the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it."
+  },
   "done": [
     {
       "number": 1,

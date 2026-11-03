@@ -33,8 +33,10 @@ export function edge(
           {
             contract: options.claim,
             scope: options.scope,
-            from: [observe(input, operation.input, "input", input.value)],
-            to: [observe(output, operation.output, "output", output.value)],
+            // One key on both ends, so one edge's output observation is the
+            // next edge's input observation and compose can connect them.
+            from: [observe(input, operation.input, "value", input.value)],
+            to: [observe(output, operation.output, "value", output.value)],
             verdict: "passed",
             witness: null,
           },

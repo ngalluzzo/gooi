@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { compose } from "@gooi/kernel/compose";
 import { artifact, artifactId } from "@gooi/kernel/evidence";
 import { edge, invoke } from "./invoke.js";
 
@@ -7,6 +8,19 @@ const OUT = { id: "urn:test:out", version: 1 };
 const CLAIM = { id: "urn:test:applied", version: 1 };
 
 describe("edge", () => {
+  test("two edges chain, and compose connects their claims", async () => {
+    const inc = (from: typeof IN, to: typeof IN) =>
+      edge(
+        { operation: { input: from, output: to }, claim: CLAIM, scope: "Added one" },
+        (input) => ({ n: (input.value as { n: number }).n + 1 }),
+      );
+    const first = await invoke(inc(IN, OUT), artifact(IN, { n: 1 }));
+    const second = await invoke(inc(OUT, IN), first.artifact);
+    const [trace] = compose([first, second]);
+    expect(trace).toMatchObject({ verdict: "passed", firstIssueStage: null, missingStage: null });
+    expect(trace!.claims).toHaveLength(2);
+  });
+
   test("returns one passed claim pinned to the exact input and output", async () => {
     const double = edge(
       {

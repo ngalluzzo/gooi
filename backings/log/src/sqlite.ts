@@ -1,60 +1,47 @@
-import { and, eq, gte, Placeholder, sql } from "drizzle-orm";
+import type { Database } from "bun:sqlite";
+import { fileURLToPath } from "node:url";
+import { and, asc, eq, gte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/bun-sqlite";
-import { integer, QueryBuilder, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { readMigrationFiles } from "drizzle-orm/migrator";
 import { edge } from "@gooi/exchange";
+import type { Value } from "@gooi/kernel/types";
 import type { Sqlite } from "@gooi/sqlite";
-import { bindQuery, type SQLiteQueryTemplate } from "@gooi/sqlite/query";
-import { appendSpec, listSpec, LogConflict, type AppendRequest, type Log } from "./index.js";
-import { sqliteRead, sqliteReadLowering } from "./sqlite-read.js";
-import { logDatabase } from "./sqlite-schema.js";
+import {
+  appendSpec, listSpec, LogConflict, readSpec, type AppendRequest, type Log, type ReadRequest,
+} from "./index.js";
+import { entries, streams } from "./sqlite-tables.js";
 
-// Typed definitions for the DDL in sqlite-schema.ts.
-const streams = sqliteTable("streams", {
-  stream: text().primaryKey(),
-  length: integer().notNull(),
-  updated: text().notNull(),
-});
-const entries = sqliteTable("entries", {
-  stream: text().notNull(),
-  position: integer().notNull(),
-  value: text().notNull(),
+const migrations = readMigrationFiles({
+  migrationsFolder: fileURLToPath(new URL("../drizzle", import.meta.url)),
 });
 
-/** Keep a compiled Drizzle query's placeholders as named parameters. */
-function template({ sql: statement, params }: { sql: string; params: unknown[] }): SQLiteQueryTemplate {
-  return {
-    sql: statement,
-    parameters: params.map((param) => {
-      if (!(param instanceof Placeholder)) throw new Error("Expected only named placeholders");
-      return param.name;
-    }),
-  };
+/** Apply drizzle-kit's migrations, recording the count in SQLite's user_version.
+ * Drizzle's own migrate() checks what was applied before taking the write lock,
+ * so two processes opening a new file would both create the tables. */
+function migrate(db: Database) {
+  const applied = () => db.query<{ user_version: number }, []>("PRAGMA user_version").get()!.user_version;
+  if (applied() === migrations.length) return;
+  db.transaction(() => {
+    const from = applied();
+    if (from > migrations.length) throw new Error("The log database is newer than this code");
+    for (const migration of migrations.slice(from))
+      for (const statement of migration.sql) db.run(statement);
+    db.run(`PRAGMA user_version = ${migrations.length}`);
+  }).immediate();
 }
 
-// Compiled once at load: the read is trusted SQL, and requests supply values only.
-const READ = template(
-  new QueryBuilder()
-    .select({ value: entries.value })
-    .from(entries)
-    .where(and(
-      eq(entries.stream, sql.placeholder("stream")),
-      gte(entries.position, sql.placeholder("from")),
-    ))
-    .orderBy(entries.position)
-    .limit(sql.placeholder("limit"))
-    .toSQL(),
-);
-
-export const lowerRead = sqliteReadLowering(({ stream, from = 0, limit = -1 }) =>
-  bindQuery(READ, { stream, from, limit }));
-
-/** Lower the log edges to SQLite with Drizzle's typed queries. */
+/** Lower the log edges to SQLite tables with Drizzle's typed queries. */
 export function sqliteLog(use: Sqlite): Log {
-  const withDatabase = logDatabase(use);
+  let migrated = false;
+  const withLog: Sqlite = (run) => use((db) => {
+    if (!migrated) migrate(db);
+    migrated = true;
+    return run(db);
+  });
   return {
     append: edge(appendSpec, (input) => {
       const { stream, expectedLength, entries: batch } = input.value as unknown as AppendRequest;
-      return withDatabase((db) => db.transaction(() => {
+      return withLog((db) => db.transaction(() => {
         const orm = drizzle(db);
         const current = orm.select({ length: streams.length }).from(streams)
           .where(eq(streams.stream, stream)).get()?.length ?? 0;
@@ -64,16 +51,21 @@ export function sqliteLog(use: Sqlite): Log {
         const updated = new Date().toISOString();
         orm.insert(streams).values({ stream, length, updated })
           .onConflictDoUpdate({ target: streams.stream, set: { length, updated } }).run();
-        batch.forEach((entry, index) => {
-          orm.insert(entries)
-            .values({ stream, position: current + index, value: JSON.stringify(entry) }).run();
-        });
+        orm.insert(entries).values(batch.map((entry, index) => ({
+          stream, position: current + index, value: JSON.stringify(entry),
+        }))).run();
         return { stream, length };
       }).immediate());
     }),
-    read: sqliteRead(withDatabase, READ.sql, lowerRead),
-    list: edge(listSpec, () => withDatabase((db) =>
-      drizzle(db).select().from(streams).orderBy(streams.stream).all(),
+    read: edge(readSpec, (input) => {
+      const { stream, from = 0, limit = -1 } = input.value as unknown as ReadRequest;
+      const rows = withLog((db) => drizzle(db).select({ value: entries.value }).from(entries)
+        .where(and(eq(entries.stream, stream), gte(entries.position, from)))
+        .orderBy(asc(entries.position)).limit(limit).all());
+      return rows.map((row) => JSON.parse(row.value) as Value);
+    }),
+    list: edge(listSpec, () => withLog((db) =>
+      drizzle(db).select().from(streams).orderBy(asc(streams.stream)).all(),
     )),
   };
 }

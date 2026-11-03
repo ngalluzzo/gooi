@@ -1,7 +1,7 @@
 {
   "name": "@gooi/sqlite",
   "version": "0.1.0",
-  "description": "Host binding for a SQLite database file, and an edge that runs one trusted statement with values only",
+  "description": "Host binding for a SQLite database file: lends a configured connection to each synchronous use",
   "type": "module",
   "exports": {
     ".": {
@@ -11,25 +11,11 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
-    },
-    "./query": {
-      "bun": "./src/query.ts",
-      "dev": "./src/query.ts",
-      "default": {
-        "types": "./dist/query.d.ts",
-        "default": "./dist/query.js"
-      }
     }
   },
   "scripts": {
     "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.test.json",
     "test": "bun test ./src"
-  },
-  "dependencies": {
-    "@gooi/exchange": "workspace:*"
-  },
-  "devDependencies": {
-    "@gooi/kernel": "workspace:*"
   }
 }

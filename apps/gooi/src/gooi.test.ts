@@ -4,17 +4,26 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parsesTo } from "@gooi/estree";
-import { generate, generateServer, serverTarget, target } from "./compile.js";
+import {
+  designTarget,
+  generate,
+  generateDesign,
+  generateServer,
+  serverTarget,
+  target,
+} from "./compile.js";
 
 const cli = fileURLToPath(target);
 const source = readFileSync(cli, "utf8");
 const server = fileURLToPath(serverTarget);
 
-describe("generated gooi.ts and server.ts", () => {
+describe("generated gooi.ts, shadcn.tsx and server.ts", () => {
   test("are the programs the current layouts lower to", async () => {
-    // Compares syntax trees, so formatting is free; changing commands.ts or
-    // routes.ts without `bun run compile` is not.
+    // Compares syntax trees, so formatting is free; changing commands.ts,
+    // design.ts or routes.ts without `bun run compile` is not.
     expect(parsesTo(source, (await generate()).program.value as never)).toBe(true);
+    const design = (await generateDesign()).program.value as never;
+    expect(parsesTo(readFileSync(designTarget, "utf8"), design, "tsx")).toBe(true);
     const routes = (await generateServer()).program.value as never;
     expect(parsesTo(readFileSync(server, "utf8"), routes)).toBe(true);
   });
@@ -89,6 +98,19 @@ describe("gooi end to end", () => {
 
       gooi("task", "add", "--title", "<b>Bold</b> plan");
       expect(await (await fetch(page)).text()).toContain("&#x3C;b>Bold&#x3C;/b> plan");
+
+      // The same view through the shadcn mapping: components, same text.
+      const designed = await fetch(`${page}shadcn`);
+      expect(designed.headers.get("content-type")).toBe("text/html; charset=utf-8");
+      const html = await designed.text();
+      expect(html).toContain('data-slot="card"');
+      expect(html).toContain('data-slot="badge"');
+      expect(html).toContain('<link rel="stylesheet" href="/shadcn.css"/>');
+      expect(html).toContain("&lt;b&gt;Bold&lt;/b&gt; plan");
+      expect(html).not.toContain("<b>Bold</b>");
+      const styles = await fetch(`${page}shadcn.css`);
+      expect(styles.headers.get("content-type")).toBe("text/css; charset=utf-8");
+      expect(await styles.text()).toContain(".bg-card");
 
       const file = join(root, "tasks", "b-bold-b-plan.md");
       writeFileSync(file, readFileSync(file, "utf8").replace("# <b>Bold</b> plan", "# Renamed by hand"));

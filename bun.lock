@@ -14,6 +14,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/exchange": "workspace:*",
+        "@gooi/hast": "workspace:*",
         "@gooi/kernel": "workspace:*",
         "@gooi/slices": "workspace:*",
         "@gooi/tasks": "workspace:*",
@@ -48,9 +49,8 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/exchange": "workspace:*",
+        "@gooi/hast": "workspace:*",
         "@gooi/kernel": "workspace:*",
-        "hast-util-from-html": "^2.0.3",
-        "hast-util-to-html": "^9.0.6",
       },
     },
     "core/exchange": {
@@ -98,6 +98,16 @@
         "oxc-parser": "^0.157.0",
       },
     },
+    "surfaces/hast": {
+      "name": "@gooi/hast",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+        "hast-util-from-html": "^2.0.3",
+        "hast-util-to-html": "^9.0.6",
+      },
+    },
     "surfaces/hono": {
       "name": "@gooi/hono",
       "version": "0.1.0",
@@ -126,6 +136,8 @@
     "@gooi/exchange": ["@gooi/exchange@workspace:core/exchange"],
 
     "@gooi/gooi": ["@gooi/gooi@workspace:apps/gooi"],
+
+    "@gooi/hast": ["@gooi/hast@workspace:surfaces/hast"],
 
     "@gooi/hono": ["@gooi/hono@workspace:surfaces/hono"],
 

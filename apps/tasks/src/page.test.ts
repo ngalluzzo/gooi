@@ -3,7 +3,8 @@ import { invoke } from "@gooi/exchange";
 import { compose } from "@gooi/kernel/compose";
 import { artifact } from "@gooi/kernel/evidence";
 import { TASKS } from "./index.js";
-import { HAST, printHtml, renderTasks } from "./page.js";
+import { printHtml } from "@gooi/hast";
+import { renderTasks } from "./page.js";
 
 const listing = {
   open: [{ name: "evil", title: '<script>alert("x")</script> & </style>', status: "open", created: "2026-11-03" }],
@@ -32,23 +33,5 @@ describe("task page", () => {
     const html = (await invoke(printHtml, rendered.artifact)).artifact.value as string;
     expect(html).toContain("Nothing open.");
     expect(html).not.toContain("Can't read");
-  });
-
-  test("the printer refuses trees whose HTML would mean something else", async () => {
-    const el = (tagName: string, properties: object, children: object[]) => ({
-      type: "element",
-      tagName,
-      properties,
-      children,
-    });
-    for (const child of [
-      { type: "raw", value: "<script>evil()</script>" },
-      el("img src=x onerror=evil()", {}, []),
-      el("p", { 'title="x" onclick="evil()"': "y" }, []),
-      el("style", {}, [{ type: "text", value: "</style><script>evil()</script>" }]),
-    ])
-      await expect(
-        invoke(printHtml, artifact(HAST, { type: "root", children: [child] })),
-      ).rejects.toThrow("doesn't parse back to the same tree");
   });
 });

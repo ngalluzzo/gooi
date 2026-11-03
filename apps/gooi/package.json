@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@gooi/exchange": "workspace:*",
+    "@gooi/hast": "workspace:*",
     "@gooi/kernel": "workspace:*",
     "@gooi/slices": "workspace:*",
     "@gooi/tasks": "workspace:*",

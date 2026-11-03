@@ -36,8 +36,7 @@
   },
   "dependencies": {
     "@gooi/exchange": "workspace:*",
-    "@gooi/kernel": "workspace:*",
-    "hast-util-from-html": "^2.0.3",
-    "hast-util-to-html": "^9.0.6"
+    "@gooi/hast": "workspace:*",
+    "@gooi/kernel": "workspace:*"
   }
 }

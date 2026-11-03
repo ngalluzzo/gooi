@@ -51,19 +51,15 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**8. Claude and OMLx in one room**
-
-A room is a log stream of Matrix events: messages (m.room.message), members (m.room.member) and mentions (m.mentions). The owner posts from the CLI. Each mentioned agent reads the room through its own ACP session and answers under its own Matrix user ID. gooi room show reads the room back.
-
-Done when: the owner has one real conversation with Claude and OMLx in one room and reads it back with gooi room show.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **8. Claude and OMLx in one room** (closed 2026-11-03). Used for: reviewed my ongoing conversation with both agents
 - **7. Agent conversations on a swappable log** (closed 2026-11-03). Used for: reviewed my ongoing conversation with claude
 - **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
 - **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
 - **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
-- **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
-- _…and 2 earlier._
+- _…and 3 earlier._
 
 <!-- gooi:slices:end -->

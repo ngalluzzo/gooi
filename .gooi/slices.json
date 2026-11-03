@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 8,
-    "title": "Claude and OMLx in one room",
-    "detail": "A room is a log stream of Matrix events: messages (m.room.message), members (m.room.member) and mentions (m.mentions). The owner posts from the CLI. Each mentioned agent reads the room through its own ACP session and answers under its own Matrix user ID. gooi room show reads the room back.",
-    "done": "the owner has one real conversation with Claude and OMLx in one room and reads it back with gooi room show."
-  },
+  "open": null,
   "done": [
     {
       "number": 1,
@@ -60,6 +55,14 @@
       "detail": "Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.",
       "done": "the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change.",
       "used": "reviewed my ongoing conversation with claude",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 8,
+      "title": "Claude and OMLx in one room",
+      "detail": "A room is a log stream of Matrix events: messages (m.room.message), members (m.room.member) and mentions (m.mentions). The owner posts from the CLI. Each mentioned agent reads the room through its own ACP session and answers under its own Matrix user ID. gooi room show reads the room back.",
+      "done": "the owner has one real conversation with Claude and OMLx in one room and reads it back with gooi room show.",
+      "used": "reviewed my ongoing conversation with both agents",
       "closed": "2026-11-03"
     }
   ]

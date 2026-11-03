@@ -22,6 +22,7 @@
       },
       "devDependencies": {
         "@gooi/commander": "workspace:*",
+        "@gooi/estree": "workspace:*",
       },
     },
     "apps/slices": {
@@ -72,6 +73,15 @@
       "name": "@gooi/commander",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/estree": "workspace:*",
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+      },
+    },
+    "surfaces/estree": {
+      "name": "@gooi/estree",
+      "version": "0.1.0",
+      "dependencies": {
         "@gooi/exchange": "workspace:*",
         "@gooi/kernel": "workspace:*",
         "esrap": "^2.4.0",
@@ -83,6 +93,8 @@
     "@gooi/cli": ["@gooi/cli@workspace:surfaces/cli"],
 
     "@gooi/commander": ["@gooi/commander@workspace:surfaces/commander"],
+
+    "@gooi/estree": ["@gooi/estree@workspace:surfaces/estree"],
 
     "@gooi/exchange": ["@gooi/exchange@workspace:core/exchange"],
 

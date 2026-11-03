@@ -18,9 +18,7 @@ import {
   printTypeScript,
   statement,
   type Node as Estree,
-} from "./estree.js";
-
-export { ESTREE_PROGRAM, TYPESCRIPT_SOURCE, parsesTo, printTypeScript } from "./estree.js";
+} from "@gooi/estree";
 
 /** This package's own dialect: commands, groups and options, nothing more. */
 export const COMMAND_TREE = Object.freeze({ id: "urn:gooi:commander:command-tree", version: 1 });

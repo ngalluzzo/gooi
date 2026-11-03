@@ -12,10 +12,10 @@ export const ESTREE_PROGRAM = Object.freeze({
   version: 1,
 });
 export const TYPESCRIPT_SOURCE = Object.freeze({
-  id: "urn:gooi:commander:typescript-source",
+  id: "urn:gooi:estree:typescript-source",
   version: 1,
 });
-const PRINTED = Object.freeze({ id: "urn:gooi:commander:printed", version: 1 });
+const PRINTED = Object.freeze({ id: "urn:gooi:estree:printed", version: 1 });
 
 export type Node = { readonly type: string; readonly [key: string]: Value };
 

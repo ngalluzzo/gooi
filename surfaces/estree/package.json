@@ -1,0 +1,27 @@
+{
+  "name": "@gooi/estree",
+  "version": "0.1.0",
+  "description": "ESTree builders and a TypeScript printer that checks its output parses back",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*",
+    "esrap": "^2.4.0",
+    "oxc-parser": "^0.157.0"
+  }
+}

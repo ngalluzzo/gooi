@@ -8,7 +8,7 @@
   "scripts": {
     "gooi": "bun apps/gooi/src/gooi.ts",
     "compile": "bun apps/gooi/src/compile.ts",
-    "build": "bun run --cwd core/kernel build && bun run --cwd core/exchange build && bun run --cwd surfaces/cli build && bun run --cwd surfaces/commander build && bun run --cwd apps/slices build && bun run --cwd apps/tasks build",
+    "build": "bun run --cwd core/kernel build && bun run --cwd core/exchange build && bun run --cwd surfaces/cli build && bun run --cwd surfaces/estree build && bun run --cwd surfaces/commander build && bun run --cwd apps/slices build && bun run --cwd apps/tasks build",
     "typecheck": "bun run --filter './core/*' --filter './surfaces/*' --filter './apps/*' typecheck",
     "test": "bun test ./core ./surfaces ./apps"
   },

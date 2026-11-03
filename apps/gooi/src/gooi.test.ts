@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parsesTo } from "@gooi/commander";
+import { parsesTo } from "@gooi/estree";
 import { generate, target } from "./compile.js";
 
 const cli = fileURLToPath(target);

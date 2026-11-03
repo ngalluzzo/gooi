@@ -12,9 +12,11 @@
     "@gooi/kernel": "workspace:*",
     "@gooi/slices": "workspace:*",
     "@gooi/tasks": "workspace:*",
-    "commander": "^15.0.0"
+    "commander": "^15.0.0",
+    "hono": "^4.13.16"
   },
   "devDependencies": {
-    "@gooi/commander": "workspace:*"
+    "@gooi/commander": "workspace:*",
+    "@gooi/estree": "workspace:*"
   }
 }

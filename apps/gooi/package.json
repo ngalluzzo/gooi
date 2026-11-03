@@ -2,7 +2,7 @@
   "name": "@gooi/gooi",
   "version": "0.1.0",
   "private": true,
-  "description": "This repo's own gooi command, compiled from commands.ts to a Commander CLI",
+  "description": "This repo's own gooi command and task page, compiled to Commander and Hono",
   "type": "module",
   "scripts": {
     "typecheck": "tsc -p tsconfig.test.json"
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@gooi/commander": "workspace:*",
-    "@gooi/estree": "workspace:*"
+    "@gooi/estree": "workspace:*",
+    "@gooi/hono": "workspace:*"
   }
 }

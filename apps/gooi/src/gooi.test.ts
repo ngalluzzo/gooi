@@ -4,17 +4,19 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parsesTo } from "@gooi/estree";
-import { generate, target } from "./compile.js";
+import { generate, generateServer, serverTarget, target } from "./compile.js";
 
 const cli = fileURLToPath(target);
 const source = readFileSync(cli, "utf8");
+const server = fileURLToPath(serverTarget);
 
-describe("generated gooi.ts", () => {
-  test("is the program the current layout lowers to", async () => {
-    // Compares syntax trees, so formatting is free; changing commands.ts
-    // without `bun run compile` is not.
-    const { program } = await generate();
-    expect(parsesTo(source, program.value as never)).toBe(true);
+describe("generated gooi.ts and server.ts", () => {
+  test("are the programs the current layouts lower to", async () => {
+    // Compares syntax trees, so formatting is free; changing commands.ts or
+    // routes.ts without `bun run compile` is not.
+    expect(parsesTo(source, (await generate()).program.value as never)).toBe(true);
+    const routes = (await generateServer()).program.value as never;
+    expect(parsesTo(readFileSync(server, "utf8"), routes)).toBe(true);
   });
 
   test("doesn't use gooi's generic CLI", () => {
@@ -67,6 +69,42 @@ describe("gooi end to end", () => {
     expect(readFileSync(join(root, "AGENTS.md"), "utf8")).toContain(
       "- **1. Try it** (closed",
     );
+  });
+
+  test("the task page shows CLI changes, hand edits and broken files", async () => {
+    const port = 40000 + Math.floor(Math.random() * 20000);
+    const page = `http://localhost:${port}/`;
+    const proc = Bun.spawn(["bun", server], {
+      env: { ...process.env, GOOI_ROOT: root, PORT: String(port) },
+      stdout: "ignore",
+      stderr: "ignore",
+    });
+    try {
+      let first: Response | undefined;
+      for (let i = 0; i < 100 && !first; i++)
+        first = await fetch(page).catch(() => Bun.sleep(50).then(() => undefined));
+      expect(first?.status).toBe(200);
+      expect(first?.headers.get("content-type")).toBe("text/html; charset=utf-8");
+      expect(await first!.text()).toContain("Nothing open.");
+
+      gooi("task", "add", "--title", "<b>Bold</b> plan");
+      expect(await (await fetch(page)).text()).toContain("&#x3C;b>Bold&#x3C;/b> plan");
+
+      const file = join(root, "tasks", "b-bold-b-plan.md");
+      writeFileSync(file, readFileSync(file, "utf8").replace("# <b>Bold</b> plan", "# Renamed by hand"));
+      writeFileSync(join(root, "tasks", "broken.md"), "no header\n");
+      const after = await (await fetch(page)).text();
+      expect(after).toContain("Renamed by hand");
+      expect(after).toContain("broken.md");
+      expect(after).toContain("Expected the file to start with a --- header");
+
+      const bad = await fetch(`${page}?x=1`);
+      expect(bad.status).toBe(400);
+      expect(await bad.text()).toBe("Unexpected field: x");
+    } finally {
+      proc.kill();
+      await proc.exited;
+    }
   });
 
   test("refusals exit nonzero with a readable message", () => {

@@ -12,12 +12,21 @@
     "@gooi/kernel": "workspace:*",
     "@gooi/slices": "workspace:*",
     "@gooi/tasks": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.2",
     "commander": "^15.0.0",
-    "hono": "^4.13.16"
+    "hono": "^4.13.16",
+    "radix-ui": "^1.8.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@gooi/commander": "workspace:*",
     "@gooi/estree": "workspace:*",
-    "@gooi/hono": "workspace:*"
+    "@gooi/hono": "workspace:*",
+    "@tailwindcss/cli": "^4.3.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.4"
   }
 }

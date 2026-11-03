@@ -48,7 +48,6 @@ export function sqliteQuery(use: Sqlite, statement: string) {
     },
     claim: { id: "urn:gooi:sqlite:queried", version: 1 },
     scope: "Executed the host-bound statement with the supplied parameters and observed its JSON-compatible rows in query order",
-    observations: "artifact-id",
   }, (input) => {
     const { params } = input.value as unknown as SQLiteQuery;
     return use((db) => db.query(statement).all(...params));

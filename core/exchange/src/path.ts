@@ -1,6 +1,7 @@
 import { compose } from "@gooi/kernel/compose";
-import { observe, readOperation } from "@gooi/kernel/evidence";
+import { readOperation } from "@gooi/kernel/evidence";
 import type { Artifact, Contract, Stage } from "@gooi/kernel/types";
+import { boundary } from "./edge.js";
 import { invoke } from "./invoke.js";
 import type { Implementation } from "./types.js";
 
@@ -48,8 +49,8 @@ export function path(...steps: Implementation[]): Implementation {
           {
             contract: PATH,
             scope: `Ran ${steps.length} edges in order, each output feeding the next; the witness is their composed trace`,
-            from: [observe(input, operation.input, "value", input.value)],
-            to: [observe(current, operation.output, "value", current.value)],
+            from: [boundary(input, operation.input)],
+            to: [boundary(current, operation.output)],
             verdict,
             witness: traces,
           },

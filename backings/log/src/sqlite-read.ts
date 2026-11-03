@@ -10,7 +10,6 @@ export function sqliteReadLowering(compile: (request: ReadRequest) => SQLiteQuer
     inputSchema: readSpec.inputSchema,
     claim: { id: "urn:gooi:log:sqlite-read-lowered", version: 1 },
     scope: "Lowered the requested stream and range to a parameterized SQLite query",
-    observations: "artifact-id",
   }, (input) => compile(input.value as unknown as ReadRequest));
 }
 
@@ -18,7 +17,6 @@ const decodeEntries = edge({
   operation: { input: SQLITE_ROWS, output: LOG_ENTRIES },
   claim: { id: "urn:gooi:log:sqlite-entries-decoded", version: 1 },
   scope: "Decoded the JSON value column of every returned row in query order",
-  observations: "artifact-id",
 }, (input) => {
   if (!Array.isArray(input.value)) throw new Error("Expected SQLite rows");
   return input.value.map((row: Value) => {

@@ -146,3 +146,28 @@ describe("path", () => {
     );
   });
 });
+
+describe("observations", () => {
+  const A = { id: "urn:test:a", version: 1 };
+  const B = { id: "urn:test:b", version: 1 };
+  const C = { id: "urn:test:c", version: 1 };
+  const D = { id: "urn:test:d", version: 1 };
+  const step = (from: typeof A, to: typeof A) =>
+    edge({ operation: { input: from, output: to }, claim: CLAIM, scope: "Step" }, (input) => input.value);
+
+  test("edges and paths observe artifacts by ID, so any chain composes", async () => {
+    const input = artifact(A, { text: "x".repeat(10_000) });
+    const single = await invoke(step(A, B), input);
+    const [from] = single.claims[0]!.from;
+    expect(from).toMatchObject({ key: "artifact-id", value: artifactId(input), artifact: artifactId(input) });
+    expect(JSON.stringify(single.claims).includes("x".repeat(100))).toBe(false);
+
+    // A path nested inside a path, then a plain edge: every boundary matches.
+    const nested = path(path(step(A, B), step(B, C)), step(C, D));
+    const result = await invoke(nested, input);
+    const [claim] = result.claims;
+    expect(claim!.verdict).toBe("passed");
+    const [trace] = claim!.witness as unknown as { verdict: string; missingStage: number | null }[];
+    expect(trace).toMatchObject({ verdict: "passed", missingStage: null });
+  });
+});

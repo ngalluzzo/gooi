@@ -11,8 +11,14 @@ export interface EdgeOptions {
   readonly claim: Contract;
   /** What the claim asserts, and what it excludes. */
   readonly scope: string;
-  /** Pin the exact artifacts by ID when the trace doesn't need their inline values. */
-  readonly observations?: "artifact-id";
+}
+
+/** The one way edges and paths observe an artifact: by its ID, which pins its
+ * exact content without copying it into the trace. Every claim's boundary has
+ * the same shape, so any edge's output observation is the next edge's input
+ * observation and compose can always connect them. */
+export function boundary(subject: Artifact, contract: Contract) {
+  return observe(subject, contract, "artifact-id", artifactId(subject));
 }
 
 /** Build an edge whose result carries one passed claim from the exact input to
@@ -22,9 +28,6 @@ export function edge(
   apply: (input: Artifact) => unknown | Promise<unknown>,
 ): Implementation {
   const operation = readOperation(options.operation);
-  const boundary = options.observations === "artifact-id"
-    ? (subject: Artifact, contract: Contract) => observe(subject, contract, "artifact-id", artifactId(subject))
-    : (subject: Artifact, contract: Contract) => observe(subject, contract, "value", subject.value);
   return Object.freeze({
     operation,
     ...(options.inputSchema === undefined
@@ -38,8 +41,6 @@ export function edge(
           {
             contract: options.claim,
             scope: options.scope,
-            // One key on both ends, so one edge's output observation is the
-            // next edge's input observation and compose can connect them.
             from: [boundary(input, operation.input)],
             to: [boundary(output, operation.output)],
             verdict: "passed",

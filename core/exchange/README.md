@@ -39,7 +39,9 @@ meaning.
 
 `edge({operation, claim, scope}, apply)` builds an `Implementation` whose result
 carries one passed claim from the exact input to the output value `apply` returns.
-It is a shorthand for the common case, not a different kind of edge.
+It is a shorthand for the common case, not a different kind of edge. Its claims,
+like `path`'s, observe each artifact by its ID, so every edge's boundaries have
+the same shape and any chain of edges and paths composes.
 
 An `Implementation` may declare `inputSchema`, a JSON Schema for its input value.
 `invoke` checks it after the contract and before `run`, and throws `InputError`

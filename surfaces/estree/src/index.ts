@@ -33,6 +33,8 @@ const jsxName = (name: string): Node => {
 };
 /** `{expression}` inside JSX. */
 export const embed = (expression: Node): Node => ({ type: "JSXExpressionContainer", expression });
+/** `{...argument}` among JSX attributes. */
+export const spreadAttribute = (argument: Node): Node => ({ type: "JSXSpreadAttribute", argument });
 /** A JSX attribute. Strings that a plain attribute can't hold become `{"..."}`. */
 export function attribute(name: string, value: string | Node): Node {
   if (!ATTRIBUTE.test(name)) throw new Error(`Not a JSX attribute name: ${JSON.stringify(name)}`);
@@ -204,6 +206,19 @@ function comments(node: unknown, found: { type: string; value: string }[] = []) 
 type Language = "ts" | "tsx";
 const parse = (source: string, language: Language) =>
   parseSync(`module.${language}`, source, { sourceType: "module", preserveParens: false });
+
+/** Parse trusted, constant source into ESTree statements so a lowering can
+ * splice fixed code around the parts it builds. Never pass text that came
+ * from data: data becomes nodes only through the builders above. */
+export function parseProgram(source: string, language: Language = "ts"): Node[] {
+  const parsed = parse(source, language);
+  if (parsed.errors.length) throw new Error(`Constant source doesn't parse: ${parsed.errors[0]!.message}`);
+  return JSON.parse(
+    JSON.stringify(parsed.program.body, (key, value) =>
+      key === "start" || key === "end" ? undefined : value,
+    ),
+  );
+}
 
 /** Whether TypeScript (or TSX) source parses to exactly this program's
  * statements, ignoring positions, formatting and comments. */

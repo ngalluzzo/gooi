@@ -37,6 +37,10 @@ retains ownership of its native frame. Run `bun run demo:arrow-browser`.
 can all use this interface; their contracts and implementations define their
 meaning.
 
+`edge({operation, claim, scope}, apply)` builds an `Implementation` whose result
+carries one passed claim from the exact input to the output value `apply` returns.
+It is a shorthand for the common case, not a different kind of edge.
+
 `invoke(implementation, rawInput)` returns `Promise<Result>`. It admits and
 deeply freezes detached copies of the signature and input, checks the exact
 input contract before calling `run`, then admits the returned result against

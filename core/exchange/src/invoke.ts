@@ -4,6 +4,7 @@ import type { Artifact, Operation, Result } from "@gooi/kernel/types";
 import type { Implementation } from "./types.js";
 
 export type { Implementation } from "./types.js";
+export { edge, type EdgeOptions } from "./edge.js";
 
 /** Execute once against owned inputs and admit the result without choosing an acceptance policy. */
 export async function invoke(

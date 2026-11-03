@@ -1,7 +1,6 @@
-import { artifact, observe } from "@gooi/kernel/evidence";
 import { snapshot } from "@gooi/kernel/value";
-import type { Artifact, Contract, Value } from "@gooi/kernel/types";
-import type { Implementation } from "@gooi/exchange";
+import type { Contract, Value } from "@gooi/kernel/types";
+import { edge } from "@gooi/exchange";
 
 export const STATUS = Object.freeze({ id: "urn:gooi:slices:status", version: 1 });
 export const OPEN = Object.freeze({ id: "urn:gooi:slices:open", version: 1 });
@@ -80,26 +79,10 @@ export function readState(value: unknown): State {
   return snapshot({ open, done }) as unknown as State;
 }
 
-function edge(input: Contract, scope: string, apply: (request: Value) => State): Implementation {
-  return Object.freeze({
-    operation: Object.freeze({ input, output: STATE }),
-    async run(request: Artifact) {
-      const output = artifact(STATE, apply(request.value));
-      return {
-        artifact: output,
-        claims: [
-          {
-            contract: APPLIED,
-            scope,
-            from: [observe(request, input, "request", request.value)],
-            to: [observe(output, STATE, "state", output.value)],
-            verdict: "passed",
-            witness: null,
-          },
-        ],
-      };
-    },
-  });
+function step(input: Contract, scope: string, apply: (request: Value) => State) {
+  return edge({ operation: { input, output: STATE }, claim: APPLIED, scope }, (request) =>
+    apply(request.value),
+  );
 }
 
 function localDate(): string {
@@ -109,11 +92,11 @@ function localDate(): string {
 /** The three slice edges over a host-chosen store. `today` returns YYYY-MM-DD. */
 export function slices(store: Store, today: () => string = localDate) {
   return Object.freeze({
-    status: edge(STATUS, "Read the slice state; excludes later changes", (request) => {
+    status: step(STATUS, "Read the slice state; excludes later changes", (request) => {
       fields(request, []);
       return store.read();
     }),
-    open: edge(OPEN, "Opened one slice and stored the resulting state; excludes later changes", (request) => {
+    open: step(OPEN, "Opened one slice and stored the resulting state; excludes later changes", (request) => {
       const v = fields(request, ["title", "done"], ["detail"]);
       const state = store.read();
       if (state.open)
@@ -127,7 +110,7 @@ export function slices(store: Store, today: () => string = localDate) {
       store.write(next);
       return next;
     }),
-    close: edge(CLOSE, "Closed the open slice with what it was used for and stored the resulting state; excludes later changes", (request) => {
+    close: step(CLOSE, "Closed the open slice with what it was used for and stored the resulting state; excludes later changes", (request) => {
       const { used } = fields(request, ["used"]);
       const state = store.read();
       if (!state.open) throw new Error("No slice is open.");

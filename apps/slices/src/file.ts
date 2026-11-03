@@ -43,7 +43,8 @@ function section(page: string, body: string): string {
     end = page.indexOf(END);
   if (start < 0 || end < start || page.indexOf(START, start + 1) >= 0)
     throw new Error(`Expected one ${START} … ${END} section in the view`);
-  return `${page.slice(0, start + START.length)}\n${body}\n${page.slice(end)}`;
+  // Blank lines around the body match what Markdown formatters produce.
+  return `${page.slice(0, start + START.length)}\n\n${body}\n\n${page.slice(end)}`;
 }
 
 function replace(path: string, text: string) {

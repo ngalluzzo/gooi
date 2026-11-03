@@ -39,9 +39,9 @@ describe("file store", () => {
     expect(store.read()).toEqual(state);
     const page = readFileSync(view, "utf8");
     expect(page).toStartWith("# Title\n\nKeep me.\n\n");
-    expect(page).toContain(`${START}\n## Open slice\n\n**1. First**`);
+    expect(page).toContain(`${START}\n\n## Open slice\n\n**1. First**`);
     expect(page).not.toContain("old");
-    expect(page).toEndWith(`_Nothing yet._\n${END}\n\nAfter.\n`);
+    expect(page).toEndWith(`_Nothing yet._\n\n${END}\n\nAfter.\n`);
   });
 
   test("writes nothing when the view has no marked section", () => {

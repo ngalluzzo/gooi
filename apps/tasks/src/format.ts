@@ -75,13 +75,14 @@ export function readTask(name: string, text: string): Task {
   return parse(readName(name), text).task;
 }
 
-/** The text of a new open task. */
+/** The text of a new open task, laid out as Markdown formatters leave it. */
 export function taskText(
   title: string,
   created: string,
   notes?: string,
 ): string {
-  return `${["---", "status: open", `created: ${created}`, "---", `# ${title}`, ...(notes ? ["", notes] : [])].join("\n")}\n`;
+  const lines = ["---", "status: open", `created: ${created}`, "---", ""];
+  return `${[...lines, `# ${title}`, ...(notes ? ["", notes] : [])].join("\n")}\n`;
 }
 
 /** Mark an open task done. Only header lines change; the title and notes keep

@@ -5,7 +5,7 @@ describe("task files", () => {
   test("a new task reads back", () => {
     const text = taskText("Ship it", "2026-11-03", "Some notes.\n\nMore.");
     expect(text).toBe(
-      "---\nstatus: open\ncreated: 2026-11-03\n---\n# Ship it\n\nSome notes.\n\nMore.\n",
+      "---\nstatus: open\ncreated: 2026-11-03\n---\n\n# Ship it\n\nSome notes.\n\nMore.\n",
     );
     expect(readTask("ship-it", text)).toEqual({
       name: "ship-it",

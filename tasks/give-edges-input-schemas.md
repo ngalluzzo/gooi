@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-03
+finished: 2026-11-03
 ---
 
 # Give edges input schemas
@@ -14,4 +15,5 @@ prerequisite for compiling gooi's command into a standalone CLI.
       OpenAPI operations do. Contracts stay plain `{id, version}` references.
 - [x] Replace the hand-written field checks in apps/slices and apps/tasks. Slices
       still checks its stored file, which people may edit by hand.
-- [ ] Show each command's fields in `gooi help`.
+- [x] Show each command's fields in `gooi help`: the generated Commander CLI
+      lists them, e.g. `bun gooi task add --help`.

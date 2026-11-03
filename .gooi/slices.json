@@ -1,5 +1,10 @@
 {
-  "open": null,
+  "open": {
+    "number": 8,
+    "title": "Claude and OMLx in one room",
+    "detail": "A room is a log stream of Matrix events: messages (m.room.message), members (m.room.member) and mentions (m.mentions). The owner posts from the CLI. Each mentioned agent reads the room through its own ACP session and answers under its own Matrix user ID. gooi room show reads the room back.",
+    "done": "the owner has one real conversation with Claude and OMLx in one room and reads it back with gooi room show."
+  },
   "done": [
     {
       "number": 1,

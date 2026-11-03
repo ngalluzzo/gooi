@@ -51,7 +51,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**8. Claude and OMLx in one room**
+
+A room is a log stream of Matrix events: messages (m.room.message), members (m.room.member) and mentions (m.mentions). The owner posts from the CLI. Each mentioned agent reads the room through its own ACP session and answers under its own Matrix user ID. gooi room show reads the room back.
+
+Done when: the owner has one real conversation with Claude and OMLx in one room and reads it back with gooi room show.
 
 ## Done
 

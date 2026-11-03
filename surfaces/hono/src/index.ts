@@ -26,7 +26,7 @@ import {
 export const ROUTE_TREE = Object.freeze({ id: "urn:gooi:hono:route-tree", version: 1 });
 const LOWERED = Object.freeze({ id: "urn:gooi:hono:lowered", version: 1 });
 const NAME = "^[a-z][a-z0-9]*$";
-const PATH = "^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)*)?$";
+const PATH = "^/(?:[a-z0-9][a-z0-9.-]*(?:/[a-z0-9][a-z0-9.-]*)*)?$";
 const MEDIA = "^[a-z]+/[a-z0-9.+-]+$";
 const ONE_LINE = "^[^\\u0000-\\u001f\\u007f\\u2028\\u2029]*$";
 /** Output contracts named by an IANA media type registration are served as that type. */

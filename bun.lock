@@ -13,9 +13,12 @@
       "name": "@gooi/gooi",
       "version": "0.1.0",
       "dependencies": {
+        "@gooi/agent": "workspace:*",
+        "@gooi/claude": "workspace:*",
         "@gooi/exchange": "workspace:*",
         "@gooi/hast": "workspace:*",
         "@gooi/kernel": "workspace:*",
+        "@gooi/openai": "workspace:*",
         "@gooi/react": "workspace:*",
         "@gooi/slices": "workspace:*",
         "@gooi/tasks": "workspace:*",

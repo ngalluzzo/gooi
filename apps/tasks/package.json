@@ -27,6 +27,14 @@
         "types": "./dist/page.d.ts",
         "default": "./dist/page.js"
       }
+    },
+    "./agent": {
+      "bun": "./src/agent.ts",
+      "dev": "./src/agent.ts",
+      "default": {
+        "types": "./dist/agent.d.ts",
+        "default": "./dist/agent.js"
+      }
     }
   },
   "scripts": {

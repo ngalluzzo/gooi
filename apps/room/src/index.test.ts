@@ -42,12 +42,13 @@ function fake(reply: string | (() => never)) {
 }
 
 const OWNER = "@nic:localhost";
-const setup = (log: Log, replies: Record<string, string | (() => never)>) => {
+const setup = (log: Log, replies: Record<string, string | (() => never)>, maxReplies?: number) => {
   const agents = Object.fromEntries(Object.entries(replies).map(([name, reply]) => [name, fake(reply)]));
   const room = rooms({
     log,
     owner: OWNER,
     agents: Object.fromEntries(Object.entries(agents).map(([name, { agent }]) => [name, agent])),
+    ...(maxReplies === undefined ? {} : { maxReplies }),
   });
   const say = async (text: string, name = "gooi") =>
     (await invoke(room.say, artifact(ROOM_SAY, { room: name, text }))).artifact.value as string;
@@ -103,14 +104,45 @@ test("@room mentions every agent; no mention starts no turn", async () => {
   expect([agents.claude!.prompts.length, agents.omlx!.prompts.length]).toEqual([1, 1]);
 });
 
-test("an agent's mentions are recorded but start no turns", async () => {
+test("agents bring each other in by mention, and the conversation ends when no one is asked", async () => {
   const log = stores.jsonl();
-  const { agents, say } = setup(log, { claude: "Over to you, @omlx.", omlx: "o" });
-  await say("@claude go");
-  expect(agents.omlx!.prompts).toEqual([]);
+  const { agents, say } = setup(log, { claude: "Over to you, @omlx.", omlx: "Agreed, @nic." });
+  expect(await say("@claude go")).toEndWith("nic: @claude go\nclaude: Over to you, @omlx.\nomlx: Agreed, @nic.");
+  expect(agents.omlx!.prompts[0]).toContain("claude: Over to you, @omlx.");
+  expect(agents.omlx!.prompts[0]).toContain("Also here: nic (the owner), @claude.");
   const events = (await invoke(log.read, artifact(LOG_READ, { stream: "gooi" })))
     .artifact.value as unknown as RoomEvent[];
-  expect(events.at(-1)).toMatchObject({ content: { "m.mentions": { user_ids: ["@omlx:localhost"] } } });
+  expect(events.at(-2)).toMatchObject({ content: { "m.mentions": { user_ids: ["@omlx:localhost"] } } });
+  // Mentioning the owner records the mention; people are never called.
+  expect(events.at(-1)).toMatchObject({ content: { "m.mentions": { user_ids: ["@nic:localhost"] } } });
+});
+
+test("an agent already waiting to answer isn't asked twice", async () => {
+  const { agents, say } = setup(stores.jsonl(), { claude: "Good question for @omlx.", omlx: "Here's my take." });
+  expect(await say("@claude ask @omlx about rooms")).toEndWith(
+    "claude: Good question for @omlx.\nomlx: Here's my take.",
+  );
+  expect(agents.omlx!.prompts).toHaveLength(1);
+  expect(agents.omlx!.prompts[0]).toContain("claude: Good question for @omlx.");
+});
+
+test("agents that keep mentioning each other stop at the reply limit, and the last one knows it", async () => {
+  const { agents, say } = setup(stores.jsonl(), { claude: "What about you, @omlx?", omlx: "And you, @claude?" }, 3);
+  const said = await say("@claude start");
+  expect(said.split("\n").slice(-3)).toEqual([
+    "claude: What about you, @omlx?",
+    "omlx: And you, @claude?",
+    "claude: What about you, @omlx?",
+  ]);
+  expect([agents.claude!.prompts.length, agents.omlx!.prompts.length]).toEqual([2, 1]);
+  expect(agents.claude!.prompts[0]).toContain("2 more agent replies can follow yours");
+  expect(agents.claude!.prompts[1]).toContain("Yours is the last agent reply before the owner speaks again");
+});
+
+test("an agent never answers its own mention", async () => {
+  const { agents, say } = setup(stores.jsonl(), { claude: "Noted by me, @claude." });
+  await say("@claude note this");
+  expect(agents.claude!.prompts).toHaveLength(1);
 });
 
 test("an agent that fails leaves a note, and the others still answer", async () => {

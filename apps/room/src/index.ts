@@ -26,6 +26,7 @@ const room = {
 export const instructions = [
   "You're one participant in a chat room with the owner and other agents.",
   "The prompt shows the room so far and says who you are. Reply to the latest message that mentions you, in a few sentences, as yourself.",
+  "To ask another participant something, mention them with @ and their name, like @claude; whoever you mention answers next. Only mention someone when you want them to answer, and never yourself.",
   "Use your tools when the conversation calls for it, and say what you did.",
   "Don't speak for the other participants.",
 ].join("\n");
@@ -33,14 +34,17 @@ export const instructions = [
 export interface RoomOptions {
   /** Where rooms live: one log stream per room. */
   readonly log: Log;
-  /** The owner's Matrix user ID; only the owner's messages start agent turns. */
+  /** The owner's Matrix user ID. */
   readonly owner: string;
   /** Agent edges (ACP prompt to turn) by Matrix user name. Each new room joins them all. */
   readonly agents: Readonly<Record<string, Implementation>>;
+  /** The most agent replies one owner message can lead to, so agents that keep
+   * mentioning each other stop and the owner speaks again. Defaults to 6. */
+  readonly maxReplies?: number;
 }
 
 /** Rooms on a log: post as the owner, let mentioned agents answer, read a room back. */
-export function rooms({ log, owner, agents }: RoomOptions) {
+export function rooms({ log, owner, agents, maxReplies = 6 }: RoomOptions) {
   const agentIds = new Map(Object.entries(agents).map(([name, agent]) => [userId(name), agent]));
   if (agentIds.has(owner)) throw new Error(`The owner ${owner} can't also be an agent`);
 
@@ -96,12 +100,17 @@ export function rooms({ log, owner, agents }: RoomOptions) {
 
   // One ACP session per answer: the room is the shared memory, so each turn's
   // prompt is the room so far, and the session keeps that turn's tool calls.
-  async function answerAs(name: string, agentId: string): Promise<TextMessage> {
+  async function answerAs(name: string, agentId: string, left: number): Promise<TextMessage> {
     const before = await read(name);
+    const others = members(before).filter((id) => id !== agentId)
+      .map((id) => id === owner ? `${nameOf(id)} (the owner)` : `@${nameOf(id)}`);
     const prompt = [
       `Room ${roomId(name)} so far:`,
       transcript(before),
-      `You are ${nameOf(agentId)} (${agentId}). Reply to the latest message that mentions you.`,
+      `You are ${nameOf(agentId)} (${agentId}). Also here: ${others.join(", ")}.`,
+      left > 0
+        ? `Reply to the latest message that mentions you. ${left} more agent ${left === 1 ? "reply" : "replies"} can follow yours before the owner speaks again.`
+        : "Reply to the latest message that mentions you. Yours is the last agent reply before the owner speaks again, so don't ask anyone else to answer.",
     ].join("\n\n");
     let body: string;
     try {
@@ -122,21 +131,37 @@ export function rooms({ log, owner, agents }: RoomOptions) {
     return events[0] as TextMessage;
   }
 
+  /** The agents a message asks to answer: the ones it mentions, or all of them
+   * for @room, never its own sender. People are mentioned but never called. */
+  function called(event: TextMessage) {
+    const mentions = event.content["m.mentions"] ?? {};
+    const ids = mentions.room ? [...agentIds.keys()] : (mentions.user_ids ?? []).filter((id) => agentIds.has(id));
+    return ids.filter((id) => id !== event.sender).map((agent) => ({ room: nameOf(event.room_id), agent }));
+  }
+
   const answer = edge({
     operation: { input: MATRIX_MESSAGES, output: MATRIX_MESSAGES },
     inputSchema: messagesSchema,
     claim: contract("answered"),
-    scope: "Each agent mentioned in an owner's message answered once, in mention order, through a new ACP session; agents' own mentions start no turns",
+    scope: "Each agent a message mentioned answered in turn through a new ACP session, the owner's mentions first and then whoever each reply mentioned, until no one was asked or the reply limit was reached",
   }, async (input) => {
     const posted = input.value as unknown as Messages;
     const chunk = posted.chunk as RoomEvent[];
     const replies: TextMessage[] = [];
-    for (const event of chunk) {
-      if (event.type !== "m.room.message" || event.sender !== owner) continue;
-      const mentions = event.content["m.mentions"] ?? {};
-      const targets = mentions.room ? [...agentIds.keys()] : (mentions.user_ids ?? []).filter((id) => agentIds.has(id));
-      const name = nameOf(event.room_id);
-      for (const agentId of targets) replies.push(await answerAs(name, agentId));
+    // Who has been asked, in order: the owner's mentions, then whoever each reply
+    // brings in. An agent already waiting isn't asked twice; when its turn comes
+    // it sees everything said before it.
+    const asked: { room: string; agent: string }[] = [];
+    const ask = (event: TextMessage) => {
+      for (const next of called(event))
+        if (!asked.some(({ room, agent }) => room === next.room && agent === next.agent)) asked.push(next);
+    };
+    for (const event of chunk) if (event.type === "m.room.message") ask(event);
+    while (asked.length && replies.length < maxReplies) {
+      const { room: name, agent } = asked.shift()!;
+      const reply = await answerAs(name, agent, maxReplies - replies.length - 1);
+      replies.push(reply);
+      ask(reply);
     }
     // Others may write between replies, so the result is no longer one contiguous page: no end token.
     return { chunk: [...chunk, ...replies], start: posted.start } as unknown as Value;

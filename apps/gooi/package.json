@@ -17,6 +17,7 @@
     "@gooi/log": "workspace:*",
     "@gooi/openai": "workspace:*",
     "@gooi/react": "workspace:*",
+    "@gooi/room": "workspace:*",
     "@gooi/slices": "workspace:*",
     "@gooi/sqlite": "workspace:*",
     "@gooi/tasks": "workspace:*",

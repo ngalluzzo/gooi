@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { tmpdir, userInfo } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parsesTo } from "@gooi/estree";
@@ -197,6 +197,56 @@ describe("gooi end to end", () => {
         const missing = await agentCommand("show", "--session", "missing");
         expect(missing.code).toBe(1);
         expect(missing.err).toContain("No saved agent session missing");
+      } finally {
+        provider.stop(true);
+      }
+    });
+  }
+
+  for (const store of ["jsonl", "sqlite"] as const) {
+    test(`room say lets a mentioned agent answer, and room show reads it back, using ${store}`, async () => {
+      const prompts: string[] = [];
+      const provider = Bun.serve({
+        port: 0,
+        async fetch(request) {
+          const { messages } = await request.json() as { messages: { role: string; content: string }[] };
+          prompts.push(messages.at(-1)!.content);
+          return Response.json({
+            choices: [{ finish_reason: "stop", message: { role: "assistant", content: "Rooms work." } }],
+          });
+        },
+      });
+      const room = async (...args: string[]) => {
+        const proc = Bun.spawn([process.execPath, cli, "room", ...args], {
+          env: {
+            ...process.env,
+            GOOI_ROOT: root,
+            GOOI_STORE: store,
+            OMLX_BASE_URL: new URL("/v1", provider.url).href,
+            OMLX_API_KEY: "test",
+          },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const [out, err, code] = await Promise.all([
+          new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited,
+        ]);
+        return { out, err, code };
+      };
+      const me = userInfo().username.toLowerCase().replace(/[^a-z0-9._=\-/+]/gu, "_");
+      try {
+        const said = await room("say", "--room", `chat-${store}`, "--text", "@omlx do rooms work?");
+        expect(said.code, said.err).toBe(0);
+        expect(said.out).toBe(
+          `* ${me} joined\n* claude joined\n* omlx joined\n${me}: @omlx do rooms work?\nomlx: Rooms work.\n`,
+        );
+        expect(prompts).toHaveLength(1);
+        expect(prompts[0]).toContain(`${me}: @omlx do rooms work?`);
+        expect(prompts[0]).toContain("You are omlx (@omlx:localhost)");
+
+        const shown = await room("show", "--room", `chat-${store}`);
+        expect(shown.code, shown.err).toBe(0);
+        expect(shown.out).toBe(said.out);
       } finally {
         provider.stop(true);
       }

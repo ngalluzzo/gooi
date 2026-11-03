@@ -1,3 +1,4 @@
+import { userInfo } from "node:os";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { agent, sessionHistory, textPrompt, type Model } from "@gooi/agent";
@@ -8,6 +9,7 @@ import { jsonl } from "@gooi/jsonl";
 import { jsonlLog } from "@gooi/log/jsonl";
 import { sqliteLog } from "@gooi/log/sqlite";
 import { openaiCompatible } from "@gooi/openai";
+import { instructions as roomInstructions, rooms, userId } from "@gooi/room";
 import { slices } from "@gooi/slices";
 import { fileStore } from "@gooi/slices/file";
 import { sqlite } from "@gooi/sqlite";
@@ -37,16 +39,29 @@ const backing = process.env.GOOI_AGENT ?? "claude";
 if (!Object.hasOwn(backings, backing))
   throw new Error(`GOOI_AGENT must be one of ${Object.keys(backings).join(", ")}; got "${backing}"`);
 
-const sessionDb = sqlite(file(".gooi/agent-sessions.sqlite"));
+// GOOI_STORE picks where logs live; agent sessions and rooms each get their own.
 const stores = {
-  jsonl: () => jsonlLog(jsonl(file(".gooi/agent-sessions"))),
-  sqlite: () => sqliteLog(sessionDb),
+  jsonl: (name: string) => jsonlLog(jsonl(file(`.gooi/${name}`))),
+  sqlite: (name: string) => sqliteLog(sqlite(file(`.gooi/${name}.sqlite`))),
 };
 const store = process.env.GOOI_STORE ?? "jsonl";
 if (!Object.hasOwn(stores, store))
   throw new Error(`GOOI_STORE must be one of ${Object.keys(stores).join(", ")}; got "${store}"`);
-const log = stores[store as keyof typeof stores]();
+const logAt = stores[store as keyof typeof stores];
+const log = logAt("agent-sessions");
 const history = sessionHistory(log, resolve(file(".")));
+
+// In a room every backing takes part at once, each under its own Matrix name.
+// The owner is the local user; their turns are saved like any agent session.
+const owner = userId(userInfo().username.toLowerCase().replace(/[^a-z0-9._=\-/+]/gu, "_"));
+const room = rooms({
+  log: logAt("rooms"),
+  owner,
+  agents: Object.fromEntries(Object.entries(backings).map(([name, model]) => [
+    name,
+    agent({ instructions: roomInstructions, tools: toolbox(task), model: model(), log }),
+  ])),
+});
 
 /** How gooi's edges appear as commands. Change this, then run `bun run compile`. */
 export const commands = {
@@ -67,6 +82,13 @@ export const commands = {
       ),
       sessions: history.sessions,
       show: { edge: history.show, output: "text" },
+    },
+  },
+  room: {
+    description: "Talk with agents in a room; @claude or @omlx mentions one, @room mentions all",
+    commands: {
+      say: { edge: room.say, output: "text" },
+      show: { edge: room.show, output: "text" },
     },
   },
 } satisfies Layout;

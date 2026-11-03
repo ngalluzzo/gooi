@@ -37,8 +37,9 @@ that exposes any edge, written once, with no per-app code.
 - Keep this page to one screen. No ledgers, gate logs or "next" lists.
 
 The two sections below are written by `bun gooi slice` (`status`, `open`,
-`close --used`) from `.gooi/slices.json`. Don't edit them by hand. `bun gooi` is
-generated: after changing `apps/gooi/src/commands.ts`, run `bun run compile`.
+`close --used`) from `.gooi/slices.json`. Don't edit them by hand. `bun gooi` and
+the task page (`bun run serve`) are generated: after changing
+`apps/gooi/src/commands.ts` or `routes.ts`, run `bun run compile`.
 
 <!-- gooi:slices:start -->
 

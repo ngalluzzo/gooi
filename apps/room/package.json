@@ -1,0 +1,35 @@
+{
+  "name": "@gooi/room",
+  "version": "0.1.0",
+  "description": "Rooms as logs of Matrix events, where mentioned agents answer",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src",
+    "matrix-schemas": "bun scripts/matrix-schemas.ts"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^2.4.0",
+    "@gooi/agent": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*",
+    "@gooi/log": "workspace:*",
+    "json-schema-to-ts": "^3.1.1"
+  },
+  "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^16.0.5",
+    "@gooi/jsonl": "workspace:*",
+    "@gooi/sqlite": "workspace:*"
+  }
+}

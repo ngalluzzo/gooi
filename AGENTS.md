@@ -47,18 +47,15 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**6. Tell an agent, get a task**
-
-An agent edge takes an ACP prompt and returns the turn's ACP session updates. Its toolbox of task edges becomes tools built from their JSON Schemas, and every tool call runs through invoke. Backings are host wiring: gooi's loop over Claude, then over the local model in OMLx, with no change to edges, toolbox or instructions. gooi agent tell exposes it.
-
-Done when: the owner turns a real rant into tasks with gooi agent tell on Claude and on the local model in OMLx, with the same app code.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
 - **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
 - **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
 - **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
 - **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
-- **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project
+- _…and 1 earlier._
 
 <!-- gooi:slices:end -->

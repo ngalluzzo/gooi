@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 6,
-    "title": "Tell an agent, get a task",
-    "detail": "An agent edge takes an ACP prompt and returns the turn's ACP session updates. Its toolbox of task edges becomes tools built from their JSON Schemas, and every tool call runs through invoke. Backings are host wiring: gooi's loop over Claude, then over the local model in OMLx, with no change to edges, toolbox or instructions. gooi agent tell exposes it.",
-    "done": "the owner turns a real rant into tasks with gooi agent tell on Claude and on the local model in OMLx, with the same app code."
-  },
+  "open": null,
   "done": [
     {
       "number": 1,
@@ -44,6 +39,14 @@
       "detail": "A shadcn mapping lowers the task page's HTML syntax tree to TSX using shadcn components, printed and parsed back, and the server renders it to HTML with Tailwind. renderTasks does not change.",
       "done": "the owner keeps the shadcn task page open instead of the plain one, and renderTasks is unchanged.",
       "used": "using shadcn now to monitor the list",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 6,
+      "title": "Tell an agent, get a task",
+      "detail": "An agent edge takes an ACP prompt and returns the turn's ACP session updates. Its toolbox of task edges becomes tools built from their JSON Schemas, and every tool call runs through invoke. Backings are host wiring: gooi's loop over Claude, then over the local model in OMLx, with no change to edges, toolbox or instructions. gooi agent tell exposes it.",
+      "done": "the owner turns a real rant into tasks with gooi agent tell on Claude and on the local model in OMLx, with the same app code.",
+      "used": "used both backings to try enriching the rac ACP output",
       "closed": "2026-11-03"
     }
   ]

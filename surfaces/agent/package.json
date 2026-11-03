@@ -1,0 +1,26 @@
+{
+  "name": "@gooi/agent",
+  "version": "0.1.0",
+  "description": "gooi's agent loop: one ACP prompt turn over a host-chosen model, with a toolbox of edges as tools",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^2.4.0",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*"
+  }
+}

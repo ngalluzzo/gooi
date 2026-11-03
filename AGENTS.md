@@ -28,6 +28,8 @@ that exposes any edge, written once, with no per-app code.
   by being used twice, never by being designed to be shared.
 - One open slice at a time. Agents work only on the open slice and stop when its
   done condition is met. Agents never open or choose the next slice.
+- Tasks are shared: agents add and finish tasks in `tasks/` with `bun gooi`, so
+  the owner can follow along. Slices stay the owner's.
 - Done means used: the owner used it for something real, recorded under Done.
 - Nothing from `old/` or the deleted attempt comes back unless the open slice
   needs it. Docs inside `core/` may mention packages that no longer exist; that

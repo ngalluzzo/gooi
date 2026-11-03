@@ -101,6 +101,13 @@
         "canonicalize": "4.0.0",
       },
     },
+    "core/storage": {
+      "name": "@gooi/storage",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/kernel": "workspace:*",
+      },
+    },
     "surfaces/agent": {
       "name": "@gooi/agent",
       "version": "0.1.0",
@@ -216,6 +223,8 @@
     "@gooi/react": ["@gooi/react@workspace:surfaces/react"],
 
     "@gooi/slices": ["@gooi/slices@workspace:apps/slices"],
+
+    "@gooi/storage": ["@gooi/storage@workspace:core/storage"],
 
     "@gooi/tasks": ["@gooi/tasks@workspace:apps/tasks"],
 

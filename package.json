@@ -1,0 +1,18 @@
+{
+  "name": "gooi",
+  "workspaces": [
+    "core/*",
+    "surfaces/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "gooi": "bun apps/slices/src/main.ts",
+    "build": "bun run --cwd core/kernel build && bun run --cwd core/exchange build && bun run --cwd surfaces/cli build && bun run --cwd apps/slices build",
+    "typecheck": "bun run --filter './core/*' --filter './surfaces/*' --filter './apps/*' typecheck",
+    "test": "bun test ./core ./surfaces ./apps"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@gooi/slices",
+  "version": "0.1.0",
+  "description": "Gooi tracks its own slices: status, open and close",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./file": {
+      "bun": "./src/file.ts",
+      "dev": "./src/file.ts",
+      "default": {
+        "types": "./dist/file.d.ts",
+        "default": "./dist/file.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/cli": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*"
+  }
+}

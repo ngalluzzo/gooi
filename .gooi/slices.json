@@ -1,0 +1,9 @@
+{
+  "open": {
+    "number": 1,
+    "title": "Gooi tracks itself (CLI)",
+    "detail": "The operations `status`, `open` and `close --used \"<what it was used for>\"` are edges over `.gooi/slices.json`, with a generic CLI surface (`surfaces/cli`). The CLI keeps this page's Open slice and Done sections in sync.",
+    "done": "the owner closes this slice with `bun gooi close --used \"...\"`."
+  },
+  "done": []
+}

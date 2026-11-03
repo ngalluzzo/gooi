@@ -1,0 +1,67 @@
+{
+  "name": "@gooi/kernel",
+  "version": "0.1.0",
+  "description": "Identity and evidence for portable programs",
+  "type": "module",
+  "exports": {
+    "./value": {
+      "bun": "./src/data.ts",
+      "dev": "./src/data.ts",
+      "default": {
+        "types": "./dist/data.d.ts",
+        "default": "./dist/data.js"
+      }
+    },
+    "./types": {
+      "bun": "./src/types.ts",
+      "dev": "./src/types.ts",
+      "default": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/types.js"
+      }
+    },
+    "./errors": {
+      "bun": "./src/errors.ts",
+      "dev": "./src/errors.ts",
+      "default": {
+        "types": "./dist/errors.d.ts",
+        "default": "./dist/errors.js"
+      }
+    },
+    "./evidence": {
+      "bun": "./src/evidence.ts",
+      "dev": "./src/evidence.ts",
+      "default": {
+        "types": "./dist/evidence.d.ts",
+        "default": "./dist/evidence.js"
+      }
+    },
+    "./compose": {
+      "bun": "./src/compose.ts",
+      "dev": "./src/compose.ts",
+      "default": {
+        "types": "./dist/compose.d.ts",
+        "default": "./dist/compose.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.fixtures.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src",
+    "prepack": "bun run build"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0"
+  },
+  "devDependencies": {
+    "canonicalize": "4.0.0"
+  }
+}

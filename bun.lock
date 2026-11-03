@@ -23,6 +23,7 @@
       "devDependencies": {
         "@gooi/commander": "workspace:*",
         "@gooi/estree": "workspace:*",
+        "@gooi/hono": "workspace:*",
       },
     },
     "apps/slices": {
@@ -88,6 +89,15 @@
         "oxc-parser": "^0.157.0",
       },
     },
+    "surfaces/hono": {
+      "name": "@gooi/hono",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/estree": "workspace:*",
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+      },
+    },
   },
   "packages": {
     "@gooi/cli": ["@gooi/cli@workspace:surfaces/cli"],
@@ -99,6 +109,8 @@
     "@gooi/exchange": ["@gooi/exchange@workspace:core/exchange"],
 
     "@gooi/gooi": ["@gooi/gooi@workspace:apps/gooi"],
+
+    "@gooi/hono": ["@gooi/hono@workspace:surfaces/hono"],
 
     "@gooi/kernel": ["@gooi/kernel@workspace:core/kernel"],
 

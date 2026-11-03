@@ -60,9 +60,19 @@
         "@gooi/kernel": "workspace:*",
       },
     },
+    "surfaces/commander": {
+      "name": "@gooi/commander",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+      },
+    },
   },
   "packages": {
     "@gooi/cli": ["@gooi/cli@workspace:surfaces/cli"],
+
+    "@gooi/commander": ["@gooi/commander@workspace:surfaces/commander"],
 
     "@gooi/exchange": ["@gooi/exchange@workspace:core/exchange"],
 

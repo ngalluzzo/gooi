@@ -45,14 +45,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**5. Task page in shadcn**
-
-A shadcn mapping lowers the task page's HTML syntax tree to TSX using shadcn components, printed and parsed back, and the server renders it to HTML with Tailwind. renderTasks does not change.
-
-Done when: the owner keeps the shadcn task page open instead of the plain one, and renderTasks is unchanged.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
 - **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
 - **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
 - **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along

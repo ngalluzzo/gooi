@@ -44,14 +44,15 @@ generated: after changing `apps/gooi/src/commands.ts`, run `bun run compile`.
 
 ## Open slice
 
-**3. Compile the gooi command into a Commander CLI**
+**4. See tasks in a browser**
 
-Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.
+The tasks app renders its listing to HTML through an HTML syntax tree, printed and parsed back. A compiled server runs the task list then render path on each request; titles are text, never markup.
 
-Done when: the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it.
+Done when: the owner keeps the task page open while working and it shows current tasks, including hand edits and agent changes.
 
 ## Done
 
+- **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
 - **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
 - **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project
 

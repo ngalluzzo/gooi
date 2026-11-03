@@ -1,9 +1,9 @@
 {
   "open": {
-    "number": 3,
-    "title": "Compile the gooi command into a Commander CLI",
-    "detail": "Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.",
-    "done": "the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it."
+    "number": 4,
+    "title": "See tasks in a browser",
+    "detail": "The tasks app renders its listing to HTML through an HTML syntax tree, printed and parsed back. A compiled server runs the task list then render path on each request; titles are text, never markup.",
+    "done": "the owner keeps the task page open while working and it shows current tasks, including hand edits and agent changes."
   },
   "done": [
     {
@@ -20,6 +20,14 @@
       "detail": "Each task is tasks/<name>.md with a status and created header and free notes below. List, add and finish tasks through the same generic CLI, and editing a file by hand stays valid.",
       "done": "the owner tracks gooi's real next tasks in tasks/ and has finished one with the CLI.",
       "used": "my agent tracks gooi's next tasks and I follow along",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 3,
+      "title": "Compile the gooi command into a Commander CLI",
+      "detail": "Edges describe their inputs with JSON Schema. One step turns the edges into a command tree with chosen names and groups; a lowering edge emits a Commander program that calls the edges directly. The generated CLI replaces `bun gooi`.",
+      "done": "the generated CLI replaces bun gooi for daily use by the owner and agents, and @gooi/cli is not in it.",
+      "used": "to close this task",
       "closed": "2026-11-03"
     }
   ]

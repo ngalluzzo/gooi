@@ -7,6 +7,7 @@ import type { Implementation } from "./types.js";
 export type { Implementation } from "./types.js";
 export { edge, type EdgeOptions } from "./edge.js";
 export { InputError } from "./schema.js";
+export { path } from "./path.js";
 
 /** Execute once against owned inputs and admit the result without choosing an acceptance policy. */
 export async function invoke(

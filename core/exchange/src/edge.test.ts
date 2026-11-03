@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { compose } from "@gooi/kernel/compose";
 import { artifact, artifactId } from "@gooi/kernel/evidence";
-import { edge, invoke } from "./invoke.js";
+import { edge, invoke, path } from "./invoke.js";
 
 const IN = { id: "urn:test:in", version: 1 };
 const OUT = { id: "urn:test:out", version: 1 };
@@ -106,5 +106,43 @@ describe("edge", () => {
       },
     );
     await expect(invoke(refuse, artifact(IN, {}))).rejects.toThrow("no");
+  });
+});
+
+describe("path", () => {
+  const MID = { id: "urn:test:mid", version: 1 };
+  const step = (from: typeof IN, to: typeof IN, inputSchema?: object) =>
+    edge(
+      {
+        operation: { input: from, output: to },
+        ...(inputSchema ? { inputSchema: inputSchema as never } : {}),
+        claim: CLAIM,
+        scope: "Step",
+      },
+      (input) => ({ n: (input.value as { n: number }).n + 1 }),
+    );
+  const schema = { type: "object", properties: { n: { type: "integer" } }, required: ["n"] };
+
+  test("runs connected edges as one, carrying their composed trace", async () => {
+    const both = path(step(IN, MID, schema), step(MID, OUT));
+    expect(both.operation).toEqual({ input: IN, output: OUT });
+    expect(both.inputSchema).toEqual(schema);
+    const input = artifact(IN, { n: 1 });
+    const result = await invoke(both, input);
+    expect(result.artifact).toEqual(artifact(OUT, { n: 3 }));
+    const [claim] = result.claims;
+    expect(claim!.verdict).toBe("passed");
+    expect(claim!.from[0]!.artifact).toBe(artifactId(input));
+    const [trace] = claim!.witness as unknown as { verdict: string; claims: unknown[] }[];
+    expect(trace).toMatchObject({ verdict: "passed" });
+    expect(trace!.claims).toHaveLength(2);
+    await expect(invoke(both, artifact(IN, { n: "x" }))).rejects.toThrow("n must be integer");
+  });
+
+  test("refuses steps that don't connect", () => {
+    expect(() => path()).toThrow("at least one edge");
+    expect(() => path(step(IN, MID), step(IN, OUT))).toThrow(
+      "Step 2 takes urn:test:in@1 but step 1 gives urn:test:mid@1",
+    );
   });
 });

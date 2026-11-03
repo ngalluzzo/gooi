@@ -37,6 +37,7 @@ li { padding: .6rem 0; border-top: 1px solid var(--line); }
 .title { display: block; font-weight: 600; overflow-wrap: anywhere; }
 .done .title { font-weight: 400; color: var(--soft); text-decoration: line-through; }
 .meta, .summary, footer { color: var(--soft); font-size: .875rem; }
+footer { margin-top: 2.5rem; }
 .problem { color: #c9342b; }
 `;
 

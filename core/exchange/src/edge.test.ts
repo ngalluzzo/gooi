@@ -9,7 +9,11 @@ const CLAIM = { id: "urn:test:applied", version: 1 };
 describe("edge", () => {
   test("returns one passed claim pinned to the exact input and output", async () => {
     const double = edge(
-      { operation: { input: IN, output: OUT }, claim: CLAIM, scope: "Doubled n" },
+      {
+        operation: { input: IN, output: OUT },
+        claim: CLAIM,
+        scope: "Doubled n",
+      },
       async (input) => ({ n: (input.value as { n: number }).n * 2 }),
     );
     const input = artifact(IN, { n: 2 });
@@ -52,7 +56,9 @@ describe("edge", () => {
         expect.objectContaining({ name: "InputError", message: problem }),
       );
     expect(ran).toBe(0);
-    expect((await invoke(greet, artifact(IN, { name: "ana" }))).artifact.value).toEqual({
+    expect(
+      (await invoke(greet, artifact(IN, { name: "ana" }))).artifact.value,
+    ).toEqual({
       text: "hi ana",
     });
   });

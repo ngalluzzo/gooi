@@ -22,7 +22,9 @@ export function edge(
   const operation = readOperation(options.operation);
   return Object.freeze({
     operation,
-    ...(options.inputSchema === undefined ? {} : { inputSchema: snapshot(options.inputSchema) }),
+    ...(options.inputSchema === undefined
+      ? {}
+      : { inputSchema: snapshot(options.inputSchema) }),
     async run(input: Artifact) {
       const output = artifact(operation.output, await apply(input));
       return {

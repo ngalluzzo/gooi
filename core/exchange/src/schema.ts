@@ -10,7 +10,8 @@ const ajv = new Ajv({ allErrors: false });
 const compiled = new WeakMap<object, ValidateFunction>();
 
 function message(error: ErrorObject): string {
-  if (error.keyword === "required") return `Missing field: ${error.params.missingProperty}`;
+  if (error.keyword === "required")
+    return `Missing field: ${error.params.missingProperty}`;
   if (error.keyword === "additionalProperties")
     return `Unexpected field: ${error.params.additionalProperty}`;
   const field = error.instancePath.replace(/^\//u, "").replaceAll("/", ".");

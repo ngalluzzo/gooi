@@ -2,6 +2,7 @@
 status: open
 created: 2026-11-03
 ---
+
 # Give edges input schemas
 
 Describe each edge's input fields with JSON Schema, adopted rather than invented

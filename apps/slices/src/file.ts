@@ -20,13 +20,18 @@ export function fileStore(path: string, view?: string): Store {
       try {
         return readState(JSON.parse(raw));
       } catch (error) {
-        throw new Error(`Invalid slice file ${path}: ${(error as Error).message}`);
+        throw new Error(
+          `Invalid slice file ${path}: ${(error as Error).message}`,
+        );
       }
     },
     write(value: State) {
       const state = readState(value);
       // Check the view before writing anything, so a broken page leaves both files as they were.
-      const page = view === undefined ? undefined : section(readFileSync(view, "utf8"), render(state));
+      const page =
+        view === undefined
+          ? undefined
+          : section(readFileSync(view, "utf8"), render(state));
       replace(path, `${JSON.stringify(state, null, 2)}\n`);
       if (view !== undefined) replace(view, page!);
     },

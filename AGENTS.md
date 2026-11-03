@@ -40,6 +40,7 @@ The two sections below are written by `bun gooi` (`status`, `open`, `close --use
 from `.gooi/slices.json`. Don't edit them by hand.
 
 <!-- gooi:slices:start -->
+
 ## Open slice
 
 **3. Compile the gooi command into a Commander CLI**
@@ -52,4 +53,5 @@ Done when: the generated CLI replaces bun gooi for daily use by the owner and ag
 
 - **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
 - **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project
+
 <!-- gooi:slices:end -->

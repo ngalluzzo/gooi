@@ -35,7 +35,8 @@ export function nameFor(title: string): string {
 function parse(name: string, text: string) {
   if (text.includes("\r")) throw new Error("Expected Unix line endings");
   const lines = text.split("\n");
-  if (lines[0] !== "---") throw new Error("Expected the file to start with a --- header");
+  if (lines[0] !== "---")
+    throw new Error("Expected the file to start with a --- header");
   const close = lines.indexOf("---", 1);
   if (close < 0) throw new Error("Expected the header to end with ---");
   const header = new Map<string, number>(),
@@ -75,7 +76,11 @@ export function readTask(name: string, text: string): Task {
 }
 
 /** The text of a new open task. */
-export function taskText(title: string, created: string, notes?: string): string {
+export function taskText(
+  title: string,
+  created: string,
+  notes?: string,
+): string {
   return `${["---", "status: open", `created: ${created}`, "---", `# ${title}`, ...(notes ? ["", notes] : [])].join("\n")}\n`;
 }
 

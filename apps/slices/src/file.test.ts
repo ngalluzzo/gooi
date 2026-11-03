@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { END, START, fileStore } from "./file.js";
@@ -11,7 +17,10 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-const state = readState({ open: { number: 1, title: "First", done: "d" }, done: [] });
+const state = readState({
+  open: { number: 1, title: "First", done: "d" },
+  done: [],
+});
 
 describe("file store", () => {
   test("treats a missing file as an empty project", () => {
@@ -21,7 +30,10 @@ describe("file store", () => {
   test("writes JSON and replaces only the marked section of the view", () => {
     const path = join(dir, ".gooi", "slices.json"),
       view = join(dir, "AGENTS.md");
-    writeFileSync(view, `# Title\n\nKeep me.\n\n${START}\nold\n${END}\n\nAfter.\n`);
+    writeFileSync(
+      view,
+      `# Title\n\nKeep me.\n\n${START}\nold\n${END}\n\nAfter.\n`,
+    );
     const store = fileStore(path, view);
     store.write(state);
     expect(store.read()).toEqual(state);

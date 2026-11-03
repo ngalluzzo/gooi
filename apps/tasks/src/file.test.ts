@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileFolder } from "./file.js";
@@ -32,7 +38,9 @@ describe("file folder", () => {
   test("replace refuses when the file changed since it was read", () => {
     const folder = fileFolder(dir);
     folder.create("a", "before");
-    expect(() => folder.replace("a", "something else", "after")).toThrow("changed");
+    expect(() => folder.replace("a", "something else", "after")).toThrow(
+      "changed",
+    );
     folder.replace("a", "before", "after");
     expect(readFileSync(join(dir, "a.md"), "utf8")).toBe("after");
   });

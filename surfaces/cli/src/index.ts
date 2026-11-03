@@ -33,7 +33,10 @@ export async function cli(
     return 1;
   }
   try {
-    const result = await invoke(edge, artifact(edge.operation.input, flags(rest)));
+    const result = await invoke(
+      edge,
+      artifact(edge.operation.input, flags(rest)),
+    );
     out(JSON.stringify(result.artifact.value, null, 2));
     return 0;
   } catch (error) {
@@ -49,7 +52,11 @@ function flags(args: readonly string[]): Record<string, string> {
     if (!match) throw new Error(`Unexpected argument: ${args[i]}`);
     const key = match[1]!;
     let value = match[2];
-    if (value === undefined && args[i + 1] !== undefined && !args[i + 1]!.startsWith("--"))
+    if (
+      value === undefined &&
+      args[i + 1] !== undefined &&
+      !args[i + 1]!.startsWith("--")
+    )
       value = args[++i];
     if (value === undefined) throw new Error(`Missing value for --${key}`);
     if (Object.hasOwn(values, key)) throw new Error(`Repeated flag: --${key}`);

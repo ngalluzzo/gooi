@@ -13,6 +13,9 @@ const apps = [
   tasks(fileFolder(path("tasks"))),
 ];
 const edges = Object.assign({}, ...apps);
-if (Object.keys(edges).length !== apps.reduce((n, app) => n + Object.keys(app).length, 0))
+if (
+  Object.keys(edges).length !==
+  apps.reduce((n, app) => n + Object.keys(app).length, 0)
+)
   throw new Error("Two apps define the same command");
 process.exitCode = await cli(edges, process.argv.slice(2), { name: "gooi" });

@@ -1,4 +1,10 @@
-import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { readName } from "./format.js";
 import type { Folder } from "./index.js";
@@ -34,7 +40,9 @@ export function fileFolder(dir: string): Folder {
     replace(name: string, expected: string, text: string) {
       const path = file(name);
       if (readFileSync(path, "utf8") !== expected)
-        throw new Error(`Task ${name} changed while it was being updated; try again`);
+        throw new Error(
+          `Task ${name} changed while it was being updated; try again`,
+        );
       const temporary = `${path}.${process.pid}.tmp`;
       writeFileSync(temporary, text);
       renameSync(temporary, path);

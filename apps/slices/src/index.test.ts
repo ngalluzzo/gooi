@@ -33,15 +33,18 @@ describe("slice edges", () => {
   test("open, status and close move one slice through", async () => {
     const m = memory(),
       e = edges(m.store);
-    const opened = await invoke(e.open, open({ title: " First ", done: "used once" }));
+    const opened = await invoke(
+      e.open,
+      open({ title: " First ", done: "used once" }),
+    );
     expect(opened.artifact.value).toEqual({
       open: { number: 1, title: "First", done: "used once" },
       done: [],
     });
     expect(opened.claims).toHaveLength(1);
-    expect((await invoke(e.status, artifact(STATUS, {}))).artifact.value).toEqual(
-      opened.artifact.value,
-    );
+    expect(
+      (await invoke(e.status, artifact(STATUS, {}))).artifact.value,
+    ).toEqual(opened.artifact.value);
     const closed = await invoke(e.close, close("tracked this test"));
     expect(closed.artifact.value).toEqual({
       open: null,
@@ -55,7 +58,10 @@ describe("slice edges", () => {
         },
       ],
     });
-    const second = await invoke(e.open, open({ title: "Second", done: "d", detail: "more" }));
+    const second = await invoke(
+      e.open,
+      open({ title: "Second", done: "d", detail: "more" }),
+    );
     expect(readState(second.artifact.value).open).toEqual({
       number: 2,
       title: "Second",
@@ -68,30 +74,38 @@ describe("slice edges", () => {
     const m = memory(),
       e = edges(m.store);
     await invoke(e.open, open({ title: "First", done: "d" }));
-    await expect(invoke(e.open, open({ title: "Second", done: "d" }))).rejects.toThrow(
-      "Slice 1 is still open",
-    );
+    await expect(
+      invoke(e.open, open({ title: "Second", done: "d" })),
+    ).rejects.toThrow("Slice 1 is still open");
     expect(m.writes()).toBe(1);
     expect(m.get().open?.title).toBe("First");
   });
 
   test("refuses closing when nothing is open", async () => {
     const m = memory();
-    await expect(invoke(edges(m.store).close, close("x"))).rejects.toThrow("No slice is open");
+    await expect(invoke(edges(m.store).close, close("x"))).rejects.toThrow(
+      "No slice is open",
+    );
     expect(m.writes()).toBe(0);
   });
 
   test("refuses missing, blank and unexpected fields", async () => {
     const e = edges(memory().store);
-    await expect(invoke(e.open, open({ done: "d" }))).rejects.toThrow("Missing field: title");
-    await expect(invoke(e.open, open({ title: "  ", done: "d" }))).rejects.toThrow("title");
-    await expect(invoke(e.open, open({ titel: "x", title: "x", done: "d" }))).rejects.toThrow(
-      "Unexpected field: titel",
+    await expect(invoke(e.open, open({ done: "d" }))).rejects.toThrow(
+      "Missing field: title",
     );
-    await expect(invoke(e.status, artifact(STATUS, { all: "yes" }))).rejects.toThrow(
-      "Unexpected field: all",
+    await expect(
+      invoke(e.open, open({ title: "  ", done: "d" })),
+    ).rejects.toThrow("title");
+    await expect(
+      invoke(e.open, open({ titel: "x", title: "x", done: "d" })),
+    ).rejects.toThrow("Unexpected field: titel");
+    await expect(
+      invoke(e.status, artifact(STATUS, { all: "yes" })),
+    ).rejects.toThrow("Unexpected field: all");
+    await expect(invoke(e.close, artifact(CLOSE, {}))).rejects.toThrow(
+      "Missing field: used",
     );
-    await expect(invoke(e.close, artifact(CLOSE, {}))).rejects.toThrow("Missing field: used");
   });
 });
 
@@ -99,10 +113,19 @@ describe("state", () => {
   test("refuses numbers that do not increase", () => {
     const closed = { title: "t", done: "d", used: "u", closed: "2026-11-03" };
     expect(() =>
-      readState({ open: null, done: [{ ...closed, number: 2 }, { ...closed, number: 2 }] }),
+      readState({
+        open: null,
+        done: [
+          { ...closed, number: 2 },
+          { ...closed, number: 2 },
+        ],
+      }),
     ).toThrow("must increase");
     expect(() =>
-      readState({ open: { number: 1, title: "t", done: "d" }, done: [{ ...closed, number: 1 }] }),
+      readState({
+        open: { number: 1, title: "t", done: "d" },
+        done: [{ ...closed, number: 1 }],
+      }),
     ).toThrow("must increase");
   });
 
@@ -117,9 +140,13 @@ describe("state", () => {
       used: `u${i + 1}`,
       closed: "2026-11-03",
     }));
-    const page = render(readState({ open: { number: 8, title: "Next", done: "d" }, done }));
+    const page = render(
+      readState({ open: { number: 8, title: "Next", done: "d" }, done }),
+    );
     expect(page).toContain("**8. Next**\n\nDone when: d");
-    expect(page).toContain("- **7. S7** (closed 2026-11-03). Used for: u7\n- **6. S6**");
+    expect(page).toContain(
+      "- **7. S7** (closed 2026-11-03). Used for: u7\n- **6. S6**",
+    );
     expect(page).not.toContain("S2**");
     expect(page).toContain("- _…and 2 earlier._");
   });

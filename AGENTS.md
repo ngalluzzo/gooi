@@ -36,13 +36,9 @@ from `.gooi/slices.json`. Don't edit them by hand.
 <!-- gooi:slices:start -->
 ## Open slice
 
-**1. Gooi tracks itself (CLI)**
-
-The operations `status`, `open` and `close --used "<what it was used for>"` are edges over `.gooi/slices.json`, with a generic CLI surface (`surfaces/cli`). The CLI keeps this page's Open slice and Done sections in sync.
-
-Done when: the owner closes this slice with `bun gooi close --used "..."`.
+_None. Only the owner opens the next slice._
 
 ## Done
 
-_Nothing yet._
+- **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project
 <!-- gooi:slices:end -->

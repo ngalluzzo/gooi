@@ -19,6 +19,14 @@
         "types": "./dist/file.d.ts",
         "default": "./dist/file.js"
       }
+    },
+    "./page": {
+      "bun": "./src/page.ts",
+      "dev": "./src/page.ts",
+      "default": {
+        "types": "./dist/page.d.ts",
+        "default": "./dist/page.js"
+      }
     }
   },
   "scripts": {
@@ -28,6 +36,8 @@
   },
   "dependencies": {
     "@gooi/exchange": "workspace:*",
-    "@gooi/kernel": "workspace:*"
+    "@gooi/kernel": "workspace:*",
+    "hast-util-from-html": "^2.0.3",
+    "hast-util-to-html": "^9.0.6"
   }
 }

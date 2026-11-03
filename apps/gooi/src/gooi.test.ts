@@ -129,14 +129,14 @@ describe("gooi end to end", () => {
     }
   });
 
-  for (const store of ["jsonl", "sqlite"] as const) {
+  for (const store of ["jsonl", "sqlite", "drizzle"] as const) {
     test(`agent tell persists and agent show replays ACP notifications using ${store}`, async () => {
-      async function agentCommand(...args: string[]) {
+      async function runAgent(using: string, ...args: string[]) {
         const proc = Bun.spawn([process.execPath, cli, "agent", ...args], {
           env: {
             ...process.env,
             GOOI_ROOT: root,
-            GOOI_STORE: store,
+            GOOI_STORE: using,
             GOOI_AGENT: "omlx",
             OMLX_BASE_URL: new URL("/v1", provider.url).href,
             OMLX_API_KEY: "test",
@@ -150,6 +150,7 @@ describe("gooi end to end", () => {
         return { out, err, code };
       }
 
+      const agentCommand = (...args: string[]) => runAgent(store, ...args);
       const observed: string[] = [];
       const provider = Bun.serve({
         port: 0,
@@ -193,6 +194,12 @@ describe("gooi end to end", () => {
         const show = await agentCommand("show", "--session", sessions[0].sessionId);
         expect(show.code, show.err).toBe(0);
         expect(show.out).toBe(observed[1] + "Agent: I checked the tasks.\n");
+        if (store !== "jsonl") {
+          const other = store === "sqlite" ? "drizzle" : "sqlite";
+          const replay = await runAgent(other, "show", "--session", sessions[0].sessionId);
+          expect(replay.code, replay.err).toBe(0);
+          expect(replay.out).toBe(show.out);
+        }
         const missing = await agentCommand("show", "--session", "missing");
         expect(missing.code).toBe(1);
         expect(missing.err).toContain("No saved agent session missing");

@@ -1,6 +1,6 @@
 import { compose } from "@gooi/kernel/compose";
 import { observe, readOperation } from "@gooi/kernel/evidence";
-import type { Artifact, Contract, Result } from "@gooi/kernel/types";
+import type { Artifact, Contract, Stage } from "@gooi/kernel/types";
 import { invoke } from "./invoke.js";
 import type { Implementation } from "./types.js";
 
@@ -29,14 +29,14 @@ export function path(...steps: Implementation[]): Implementation {
     operation,
     ...(inputSchema === undefined ? {} : { inputSchema }),
     async run(input: Artifact) {
-      const results: Result[] = [];
+      const stages: Stage[] = [];
       let current = input;
       for (const step of steps) {
         const result = await invoke(step, current);
-        results.push(result);
+        stages.push({ claims: result.claims });
         current = result.artifact;
       }
-      const traces = compose(results);
+      const traces = compose(stages);
       const verdict = traces.every((t) => t.verdict === "passed")
         ? "passed"
         : traces.some((t) => t.verdict === "failed")

@@ -5,6 +5,7 @@ import { claude } from "@gooi/claude";
 import type { Layout } from "@gooi/commander";
 import { path } from "@gooi/exchange";
 import { jsonl } from "@gooi/jsonl";
+import { drizzleLog } from "@gooi/log/drizzle";
 import { jsonlLog } from "@gooi/log/jsonl";
 import { sqliteLog } from "@gooi/log/sqlite";
 import { openaiCompatible } from "@gooi/openai";
@@ -37,12 +38,16 @@ const backing = process.env.GOOI_AGENT ?? "claude";
 if (!Object.hasOwn(backings, backing))
   throw new Error(`GOOI_AGENT must be one of ${Object.keys(backings).join(", ")}; got "${backing}"`);
 
+const sessionDb = sqlite(file(".gooi/agent-sessions.sqlite"));
+const stores = {
+  jsonl: () => jsonlLog(jsonl(file(".gooi/agent-sessions"))),
+  sqlite: () => sqliteLog(sessionDb),
+  drizzle: () => drizzleLog(sessionDb),
+};
 const store = process.env.GOOI_STORE ?? "jsonl";
-if (store !== "jsonl" && store !== "sqlite")
-  throw new Error(`GOOI_STORE must be jsonl or sqlite; got "${store}"`);
-const log = store === "jsonl"
-  ? jsonlLog(jsonl(file(".gooi/agent-sessions")))
-  : sqliteLog(sqlite(file(".gooi/agent-sessions.sqlite")));
+if (!Object.hasOwn(stores, store))
+  throw new Error(`GOOI_STORE must be one of ${Object.keys(stores).join(", ")}; got "${store}"`);
+const log = stores[store as keyof typeof stores]();
 const history = sessionHistory(log, resolve(file(".")));
 
 /** How gooi's edges appear as commands. Change this, then run `bun run compile`. */

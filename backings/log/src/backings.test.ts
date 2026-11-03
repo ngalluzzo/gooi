@@ -6,6 +6,7 @@ import { invoke } from "@gooi/exchange";
 import { artifact } from "@gooi/kernel/evidence";
 import { jsonl } from "@gooi/jsonl";
 import { sqlite } from "@gooi/sqlite";
+import { drizzleLog } from "./drizzle.js";
 import { LOG_APPEND, LOG_READ } from "./index.js";
 import { jsonlLog } from "./jsonl.js";
 import { sqliteLog } from "./sqlite.js";
@@ -14,9 +15,12 @@ import { logLaws } from "./testing.js";
 const openJsonl = (directory: string) => jsonlLog(jsonl(directory));
 const openSqlite = (file: string) => sqliteLog(sqlite(file));
 
-for (const [name, create] of [
-  ["jsonl", openJsonl],
-  ["sqlite", openSqlite],
+const openDrizzle = (file: string) => drizzleLog(sqlite(file));
+
+for (const [name, binding, create] of [
+  ["jsonl", "jsonl", openJsonl],
+  ["sqlite", "sqlite", openSqlite],
+  ["drizzle", "sqlite", openDrizzle],
 ] as const) {
   describe(name, () => {
     for (const law of logLaws(async () => {
@@ -39,7 +43,7 @@ for (const [name, create] of [
         import { invoke } from ${JSON.stringify(import.meta.resolve("@gooi/exchange"))};
         import { artifact } from ${JSON.stringify(import.meta.resolve("@gooi/kernel/evidence"))};
         import { LOG_APPEND, LogConflict } from ${JSON.stringify(new URL("./index.ts", import.meta.url).href)};
-        import { ${name} as bind } from ${JSON.stringify(import.meta.resolve(`@gooi/${name}`))};
+        import { ${binding} as bind } from ${JSON.stringify(import.meta.resolve(`@gooi/${binding}`))};
         import { ${name}Log as lower } from ${JSON.stringify(new URL(`./${name}.ts`, import.meta.url).href)};
         const [id, file, gate] = process.argv.slice(2);
         writeFileSync(gate + id, "");
@@ -95,6 +99,28 @@ test("JSONL drops a torn final batch and preserves preceding committed entries",
     expect((await invoke(openJsonl(dir).read, request)).artifact.value).toEqual([1, 2]);
     await invoke(openJsonl(dir).append, artifact(LOG_APPEND, { stream: "s", expectedLength: 2, entries: [4] }));
     expect((await invoke(openJsonl(dir).read, request)).artifact.value).toEqual([1, 2, 4]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("Drizzle rolls back the whole batch and its length if an insert fails", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "gooi-drizzle-rollback-"));
+  try {
+    const file = join(dir, "log");
+    const log = openDrizzle(file);
+    const append = (expectedLength: number, entries: string[]) =>
+      invoke(log.append, artifact(LOG_APPEND, { stream: "s", expectedLength, entries }));
+    await append(0, ["first"]);
+    sqlite(file)((db) => db.exec(`
+      CREATE TRIGGER refuse_third BEFORE INSERT ON entries
+      WHEN NEW.position = 2 BEGIN SELECT RAISE(ABORT, 'refuse third entry'); END;
+    `));
+    await expect(append(1, ["second", "third"])).rejects.toThrow("refuse third entry");
+    const request = artifact(LOG_READ, { stream: "s" });
+    expect((await invoke(openSqlite(file).read, request)).artifact.value).toEqual(["first"]);
+    await append(1, ["replacement"]);
+    expect((await invoke(log.read, request)).artifact.value).toEqual(["first", "replacement"]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

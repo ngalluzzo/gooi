@@ -1,34 +1,21 @@
-import type { Database } from "bun:sqlite";
 import type { Sqlite } from "@gooi/sqlite";
 import { edge } from "@gooi/exchange";
-import type { Value } from "@gooi/kernel/types";
 import {
-  appendSpec, listSpec, LogConflict, readSpec,
-  type AppendRequest, type Log, type ReadRequest, type StreamInfo,
+  appendSpec, listSpec, LogConflict,
+  type AppendRequest, type Log, type StreamInfo,
 } from "./index.js";
+import { sqliteRead, sqliteReadLowering } from "./sqlite-read.js";
+import { logDatabase } from "./sqlite-schema.js";
 
-const SCHEMA = `
-  CREATE TABLE IF NOT EXISTS streams (
-    stream TEXT PRIMARY KEY,
-    length INTEGER NOT NULL,
-    updated TEXT NOT NULL
-  ) STRICT;
-  CREATE TABLE IF NOT EXISTS entries (
-    stream TEXT NOT NULL REFERENCES streams(stream),
-    position INTEGER NOT NULL,
-    value TEXT NOT NULL,
-    PRIMARY KEY (stream, position)
-  ) STRICT;
-`;
+const READ_SQL = "SELECT value FROM entries WHERE stream = ? AND position >= ? ORDER BY position LIMIT ?";
+
+export const lowerRead = sqliteReadLowering(({ stream, from = 0, limit = -1 }) => ({
+  sql: READ_SQL, params: [stream, from, limit],
+}));
 
 /** Lower the log contract to this schema and its SQLite transactions. */
 export function sqliteLog(use: Sqlite): Log {
-  function withDatabase<T>(run: (db: Database) => T): T {
-    return use((db) => {
-      db.exec(SCHEMA);
-      return run(db);
-    });
-  }
+  const withDatabase = logDatabase(use);
 
   return {
     append: edge(appendSpec, (input) => {
@@ -49,12 +36,7 @@ export function sqliteLog(use: Sqlite): Log {
         return { stream, length };
       }).immediate());
     }),
-    read: edge(readSpec, (input) => {
-      const { stream, from = 0, limit = -1 } = input.value as unknown as ReadRequest;
-      return withDatabase((db) => db.query<{ value: string }, [string, number, number]>(`
-        SELECT value FROM entries WHERE stream = ? AND position >= ? ORDER BY position LIMIT ?
-      `).all(stream, from, limit).map(({ value }) => JSON.parse(value) as Value));
-    }),
+    read: sqliteRead(withDatabase, READ_SQL, lowerRead),
     list: edge(listSpec, () => withDatabase((db) =>
       db.query<StreamInfo, []>("SELECT stream, length, updated FROM streams ORDER BY stream").all(),
     )),

@@ -62,14 +62,14 @@ export function logLaws(open: () => Promise<LogFixture>) {
       check(same(await list(log), []), "an empty log lists nothing");
     }),
     law("append batches land in order and survive reopening", async ({ log, reopen }) => {
-      const entries = ["line\n二 🎉", { nested: [null, -2.5, true] }, 0, ""];
+      const entries = ["line\n二 🎉", { nested: [null, -2.5, true] }, 0, "", null];
       const first = await append(log, "s", 0, entries.slice(0, 2));
       const last = await append(log, "s", 2, entries.slice(2));
-      check(first.stream === "s" && first.length === 2 && last.length === 4, "append returns stream and length");
+      check(first.stream === "s" && first.length === 2 && last.length === entries.length, "append returns stream and length");
       const again = await reopen();
       check(same(await read(again, "s"), entries), "exact JSON entries survive reopening in order");
       const [info, ...rest] = await list(again);
-      check(info?.stream === "s" && info.length === 4 && !rest.length, "list shows the stream and its length");
+      check(info?.stream === "s" && info.length === entries.length && !rest.length, "list shows the stream and its length");
       check(new Date(info.updated).toISOString() === info.updated, "list gives an ISO update time");
     }),
     law("an incorrect expected length refuses the whole batch", async ({ log }) => {

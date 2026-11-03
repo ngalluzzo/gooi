@@ -11,11 +11,42 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./query": {
+      "bun": "./src/query.ts",
+      "dev": "./src/query.ts",
+      "default": {
+        "types": "./dist/query.d.ts",
+        "default": "./dist/query.js"
+      }
+    },
+    "./drizzle": {
+      "bun": "./src/drizzle.ts",
+      "dev": "./src/drizzle.ts",
+      "default": {
+        "types": "./dist/drizzle.d.ts",
+        "default": "./dist/drizzle.js"
+      }
+    },
+    "./transaction": {
+      "bun": "./src/transaction.ts",
+      "dev": "./src/transaction.ts",
+      "default": {
+        "types": "./dist/transaction.d.ts",
+        "default": "./dist/transaction.js"
+      }
     }
   },
   "scripts": {
     "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.test.json",
     "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/exchange": "workspace:*",
+    "drizzle-orm": "^0.45.4"
+  },
+  "devDependencies": {
+    "@gooi/kernel": "workspace:*"
   }
 }

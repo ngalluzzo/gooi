@@ -1,5 +1,6 @@
 import { print } from "esrap";
 import ts from "esrap/languages/ts";
+import tsx from "esrap/languages/tsx";
 import { parseSync } from "oxc-parser";
 import { edge, type Implementation } from "@gooi/exchange";
 import { canonical } from "@gooi/kernel/value";
@@ -15,9 +16,53 @@ export const TYPESCRIPT_SOURCE = Object.freeze({
   id: "urn:gooi:estree:typescript-source",
   version: 1,
 });
+export const TSX_SOURCE = Object.freeze({ id: "urn:gooi:estree:tsx-source", version: 1 });
 const PRINTED = Object.freeze({ id: "urn:gooi:estree:printed", version: 1 });
 
 export type Node = { readonly type: string; readonly [key: string]: Value };
+
+const COMPONENT = /^[A-Z][A-Za-z0-9]*$/u;
+const INTRINSIC = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
+const ATTRIBUTE = /^[A-Za-z_][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$/u;
+/** Text JSX can hold as a plain "..." attribute: no quotes, escapes or entities. */
+const PLAIN_ATTRIBUTE = /^[^"\\&\n\r]*$/u;
+const jsxName = (name: string): Node => {
+  if (!COMPONENT.test(name) && !INTRINSIC.test(name))
+    throw new Error(`Not a JSX element name: ${JSON.stringify(name)}`);
+  return { type: "JSXIdentifier", name };
+};
+/** `{expression}` inside JSX. */
+export const embed = (expression: Node): Node => ({ type: "JSXExpressionContainer", expression });
+/** A JSX attribute. Strings that a plain attribute can't hold become `{"..."}`. */
+export function attribute(name: string, value: string | Node): Node {
+  if (!ATTRIBUTE.test(name)) throw new Error(`Not a JSX attribute name: ${JSON.stringify(name)}`);
+  return {
+    type: "JSXAttribute",
+    name: { type: "JSXIdentifier", name },
+    value:
+      typeof value !== "string"
+        ? embed(value)
+        : PLAIN_ATTRIBUTE.test(value)
+          ? literal(value)
+          : embed(literal(value)),
+  };
+}
+/** `<Name ...>children</Name>`, or self-closing without children. Text
+ * belongs in `embed(literal(...))`, never raw JSX text. */
+export function jsx(name: string, attributes: Node[], children: Node[] = []): Node {
+  const element = jsxName(name);
+  return {
+    type: "JSXElement",
+    openingElement: {
+      type: "JSXOpeningElement",
+      name: element,
+      attributes,
+      selfClosing: !children.length,
+    },
+    children,
+    closingElement: children.length ? { type: "JSXClosingElement", name: element } : null,
+  };
+}
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 const RESERVED = new Set(
@@ -156,46 +201,53 @@ function comments(node: unknown, found: { type: string; value: string }[] = []) 
   return found;
 }
 
-/** Whether TypeScript source parses to exactly this program's statements,
- * ignoring positions, formatting and comments. */
-export function parsesTo(source: string, program: Node): boolean {
-  const parsed = parseSync("module.ts", source, { sourceType: "module", preserveParens: false });
+type Language = "ts" | "tsx";
+const parse = (source: string, language: Language) =>
+  parseSync(`module.${language}`, source, { sourceType: "module", preserveParens: false });
+
+/** Whether TypeScript (or TSX) source parses to exactly this program's
+ * statements, ignoring positions, formatting and comments. */
+export function parsesTo(source: string, program: Node, language: Language = "ts"): boolean {
+  const parsed = parse(source, language);
   return (
     !parsed.errors.length &&
     canonical(normalize(parsed.program.body)) === canonical(normalize(program.body))
   );
 }
 
+function printer(language: Language, output: Value): Implementation {
+  const name = language === "ts" ? "TypeScript" : "TSX";
+  return edge(
+    {
+      operation: { input: ESTREE_PROGRAM, output: output as never },
+      inputSchema: {
+        type: "object",
+        required: ["type", "body"],
+        properties: { type: { const: "Program" }, body: { type: "array" } },
+      },
+      claim: PRINTED,
+      scope: `Printed this ESTree program as ${name}, then parsed the text back to the same statements and comments, ignoring positions and formatting; excludes what the program does`,
+    },
+    (input) => {
+      const program = input.value as unknown as Node;
+      const options = {
+        quotes: "double" as const,
+        getLeadingComments: (node: unknown) =>
+          (node as { leadingComments?: never }).leadingComments,
+      };
+      const visitors = language === "ts" ? ts(options) : tsx(options);
+      const { code } = print(program as never, visitors, { indent: "  " });
+      const source = code.endsWith("\n") ? code : `${code}\n`;
+      const back = parse(source, language).comments.map((c) => ({ type: c.type, value: c.value }));
+      if (!parsesTo(source, program, language) || canonical(back) !== canonical(comments(program)))
+        throw new Error("The printed source doesn't parse back to the same program");
+      return source;
+    },
+  );
+}
+
 /** One printing edge: an ESTree program to TypeScript text, refused unless the
  * text parses back to the same program and the same comments. */
-export const printTypeScript: Implementation = edge(
-  {
-    operation: { input: ESTREE_PROGRAM, output: TYPESCRIPT_SOURCE },
-    inputSchema: {
-      type: "object",
-      required: ["type", "body"],
-      properties: { type: { const: "Program" }, body: { type: "array" } },
-    },
-    claim: PRINTED,
-    scope:
-      "Printed this ESTree program as TypeScript, then parsed the text back to the same statements and comments, ignoring positions and formatting; excludes what the program does",
-  },
-  (input) => {
-    const program = input.value as unknown as Node;
-    const { code } = print(
-      program as never,
-      ts({
-        quotes: "double",
-        getLeadingComments: (node) =>
-          (node as { leadingComments?: never }).leadingComments,
-      }),
-      { indent: "  " },
-    );
-    const source = code.endsWith("\n") ? code : `${code}\n`;
-    const parsed = parseSync("module.ts", source, { sourceType: "module", preserveParens: false });
-    const back = parsed.comments.map((c) => ({ type: c.type, value: c.value }));
-    if (!parsesTo(source, program) || canonical(back) !== canonical(comments(program)))
-      throw new Error("The printed source doesn't parse back to the same program");
-    return source;
-  },
-);
+export const printTypeScript: Implementation = printer("ts", TYPESCRIPT_SOURCE);
+/** The same for programs with JSX: ESTree to TSX text, parsed back as TSX. */
+export const printTsx: Implementation = printer("tsx", TSX_SOURCE);

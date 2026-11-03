@@ -6,7 +6,6 @@ import { invoke } from "@gooi/exchange";
 import { artifact } from "@gooi/kernel/evidence";
 import { jsonl } from "@gooi/jsonl";
 import { sqlite } from "@gooi/sqlite";
-import { drizzleLog } from "./drizzle.js";
 import { LOG_APPEND, LOG_READ } from "./index.js";
 import { jsonlLog } from "./jsonl.js";
 import { sqliteLog } from "./sqlite.js";
@@ -15,12 +14,9 @@ import { logLaws } from "./testing.js";
 const openJsonl = (directory: string) => jsonlLog(jsonl(directory));
 const openSqlite = (file: string) => sqliteLog(sqlite(file));
 
-const openDrizzle = (file: string) => drizzleLog(sqlite(file));
-
 for (const [name, binding, create] of [
   ["jsonl", "jsonl", openJsonl],
   ["sqlite", "sqlite", openSqlite],
-  ["drizzle", "sqlite", openDrizzle],
 ] as const) {
   describe(name, () => {
     for (const law of logLaws(async () => {
@@ -104,11 +100,11 @@ test("JSONL drops a torn final batch and preserves preceding committed entries",
   }
 });
 
-test("Drizzle rolls back the whole batch and its length if an insert fails", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "gooi-drizzle-rollback-"));
+test("SQLite rolls back the whole batch and its length if an insert fails", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "gooi-sqlite-rollback-"));
   try {
     const file = join(dir, "log");
-    const log = openDrizzle(file);
+    const log = openSqlite(file);
     const append = (expectedLength: number, entries: string[]) =>
       invoke(log.append, artifact(LOG_APPEND, { stream: "s", expectedLength, entries }));
     await append(0, ["first"]);

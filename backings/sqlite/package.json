@@ -1,7 +1,7 @@
 {
   "name": "@gooi/sqlite",
   "version": "0.1.0",
-  "description": "Host binding for a SQLite database file",
+  "description": "Host binding for a SQLite database file, and an edge that runs one trusted statement with values only",
   "type": "module",
   "exports": {
     ".": {
@@ -19,22 +19,6 @@
         "types": "./dist/query.d.ts",
         "default": "./dist/query.js"
       }
-    },
-    "./drizzle": {
-      "bun": "./src/drizzle.ts",
-      "dev": "./src/drizzle.ts",
-      "default": {
-        "types": "./dist/drizzle.d.ts",
-        "default": "./dist/drizzle.js"
-      }
-    },
-    "./transaction": {
-      "bun": "./src/transaction.ts",
-      "dev": "./src/transaction.ts",
-      "default": {
-        "types": "./dist/transaction.d.ts",
-        "default": "./dist/transaction.js"
-      }
     }
   },
   "scripts": {
@@ -43,8 +27,7 @@
     "test": "bun test ./src"
   },
   "dependencies": {
-    "@gooi/exchange": "workspace:*",
-    "drizzle-orm": "^0.45.4"
+    "@gooi/exchange": "workspace:*"
   },
   "devDependencies": {
     "@gooi/kernel": "workspace:*"

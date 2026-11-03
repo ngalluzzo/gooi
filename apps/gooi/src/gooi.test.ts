@@ -129,7 +129,7 @@ describe("gooi end to end", () => {
     }
   });
 
-  for (const store of ["jsonl", "sqlite", "drizzle"] as const) {
+  for (const store of ["jsonl", "sqlite"] as const) {
     test(`agent tell persists and agent show replays ACP notifications using ${store}`, async () => {
       async function runAgent(using: string, ...args: string[]) {
         const proc = Bun.spawn([process.execPath, cli, "agent", ...args], {
@@ -194,12 +194,6 @@ describe("gooi end to end", () => {
         const show = await agentCommand("show", "--session", sessions[0].sessionId);
         expect(show.code, show.err).toBe(0);
         expect(show.out).toBe(observed[1] + "Agent: I checked the tasks.\n");
-        if (store !== "jsonl") {
-          const other = store === "sqlite" ? "drizzle" : "sqlite";
-          const replay = await runAgent(other, "show", "--session", sessions[0].sessionId);
-          expect(replay.code, replay.err).toBe(0);
-          expect(replay.out).toBe(show.out);
-        }
         const missing = await agentCommand("show", "--session", "missing");
         expect(missing.code).toBe(1);
         expect(missing.err).toContain("No saved agent session missing");

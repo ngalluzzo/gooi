@@ -35,14 +35,6 @@
         "types": "./dist/sqlite.d.ts",
         "default": "./dist/sqlite.js"
       }
-    },
-    "./drizzle": {
-      "bun": "./src/drizzle.ts",
-      "dev": "./src/drizzle.ts",
-      "default": {
-        "types": "./dist/drizzle.d.ts",
-        "default": "./dist/drizzle.js"
-      }
     }
   },
   "scripts": {

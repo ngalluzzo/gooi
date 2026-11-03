@@ -1,7 +1,6 @@
 import { edge } from "@gooi/exchange";
 import type { Sqlite } from "./index.js";
 
-export const SQLITE_QUERY_TEMPLATE = Object.freeze({ id: "urn:gooi:sqlite:query-template", version: 1 });
 export const SQLITE_QUERY = Object.freeze({ id: "urn:gooi:sqlite:query", version: 1 });
 export const SQLITE_ROWS = Object.freeze({ id: "urn:gooi:sqlite:rows", version: 1 });
 

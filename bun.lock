@@ -109,7 +109,6 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/exchange": "workspace:*",
-        "drizzle-orm": "^0.45.4",
       },
       "devDependencies": {
         "@gooi/kernel": "workspace:*",

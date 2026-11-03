@@ -5,7 +5,6 @@ import { claude } from "@gooi/claude";
 import type { Layout } from "@gooi/commander";
 import { path } from "@gooi/exchange";
 import { jsonl } from "@gooi/jsonl";
-import { drizzleLog } from "@gooi/log/drizzle";
 import { jsonlLog } from "@gooi/log/jsonl";
 import { sqliteLog } from "@gooi/log/sqlite";
 import { openaiCompatible } from "@gooi/openai";
@@ -42,7 +41,6 @@ const sessionDb = sqlite(file(".gooi/agent-sessions.sqlite"));
 const stores = {
   jsonl: () => jsonlLog(jsonl(file(".gooi/agent-sessions"))),
   sqlite: () => sqliteLog(sessionDb),
-  drizzle: () => drizzleLog(sessionDb),
 };
 const store = process.env.GOOI_STORE ?? "jsonl";
 if (!Object.hasOwn(stores, store))

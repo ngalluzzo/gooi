@@ -3,17 +3,18 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { artifactId } from "@gooi/kernel/evidence";
+import { parsesTo } from "@gooi/commander";
 import { generate, target } from "./compile.js";
 
 const cli = fileURLToPath(target);
 const source = readFileSync(cli, "utf8");
 
 describe("generated gooi.ts", () => {
-  test("was generated from the current layout", async () => {
-    // Formatting the file is fine; changing commands.ts without `bun run compile` is not.
-    const { tree } = await generate();
-    expect(source).toContain(`from command tree ${artifactId(tree)}.`);
+  test("is the program the current layout lowers to", async () => {
+    // Compares syntax trees, so formatting is free; changing commands.ts
+    // without `bun run compile` is not.
+    const { program } = await generate();
+    expect(parsesTo(source, program.value as never)).toBe(true);
   });
 
   test("doesn't use gooi's generic CLI", () => {

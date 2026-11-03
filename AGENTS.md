@@ -38,8 +38,8 @@ that exposes any edge, written once, with no per-app code.
 
 The two sections below are written by `bun gooi slice` (`status`, `open`,
 `close --used`) from `.gooi/slices.json`. Don't edit them by hand. `bun gooi` and
-the task page (`bun run serve`) are generated: after changing
-`apps/gooi/src/commands.ts` or `routes.ts`, run `bun run compile`.
+the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changing
+`apps/gooi/src/commands.ts`, `routes.ts` or `design.ts`, run `bun run compile`.
 
 <!-- gooi:slices:start -->
 

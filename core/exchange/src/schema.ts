@@ -1,4 +1,5 @@
-import { Ajv, type ErrorObject, type ValidateFunction } from "ajv";
+import { Ajv2020 } from "ajv/dist/2020";
+import type { ErrorObject, ValidateFunction } from "ajv";
 import type { Value } from "@gooi/kernel/types";
 
 /** The input value does not match the edge's declared JSON Schema. */
@@ -6,7 +7,10 @@ export class InputError extends Error {
   override readonly name = "InputError";
 }
 
-const ajv = new Ajv({ allErrors: false });
+// JSON Schema 2020-12 as specified: unknown keywords (such as a standard's own
+// x- extensions) are ignored and formats are annotations, so schemas published
+// by other standards can be adopted as they are.
+const ajv = new Ajv2020({ allErrors: false, strictSchema: false, validateFormats: false });
 const compiled = new WeakMap<object, ValidateFunction>();
 
 function message(error: ErrorObject): string {

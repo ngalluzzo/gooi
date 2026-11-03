@@ -77,6 +77,27 @@ describe("edge", () => {
     });
   });
 
+  test("accepts schemas from other standards as JSON Schema 2020-12 specifies", async () => {
+    // Unknown keywords are ignored and formats are annotations, so a published
+    // schema with its own extensions (like ACP's x-side) can be used as is.
+    const adopted = edge(
+      {
+        operation: { input: IN, output: OUT },
+        inputSchema: {
+          $defs: { id: { type: "integer", format: "uint64", "x-side": "agent" } },
+          type: "object",
+          properties: { n: { $ref: "#/$defs/id" } },
+          required: ["n"],
+        },
+        claim: CLAIM,
+        scope: "Adopted",
+      },
+      (input) => input.value,
+    );
+    expect((await invoke(adopted, artifact(IN, { n: 3 }))).artifact.value).toEqual({ n: 3 });
+    await expect(invoke(adopted, artifact(IN, { n: "3" }))).rejects.toThrow("n must be integer");
+  });
+
   test("propagates errors from apply", async () => {
     const refuse = edge(
       { operation: { input: IN, output: OUT }, claim: CLAIM, scope: "Refuses" },

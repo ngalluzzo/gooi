@@ -22,6 +22,41 @@ describe("edge", () => {
     expect(claim!.to[0]!.artifact).toBe(artifactId(result.artifact));
   });
 
+  test("invoke checks a declared input schema before apply runs", async () => {
+    let ran = 0;
+    const greet = edge(
+      {
+        operation: { input: IN, output: OUT },
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string", maxLength: 5 } },
+          required: ["name"],
+          additionalProperties: false,
+        },
+        claim: CLAIM,
+        scope: "Greeted",
+      },
+      (input) => {
+        ran++;
+        return { text: `hi ${(input.value as { name: string }).name}` };
+      },
+    );
+    expect(greet.inputSchema).toMatchObject({ required: ["name"] });
+    for (const [value, problem] of [
+      [{}, "Missing field: name"],
+      [{ name: "a", extra: "b" }, "Unexpected field: extra"],
+      [{ name: 7 }, "name must be string"],
+      [{ name: "toolong" }, "name must NOT have more than 5 characters"],
+    ] as const)
+      await expect(invoke(greet, artifact(IN, value))).rejects.toThrow(
+        expect.objectContaining({ name: "InputError", message: problem }),
+      );
+    expect(ran).toBe(0);
+    expect((await invoke(greet, artifact(IN, { name: "ana" }))).artifact.value).toEqual({
+      text: "hi ana",
+    });
+  });
+
   test("propagates errors from apply", async () => {
     const refuse = edge(
       { operation: { input: IN, output: OUT }, claim: CLAIM, scope: "Refuses" },

@@ -27,6 +27,7 @@
     "prepack": "bun run build"
   },
   "dependencies": {
-    "@gooi/kernel": "workspace:*"
+    "@gooi/kernel": "workspace:*",
+    "ajv": "^8"
   }
 }

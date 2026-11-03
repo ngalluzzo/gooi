@@ -41,6 +41,12 @@ meaning.
 carries one passed claim from the exact input to the output value `apply` returns.
 It is a shorthand for the common case, not a different kind of edge.
 
+An `Implementation` may declare `inputSchema`, a JSON Schema for its input value.
+`invoke` checks it after the contract and before `run`, and throws `InputError`
+naming the first problem (`Missing field: title`, `Unexpected field: x`). Surfaces
+can read the same schema to describe their fields. The schema language is the
+JSON Schema standard, checked with Ajv; gooi does not define its own.
+
 `invoke(implementation, rawInput)` returns `Promise<Result>`. It admits and
 deeply freezes detached copies of the signature and input, checks the exact
 input contract before calling `run`, then admits the returned result against

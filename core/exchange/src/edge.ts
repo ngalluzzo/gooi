@@ -1,9 +1,12 @@
 import { artifact, observe, readOperation } from "@gooi/kernel/evidence";
-import type { Artifact, Contract, Operation } from "@gooi/kernel/types";
+import { snapshot } from "@gooi/kernel/value";
+import type { Artifact, Contract, Operation, Value } from "@gooi/kernel/types";
 import type { Implementation } from "./types.js";
 
 export interface EdgeOptions {
   readonly operation: Operation;
+  /** JSON Schema for the input value; invoke checks it before apply runs. */
+  readonly inputSchema?: Value;
   /** Contract of the one claim linking the exact input to its output. */
   readonly claim: Contract;
   /** What the claim asserts, and what it excludes. */
@@ -19,6 +22,7 @@ export function edge(
   const operation = readOperation(options.operation);
   return Object.freeze({
     operation,
+    ...(options.inputSchema === undefined ? {} : { inputSchema: snapshot(options.inputSchema) }),
     async run(input: Artifact) {
       const output = artifact(operation.output, await apply(input));
       return {

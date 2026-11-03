@@ -1,12 +1,16 @@
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { agent, textPrompt, type Model } from "@gooi/agent";
+import { agent, sessionHistory, textPrompt, type Model } from "@gooi/agent";
 import { claude } from "@gooi/claude";
 import type { Layout } from "@gooi/commander";
 import { path } from "@gooi/exchange";
+import { jsonl } from "@gooi/jsonl";
+import { jsonlLog } from "@gooi/log/jsonl";
+import { sqliteLog } from "@gooi/log/sqlite";
 import { openaiCompatible } from "@gooi/openai";
 import { slices } from "@gooi/slices";
 import { fileStore } from "@gooi/slices/file";
+import { sqlite } from "@gooi/sqlite";
 import { tasks } from "@gooi/tasks";
 import { instructions, toolbox } from "@gooi/tasks/agent";
 import { fileFolder } from "@gooi/tasks/file";
@@ -33,6 +37,14 @@ const backing = process.env.GOOI_AGENT ?? "claude";
 if (!Object.hasOwn(backings, backing))
   throw new Error(`GOOI_AGENT must be one of ${Object.keys(backings).join(", ")}; got "${backing}"`);
 
+const store = process.env.GOOI_STORE ?? "jsonl";
+if (store !== "jsonl" && store !== "sqlite")
+  throw new Error(`GOOI_STORE must be jsonl or sqlite; got "${store}"`);
+const log = store === "jsonl"
+  ? jsonlLog(jsonl(file(".gooi/agent-sessions")))
+  : sqliteLog(sqlite(file(".gooi/agent-sessions.sqlite")));
+const history = sessionHistory(log, resolve(file(".")));
+
 /** How gooi's edges appear as commands. Change this, then run `bun run compile`. */
 export const commands = {
   slice: {
@@ -48,8 +60,10 @@ export const commands = {
     commands: {
       tell: path(
         textPrompt("Tell the agent about work to do, in your own words; it adds the tasks"),
-        agent({ instructions, tools: toolbox(task), model: backings[backing]!() }),
+        agent({ instructions, tools: toolbox(task), model: backings[backing]!(), log }),
       ),
+      sessions: history.sessions,
+      show: { edge: history.show, output: "text" },
     },
   },
 } satisfies Layout;

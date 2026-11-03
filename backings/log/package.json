@@ -1,0 +1,51 @@
+{
+  "name": "@gooi/log",
+  "version": "0.1.0",
+  "description": "Artifact operations and conformance laws for append-only logs",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./testing": {
+      "bun": "./src/testing.ts",
+      "dev": "./src/testing.ts",
+      "default": {
+        "types": "./dist/testing.d.ts",
+        "default": "./dist/testing.js"
+      }
+    },
+    "./jsonl": {
+      "bun": "./src/jsonl.ts",
+      "dev": "./src/jsonl.ts",
+      "default": {
+        "types": "./dist/jsonl.d.ts",
+        "default": "./dist/jsonl.js"
+      }
+    },
+    "./sqlite": {
+      "bun": "./src/sqlite.ts",
+      "dev": "./src/sqlite.ts",
+      "default": {
+        "types": "./dist/sqlite.d.ts",
+        "default": "./dist/sqlite.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/exchange": "workspace:*",
+    "@gooi/jsonl": "workspace:*",
+    "@gooi/kernel": "workspace:*",
+    "@gooi/sqlite": "workspace:*"
+  }
+}

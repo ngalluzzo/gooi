@@ -17,10 +17,13 @@
         "@gooi/claude": "workspace:*",
         "@gooi/exchange": "workspace:*",
         "@gooi/hast": "workspace:*",
+        "@gooi/jsonl": "workspace:*",
         "@gooi/kernel": "workspace:*",
+        "@gooi/log": "workspace:*",
         "@gooi/openai": "workspace:*",
         "@gooi/react": "workspace:*",
         "@gooi/slices": "workspace:*",
+        "@gooi/sqlite": "workspace:*",
         "@gooi/tasks": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "cn": "^0.5.2",
@@ -71,6 +74,23 @@
         "@gooi/kernel": "workspace:*",
       },
     },
+    "backings/jsonl": {
+      "name": "@gooi/jsonl",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/kernel": "workspace:*",
+      },
+    },
+    "backings/log": {
+      "name": "@gooi/log",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/exchange": "workspace:*",
+        "@gooi/jsonl": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+        "@gooi/sqlite": "workspace:*",
+      },
+    },
     "backings/openai": {
       "name": "@gooi/openai",
       "version": "0.1.0",
@@ -82,6 +102,10 @@
         "@gooi/exchange": "workspace:*",
         "@gooi/kernel": "workspace:*",
       },
+    },
+    "backings/sqlite": {
+      "name": "@gooi/sqlite",
+      "version": "0.1.0",
     },
     "core/exchange": {
       "name": "@gooi/exchange",
@@ -108,6 +132,7 @@
         "@agentclientprotocol/sdk": "^2.4.0",
         "@gooi/exchange": "workspace:*",
         "@gooi/kernel": "workspace:*",
+        "@gooi/log": "workspace:*",
       },
     },
     "surfaces/cli": {
@@ -209,13 +234,19 @@
 
     "@gooi/hono": ["@gooi/hono@workspace:surfaces/hono"],
 
+    "@gooi/jsonl": ["@gooi/jsonl@workspace:backings/jsonl"],
+
     "@gooi/kernel": ["@gooi/kernel@workspace:core/kernel"],
+
+    "@gooi/log": ["@gooi/log@workspace:backings/log"],
 
     "@gooi/openai": ["@gooi/openai@workspace:backings/openai"],
 
     "@gooi/react": ["@gooi/react@workspace:surfaces/react"],
 
     "@gooi/slices": ["@gooi/slices@workspace:apps/slices"],
+
+    "@gooi/sqlite": ["@gooi/sqlite@workspace:backings/sqlite"],
 
     "@gooi/tasks": ["@gooi/tasks@workspace:apps/tasks"],
 

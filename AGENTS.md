@@ -15,15 +15,14 @@ tools that already exist), and reuse pieces of one app in another.
 3. **Run record**: caller + request ID + exact input + state. Not built. It comes
    back only when an app needs retries or replay.
 
-Surfaces (CLI, MCP, HTTP, UI) are not a fourth thing. Each is one generic adapter
-that exposes any edge, written once, with no per-app code. Backings aren't either:
-a backing is host-chosen code behind an edge, such as the model in `backings/`,
-and provider code lives only there. Swapping one never changes the app.
+Surfaces (CLI, MCP, HTTP, UI) expose edges through generic adapters. The host
+chooses the backings behind those edges. Each native binding in `backings/`
+owns its provider's mechanics and can serve multiple contracts.
 
-Storage is a backing too. Apps store through two interfaces with no domain
-meaning: records (named documents with compare-and-set) and logs (append-only
-streams with an expected length). Every storage backing passes one law suite,
-and the interfaces never gain queries.
+Storage contracts define operations and laws. `@gooi/log` owns conditional
+append, read, and list as edges, plus the mappings to JSONL files and SQLite
+transactions. Each mapping is shared by every app using the log and passes the
+same laws. Apps own the entries' meaning and express domain queries as edges.
 
 ## Rules
 
@@ -43,8 +42,8 @@ and the interfaces never gain queries.
   is history, not a to-do list.
 - Keep this page to one screen. No ledgers, gate logs or "next" lists.
 
-The two sections below are written by `bun gooi slice` (`status`, `open`,
-`close --used`) from `.gooi/slices.json`. Don't edit them by hand. `bun gooi` and
+The owner updates the generated sections below through `bun gooi slice open`
+and `bun gooi slice close --used`. Both use `.gooi/slices.json`. `bun gooi` and
 the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changing
 `apps/gooi/src/commands.ts`, `routes.ts` or `design.ts`, run `bun run compile`.
 

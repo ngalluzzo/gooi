@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import {
   PROTOCOL_VERSION,
@@ -10,15 +9,10 @@ import {
 import { edge, invoke, type Implementation } from "@gooi/exchange";
 import { artifact } from "@gooi/kernel/evidence";
 import type { Value } from "@gooi/kernel/types";
+import { LOG_APPEND, type Appended, type Log } from "@gooi/log";
+import { ACP, acp } from "./acp.js";
 
-/** ACP's own JSON Schema, as published with its SDK: the standard, not a copy. */
-const ACP: { $defs: Record<string, Value> } = JSON.parse(
-  readFileSync(
-    new URL("../../../schema/v1/schema.json", import.meta.resolve("@agentclientprotocol/sdk")),
-    "utf8",
-  ),
-);
-const acp = (def: string): Value => ({ $defs: ACP.$defs as Value, $ref: `#/$defs/${def}` });
+export { sessionHistory } from "./history.js";
 
 /** An ACP prompt request (a session ID and content blocks), named by the standard. */
 export const ACP_PROMPT = Object.freeze({
@@ -129,6 +123,7 @@ export function agent(options: {
   readonly tools: Toolbox;
   readonly model: Model;
   readonly maxTurns?: number;
+  readonly log?: Log;
 }): Implementation {
   const specs = toolSpecs(options.tools);
   const maxTurns = options.maxTurns ?? 8;
@@ -146,9 +141,30 @@ export function agent(options: {
       if (blocks.some((block) => block.type !== "text"))
         throw new Error("This agent reads text prompts only");
       const text = blocks.map((block) => (block.type === "text" ? block.text : "")).join("\n\n");
+      const { sessionId } = request;
+      const { log } = options;
+      let length = 0;
+      async function persist(entries: readonly SessionNotification[]) {
+        if (!log || !entries.length) return;
+        const result = await invoke(log.append, artifact(LOG_APPEND, {
+          stream: sessionId,
+          expectedLength: length,
+          entries,
+        }));
+        length = (result.artifact.value as unknown as Appended).length;
+      }
+
+      // The prompt starts a new session, before the model can fail or call tools.
+      await persist(blocks.map((content) => ({
+        sessionId,
+        update: { sessionUpdate: "user_message_chunk", content },
+      })));
       const notifications: SessionNotification[] = [];
-      const note = (update: SessionUpdate) =>
-        notifications.push({ sessionId: request.sessionId, update });
+      const note = async (update: SessionUpdate) => {
+        const notification = { sessionId, update };
+        await persist([notification]);
+        notifications.push(notification);
+      };
       const finish = (stopReason: PromptResponse["stopReason"]): Turn => ({
         notifications,
         response: { stopReason },
@@ -158,13 +174,13 @@ export function agent(options: {
       let turn = await session.send(text);
       for (let round = 1; ; round++) {
         if (turn.text)
-          note({ sessionUpdate: "agent_message_chunk", content: { type: "text", text: turn.text } });
+          await note({ sessionUpdate: "agent_message_chunk", content: { type: "text", text: turn.text } });
         if (turn.stop !== "tool_use" || !turn.toolCalls.length)
           return finish(turn.stop === "tool_use" ? "end_turn" : turn.stop) as unknown as Value;
         if (round >= maxTurns) return finish("max_turn_requests") as unknown as Value;
         const results: ToolResult[] = [];
         for (const call of turn.toolCalls) {
-          note({
+          await note({
             sessionUpdate: "tool_call",
             toolCallId: call.id,
             title: call.name,
@@ -172,27 +188,29 @@ export function agent(options: {
             status: "in_progress",
             rawInput: call.input,
           });
+          let update: SessionUpdate;
           try {
             const tool = Object.hasOwn(options.tools, call.name) ? options.tools[call.name] : undefined;
             if (!tool) throw new Error(`No tool named ${call.name}`);
             const result = await invoke(tool, artifact(tool.operation.input, call.input));
-            note({
+            update = {
               sessionUpdate: "tool_call_update",
               toolCallId: call.id,
               status: "completed",
               rawOutput: result.artifact.value,
-            });
+            };
             results.push({ id: call.id, output: JSON.stringify(result.artifact.value), isError: false });
           } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
-            note({
+            update = {
               sessionUpdate: "tool_call_update",
               toolCallId: call.id,
               status: "failed",
               rawOutput: { error: message },
-            });
+            };
             results.push({ id: call.id, output: message, isError: true });
           }
+          await note(update);
         }
         turn = await session.answer(results);
       }

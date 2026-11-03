@@ -129,6 +129,79 @@ describe("gooi end to end", () => {
     }
   });
 
+  for (const store of ["jsonl", "sqlite"] as const) {
+    test(`agent tell persists and agent show replays ACP notifications using ${store}`, async () => {
+      async function agentCommand(...args: string[]) {
+        const proc = Bun.spawn([process.execPath, cli, "agent", ...args], {
+          env: {
+            ...process.env,
+            GOOI_ROOT: root,
+            GOOI_STORE: store,
+            GOOI_AGENT: "omlx",
+            OMLX_BASE_URL: new URL("/v1", provider.url).href,
+            OMLX_API_KEY: "test",
+          },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const [out, err, code] = await Promise.all([
+          new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited,
+        ]);
+        return { out, err, code };
+      }
+
+      const observed: string[] = [];
+      const provider = Bun.serve({
+        port: 0,
+        async fetch(request) {
+          const { messages } = await request.json() as { messages: { role: string }[] };
+          const beforeTool = messages.at(-1)?.role === "user";
+          // This request is still in flight. The CLI can already replay the prompt
+          // and, on the second request, the tool call and its result.
+          const list = await agentCommand("sessions");
+          const session = JSON.parse(list.out).sessions[0].sessionId;
+          const show = await agentCommand("show", "--session", session);
+          observed.push(show.out);
+          return Response.json({
+            choices: [beforeTool
+              ? {
+                  finish_reason: "tool_calls",
+                  message: {
+                    role: "assistant", content: null,
+                    tool_calls: [{ id: "call-1", type: "function", function: { name: "list_tasks", arguments: "{}" } }],
+                  },
+                }
+              : { finish_reason: "stop", message: { role: "assistant", content: "I checked the tasks." } }],
+          });
+        },
+      });
+
+      try {
+        const tell = await agentCommand("tell", "--text", "Check the tasks");
+        expect(tell.code, tell.err).toBe(0);
+        expect(JSON.parse(tell.out).response.stopReason).toBe("end_turn");
+        expect(observed).toEqual([
+          "You: Check the tasks\n",
+          "You: Check the tasks\nTool: list_tasks\nTool: list_tasks (completed)\n",
+        ]);
+
+        const list = await agentCommand("sessions");
+        expect(list.code, list.err).toBe(0);
+        const { sessions } = JSON.parse(list.out);
+        expect(sessions).toHaveLength(1);
+        expect(sessions[0]).toMatchObject({ cwd: root, updatedAt: expect.any(String) });
+        const show = await agentCommand("show", "--session", sessions[0].sessionId);
+        expect(show.code, show.err).toBe(0);
+        expect(show.out).toBe(observed[1] + "Agent: I checked the tasks.\n");
+        const missing = await agentCommand("show", "--session", "missing");
+        expect(missing.code).toBe(1);
+        expect(missing.err).toContain("No saved agent session missing");
+      } finally {
+        provider.stop(true);
+      }
+    });
+  }
+
   test("refusals exit nonzero with a readable message", () => {
     const missing = gooi("task", "add");
     expect(missing.code).not.toBe(0);

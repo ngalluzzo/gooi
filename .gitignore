@@ -14,3 +14,6 @@ __pycache__/
 
 playwright-report/
 test-results/
+
+/.gooi/agent-sessions/
+/.gooi/agent-sessions.sqlite*

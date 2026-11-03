@@ -21,6 +21,7 @@
   "dependencies": {
     "@agentclientprotocol/sdk": "^2.4.0",
     "@gooi/exchange": "workspace:*",
-    "@gooi/kernel": "workspace:*"
+    "@gooi/kernel": "workspace:*",
+    "@gooi/log": "workspace:*"
   }
 }

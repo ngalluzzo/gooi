@@ -6,7 +6,6 @@ import {
   ESTREE_PROGRAM,
   arrow,
   binding,
-  block,
   call,
   chain,
   constant,
@@ -15,12 +14,13 @@ import {
   lineComment,
   literal,
   member,
+  parseProgram,
   printTypeScript,
   statement,
   type Node as Estree,
 } from "@gooi/estree";
 
-/** This package's own dialect: commands, groups and options, nothing more. */
+/** This package's own dialect: commands, groups, options and output formats. */
 export const COMMAND_TREE = Object.freeze({ id: "urn:gooi:commander:command-tree", version: 1 });
 const LOWERED = Object.freeze({ id: "urn:gooi:commander:lowered", version: 1 });
 const NAME = "^[a-z][a-z0-9]*$";
@@ -31,8 +31,12 @@ export interface Group {
   readonly description: string;
   readonly commands: Layout;
 }
-/** Command names mapped to edges or groups. Nesting is the command tree. */
-export type Layout = { readonly [name: string]: Implementation | Group };
+export interface TextCommand {
+  readonly edge: Implementation;
+  readonly output: "text";
+}
+/** Command names mapped to edges, text commands or groups. */
+export type Layout = { readonly [name: string]: Implementation | TextCommand | Group };
 export interface Program {
   readonly name: string;
   readonly description: string;
@@ -60,6 +64,7 @@ export type Node =
       /** Property path to the edge inside the layout export. */
       readonly path: readonly string[];
       readonly options: readonly Option[];
+      readonly output?: "text";
     };
 export interface Tree extends Program {
   readonly commands: readonly Node[];
@@ -68,7 +73,7 @@ export interface Tree extends Program {
 const name = { type: "string", pattern: NAME };
 const text = { type: "string", pattern: ONE_LINE };
 const TREE_SCHEMA = {
-  description: "A Commander program: groups, commands and their string options",
+  description: "A Commander program: groups, commands, string options and output formats",
   type: "object",
   required: ["name", "description", "module", "export", "commands"],
   additionalProperties: false,
@@ -101,6 +106,7 @@ const TREE_SCHEMA = {
         name,
         description: text,
         path: { type: "array", minItems: 1, items: name },
+        output: { const: "text" },
         options: {
           type: "array",
           items: {
@@ -148,24 +154,30 @@ function nodes(layout: Layout, path: string[]): Node[] {
   return Object.entries(layout).map(([key, node]) => {
     const where = [...path.filter((p) => p !== "commands"), key].join(" ");
     checkName(key, where);
-    if (isEdge(node)) {
-      const description = (node.inputSchema as { description?: unknown } | undefined)?.description;
+    const textCommand = node && typeof node === "object" && "edge" in node && node.output === "text" && isEdge(node.edge)
+      ? node
+      : undefined;
+    const implementation = textCommand?.edge ?? (isEdge(node) ? node : undefined);
+    if (implementation) {
+      const description = (implementation.inputSchema as { description?: unknown } | undefined)?.description;
       return {
         kind: "command",
         name: key,
         description: typeof description === "string" ? description : "",
-        path: [...path, key],
-        options: options(node, where),
+        path: textCommand ? [...path, key, "edge"] : [...path, key],
+        options: options(implementation, where),
+        ...(textCommand ? { output: textCommand.output } : {}),
       };
     }
-    if (node && typeof node.description === "string" && node.commands && typeof node.commands === "object")
+    if (node && typeof node === "object" && "commands" in node &&
+        typeof node.description === "string" && node.commands && typeof node.commands === "object")
       return {
         kind: "group",
         name: key,
         description: node.description,
         commands: nodes(node.commands, [...path, key, "commands"]),
       };
-    throw new Error(`${where}: expected an edge or a {description, commands} group`);
+    throw new Error(`${where}: expected an edge or a {description, commands} group, or a text command`);
   });
 }
 
@@ -177,73 +189,18 @@ export function describe(layout: Layout, program: Program): Tree {
 
 const camel = (path: readonly string[]) =>
   path.map((part, i) => (i ? part[0]!.toUpperCase() + part.slice(1) : part)).join("");
-const typed = (name: string, type: Value): Estree => ({
-  ...binding(name),
-  typeAnnotation: { type: "TSTypeAnnotation", typeAnnotation: type },
-});
-
-// async function run(edge: Implementation, input: unknown) { try { ... } catch (error) { ... } }
-const RUN: Estree = {
-  type: "FunctionDeclaration",
-  id: binding("run"),
-  async: true,
-  generator: false,
-  params: [
-    typed("edge", { type: "TSTypeReference", typeName: id("Implementation") }),
-    typed("input", { type: "TSUnknownKeyword" }),
-  ],
-  body: block([
-    {
-      type: "TryStatement",
-      block: block([
-        constant("result", {
-          type: "AwaitExpression",
-          argument: call(
-            id("invoke"),
-            id("edge"),
-            call(id("artifact"), member(id("edge"), "operation", "input"), id("input")),
-          ),
-        }),
-        statement(
-          call(
-            member(id("console"), "log"),
-            call(
-              member(id("JSON"), "stringify"),
-              member(id("result"), "artifact", "value"),
-              literal(null),
-              literal(2),
-            ),
-          ),
-        ),
-      ]),
-      handler: {
-        type: "CatchClause",
-        param: binding("error"),
-        body: block([
-          statement(
-            call(member(id("console"), "error"), {
-              type: "ConditionalExpression",
-              test: {
-                type: "BinaryExpression",
-                operator: "instanceof",
-                left: id("error"),
-                right: id("Error"),
-              },
-              consequent: member(id("error"), "message"),
-              alternate: call(id("String"), id("error")),
-            }),
-          ),
-          statement({
-            type: "AssignmentExpression",
-            operator: "=",
-            left: member(id("process"), "exitCode"),
-            right: literal(1),
-          }),
-        ]),
-      },
-    },
-  ]),
-};
+const RUN = parseProgram(`
+async function run(edge: Implementation, input: unknown, output = "json") {
+  try {
+    const { artifact: result } = await invoke(edge, artifact(edge.operation.input, input));
+    if (output === "text" && typeof result.value !== "string") throw new Error("Expected text output");
+    console.log(output === "text" ? result.value : JSON.stringify(result.value, null, 2));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}
+`);
 
 /** Build the ESTree program. Every name is checked as it becomes a node, and
  * tree text only ever appears as string literals. */
@@ -260,7 +217,7 @@ function lower(tree: Tree, from: Digest): Estree {
     importFrom("@gooi/exchange", ["invoke"], ["Implementation"]),
     importFrom("@gooi/kernel/evidence", ["artifact"]),
     importFrom(tree.module, [tree.export]),
-    RUN,
+    ...RUN,
     constant(
       "program",
       chain({ type: "NewExpression", callee: id("Command"), arguments: [literal(tree.name)] }, [
@@ -284,6 +241,8 @@ function lower(tree: Tree, from: Digest): Estree {
         continue;
       }
       const spread = { type: "ObjectExpression", properties: [{ type: "SpreadElement", argument: id("options") }] };
+      const args = [member(id(tree.export), ...node.path), spread];
+      if (node.output === "text") args.push(literal("text"));
       body.push(
         statement(
           chain(id(parent), [
@@ -293,7 +252,7 @@ function lower(tree: Tree, from: Digest): Estree {
               literal(`--${o.field} <${o.field}>`),
               literal(o.description),
             ]),
-            ["action", arrow(["options"], call(id("run"), member(id(tree.export), ...node.path), spread))],
+            ["action", arrow(["options"], call(id("run"), ...args))],
           ]),
         ),
       );

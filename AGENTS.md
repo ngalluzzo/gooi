@@ -42,13 +42,10 @@ from `.gooi/slices.json`. Don't edit them by hand.
 <!-- gooi:slices:start -->
 ## Open slice
 
-**2. Tasks as markdown files**
-
-Each task is tasks/<name>.md with a status and created header and free notes below. List, add and finish tasks through the same generic CLI, and editing a file by hand stays valid.
-
-Done when: the owner tracks gooi's real next tasks in tasks/ and has finished one with the CLI.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
 - **1. Gooi tracks itself (CLI)** (closed 2026-11-03). Used for: to check the status of the project
 <!-- gooi:slices:end -->

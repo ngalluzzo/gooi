@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 2,
-    "title": "Tasks as markdown files",
-    "detail": "Each task is tasks/<name>.md with a status and created header and free notes below. List, add and finish tasks through the same generic CLI, and editing a file by hand stays valid.",
-    "done": "the owner tracks gooi's real next tasks in tasks/ and has finished one with the CLI."
-  },
+  "open": null,
   "done": [
     {
       "number": 1,
@@ -12,6 +7,14 @@
       "detail": "The operations `status`, `open` and `close --used \"<what it was used for>\"` are edges over `.gooi/slices.json`, with a generic CLI surface (`surfaces/cli`). The CLI keeps this page's Open slice and Done sections in sync.",
       "done": "the owner closes this slice with `bun gooi close --used \"...\"`.",
       "used": "to check the status of the project",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 2,
+      "title": "Tasks as markdown files",
+      "detail": "Each task is tasks/<name>.md with a status and created header and free notes below. List, add and finish tasks through the same generic CLI, and editing a file by hand stays valid.",
+      "done": "the owner tracks gooi's real next tasks in tasks/ and has finished one with the CLI.",
+      "used": "my agent tracks gooi's next tasks and I follow along",
       "closed": "2026-11-03"
     }
   ]

@@ -73,10 +73,38 @@ export const statement = (expression: Node): Node => ({
   expression,
 });
 export const block = (body: Node[]): Node => ({ type: "BlockStatement", body });
-export const constant = (name: string, init: Node): Node => ({
+/** `const name = init` or `let name = init`. */
+export const declare = (kind: "const" | "let", name: string, init: Node | null): Node => ({
   type: "VariableDeclaration",
-  kind: "const",
+  kind,
   declarations: [{ type: "VariableDeclarator", id: binding(name), init }],
+});
+export const constant = (name: string, init: Node): Node => declare("const", name, init);
+/** `target[index]` for a fixed array position. */
+export const element = (target: Node, index: number): Node => ({
+  type: "MemberExpression",
+  object: target,
+  property: literal(index),
+  computed: true,
+  optional: false,
+});
+export const construct = (callee: Node, ...args: Node[]): Node => ({
+  type: "NewExpression",
+  callee,
+  arguments: args,
+});
+/** An object literal; keys that aren't identifiers become string keys. */
+export const object = (entries: readonly [string, Node][]): Node => ({
+  type: "ObjectExpression",
+  properties: entries.map(([key, value]) => ({
+    type: "Property",
+    key: IDENTIFIER.test(key) ? id(key) : literal(key),
+    value,
+    kind: "init",
+    computed: false,
+    method: false,
+    shorthand: false,
+  })),
 });
 export const arrow = (params: string[], body: Node): Node => ({
   type: "ArrowFunctionExpression",
@@ -131,7 +159,7 @@ function comments(node: unknown, found: { type: string; value: string }[] = []) 
 /** Whether TypeScript source parses to exactly this program's statements,
  * ignoring positions, formatting and comments. */
 export function parsesTo(source: string, program: Node): boolean {
-  const parsed = parseSync("module.ts", source, { sourceType: "module" });
+  const parsed = parseSync("module.ts", source, { sourceType: "module", preserveParens: false });
   return (
     !parsed.errors.length &&
     canonical(normalize(parsed.program.body)) === canonical(normalize(program.body))
@@ -164,7 +192,7 @@ export const printTypeScript: Implementation = edge(
       { indent: "  " },
     );
     const source = code.endsWith("\n") ? code : `${code}\n`;
-    const parsed = parseSync("module.ts", source, { sourceType: "module" });
+    const parsed = parseSync("module.ts", source, { sourceType: "module", preserveParens: false });
     const back = parsed.comments.map((c) => ({ type: c.type, value: c.value }));
     if (!parsesTo(source, program) || canonical(back) !== canonical(comments(program)))
       throw new Error("The printed source doesn't parse back to the same program");

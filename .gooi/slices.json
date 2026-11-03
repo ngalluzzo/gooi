@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 7,
-    "title": "Agent conversations on a swappable log",
-    "detail": "Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.",
-    "done": "the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change."
-  },
+  "open": null,
   "done": [
     {
       "number": 1,
@@ -52,6 +47,14 @@
       "detail": "An agent edge takes an ACP prompt and returns the turn's ACP session updates. Its toolbox of task edges becomes tools built from their JSON Schemas, and every tool call runs through invoke. Backings are host wiring: gooi's loop over Claude, then over the local model in OMLx, with no change to edges, toolbox or instructions. gooi agent tell exposes it.",
       "done": "the owner turns a real rant into tasks with gooi agent tell on Claude and on the local model in OMLx, with the same app code.",
       "used": "used both backings to try enriching the rac ACP output",
+      "closed": "2026-11-03"
+    },
+    {
+      "number": 7,
+      "title": "Agent conversations on a swappable log",
+      "detail": "Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.",
+      "done": "the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change.",
+      "used": "reviewed my ongoing conversation with claude",
       "closed": "2026-11-03"
     }
   ]

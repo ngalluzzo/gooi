@@ -51,19 +51,15 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**7. Agent conversations on a swappable log**
-
-Gooi's agent appends each turn's ACP notifications, the owner's prompt included, to a log interface: append with an expected length, read, list. JSONL files and SQLite both pass one law suite, and host wiring picks between them. gooi agent sessions and gooi agent show --session follow ACP's session list and load.
-
-Done when: the owner reads a past agent conversation with gooi agent show on both JSONL and SQLite, with no app change.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **7. Agent conversations on a swappable log** (closed 2026-11-03). Used for: reviewed my ongoing conversation with claude
 - **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
 - **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
 - **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
 - **3. Compile the gooi command into a Commander CLI** (closed 2026-11-03). Used for: to close this task
-- **2. Tasks as markdown files** (closed 2026-11-03). Used for: my agent tracks gooi's next tasks and I follow along
-- _…and 1 earlier._
+- _…and 2 earlier._
 
 <!-- gooi:slices:end -->

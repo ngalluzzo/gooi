@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-03
+finished: 2026-11-03
 ---
 
 # Let mentioned agents answer under their own Matrix IDs

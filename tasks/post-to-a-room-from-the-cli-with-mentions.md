@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-03
+finished: 2026-11-03
 ---
 
 # Post to a room from the CLI with mentions

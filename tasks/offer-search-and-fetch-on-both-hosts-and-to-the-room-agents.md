@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-04
+finished: 2026-11-04
 ---
 
 # Offer search and fetch on both hosts and to the room agents

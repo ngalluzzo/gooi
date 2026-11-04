@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-04
+finished: 2026-11-04
 ---
 
 # Bring a Markdown file in as a nooq document

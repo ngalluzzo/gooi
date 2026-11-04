@@ -2,7 +2,15 @@
   "mcpServers": {
     "gooi": {
       "command": "bun",
-      "args": ["hosts/gooi/src/mcp.ts"]
+      "args": [
+        "hosts/gooi/src/mcp.ts"
+      ]
+    },
+    "nooq": {
+      "command": "bun",
+      "args": [
+        "hosts/nooq/src/mcp.ts"
+      ]
     }
   }
 }

@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-04
+finished: 2026-11-04
 ---
 
 # Serve nooq documents from nooq's CLI and MCP

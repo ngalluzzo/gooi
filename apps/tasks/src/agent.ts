@@ -9,6 +9,11 @@ export const instructions = [
   "When you're done, reply with one short sentence saying what you added.",
 ].join("\n");
 
+/** Tools that only read: the distinction Smithy's smithy.api#readonly trait and
+ * HTTP's safe methods (RFC 9110, section 9.2.1) draw. A replay may run these for
+ * real; every other tool changes something and must not run twice. */
+export const readOnlyTools: readonly string[] = ["list_tasks"];
+
 /** The only edges the tasks agent may call. */
 export function toolbox(edges: { readonly tasks: Implementation; readonly add: Implementation }) {
   return { list_tasks: edges.tasks, add_task: edges.add };

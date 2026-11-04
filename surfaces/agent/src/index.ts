@@ -70,6 +70,8 @@ export interface ModelSession {
 }
 /** A backing for gooi's agent loop. The host chooses it; the app never sees it. */
 export interface Model {
+  /** The provider's name for the model, such as claude-opus-5-5, so a run can record what answered. */
+  readonly id?: string;
   start(options: { readonly instructions: string; readonly tools: readonly ToolSpec[] }): ModelSession;
 }
 /** Tool names mapped to the edges an agent may call, and nothing else. */

@@ -18,6 +18,7 @@ export interface ClaudeOptions {
 export function claude(options: ClaudeOptions): Model {
   const model = options.model ?? "claude-opus-5-5";
   return {
+    id: model,
     start({ instructions, tools }) {
       const key = options.apiKey();
       const client = options.client ? options.client(key) : new Anthropic(key ? { apiKey: key } : {});

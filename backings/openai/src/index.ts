@@ -25,6 +25,7 @@ function parse(json: string): unknown {
  * chat completions API with function tools. */
 export function openaiCompatible(options: OpenAICompatibleOptions): Model {
   return {
+    id: options.model,
     start({ instructions, tools }) {
       const key = options.apiKey();
       const client = options.client

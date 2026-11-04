@@ -72,7 +72,7 @@ const LIST_INPUT = record(
   {},
 );
 const ADD_INPUT = record(
-  "Add a task as tasks/<name>.md",
+  "Add a task as a Markdown file, <name>.md, in the task folder",
   {
     title: field("One-line title", TITLE_LIMIT),
     name: field("File name; made from the title when left out", 80),

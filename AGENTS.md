@@ -53,11 +53,15 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**10. Replay a room answer with a change**
+**11. Gooi's edges over MCP**
 
-Each agent answer in a room records its run: the exact prompt, the backing and model, the instructions and the tools, linked from the reply. The room's replay command re-runs a past answer from that record with another backing or the current instructions. Tools that only read run for real; tools that write are recorded as what the agent would have done and never applied, in the terms of Smithy's readonly trait and HTTP's safe methods. It shows the original and the replay side by side and writes nothing to the room. The run record stays the room app's own until a second app needs it.
+One generic MCP surface adapter serves a host's commands as MCP tools over stdio, on the official MCP TypeScript SDK. It runs interpreted: each tool comes from its edge's JSON Schema at startup, and nothing is generated. gooi's and nooq's hosts each start one from the layout they already have, with no app change, and Claude Code connects to gooi's through the repo's .mcp.json.
 
-Done when: the owner replays a real past room answer with a different backing or the current instructions, and uses the comparison to decide something.
+Done when: the owner's Claude Code session does real gooi work, such as tracking tasks or reading a room, through gooi's MCP tools instead of bun gooi.
+
+## Waiting for use
+
+- **10. Replay a room answer with a change**. Closes when: the owner replays a real past room answer with a different backing or the current instructions, and uses the comparison to decide something.
 
 ## Done
 

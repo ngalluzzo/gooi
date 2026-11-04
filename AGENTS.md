@@ -53,11 +53,7 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**11. Gooi's edges over MCP**
-
-One generic MCP surface adapter serves a host's commands as MCP tools over stdio, on the official MCP TypeScript SDK. It runs interpreted: each tool comes from its edge's JSON Schema at startup, and nothing is generated. gooi's and nooq's hosts each start one from the layout they already have, with no app change, and Claude Code connects to gooi's through the repo's .mcp.json.
-
-Done when: the owner's Claude Code session does real gooi work, such as tracking tasks or reading a room, through gooi's MCP tools instead of bun gooi.
+_None. Only the owner opens the next slice._
 
 ## Waiting for use
 
@@ -65,11 +61,11 @@ Done when: the owner's Claude Code session does real gooi work, such as tracking
 
 ## Done
 
+- **11. Gooi's edges over MCP** (closed 2026-11-04). Used for: Claude Code tracked its MCP follow-ups as gooi tasks through gooi's MCP tools: added two and finished one
 - **9. A second host: tasks and a room for nooq** (closed 2026-11-03). Used for: asked the nooq room to turn the BlockNote gap audit into nooq tasks
 - **8. Claude and OMLx in one room** (closed 2026-11-03). Used for: reviewed my ongoing conversation with both agents
 - **7. Agent conversations on a swappable log** (closed 2026-11-03). Used for: reviewed my ongoing conversation with claude
 - **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
-- **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
-- _…and 4 earlier._
+- _…and 5 earlier._
 
 <!-- gooi:slices:end -->

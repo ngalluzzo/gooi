@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 11,
-    "title": "Gooi's edges over MCP",
-    "detail": "One generic MCP surface adapter serves a host's commands as MCP tools over stdio, on the official MCP TypeScript SDK. It runs interpreted: each tool comes from its edge's JSON Schema at startup, and nothing is generated. gooi's and nooq's hosts each start one from the layout they already have, with no app change, and Claude Code connects to gooi's through the repo's .mcp.json.",
-    "done": "the owner's Claude Code session does real gooi work, such as tracking tasks or reading a room, through gooi's MCP tools instead of bun gooi."
-  },
+  "open": null,
   "waiting": [
     {
       "number": 10,
@@ -85,6 +80,14 @@
       "done": "the owner uses the nooq CLI to track a real nooq task and talk it through with the agents, and the tasks and room apps hold no gooi-specific code.",
       "used": "asked the nooq room to turn the BlockNote gap audit into nooq tasks",
       "closed": "2026-11-03"
+    },
+    {
+      "number": 11,
+      "title": "Gooi's edges over MCP",
+      "detail": "One generic MCP surface adapter serves a host's commands as MCP tools over stdio, on the official MCP TypeScript SDK. It runs interpreted: each tool comes from its edge's JSON Schema at startup, and nothing is generated. gooi's and nooq's hosts each start one from the layout they already have, with no app change, and Claude Code connects to gooi's through the repo's .mcp.json.",
+      "done": "the owner's Claude Code session does real gooi work, such as tracking tasks or reading a room, through gooi's MCP tools instead of bun gooi.",
+      "used": "Claude Code tracked its MCP follow-ups as gooi tasks through gooi's MCP tools: added two and finished one",
+      "closed": "2026-11-04"
     }
   ]
 }

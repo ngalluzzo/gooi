@@ -1,0 +1,24 @@
+{
+  "name": "@gooi/searxng",
+  "version": "0.1.0",
+  "description": "Web search through a SearXNG instance: a search function, and a query relation whose search is pushed down from WHERE query = '...'",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/duckdb": "workspace:*"
+  }
+}

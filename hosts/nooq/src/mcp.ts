@@ -10,4 +10,4 @@ await serveStdio({
     description: "Read and replay nooq's rooms; posting stays with the owner",
     commands: { show: room.commands.show, replay: room.commands.replay },
   },
-}, { name: "nooq", version: "0.1.0" });
+}, { name: "nooq", version: "0.1.0", readOnly: ["task_list", "room_show"] });

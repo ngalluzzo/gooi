@@ -20,6 +20,10 @@ export type Layout = { readonly [name: string]: Implementation | TextCommand | G
 export interface Info {
   readonly name: string;
   readonly version: string;
+  /** Tools that only read, marked with MCP's readOnlyHint: the same distinction
+   * as Smithy's readonly trait and HTTP's safe methods. Every other tool keeps
+   * MCP's default, which a client treats as able to change things. */
+  readonly readOnly?: readonly string[];
 }
 
 interface Tool {
@@ -60,12 +64,15 @@ export function mcpServer(layout: Layout, info: Info): Server {
   const listed = tools(layout);
   const byName = new Map(listed.map((tool) => [tool.name, tool]));
   if (byName.size !== listed.length) throw new Error("Two commands lower to the same tool name");
+  const readOnly = new Set(info.readOnly ?? []);
+  for (const name of readOnly) if (!byName.has(name)) throw new Error(`No tool named ${name} to mark read-only`);
   const server = new Server({ name: info.name, version: info.version }, { capabilities: { tools: {} } });
   server.setRequestHandler("tools/list", () => ({
     tools: listed.map(({ name, description, inputSchema }) => ({
       name,
       description,
       inputSchema: inputSchema as { type: "object" },
+      ...(readOnly.has(name) ? { annotations: { readOnlyHint: true } } : {}),
     })),
   }));
   server.setRequestHandler("tools/call", async (request) => {

@@ -17,4 +17,9 @@ await serveStdio({
     description: "Read and replay rooms; posting stays with the owner",
     commands: { show: room.commands.show, replay: room.commands.replay },
   },
-}, { name: "gooi", version: "0.1.0" });
+}, {
+  name: "gooi",
+  version: "0.1.0",
+  // Replay isn't here: it reads the room but runs models and saves a new session.
+  readOnly: ["slice_status", "task_list", "agent_sessions", "agent_show", "room_show"],
+});

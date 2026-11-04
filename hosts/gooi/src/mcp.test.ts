@@ -28,6 +28,8 @@ test("gooi's MCP server offers its commands an agent may use, and not the owner'
     "agent_sessions", "agent_show", "room_replay", "room_show", "slice_status",
     "task_add", "task_finish", "task_list",
   ]);
+  const readOnly = (await mcp.listTools()).tools.filter((tool) => tool.annotations?.readOnlyHint).map((tool) => tool.name);
+  expect(readOnly.sort()).toEqual(["agent_sessions", "agent_show", "room_show", "slice_status", "task_list"]);
 });
 
 test("an MCP client tracks gooi's tasks through the same edges as the CLI", async () => {

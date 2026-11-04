@@ -28,9 +28,9 @@ const layout: Layout = {
   people: { description: "People", commands: { greet, shout: { edge: shout, output: "text" } } },
 };
 
-async function connect(served: Layout) {
+async function connect(served: Layout, readOnly?: readonly string[]) {
   const [client, server] = InMemoryTransport.createLinkedPair();
-  await mcpServer(served, { name: "test", version: "0.0.0" }).connect(server);
+  await mcpServer(served, { name: "test", version: "0.0.0", ...(readOnly ? { readOnly } : {}) }).connect(server);
   const mcp = new Client({ name: "test-client", version: "0.0.0" });
   await mcp.connect(client);
   return mcp;
@@ -63,6 +63,17 @@ test("invalid arguments, failing edges and unknown tools come back as tool error
   expect(extra).toMatchObject({ isError: true, content: [{ text: "Unexpected field: age" }] });
   const unknown = await mcp.callTool({ name: "people_wave", arguments: {} });
   expect(unknown).toMatchObject({ isError: true, content: [{ text: "No tool named people_wave" }] });
+});
+
+test("tools the host says only read carry MCP's readOnlyHint, and the rest don't", async () => {
+  const { tools: listed } = await (await connect(layout, ["people_greet"])).listTools();
+  expect(listed.map((tool) => [tool.name, tool.annotations?.readOnlyHint])).toEqual([
+    ["people_greet", true],
+    ["people_shout", undefined],
+  ]);
+  expect(() => mcpServer(layout, { name: "test", version: "0.0.0", readOnly: ["people_wave"] })).toThrow(
+    "No tool named people_wave to mark read-only",
+  );
 });
 
 test("a layout that can't become tools is refused before serving", () => {

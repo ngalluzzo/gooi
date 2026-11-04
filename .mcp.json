@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gooi": {
+      "command": "bun",
+      "args": ["hosts/gooi/src/mcp.ts"]
+    }
+  }
+}

@@ -12,6 +12,7 @@
     "@gooi/exchange": "workspace:*",
     "@gooi/host-kit": "workspace:*",
     "@gooi/kernel": "workspace:*",
+    "@gooi/mcp": "workspace:*",
     "@gooi/room": "workspace:*",
     "@gooi/tasks": "workspace:*",
     "commander": "^15.0.0"

@@ -51,19 +51,15 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**9. A second host: tasks and a room for nooq**
-
-Apps don't know where they run; a host composes them, like a compose file. gooi's own wiring moves to hosts/gooi. A second host, hosts/nooq, composes the tasks and room apps for nooq: nooq's own task folder and room logs, Claude and OMLx with nooq's task tools, exposed as its own Commander CLI. The apps lose what only gooi needs, and the room checks that the log and agents it is given have the right contracts.
-
-Done when: the owner uses the nooq CLI to track a real nooq task and talk it through with the agents, and the tasks and room apps hold no gooi-specific code.
+_None. Only the owner opens the next slice._
 
 ## Done
 
+- **9. A second host: tasks and a room for nooq** (closed 2026-11-03). Used for: asked the nooq room to turn the BlockNote gap audit into nooq tasks
 - **8. Claude and OMLx in one room** (closed 2026-11-03). Used for: reviewed my ongoing conversation with both agents
 - **7. Agent conversations on a swappable log** (closed 2026-11-03). Used for: reviewed my ongoing conversation with claude
 - **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
 - **5. Task page in shadcn** (closed 2026-11-03). Used for: using shadcn now to monitor the list
-- **4. See tasks in a browser** (closed 2026-11-03). Used for: monitor the task list as it updates live
-- _…and 3 earlier._
+- _…and 4 earlier._
 
 <!-- gooi:slices:end -->

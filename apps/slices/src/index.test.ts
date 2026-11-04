@@ -6,6 +6,7 @@ import {
   EMPTY,
   OPEN,
   STATUS,
+  WAIT,
   readState,
   render,
   slices,
@@ -39,6 +40,7 @@ describe("slice edges", () => {
     );
     expect(opened.artifact.value).toEqual({
       open: { number: 1, title: "First", done: "used once" },
+      waiting: [],
       done: [],
     });
     expect(opened.claims).toHaveLength(1);
@@ -48,6 +50,7 @@ describe("slice edges", () => {
     const closed = await invoke(e.close, close("tracked this test"));
     expect(closed.artifact.value).toEqual({
       open: null,
+      waiting: [],
       done: [
         {
           number: 1,
@@ -89,6 +92,33 @@ describe("slice edges", () => {
     expect(m.writes()).toBe(0);
   });
 
+  test("a built slice waits for its real use without blocking the next one", async () => {
+    const m = memory(),
+      e = edges(m.store);
+    await invoke(e.open, open({ title: "Replay", done: "a real replay" }));
+    await expect(invoke(e.open, open({ title: "MCP", done: "used" }))).rejects.toThrow(
+      "or move it to waiting until that use comes",
+    );
+    const waited = await invoke(e.wait, artifact(WAIT, {}));
+    expect(waited.artifact.value).toMatchObject({ open: null, waiting: [{ number: 1, title: "Replay" }] });
+    await expect(invoke(e.wait, artifact(WAIT, {}))).rejects.toThrow("No slice is open");
+
+    // The next slice opens with the next number, and either can close first.
+    await invoke(e.open, open({ title: "MCP", done: "used" }));
+    const closedOpen = await invoke(e.close, close("served tasks over MCP"));
+    expect(closedOpen.artifact.value).toMatchObject({ open: null, waiting: [{ number: 1 }], done: [{ number: 2 }] });
+    await expect(invoke(e.close, close("x"))).rejects.toThrow("To close a waiting slice, give its number");
+    await expect(invoke(e.close, artifact(CLOSE, { used: "x", number: "7" }))).rejects.toThrow("No slice 7 is waiting");
+    const closedWaiting = await invoke(e.close, artifact(CLOSE, { used: "replayed an answer", number: "1" }));
+    expect(closedWaiting.artifact.value).toMatchObject({
+      waiting: [],
+      done: [{ number: 2 }, { number: 1, used: "replayed an answer", closed: "2026-11-03" }],
+    });
+    expect((await invoke(e.open, open({ title: "Next", done: "d" }))).artifact.value).toMatchObject({
+      open: { number: 3 },
+    });
+  });
+
   test("refuses missing, blank and unexpected fields", async () => {
     const e = edges(memory().store);
     await expect(invoke(e.open, open({ done: "d" }))).rejects.toThrow(
@@ -110,7 +140,7 @@ describe("slice edges", () => {
 });
 
 describe("state", () => {
-  test("refuses numbers that do not increase", () => {
+  test("refuses a slice number used twice, and reads files from before waiting slices", () => {
     const closed = { title: "t", done: "d", used: "u", closed: "2026-11-03" };
     expect(() =>
       readState({
@@ -120,13 +150,15 @@ describe("state", () => {
           { ...closed, number: 2 },
         ],
       }),
-    ).toThrow("must increase");
+    ).toThrow("Each slice number must be used once");
     expect(() =>
       readState({
         open: { number: 1, title: "t", done: "d" },
+        waiting: [],
         done: [{ ...closed, number: 1 }],
       }),
-    ).toThrow("must increase");
+    ).toThrow("Each slice number must be used once");
+    expect(readState({ open: null, done: [] })).toEqual(EMPTY);
   });
 
   test("renders the open slice and the latest five done slices", () => {
@@ -149,5 +181,8 @@ describe("state", () => {
     );
     expect(page).not.toContain("S2**");
     expect(page).toContain("- _…and 2 earlier._");
+    expect(page).not.toContain("Waiting for use");
+    const waiting = render(readState({ open: null, waiting: [{ number: 8, title: "Next", done: "d" }], done }));
+    expect(waiting).toContain("## Waiting for use\n\n- **8. Next**. Closes when: d\n\n## Done");
   });
 });

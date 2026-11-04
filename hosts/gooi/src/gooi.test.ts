@@ -56,7 +56,7 @@ describe("gooi end to end", () => {
   }
 
   test("slices and tasks through the compiled commands", () => {
-    expect(gooi("slice", "status").json()).toEqual({ open: null, done: [] });
+    expect(gooi("slice", "status").json()).toEqual({ open: null, waiting: [], done: [] });
     expect(gooi("slice", "open", "--title", "Try it", "--done", "used").json().open).toEqual({
       number: 1,
       title: "Try it",

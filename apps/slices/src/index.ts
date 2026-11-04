@@ -8,6 +8,7 @@ export const STATUS = Object.freeze({
 });
 export const OPEN = Object.freeze({ id: "urn:gooi:slices:open", version: 1 });
 export const CLOSE = Object.freeze({ id: "urn:gooi:slices:close", version: 1 });
+export const WAIT = Object.freeze({ id: "urn:gooi:slices:wait", version: 1 });
 export const STATE = Object.freeze({ id: "urn:gooi:slices:state", version: 1 });
 const APPLIED = Object.freeze({ id: "urn:gooi:slices:applied", version: 1 });
 const TEXT_LIMIT = 2000;
@@ -24,7 +25,11 @@ export interface ClosedSlice extends Slice {
   readonly closed: string;
 }
 export interface State {
+  /** The slice being built. Only one is open at a time. */
   readonly open: Slice | null;
+  /** Built slices whose real use hasn't come yet. Each closes when it does. */
+  readonly waiting: readonly Slice[];
+  /** Closed slices, in the order they closed. */
   readonly done: readonly ClosedSlice[];
 }
 /** Where slice state lives. The host chooses it; edges never pick a path. */
@@ -34,6 +39,7 @@ export interface Store {
 }
 export const EMPTY: State = Object.freeze({
   open: null,
+  waiting: Object.freeze([]),
   done: Object.freeze([]),
 });
 
@@ -91,17 +97,23 @@ function slice(value: Value | undefined, closed: boolean) {
   };
 }
 
-/** Admit stored state, including a hand-edited file. Slice numbers only increase. */
+/** Admit stored state, including a hand-edited file. A file from before
+ * waiting slices has none. Each number belongs to one slice. */
 export function readState(value: unknown): State {
-  const v = fields(snapshot(value), ["open", "done"]);
+  const v = fields(snapshot(value), ["open", "done"], ["waiting"]);
   if (!Array.isArray(v.done)) throw new Error("Expected a list of done slices");
+  if (v.waiting !== undefined && !Array.isArray(v.waiting))
+    throw new Error("Expected a list of waiting slices");
   const done = v.done.map((item) => slice(item, true) as ClosedSlice);
+  const waiting = ((v.waiting ?? []) as Value[]).map((item) => slice(item, false));
   const open = v.open === null ? null : slice(v.open, false);
-  const numbers = [...done, ...(open ? [open] : [])].map((s) => s.number);
-  if (numbers.some((n, i) => i > 0 && n <= numbers[i - 1]!))
-    throw new Error("Slice numbers must increase");
-  return snapshot({ open, done }) as unknown as State;
+  const numbers = [...done, ...waiting, ...(open ? [open] : [])].map((s) => s.number);
+  if (new Set(numbers).size !== numbers.length) throw new Error("Each slice number must be used once");
+  return snapshot({ open, waiting, done }) as unknown as State;
 }
+
+const next = (state: State) =>
+  Math.max(0, ...[...state.done, ...state.waiting, ...(state.open ? [state.open] : [])].map((s) => s.number)) + 1;
 
 const field = (description: string) => ({
   type: "string",
@@ -120,9 +132,9 @@ const record = (
   required,
   additionalProperties: false,
 });
-const STATUS_INPUT = record("Show the open slice and the done slices", {});
+const STATUS_INPUT = record("Show the open slice, the slices waiting for use, and the done slices", {});
 const OPEN_INPUT = record(
-  "Open the next slice. Only one slice can be open at a time.",
+  "Open the next slice. Only one slice can be open at a time; waiting slices don't count.",
   {
     title: field("Short name for the slice"),
     detail: field("What the slice covers"),
@@ -131,9 +143,16 @@ const OPEN_INPUT = record(
   ["title", "done"],
 );
 const CLOSE_INPUT = record(
-  "Close the open slice with what it was used for",
-  { used: field("What the slice was actually used for") },
+  "Close a slice with what it was used for: the open one, or a waiting one by number",
+  {
+    used: field("What the slice was actually used for"),
+    number: { type: "string", pattern: "^[1-9][0-9]{0,5}$", description: "The waiting slice to close; leave out for the open one" },
+  },
   ["used"],
+);
+const WAIT_INPUT = record(
+  "Move the open slice to waiting: it's built, and closes when its real use comes",
+  {},
 );
 
 function step(
@@ -152,7 +171,7 @@ function localDate(): string {
   return new Date().toLocaleDateString("en-CA");
 }
 
-/** The three slice edges over a host-chosen store. `today` returns YYYY-MM-DD. */
+/** The slice edges over a host-chosen store. `today` returns YYYY-MM-DD. */
 export function slices(store: Store, today: () => string = localDate) {
   return Object.freeze({
     status: step(
@@ -170,36 +189,53 @@ export function slices(store: Store, today: () => string = localDate) {
         const state = store.read();
         if (state.open)
           throw new Error(
-            `Slice ${state.open.number} is still open. Close it, with what you used it for, before opening another.`,
+            `Slice ${state.open.number} is still open. Close it with what you used it for, or move it to waiting until that use comes, before opening another.`,
           );
-        const next = readState({
-          open: { ...v, number: (state.done.at(-1)?.number ?? 0) + 1 },
-          done: state.done,
-        });
-        store.write(next);
-        return next;
+        const opened = readState({ ...state, open: { ...v, number: next(state) } });
+        store.write(opened);
+        return opened;
       },
     ),
     close: step(
       CLOSE,
       CLOSE_INPUT,
-      "Closed the open slice with what it was used for and stored the resulting state; excludes later changes",
+      "Closed the open slice, or the named waiting one, with what it was used for and stored the resulting state; excludes later changes",
       (request) => {
-        const { used } = request as Fields;
+        const { used, number } = request as Fields;
+        const state = store.read();
+        const chosen = number === undefined
+          ? state.open
+          : state.waiting.find((s) => s.number === Number(number));
+        if (!chosen)
+          throw new Error(number === undefined
+            ? "No slice is open. To close a waiting slice, give its number."
+            : `No slice ${number} is waiting.`);
+        const closed = readState({
+          open: chosen === state.open ? null : state.open,
+          waiting: state.waiting.filter((s) => s !== chosen),
+          done: [...state.done, { ...chosen, used, closed: today() }],
+        });
+        store.write(closed);
+        return closed;
+      },
+    ),
+    wait: step(
+      WAIT,
+      WAIT_INPUT,
+      "Moved the open slice to waiting and stored the resulting state; excludes later changes",
+      () => {
         const state = store.read();
         if (!state.open) throw new Error("No slice is open.");
-        const next = readState({
-          open: null,
-          done: [...state.done, { ...state.open, used, closed: today() }],
-        });
-        store.write(next);
-        return next;
+        const moved = readState({ open: null, waiting: [...state.waiting, state.open], done: state.done });
+        store.write(moved);
+        return moved;
       },
     ),
   });
 }
 
-/** The Open slice and Done sections as Markdown, showing the latest done slices first. */
+/** The Open slice, Waiting for use and Done sections as Markdown, showing the
+ * latest done slices first. Waiting appears only when a slice is waiting. */
 export function render(state: State): string {
   const open = state.open
     ? [
@@ -219,5 +255,10 @@ export function render(state: State): string {
         .concat(earlier ? [`- _…and ${earlier} earlier._`] : [])
         .join("\n")
     : "_Nothing yet._";
-  return ["## Open slice", open, "## Done", done].join("\n\n");
+  const waiting = state.waiting.map((s) => `- **${s.number}. ${s.title}**. Closes when: ${s.done}`).join("\n");
+  return [
+    "## Open slice", open,
+    ...(waiting ? ["## Waiting for use", waiting] : []),
+    "## Done", done,
+  ].join("\n\n");
 }

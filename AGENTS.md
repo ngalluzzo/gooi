@@ -32,8 +32,10 @@ same laws. Apps own the entries' meaning and express domain queries as edges.
   Every IR is an existing standard adopted by its contract ID, or a small local
   dialect owned by the one package that needs it. A dialect becomes shared only
   by being used twice, never by being designed to be shared.
-- One open slice at a time. Agents work only on the open slice and stop when its
-  done condition is met. Agents never open or choose the next slice.
+- One open slice at a time. When a slice is built but the real use that closes it
+  hasn't come yet, the owner moves it to waiting and may open the next; it closes
+  when that use comes, never with a staged one. Agents work only on the open slice
+  and stop when it's built. Agents never open or choose the next slice.
 - Tasks are shared: agents add and finish tasks in `tasks/` with `bun gooi task`,
   so the owner can follow along. Slices stay the owner's.
 - Done means used: the owner used it for something real, recorded under Done.
@@ -42,8 +44,8 @@ same laws. Apps own the entries' meaning and express domain queries as edges.
   is history, not a to-do list.
 - Keep this page to one screen. No ledgers, gate logs or "next" lists.
 
-The owner updates the generated sections below through `bun gooi slice open`
-and `bun gooi slice close --used`. Both use `.gooi/slices.json`. `bun gooi` and
+The owner updates the generated sections below through `bun gooi slice open`,
+`slice wait` and `slice close --used`, which all use `.gooi/slices.json`. `bun gooi` and
 the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changing
 `hosts/gooi/src/commands.ts`, `routes.ts` or `design.ts`, run `bun run compile`.
 

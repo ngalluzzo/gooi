@@ -53,7 +53,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**12. nooq documents through gooi**
+
+A gooi app keeps nooq documents on the log the way nooq's DM-14.6 says a host should: each document's state beside its header, and its history as nooq's history store, verified on load with nooq's own code. Edges read a document as Markdown or HTML, let an agent propose a change as a nooq suggestion, and let the owner accept or reject it. Every change is a nooq transaction; agents can only propose, and accepting stays with the owner. nooq's host serves these through its CLI and MCP. The first document is nooq's docs/gap-audit.md, brought in with nooq's own Markdown import.
+
+Done when: the owner accepts a real suggestion that an agent proposed through MCP to a nooq document.
 
 ## Waiting for use
 

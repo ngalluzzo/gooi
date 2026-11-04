@@ -51,7 +51,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**9. A second host: tasks and a room for nooq**
+
+Apps don't know where they run; a host composes them, like a compose file. gooi's own wiring moves to hosts/gooi. A second host, hosts/nooq, composes the tasks and room apps for nooq: nooq's own task folder and room logs, Claude and OMLx with nooq's task tools, exposed as its own Commander CLI. The apps lose what only gooi needs, and the room checks that the log and agents it is given have the right contracts.
+
+Done when: the owner uses the nooq CLI to track a real nooq task and talk it through with the agents, and the tasks and room apps hold no gooi-specific code.
 
 ## Done
 

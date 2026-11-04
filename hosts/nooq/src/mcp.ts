@@ -5,9 +5,10 @@ import { commands, docs } from "./commands.js";
 // reading documents and proposing suggestions to them. Posting in rooms,
 // importing documents and accepting or rejecting suggestions stay with the
 // owner. Run with `bun run nooq-mcp`.
-const { task, room } = commands;
+const { task, room, work } = commands;
 await serveStdio({
   task,
+  work,
   doc: {
     description: "Read nooq documents and propose changes as suggestions the owner reviews",
     commands: {
@@ -25,5 +26,5 @@ await serveStdio({
 }, {
   name: "nooq",
   version: "0.1.0",
-  readOnly: ["task_list", "room_show", "doc_list", "doc_read", "doc_blocks", "doc_suggestions"],
+  readOnly: ["task_list", "room_show", "doc_list", "doc_read", "doc_blocks", "doc_suggestions", "work_all", "work_open", "work_query"],
 });

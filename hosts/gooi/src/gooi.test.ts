@@ -262,6 +262,32 @@ describe("gooi end to end", () => {
     });
   }
 
+  test("the work page shows tasks and GitHub issues from one query", async () => {
+    const github = Bun.serve({ port: 0, fetch: () => Response.json([{
+      number: 2, title: "File the first issue", state: "open", user: { login: "nic" }, labels: [], assignees: [], comments: 0,
+      created_at: "2026-11-04T00:00:00Z", updated_at: "2026-11-04T00:00:00Z", closed_at: null, html_url: "https://github.com/o/r/issues/2",
+    }]) });
+    gooi("task", "add", "--title", "Query tasks and issues");
+    const port = 20000 + Math.floor(Math.random() * 20000);
+    const proc = Bun.spawn([process.execPath, server], {
+      env: { ...process.env, GOOI_ROOT: root, PORT: String(port), GOOI_REPO: "o/r", GITHUB_API_URL: github.url.origin },
+      stdout: "pipe", stderr: "pipe",
+    });
+    try {
+      let response: Response | undefined;
+      for (let i = 0; i < 50 && !response; i++) response = await fetch(`http://localhost:${port}/work`).catch(() => undefined) ?? (await Bun.sleep(100), undefined);
+      expect(response!.status).toBe(200);
+      const html = await response!.text();
+      expect(html).toContain("<title>gooi: work</title>");
+      expect(html).toContain("<td>Query tasks and issues</td>");
+      expect(html).toContain('<a href="https://github.com/o/r/issues/2">open</a>');
+    } finally {
+      proc.kill();
+      await proc.exited;
+      github.stop(true);
+    }
+  });
+
   test("refusals exit nonzero with a readable message", () => {
     const missing = gooi("task", "add");
     expect(missing.code).not.toBe(0);

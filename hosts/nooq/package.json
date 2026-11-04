@@ -9,13 +9,16 @@
   },
   "dependencies": {
     "@gooi/agent": "workspace:*",
+    "@gooi/duckdb": "workspace:*",
     "@gooi/exchange": "workspace:*",
+    "@gooi/github": "workspace:*",
     "@gooi/host-kit": "workspace:*",
     "@gooi/kernel": "workspace:*",
     "@gooi/mcp": "workspace:*",
     "@gooi/nooq-docs": "workspace:*",
     "@gooi/room": "workspace:*",
     "@gooi/tasks": "workspace:*",
+    "@gooi/work": "workspace:*",
     "commander": "^15.0.0"
   },
   "devDependencies": {

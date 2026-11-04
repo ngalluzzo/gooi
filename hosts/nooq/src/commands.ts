@@ -1,12 +1,17 @@
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Layout } from "@gooi/commander";
+import { path } from "@gooi/exchange";
 import { localUser, logs, models } from "@gooi/host-kit";
 import { documents } from "@gooi/nooq-docs";
 import { rooms, userId } from "@gooi/room";
 import { tasks } from "@gooi/tasks";
 import { readOnlyTools, toolbox } from "@gooi/tasks/agent";
 import { fileFolder } from "@gooi/tasks/file";
+import { tasksTable } from "@gooi/tasks/table";
+import { duckdb } from "@gooi/duckdb";
+import { issues } from "@gooi/github";
+import { work } from "@gooi/work";
 
 // NOOQ_ROOT points at the nooq checkout; by default it sits next to this repo.
 // nooq's tasks are files in it, and its room and agent logs stay in its .gooi.
@@ -35,6 +40,21 @@ export const docs = documents({
   root,
 });
 
+// All of nooq's work in one query: its Markdown tasks as a table, and its
+// GitHub issues as a relation DuckDB pushes filters down to. NOOQ_REPO names the
+// repository; GITHUB_TOKEN is read when a query runs, and public repositories
+// work without it. GITHUB_API_URL points it at another API, such as a test's.
+export const workspace = work({
+  engine: duckdb(),
+  tasks: path(task.tasks, tasksTable),
+  issues: issues({
+    repo: process.env.NOOQ_REPO ?? "ngalluzzo/nooq",
+    token: () => process.env.GITHUB_TOKEN,
+    ...(process.env.GITHUB_API_URL ? { baseUrl: process.env.GITHUB_API_URL } : {}),
+  }),
+  project: "nooq",
+});
+
 /** How nooq's edges appear as commands. Change this, then run `bun run compile`. */
 export const commands = {
   task: {
@@ -60,6 +80,14 @@ export const commands = {
       say: { edge: room.say, output: "text" },
       show: { edge: room.show, output: "text" },
       replay: { edge: room.replay, output: "text" },
+    },
+  },
+  work: {
+    description: "nooq's tasks and GitHub issues in one query, as Markdown tables",
+    commands: {
+      all: { edge: path(workspace.all, workspace.markdown), output: "text" },
+      open: { edge: path(workspace.open, workspace.markdown), output: "text" },
+      query: { edge: path(workspace.query, workspace.markdown), output: "text" },
     },
   },
 } satisfies Layout;

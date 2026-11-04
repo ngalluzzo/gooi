@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@gooi/agent": "workspace:*",
+    "@gooi/duckdb": "workspace:*",
     "@gooi/exchange": "workspace:*",
+    "@gooi/github": "workspace:*",
     "@gooi/hast": "workspace:*",
     "@gooi/host-kit": "workspace:*",
     "@gooi/jsonl": "workspace:*",
@@ -21,6 +23,7 @@
     "@gooi/slices": "workspace:*",
     "@gooi/sqlite": "workspace:*",
     "@gooi/tasks": "workspace:*",
+    "@gooi/work": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
     "commander": "^15.0.0",

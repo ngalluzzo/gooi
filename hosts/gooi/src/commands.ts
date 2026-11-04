@@ -10,6 +10,10 @@ import { fileStore } from "@gooi/slices/file";
 import { tasks } from "@gooi/tasks";
 import { instructions, readOnlyTools, toolbox } from "@gooi/tasks/agent";
 import { fileFolder } from "@gooi/tasks/file";
+import { tasksTable } from "@gooi/tasks/table";
+import { duckdb } from "@gooi/duckdb";
+import { issues } from "@gooi/github";
+import { work } from "@gooi/work";
 
 // GOOI_ROOT points the command at another checkout; by default it's this repo.
 const root = process.env.GOOI_ROOT
@@ -40,6 +44,21 @@ const room = rooms({
   ])),
 });
 
+// All of gooi's work in one query: its Markdown tasks as a table, and its
+// GitHub issues as a relation DuckDB pushes filters down to. GOOI_REPO names the
+// repository; GITHUB_TOKEN is read when a query runs, and public repositories
+// work without it. GITHUB_API_URL points it at another API, such as a test's.
+export const workspace = work({
+  engine: duckdb(),
+  tasks: path(task.tasks, tasksTable),
+  issues: issues({
+    repo: process.env.GOOI_REPO ?? "ngalluzzo/gooi",
+    token: () => process.env.GITHUB_TOKEN,
+    ...(process.env.GITHUB_API_URL ? { baseUrl: process.env.GITHUB_API_URL } : {}),
+  }),
+  project: "gooi",
+});
+
 /** How gooi's edges appear as commands. Change this, then run `bun run compile`. */
 export const commands = {
   slice: {
@@ -67,6 +86,14 @@ export const commands = {
       say: { edge: room.say, output: "text" },
       show: { edge: room.show, output: "text" },
       replay: { edge: room.replay, output: "text" },
+    },
+  },
+  work: {
+    description: "gooi's tasks and GitHub issues in one query, as Markdown tables",
+    commands: {
+      all: { edge: path(workspace.all, workspace.markdown), output: "text" },
+      open: { edge: path(workspace.open, workspace.markdown), output: "text" },
+      query: { edge: path(workspace.query, workspace.markdown), output: "text" },
     },
   },
 } satisfies Layout;

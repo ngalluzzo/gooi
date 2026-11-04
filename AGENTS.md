@@ -53,7 +53,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**13. One query over Markdown tasks and GitHub issues**
+
+DuckDB becomes a backing: one engine that reads a host's Markdown tasks as a local table and its repo's GitHub issues as a remote relation, and answers one SQL query over both. Filters on issues are pushed down into GitHub's API parameters where the API supports them, and GitHub's published OpenAPI description defines the relation. Results are Arrow tables, and a view renders them the way the task page does. The pushdown extension in old/ comes back only as far as this needs. The GitHub token comes from the host's environment.
+
+Done when: the owner uses a view that shows their Markdown tasks and GitHub issues from one query, for real work.
 
 ## Waiting for use
 

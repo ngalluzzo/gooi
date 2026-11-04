@@ -116,13 +116,12 @@
       "version": "0.1.0",
       "dependencies": {
         "@gooi/agent": "workspace:*",
-        "@gooi/claude": "workspace:*",
         "@gooi/exchange": "workspace:*",
         "@gooi/hast": "workspace:*",
+        "@gooi/host-kit": "workspace:*",
         "@gooi/jsonl": "workspace:*",
         "@gooi/kernel": "workspace:*",
         "@gooi/log": "workspace:*",
-        "@gooi/openai": "workspace:*",
         "@gooi/react": "workspace:*",
         "@gooi/room": "workspace:*",
         "@gooi/slices": "workspace:*",
@@ -146,6 +145,22 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "tailwindcss": "^4.3.4",
+      },
+    },
+    "hosts/kit": {
+      "name": "@gooi/host-kit",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/agent": "workspace:*",
+        "@gooi/claude": "workspace:*",
+        "@gooi/jsonl": "workspace:*",
+        "@gooi/log": "workspace:*",
+        "@gooi/openai": "workspace:*",
+        "@gooi/sqlite": "workspace:*",
+      },
+      "devDependencies": {
+        "@gooi/exchange": "workspace:*",
+        "@gooi/kernel": "workspace:*",
       },
     },
     "surfaces/agent": {
@@ -316,6 +331,8 @@
     "@gooi/hast": ["@gooi/hast@workspace:surfaces/hast"],
 
     "@gooi/hono": ["@gooi/hono@workspace:surfaces/hono"],
+
+    "@gooi/host-kit": ["@gooi/host-kit@workspace:hosts/kit"],
 
     "@gooi/jsonl": ["@gooi/jsonl@workspace:backings/jsonl"],
 

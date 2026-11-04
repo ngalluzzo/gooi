@@ -1,18 +1,12 @@
-import { userInfo } from "node:os";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { agent, sessionHistory, textPrompt, type Model } from "@gooi/agent";
-import { claude } from "@gooi/claude";
+import { agent, sessionHistory, textPrompt } from "@gooi/agent";
 import type { Layout } from "@gooi/commander";
 import { path } from "@gooi/exchange";
-import { jsonl } from "@gooi/jsonl";
-import { jsonlLog } from "@gooi/log/jsonl";
-import { sqliteLog } from "@gooi/log/sqlite";
-import { openaiCompatible } from "@gooi/openai";
+import { choose, localUser, logs, models } from "@gooi/host-kit";
 import { instructions as roomInstructions, rooms, userId } from "@gooi/room";
 import { slices } from "@gooi/slices";
 import { fileStore } from "@gooi/slices/file";
-import { sqlite } from "@gooi/sqlite";
 import { tasks } from "@gooi/tasks";
 import { instructions, toolbox } from "@gooi/tasks/agent";
 import { fileFolder } from "@gooi/tasks/file";
@@ -24,36 +18,17 @@ const root = process.env.GOOI_ROOT
 const file = (relative: string) => fileURLToPath(new URL(relative, root));
 const task = tasks(fileFolder(file("tasks")));
 
-// The agent's backing is host wiring: GOOI_AGENT picks it and nothing in the
-// app changes. Keys come from the environment (.env) when a turn starts.
-const backings: Record<string, () => Model> = {
-  claude: () => claude({ apiKey: () => process.env.CLAUDE_API_KEY }),
-  omlx: () =>
-    openaiCompatible({
-      baseURL: process.env.OMLX_BASE_URL ?? "http://127.0.0.1:8000/v1",
-      apiKey: () => process.env.OMLX_API_KEY,
-      model: process.env.OMLX_MODEL ?? "Qwen3.8-27B-Q8_0",
-    }),
-};
-const backing = process.env.GOOI_AGENT ?? "claude";
-if (!Object.hasOwn(backings, backing))
-  throw new Error(`GOOI_AGENT must be one of ${Object.keys(backings).join(", ")}; got "${backing}"`);
-
-// GOOI_STORE picks where logs live; agent sessions and rooms each get their own.
-const stores = {
-  jsonl: (name: string) => jsonlLog(jsonl(file(`.gooi/${name}`))),
-  sqlite: (name: string) => sqliteLog(sqlite(file(`.gooi/${name}.sqlite`))),
-};
-const store = process.env.GOOI_STORE ?? "jsonl";
-if (!Object.hasOwn(stores, store))
-  throw new Error(`GOOI_STORE must be one of ${Object.keys(stores).join(", ")}; got "${store}"`);
-const logAt = stores[store as keyof typeof stores];
+// The agent's backing is host wiring: GOOI_AGENT picks it for `agent tell`, and
+// nothing in the app changes. GOOI_STORE picks where the logs live.
+const backings = models();
+const told = choose("GOOI_AGENT", backings, "claude");
+const logAt = logs(file(".gooi"));
 const log = logAt("agent-sessions");
 const history = sessionHistory(log, resolve(file(".")));
 
 // In a room every backing takes part at once, each under its own Matrix name.
 // The owner is the local user; their turns are saved like any agent session.
-const owner = userId(userInfo().username.toLowerCase().replace(/[^a-z0-9._=\-/+]/gu, "_"));
+const owner = userId(localUser());
 const room = rooms({
   log: logAt("rooms"),
   owner,
@@ -78,7 +53,7 @@ export const commands = {
     commands: {
       tell: path(
         textPrompt("Tell the agent about work to do, in your own words; it adds the tasks"),
-        agent({ instructions, tools: toolbox(task), model: backings[backing]!(), log }),
+        agent({ instructions, tools: toolbox(task), model: told(), log }),
       ),
       sessions: history.sessions,
       show: { edge: history.show, output: "text" },

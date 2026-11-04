@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-03
+finished: 2026-11-03
 ---
 
 # Replay a past room answer with another backing or the current instructions

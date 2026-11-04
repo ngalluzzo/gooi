@@ -63,11 +63,15 @@ export function join(room: string, user: string): Member {
   };
 }
 
-export function message(room: string, sender: string, body: string, mentions: Mentions = {}): TextMessage {
+/** A text message. `extra` holds namespaced content fields, which Matrix lets
+ * clients add and other clients ignore. */
+export function message(
+  room: string, sender: string, body: string, mentions: Mentions = {}, extra: Readonly<Record<string, string>> = {},
+): TextMessage {
   return {
     ...stamp(room, sender),
     type: "m.room.message",
-    content: { msgtype: "m.text", body, "m.mentions": mentions },
+    content: { msgtype: "m.text", body, "m.mentions": mentions, ...extra },
   };
 }
 

@@ -51,7 +51,11 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-_None. Only the owner opens the next slice._
+**10. Replay a room answer with a change**
+
+Each agent answer in a room records its run: the exact prompt, the backing and model, the instructions and the tools, linked from the reply. The room's replay command re-runs a past answer from that record with another backing or the current instructions. Tools that only read run for real; tools that write are recorded as what the agent would have done and never applied, in the terms of Smithy's readonly trait and HTTP's safe methods. It shows the original and the replay side by side and writes nothing to the room. The run record stays the room app's own until a second app needs it.
+
+Done when: the owner replays a real past room answer with a different backing or the current instructions, and uses the comparison to decide something.
 
 ## Done
 

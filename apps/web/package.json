@@ -1,0 +1,37 @@
+{
+  "name": "@gooi/web",
+  "version": "0.1.0",
+  "description": "Search the web and read pages: search answers as a table, pages as Markdown through hast and mdast",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/duckdb": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/kernel": "workspace:*",
+    "@gooi/pages": "workspace:*",
+    "@gooi/searxng": "workspace:*",
+    "hast-util-from-html": "^2",
+    "hast-util-select": "^6",
+    "hast-util-to-mdast": "^10",
+    "hast-util-to-string": "^3",
+    "mdast-util-gfm": "^3",
+    "mdast-util-to-markdown": "^2"
+  },
+  "devDependencies": {
+    "@types/hast": "^3",
+    "@types/mdast": "^4"
+  }
+}

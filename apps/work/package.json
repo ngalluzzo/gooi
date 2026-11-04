@@ -1,0 +1,31 @@
+{
+  "name": "@gooi/work",
+  "version": "0.1.0",
+  "description": "All your work in one query: Markdown tasks and GitHub issues through DuckDB, as Markdown or an HTML page",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src"
+  },
+  "dependencies": {
+    "@gooi/duckdb": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/hast": "workspace:*",
+    "@gooi/kernel": "workspace:*"
+  },
+  "devDependencies": {
+    "@gooi/github": "workspace:*",
+    "@gooi/tasks": "workspace:*",
+    "@types/hast": "^3"
+  }
+}

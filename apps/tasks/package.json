@@ -35,6 +35,14 @@
         "types": "./dist/agent.d.ts",
         "default": "./dist/agent.js"
       }
+    },
+    "./table": {
+      "bun": "./src/table.ts",
+      "dev": "./src/table.ts",
+      "default": {
+        "types": "./dist/table.d.ts",
+        "default": "./dist/table.js"
+      }
     }
   },
   "scripts": {

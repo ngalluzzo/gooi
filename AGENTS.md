@@ -53,15 +53,16 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**13. One query over Markdown tasks and GitHub issues**
+**14. Web search as a source**
 
-DuckDB becomes a backing: one engine that reads a host's Markdown tasks as a local table and its repo's GitHub issues as a remote relation, and answers one SQL query over both. Filters on issues are pushed down into GitHub's API parameters where the API supports them, and GitHub's published OpenAPI description defines the relation. Results are Arrow tables, and a view renders them the way the task page does. The pushdown extension in old/ comes back only as far as this needs. The GitHub token comes from the host's environment.
+A SearXNG backing turns the SearXNG already running on 127.0.0.1:8888 into a web relation the query engine can read: a query's WHERE query = '...' is pushed down as the search itself, and the relation refuses to run without one. Search and fetch are also edges. Fetch reads a page as Markdown through hast and mdast, refuses local and private addresses, and caps size and time. Both hosts expose search and fetch on their CLIs and MCP servers, and the room agents get them as tools.
 
-Done when: the owner uses a view that shows their Markdown tasks and GitHub issues from one query, for real work.
+Done when: the owner uses a web search for something real: in a query, in a room, or through MCP.
 
 ## Waiting for use
 
 - **10. Replay a room answer with a change**. Closes when: the owner replays a real past room answer with a different backing or the current instructions, and uses the comparison to decide something.
+- **13. One query over Markdown tasks and GitHub issues**. Closes when: the owner uses a view that shows their Markdown tasks and GitHub issues from one query, for real work.
 
 ## Done
 

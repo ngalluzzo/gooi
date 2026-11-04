@@ -1,9 +1,9 @@
 {
   "open": {
-    "number": 13,
-    "title": "One query over Markdown tasks and GitHub issues",
-    "detail": "DuckDB becomes a backing: one engine that reads a host's Markdown tasks as a local table and its repo's GitHub issues as a remote relation, and answers one SQL query over both. Filters on issues are pushed down into GitHub's API parameters where the API supports them, and GitHub's published OpenAPI description defines the relation. Results are Arrow tables, and a view renders them the way the task page does. The pushdown extension in old/ comes back only as far as this needs. The GitHub token comes from the host's environment.",
-    "done": "the owner uses a view that shows their Markdown tasks and GitHub issues from one query, for real work."
+    "number": 14,
+    "title": "Web search as a source",
+    "detail": "A SearXNG backing turns the SearXNG already running on 127.0.0.1:8888 into a web relation the query engine can read: a query's WHERE query = '...' is pushed down as the search itself, and the relation refuses to run without one. Search and fetch are also edges. Fetch reads a page as Markdown through hast and mdast, refuses local and private addresses, and caps size and time. Both hosts expose search and fetch on their CLIs and MCP servers, and the room agents get them as tools.",
+    "done": "the owner uses a web search for something real: in a query, in a room, or through MCP."
   },
   "waiting": [
     {
@@ -11,6 +11,12 @@
       "title": "Replay a room answer with a change",
       "detail": "Each agent answer in a room records its run: the exact prompt, the backing and model, the instructions and the tools, linked from the reply. The room's replay command re-runs a past answer from that record with another backing or the current instructions. Tools that only read run for real; tools that write are recorded as what the agent would have done and never applied, in the terms of Smithy's readonly trait and HTTP's safe methods. It shows the original and the replay side by side and writes nothing to the room. The run record stays the room app's own until a second app needs it.",
       "done": "the owner replays a real past room answer with a different backing or the current instructions, and uses the comparison to decide something."
+    },
+    {
+      "number": 13,
+      "title": "One query over Markdown tasks and GitHub issues",
+      "detail": "DuckDB becomes a backing: one engine that reads a host's Markdown tasks as a local table and its repo's GitHub issues as a remote relation, and answers one SQL query over both. Filters on issues are pushed down into GitHub's API parameters where the API supports them, and GitHub's published OpenAPI description defines the relation. Results are Arrow tables, and a view renders them the way the task page does. The pushdown extension in old/ comes back only as far as this needs. The GitHub token comes from the host's environment.",
+      "done": "the owner uses a view that shows their Markdown tasks and GitHub issues from one query, for real work."
     }
   ],
   "done": [

@@ -1,0 +1,175 @@
+{
+  "$comment": "Extracted from https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json by backings/github/scripts/openapi.ts. Do not edit.",
+  "apiVersion": "1.1.4",
+  "operationId": "issues/list-for-repo",
+  "path": "/repos/{owner}/{repo}/issues",
+  "parameters": [
+    {
+      "name": "owner",
+      "in": "path",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "repo",
+      "in": "path",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "milestone",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "state",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "enum": [
+          "open",
+          "closed",
+          "all"
+        ],
+        "default": "open"
+      }
+    },
+    {
+      "name": "assignee",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "type",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "creator",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "mentioned",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "issue_field_values",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "labels",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "sort",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "enum": [
+          "created",
+          "updated",
+          "comments"
+        ],
+        "default": "created"
+      }
+    },
+    {
+      "name": "direction",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ],
+        "default": "desc"
+      }
+    },
+    {
+      "name": "since",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    {
+      "name": "per_page",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "default": 30
+      }
+    },
+    {
+      "name": "page",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "default": 1
+      }
+    }
+  ],
+  "issueFields": [
+    "active_lock_reason",
+    "assignee",
+    "assignees",
+    "author_association",
+    "body",
+    "body_html",
+    "body_text",
+    "closed_at",
+    "closed_by",
+    "comments",
+    "comments_url",
+    "created_at",
+    "draft",
+    "events_url",
+    "html_url",
+    "id",
+    "issue_dependencies_summary",
+    "issue_field_values",
+    "labels",
+    "labels_url",
+    "locked",
+    "milestone",
+    "node_id",
+    "number",
+    "parent_issue_url",
+    "performed_via_github_app",
+    "pinned_comment",
+    "pull_request",
+    "reactions",
+    "repository",
+    "repository_url",
+    "state",
+    "state_reason",
+    "sub_issues_summary",
+    "timeline_url",
+    "title",
+    "type",
+    "updated_at",
+    "url",
+    "user"
+  ]
+}

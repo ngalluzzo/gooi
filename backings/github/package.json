@@ -1,0 +1,25 @@
+{
+  "name": "@gooi/github",
+  "version": "0.1.0",
+  "description": "GitHub's REST API as query relations: a repository's issues, with filters pushed down to GitHub's own parameters",
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "dev": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "bun test ./src",
+    "openapi": "bun scripts/openapi.ts"
+  },
+  "dependencies": {
+    "@gooi/duckdb": "workspace:*"
+  }
+}

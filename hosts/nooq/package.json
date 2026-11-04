@@ -13,12 +13,14 @@
     "@gooi/host-kit": "workspace:*",
     "@gooi/kernel": "workspace:*",
     "@gooi/mcp": "workspace:*",
+    "@gooi/nooq-docs": "workspace:*",
     "@gooi/room": "workspace:*",
     "@gooi/tasks": "workspace:*",
     "commander": "^15.0.0"
   },
   "devDependencies": {
     "@gooi/commander": "workspace:*",
-    "@gooi/estree": "workspace:*"
+    "@gooi/estree": "workspace:*",
+    "@modelcontextprotocol/client": "2.3.1"
   }
 }

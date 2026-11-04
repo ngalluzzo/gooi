@@ -5,8 +5,26 @@
     "allowImportingTsExtensions": false,
     "rootDir": "src",
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "paths": {
+      "@nooq/core": [
+        "../../../nooq/packages/core/src/index.ts"
+      ],
+      "@nooq/yjs": [
+        "../../../nooq/packages/yjs/src/index.ts"
+      ],
+      "@nooq/plugins": [
+        "../../../nooq/packages/plugins/src/index.ts"
+      ],
+      "@nooq/plugin-tables/export": [
+        "../../../nooq/packages/plugin-tables/src/export.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
+  ]
 }

@@ -163,6 +163,23 @@
         "@gooi/kernel": "workspace:*",
       },
     },
+    "hosts/nooq": {
+      "name": "@gooi/nooq",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gooi/agent": "workspace:*",
+        "@gooi/exchange": "workspace:*",
+        "@gooi/host-kit": "workspace:*",
+        "@gooi/kernel": "workspace:*",
+        "@gooi/room": "workspace:*",
+        "@gooi/tasks": "workspace:*",
+        "commander": "^15.0.0",
+      },
+      "devDependencies": {
+        "@gooi/commander": "workspace:*",
+        "@gooi/estree": "workspace:*",
+      },
+    },
     "surfaces/agent": {
       "name": "@gooi/agent",
       "version": "0.1.0",
@@ -339,6 +356,8 @@
     "@gooi/kernel": ["@gooi/kernel@workspace:core/kernel"],
 
     "@gooi/log": ["@gooi/log@workspace:backings/log"],
+
+    "@gooi/nooq": ["@gooi/nooq@workspace:hosts/nooq"],
 
     "@gooi/openai": ["@gooi/openai@workspace:backings/openai"],
 

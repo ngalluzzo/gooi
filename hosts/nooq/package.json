@@ -1,0 +1,23 @@
+{
+  "name": "@gooi/nooq",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A host for nooq: its tasks and a room with agents, composed from gooi's apps and compiled to Commander",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@gooi/agent": "workspace:*",
+    "@gooi/exchange": "workspace:*",
+    "@gooi/host-kit": "workspace:*",
+    "@gooi/kernel": "workspace:*",
+    "@gooi/room": "workspace:*",
+    "@gooi/tasks": "workspace:*",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@gooi/commander": "workspace:*",
+    "@gooi/estree": "workspace:*"
+  }
+}

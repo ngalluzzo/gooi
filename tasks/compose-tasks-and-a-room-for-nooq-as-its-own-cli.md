@@ -1,6 +1,7 @@
 ---
-status: open
+status: done
 created: 2026-11-03
+finished: 2026-11-03
 ---
 
 # Compose tasks and a room for nooq as its own CLI

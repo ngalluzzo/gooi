@@ -1,5 +1,5 @@
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
-import { pushdown, type Filter } from "./pushdown.js";
+import { named, pushdown, type Filter } from "./pushdown.js";
 
 export type { Constant, Filter, Operator } from "./pushdown.js";
 
@@ -42,7 +42,7 @@ export interface Sources {
 
 export interface Answer {
   readonly table: Table;
-  /** What each relation was asked to filter, and how many rows it returned. */
+  /** For each relation the query named: what it was asked to filter, and how many rows it returned. */
   readonly pushed: { readonly [relation: string]: { readonly filters: readonly Filter[]; readonly rows: number } };
 }
 
@@ -124,11 +124,15 @@ export function duckdb() {
           ...Object.entries(tables).map(([name, t]) => [name, t.schema.fields.map((f) => f.name)] as [string, string[]]),
           ...Object.entries(relations).map(([name, r]) => [name, r.schema.fields.map((f) => f.name)] as [string, string[]]),
         ]);
-        const plan = pushdown(await parse(connection, sql), columns, new Set(Object.keys(relations)));
+        const ast = await parse(connection, sql);
+        const plan = pushdown(ast, columns, new Set(Object.keys(relations)));
+        // Only the relations the query names are fetched: a source costs nothing until it's used.
+        const used = named(ast);
 
         for (const [name, table] of Object.entries(tables)) await load(connection, name, table.schema, table.data);
         const pushed: Record<string, { filters: Filter[]; rows: number }> = {};
         for (const [name, relation] of Object.entries(relations)) {
+          if (!used.has(name)) continue;
           const filters = (plan.get(name) ?? []).filter((f) => relation.pushable[f.column]?.includes(f.op));
           const rows = await relation.fetch(filters);
           await load(connection, name, relation.schema, rows);

@@ -83,6 +83,14 @@ function conjuncts(where: unknown): Node[] {
   return [where];
 }
 
+/** The tables and relations a query names, from DuckDB's parse of it. */
+export function named(ast: unknown): Set<string> {
+  const names = new Set<string>();
+  for (const node of nodes(ast))
+    if (node.type === "BASE_TABLE" && typeof node.table_name === "string") names.add(node.table_name);
+  return names;
+}
+
 /**
  * The filters to push to each relation, by relation name. `columns` lists the
  * columns of every table and relation the query can see, so an unqualified

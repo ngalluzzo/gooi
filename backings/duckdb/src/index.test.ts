@@ -104,6 +104,14 @@ describe("query", () => {
   });
 });
 
+test("only the relations a query names are fetched", async () => {
+  const { relation, asked } = fake();
+  const answer = await db.query("SELECT name FROM tasks ORDER BY name", { tables: { tasks }, relations: { issues: relation } });
+  expect(answer.table.data).toEqual([{ name: "fix-paste" }, { name: "ship-room" }]);
+  expect(asked).toEqual([]);
+  expect(answer.pushed).toEqual({});
+});
+
 describe("safety", () => {
   test("only one SELECT runs; files, the environment and settings are out of reach", async () => {
     await expect(db.query("DELETE FROM tasks", { tables: { tasks } })).rejects.toThrow("Only one SELECT can be queried");

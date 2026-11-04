@@ -29,6 +29,8 @@ export interface WorkOptions {
   /** An edge giving the tasks as a table when invoked with {}. */
   readonly tasks: Implementation;
   readonly issues: Relation;
+  /** More relations queries can name, such as web; each is fetched only by a query that names it. */
+  readonly relations?: Readonly<Record<string, Relation>>;
   /** Named for the page title, such as "gooi". */
   readonly project: string;
 }
@@ -37,10 +39,10 @@ export type Answer = Table & { readonly pushdown: Record<string, { readonly filt
 
 /** Work across Markdown tasks (a local table) and GitHub issues (a relation):
  * one query over both, saved queries, and two views of any answer. */
-export function work({ engine, tasks, issues, project }: WorkOptions) {
+export function work({ engine, tasks, issues, relations = {}, project }: WorkOptions) {
   async function run(sql: string): Promise<Value> {
     const listed = await invoke(tasks, artifact(tasks.operation.input, {}));
-    const answer = await engine.query(sql, { tables: { tasks: listed.artifact.value as unknown as Table }, relations: { issues } });
+    const answer = await engine.query(sql, { tables: { tasks: listed.artifact.value as unknown as Table }, relations: { ...relations, issues } });
     return { ...answer.table, pushdown: answer.pushed } as unknown as Value;
   }
 

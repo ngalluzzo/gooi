@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { ACP_PROMPT, type Turn } from "@gooi/agent";
+import { ACP_PROMPT, ACP_TURN, type Turn } from "@gooi/agent";
 import { edge, invoke, path, type Implementation } from "@gooi/exchange";
 import { artifact } from "@gooi/kernel/evidence";
-import type { Value } from "@gooi/kernel/types";
-import { LOG_APPEND, LOG_READ, LogConflict, type Log } from "@gooi/log";
+import type { Contract, Value } from "@gooi/kernel/types";
+import { LOG_APPEND, LOG_APPENDED, LOG_ENTRIES, LOG_READ, LogConflict, type Log } from "@gooi/log";
 import {
   join, MATRIX_MESSAGES, members, mentionsIn, message, messagesSchema, nameOf, roomId, transcript,
   userId, type Messages, type RoomEvent, type TextMessage,
@@ -46,8 +46,23 @@ export interface RoomOptions {
   readonly maxReplies?: number;
 }
 
+const show = (c: Contract) => `${c.id}@${c.version}`;
+
+/** Refuse wiring whose edge doesn't take and give the contracts the room calls it with. */
+function expect(what: string, given: Implementation, input: Contract, output: Contract) {
+  const { operation } = given;
+  if (show(operation.input) !== show(input) || show(operation.output) !== show(output))
+    throw new Error(
+      `${what} must take ${show(input)} and give ${show(output)}, ` +
+        `but takes ${show(operation.input)} and gives ${show(operation.output)}`,
+    );
+}
+
 /** Rooms on a log: post as the owner, let mentioned agents answer, read a room back. */
 export function rooms({ log, owner, agents, maxReplies = 6 }: RoomOptions) {
+  expect("The room log's append", log.append, LOG_APPEND, LOG_APPENDED);
+  expect("The room log's read", log.read, LOG_READ, LOG_ENTRIES);
+  for (const [name, agent] of Object.entries(agents)) expect(`Agent ${name}`, agent, ACP_PROMPT, ACP_TURN);
   const agentIds = new Map(Object.entries(agents).map(([name, agent]) => [userId(name), agent]));
   if (agentIds.has(owner)) throw new Error(`The owner ${owner} can't also be an agent`);
 

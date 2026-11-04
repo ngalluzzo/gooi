@@ -190,3 +190,14 @@ test("events that don't match Matrix's schemas are refused", async () => {
   await invoke(log.append, artifact(LOG_APPEND, { stream: "gooi", expectedLength: 0, entries: [bad] }));
   await expect(show()).rejects.toThrow("chunk.0.content.body must be string");
 });
+
+test("a room refuses a log or an agent that doesn't have the contracts it calls", () => {
+  const log = stores.jsonl();
+  const { agent: claude } = fake("c");
+  expect(() => rooms({ log: { ...log, read: log.list }, owner: OWNER, agents: { claude } })).toThrow(
+    "The room log's read must take urn:gooi:log:read@1 and give urn:gooi:log:entries@1, but takes urn:gooi:log:list@1",
+  );
+  expect(() => rooms({ log, owner: OWNER, agents: { claude, tasks: log.list } })).toThrow(
+    "Agent tasks must take https://agentclientprotocol.com/protocol/v1/schema#PromptRequest@1",
+  );
+});

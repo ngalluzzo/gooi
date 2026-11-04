@@ -16,8 +16,11 @@
     "@gooi/kernel": "workspace:*",
     "@gooi/mcp": "workspace:*",
     "@gooi/nooq-docs": "workspace:*",
+    "@gooi/pages": "workspace:*",
     "@gooi/room": "workspace:*",
+    "@gooi/searxng": "workspace:*",
     "@gooi/tasks": "workspace:*",
+    "@gooi/web": "workspace:*",
     "@gooi/work": "workspace:*",
     "commander": "^15.0.0"
   },

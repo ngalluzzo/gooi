@@ -5,7 +5,7 @@ import { commands } from "./commands.js";
 // read slices but not open, wait or close them, since slices stay the owner's,
 // and it can read and replay rooms but not post in them, which would speak as
 // the owner. Run with `bun run mcp`; Claude Code starts it from .mcp.json.
-const { slice, task, agent, room, work } = commands;
+const { slice, task, agent, room, work, web } = commands;
 await serveStdio({
   slice: { description: slice.description, commands: { status: slice.commands.status } },
   task,
@@ -14,6 +14,7 @@ await serveStdio({
     commands: { sessions: agent.commands.sessions, show: agent.commands.show },
   },
   work,
+  web,
   room: {
     description: "Read and replay rooms; posting stays with the owner",
     commands: { show: room.commands.show, replay: room.commands.replay },
@@ -22,5 +23,5 @@ await serveStdio({
   name: "gooi",
   version: "0.1.0",
   // Replay isn't here: it reads the room but runs models and saves a new session.
-  readOnly: ["slice_status", "task_list", "agent_sessions", "agent_show", "room_show", "work_all", "work_open", "work_query"],
+  readOnly: ["slice_status", "task_list", "agent_sessions", "agent_show", "room_show", "work_all", "work_open", "work_query", "web_search", "web_read"],
 });

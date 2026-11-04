@@ -26,11 +26,12 @@ test("gooi's MCP server offers its commands an agent may use, and not the owner'
   const names = (await mcp.listTools()).tools.map((tool) => tool.name).sort();
   expect(names).toEqual([
     "agent_sessions", "agent_show", "room_replay", "room_show", "slice_status",
-    "task_add", "task_finish", "task_list", "work_all", "work_open", "work_query",
+    "task_add", "task_finish", "task_list", "web_read", "web_search", "work_all", "work_open", "work_query",
   ]);
   const readOnly = (await mcp.listTools()).tools.filter((tool) => tool.annotations?.readOnlyHint).map((tool) => tool.name);
   expect(readOnly.sort()).toEqual([
-    "agent_sessions", "agent_show", "room_show", "slice_status", "task_list", "work_all", "work_open", "work_query",
+    "agent_sessions", "agent_show", "room_show", "slice_status", "task_list", "web_read", "web_search", "work_all", "work_open",
+    "work_query",
   ]);
 });
 

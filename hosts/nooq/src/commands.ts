@@ -12,12 +12,20 @@ import { tasksTable } from "@gooi/tasks/table";
 import { duckdb } from "@gooi/duckdb";
 import { issues } from "@gooi/github";
 import { work } from "@gooi/work";
+import { pages } from "@gooi/pages";
+import { searxng } from "@gooi/searxng";
+import { web } from "@gooi/web";
 
 // NOOQ_ROOT points at the nooq checkout; by default it sits next to this repo.
 // nooq's tasks are files in it, and its room and agent logs stay in its .gooi.
 const root = resolve(process.env.NOOQ_ROOT ?? fileURLToPath(new URL("../../../../nooq", import.meta.url)));
 const task = tasks(fileFolder(join(root, "tasks")));
 const logAt = logs(join(root, ".gooi"));
+
+// The web through the SearXNG on 127.0.0.1:8888, or SEARXNG_URL: searches and
+// page reads as edges, and the web as a relation queries can name.
+const searx = searxng({ url: process.env.SEARXNG_URL ?? "http://127.0.0.1:8888" });
+export const internet = web({ search: searx.search, pages: pages() });
 
 // Both backings answer in nooq's room, and the tools they get are nooq's tasks.
 const room = rooms({
@@ -27,7 +35,11 @@ const room = rooms({
   owner: userId(localUser()),
   agents: Object.fromEntries(Object.entries(models()).map(([name, model]) => [
     name,
-    { model: model(), tools: toolbox(task), readOnly: readOnlyTools },
+    {
+      model: model(),
+      tools: { ...toolbox(task), web_search: internet.search, web_read: internet.read },
+      readOnly: [...readOnlyTools, "web_search", "web_read"],
+    },
   ])),
 });
 
@@ -44,6 +56,7 @@ export const docs = documents({
 // GitHub issues as a relation DuckDB pushes filters down to. NOOQ_REPO names the
 // repository; GITHUB_TOKEN is read when a query runs, and public repositories
 // work without it. GITHUB_API_URL points it at another API, such as a test's.
+
 export const workspace = work({
   engine: duckdb(),
   tasks: path(task.tasks, tasksTable),
@@ -52,6 +65,7 @@ export const workspace = work({
     token: () => process.env.GITHUB_TOKEN,
     ...(process.env.GITHUB_API_URL ? { baseUrl: process.env.GITHUB_API_URL } : {}),
   }),
+  relations: { web: searx.web },
   project: "nooq",
 });
 
@@ -88,6 +102,13 @@ export const commands = {
       all: { edge: path(workspace.all, workspace.markdown), output: "text" },
       open: { edge: path(workspace.open, workspace.markdown), output: "text" },
       query: { edge: path(workspace.query, workspace.markdown), output: "text" },
+    },
+  },
+  web: {
+    description: "Search the web through SearXNG and read pages as Markdown",
+    commands: {
+      search: { edge: path(internet.search, workspace.markdown), output: "text" },
+      read: { edge: internet.read, output: "text" },
     },
   },
 } satisfies Layout;

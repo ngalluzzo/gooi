@@ -14,6 +14,9 @@ import { tasksTable } from "@gooi/tasks/table";
 import { duckdb } from "@gooi/duckdb";
 import { issues } from "@gooi/github";
 import { work } from "@gooi/work";
+import { pages } from "@gooi/pages";
+import { searxng } from "@gooi/searxng";
+import { web } from "@gooi/web";
 
 // GOOI_ROOT points the command at another checkout; by default it's this repo.
 const root = process.env.GOOI_ROOT
@@ -30,6 +33,11 @@ const logAt = logs(file(".gooi"));
 const log = logAt("agent-sessions");
 const history = sessionHistory(log, resolve(file(".")));
 
+// The web through the SearXNG on 127.0.0.1:8888, or SEARXNG_URL: searches and
+// page reads as edges, and the web as a relation queries can name.
+const searx = searxng({ url: process.env.SEARXNG_URL ?? "http://127.0.0.1:8888" });
+export const internet = web({ search: searx.search, pages: pages() });
+
 // In a room every backing takes part at once, each under its own Matrix name.
 // The owner is the local user. Each answer's run is recorded, and its ACP
 // session is saved with the other agent sessions.
@@ -40,7 +48,11 @@ const room = rooms({
   owner: userId(localUser()),
   agents: Object.fromEntries(Object.entries(backings).map(([name, model]) => [
     name,
-    { model: model(), tools: toolbox(task), readOnly: readOnlyTools },
+    {
+      model: model(),
+      tools: { ...toolbox(task), web_search: internet.search, web_read: internet.read },
+      readOnly: [...readOnlyTools, "web_search", "web_read"],
+    },
   ])),
 });
 
@@ -48,6 +60,7 @@ const room = rooms({
 // GitHub issues as a relation DuckDB pushes filters down to. GOOI_REPO names the
 // repository; GITHUB_TOKEN is read when a query runs, and public repositories
 // work without it. GITHUB_API_URL points it at another API, such as a test's.
+
 export const workspace = work({
   engine: duckdb(),
   tasks: path(task.tasks, tasksTable),
@@ -56,6 +69,7 @@ export const workspace = work({
     token: () => process.env.GITHUB_TOKEN,
     ...(process.env.GITHUB_API_URL ? { baseUrl: process.env.GITHUB_API_URL } : {}),
   }),
+  relations: { web: searx.web },
   project: "gooi",
 });
 
@@ -94,6 +108,13 @@ export const commands = {
       all: { edge: path(workspace.all, workspace.markdown), output: "text" },
       open: { edge: path(workspace.open, workspace.markdown), output: "text" },
       query: { edge: path(workspace.query, workspace.markdown), output: "text" },
+    },
+  },
+  web: {
+    description: "Search the web through SearXNG and read pages as Markdown",
+    commands: {
+      search: { edge: path(internet.search, workspace.markdown), output: "text" },
+      read: { edge: internet.read, output: "text" },
     },
   },
 } satisfies Layout;

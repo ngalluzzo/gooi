@@ -4,11 +4,11 @@ import { agent, sessionHistory, textPrompt } from "@gooi/agent";
 import type { Layout } from "@gooi/commander";
 import { path } from "@gooi/exchange";
 import { choose, localUser, logs, models } from "@gooi/host-kit";
-import { instructions as roomInstructions, rooms, userId } from "@gooi/room";
+import { rooms, userId } from "@gooi/room";
 import { slices } from "@gooi/slices";
 import { fileStore } from "@gooi/slices/file";
 import { tasks } from "@gooi/tasks";
-import { instructions, toolbox } from "@gooi/tasks/agent";
+import { instructions, readOnlyTools, toolbox } from "@gooi/tasks/agent";
 import { fileFolder } from "@gooi/tasks/file";
 
 // GOOI_ROOT points the command at another checkout; by default it's this repo.
@@ -27,14 +27,16 @@ const log = logAt("agent-sessions");
 const history = sessionHistory(log, resolve(file(".")));
 
 // In a room every backing takes part at once, each under its own Matrix name.
-// The owner is the local user; their turns are saved like any agent session.
-const owner = userId(localUser());
+// The owner is the local user. Each answer's run is recorded, and its ACP
+// session is saved with the other agent sessions.
 const room = rooms({
   log: logAt("rooms"),
-  owner,
+  runs: logAt("room-runs"),
+  sessions: log,
+  owner: userId(localUser()),
   agents: Object.fromEntries(Object.entries(backings).map(([name, model]) => [
     name,
-    agent({ instructions: roomInstructions, tools: toolbox(task), model: model(), log }),
+    { model: model(), tools: toolbox(task), readOnly: readOnlyTools },
   ])),
 });
 
@@ -64,6 +66,7 @@ export const commands = {
     commands: {
       say: { edge: room.say, output: "text" },
       show: { edge: room.show, output: "text" },
+      replay: { edge: room.replay, output: "text" },
     },
   },
 } satisfies Layout;

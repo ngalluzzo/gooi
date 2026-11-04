@@ -247,6 +247,15 @@ describe("gooi end to end", () => {
         const shown = await room("show", "--room", `chat-${store}`);
         expect(shown.code, shown.err).toBe(0);
         expect(shown.out).toBe(said.out);
+
+        // Replay re-sends the recorded prompt and writes nothing to the room.
+        const replayed = await room("replay", "--room", `chat-${store}`);
+        expect(replayed.code, replayed.err).toBe(0);
+        expect(prompts).toHaveLength(2);
+        expect(prompts[1]).toBe(prompts[0]!);
+        expect(replayed.out).toContain(`Replaying omlx's latest answer in #chat-${store}, to ${me}.`);
+        expect(replayed.out).toContain("Replay: omlx · Qwen3.8-27B-Q8_0 · current instructions (unchanged)");
+        expect((await room("show", "--room", `chat-${store}`)).out).toBe(said.out);
       } finally {
         provider.stop(true);
       }

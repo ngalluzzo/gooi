@@ -1,10 +1,5 @@
 {
-  "open": {
-    "number": 12,
-    "title": "nooq documents through gooi",
-    "detail": "A gooi app keeps nooq documents on the log the way nooq's DM-14.6 says a host should: each document's state beside its header, and its history as nooq's history store, verified on load with nooq's own code. Edges read a document as Markdown or HTML, let an agent propose a change as a nooq suggestion, and let the owner accept or reject it. Every change is a nooq transaction; agents can only propose, and accepting stays with the owner. nooq's host serves these through its CLI and MCP. The first document is nooq's docs/gap-audit.md, brought in with nooq's own Markdown import.",
-    "done": "the owner accepts a real suggestion that an agent proposed through MCP to a nooq document."
-  },
+  "open": null,
   "waiting": [
     {
       "number": 10,
@@ -92,6 +87,14 @@
       "detail": "One generic MCP surface adapter serves a host's commands as MCP tools over stdio, on the official MCP TypeScript SDK. It runs interpreted: each tool comes from its edge's JSON Schema at startup, and nothing is generated. gooi's and nooq's hosts each start one from the layout they already have, with no app change, and Claude Code connects to gooi's through the repo's .mcp.json.",
       "done": "the owner's Claude Code session does real gooi work, such as tracking tasks or reading a room, through gooi's MCP tools instead of bun gooi.",
       "used": "Claude Code tracked its MCP follow-ups as gooi tasks through gooi's MCP tools: added two and finished one",
+      "closed": "2026-11-04"
+    },
+    {
+      "number": 12,
+      "title": "nooq documents through gooi",
+      "detail": "A gooi app keeps nooq documents on the log the way nooq's DM-14.6 says a host should: each document's state beside its header, and its history as nooq's history store, verified on load with nooq's own code. Edges read a document as Markdown or HTML, let an agent propose a change as a nooq suggestion, and let the owner accept or reject it. Every change is a nooq transaction; agents can only propose, and accepting stays with the owner. nooq's host serves these through its CLI and MCP. The first document is nooq's docs/gap-audit.md, brought in with nooq's own Markdown import.",
+      "done": "the owner accepts a real suggestion that an agent proposed through MCP to a nooq document.",
+      "used": "accepted Claude Code's MCP suggestion noting the Markdown round-trip limits in nooq's gap audit",
       "closed": "2026-11-04"
     }
   ]

@@ -53,11 +53,7 @@ the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changin
 
 ## Open slice
 
-**12. nooq documents through gooi**
-
-A gooi app keeps nooq documents on the log the way nooq's DM-14.6 says a host should: each document's state beside its header, and its history as nooq's history store, verified on load with nooq's own code. Edges read a document as Markdown or HTML, let an agent propose a change as a nooq suggestion, and let the owner accept or reject it. Every change is a nooq transaction; agents can only propose, and accepting stays with the owner. nooq's host serves these through its CLI and MCP. The first document is nooq's docs/gap-audit.md, brought in with nooq's own Markdown import.
-
-Done when: the owner accepts a real suggestion that an agent proposed through MCP to a nooq document.
+_None. Only the owner opens the next slice._
 
 ## Waiting for use
 
@@ -65,11 +61,11 @@ Done when: the owner accepts a real suggestion that an agent proposed through MC
 
 ## Done
 
+- **12. nooq documents through gooi** (closed 2026-11-04). Used for: accepted Claude Code's MCP suggestion noting the Markdown round-trip limits in nooq's gap audit
 - **11. Gooi's edges over MCP** (closed 2026-11-04). Used for: Claude Code tracked its MCP follow-ups as gooi tasks through gooi's MCP tools: added two and finished one
 - **9. A second host: tasks and a room for nooq** (closed 2026-11-03). Used for: asked the nooq room to turn the BlockNote gap audit into nooq tasks
 - **8. Claude and OMLx in one room** (closed 2026-11-03). Used for: reviewed my ongoing conversation with both agents
 - **7. Agent conversations on a swappable log** (closed 2026-11-03). Used for: reviewed my ongoing conversation with claude
-- **6. Tell an agent, get a task** (closed 2026-11-03). Used for: used both backings to try enriching the rac ACP output
-- _…and 5 earlier._
+- _…and 6 earlier._
 
 <!-- gooi:slices:end -->

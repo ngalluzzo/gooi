@@ -45,7 +45,7 @@ same laws. Apps own the entries' meaning and express domain queries as edges.
 The owner updates the generated sections below through `bun gooi slice open`
 and `bun gooi slice close --used`. Both use `.gooi/slices.json`. `bun gooi` and
 the task pages (`bun run serve`: `/` and `/shadcn`) are generated: after changing
-`apps/gooi/src/commands.ts`, `routes.ts` or `design.ts`, run `bun run compile`.
+`hosts/gooi/src/commands.ts`, `routes.ts` or `design.ts`, run `bun run compile`.
 
 <!-- gooi:slices:start -->
 

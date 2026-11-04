@@ -4,15 +4,16 @@
     "core/*",
     "surfaces/*",
     "apps/*",
-    "backings/*"
+    "backings/*",
+    "hosts/*"
   ],
   "scripts": {
-    "gooi": "bun apps/gooi/src/gooi.ts",
-    "serve": "bun apps/gooi/src/server.ts",
-    "compile": "bun apps/gooi/src/compile.ts",
+    "gooi": "bun hosts/gooi/src/gooi.ts",
+    "serve": "bun hosts/gooi/src/server.ts",
+    "compile": "bun hosts/gooi/src/compile.ts",
     "build": "bun run --cwd core/kernel build && bun run --cwd core/exchange build && bun run --cwd backings/jsonl build && bun run --cwd backings/sqlite build && bun run --cwd backings/log build && bun run --cwd surfaces/cli build && bun run --cwd surfaces/estree build && bun run --cwd surfaces/hast build && bun run --cwd surfaces/commander build && bun run --cwd surfaces/hono build && bun run --cwd surfaces/react build && bun run --cwd surfaces/agent build && bun run --cwd backings/claude build && bun run --cwd backings/openai build && bun run --cwd apps/slices build && bun run --cwd apps/tasks build && bun run --cwd apps/room build",
-    "typecheck": "bun run --filter './core/*' --filter './surfaces/*' --filter './backings/*' --filter './apps/*' typecheck",
-    "test": "bun test ./core ./surfaces ./backings ./apps"
+    "typecheck": "bun run --filter './core/*' --filter './surfaces/*' --filter './backings/*' --filter './apps/*' --filter './hosts/*' typecheck",
+    "test": "bun test ./core ./surfaces ./backings ./apps ./hosts"
   },
   "devDependencies": {
     "@types/bun": "^1.4.4",

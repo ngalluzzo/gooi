@@ -1,0 +1,41 @@
+# gooi's tasks as an Obsidian Base. Each task is a note whose frontmatter
+# (status, created, finished) Obsidian reads as properties. Edits in Obsidian
+# are hand edits, which gooi's CLI, MCP and agents see on their next read.
+filters:
+  and:
+    - file.folder == this.file.folder
+    - file.ext == "md"
+properties:
+  status:
+    displayName: Status
+  created:
+    displayName: Created
+  finished:
+    displayName: Finished
+views:
+  - type: table
+    name: Open
+    filters:
+      and:
+        - status == "open"
+    order:
+      - file.name
+      - note.created
+  - type: table
+    name: Done
+    filters:
+      and:
+        - status == "done"
+    order:
+      - file.name
+      - note.finished
+      - note.created
+  - type: table
+    name: All
+    groupBy:
+      property: note.status
+      direction: DESC
+    order:
+      - file.name
+      - note.created
+      - note.finished

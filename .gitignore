@@ -21,3 +21,6 @@ test-results/
 /.gooi/rooms.sqlite*
 /.gooi/room-runs/
 /.gooi/room-runs.sqlite*
+
+# Obsidian keeps its vault settings here when a folder is opened as a vault
+.obsidian/
